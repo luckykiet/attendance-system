@@ -23,6 +23,7 @@
   "workspaces": [
     "attendance-system",
     "server",
-    "admin"
+    "admin",
+    "mobile"
   ]
 }
