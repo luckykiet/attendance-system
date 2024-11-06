@@ -5,13 +5,15 @@ const dayjs = require('dayjs')
 const UserSchema = new Schema(
     {
         email: { type: String, required: true, unique: true, trim: true },
+        username: { type: String, trim: true, required: true, unique: true, match: [/^(?!.*__)[a-z0-9_]+$/] },
+
         name: { type: String, trim: true, default: '' },
-        username: {
-            type: String, trim: true, required: true, unique: true, match: [/^(?!.*__)[a-z0-9_]+$/],
-        },
         password: { type: String, required: true },
         role: { type: String, default: 'admin', },
         notes: { type: String, trim: true, default: '' },
+
+        retailId: { type: Schema.Types.ObjectId, required: true },
+        registerId: { type: Schema.Types.ObjectId, required: true },
         isAvailable: { type: Boolean, required: true, default: true },
     },
     {
@@ -19,7 +21,6 @@ const UserSchema = new Schema(
         timestamps: true,
     }
 )
-
 
 UserSchema.pre(
     ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
