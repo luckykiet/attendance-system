@@ -17,7 +17,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/': {
-        target: 'https://admin.vcap.me:3000',
+        target: 'https://api.vcap.me:3000',
         secure: false,
         bypass(req) {
           if (req.url && (req.url === '/' || req.url.startsWith('/admin'))) {

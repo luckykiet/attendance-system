@@ -1,30 +1,28 @@
-# GOKASA Admin
+# ATTENDENCE SYSTEM Admin
 
-Multi-business administration UI for GOKASA
+Administration UI for ATTENDENCE SYSTEM
 
 ## Build and deployment
 
-- the built client has to be served by GOKASA (project-ops) server on production, the following steps show how to deploy it on local development server, which can be applied the same way on production
+- the built client has to be served by server on production, the following steps show how to deploy it on local development server, which can be applied the same way on production
 
 ### DEVELOPMENT
 
 - config `/.env` file
-- note that VITE_RECAPTCHA_KEY is not being used at the moment and you can safely ignore the configuration
-- use same Grecaptcha Site Key from GOKASA (project-ops)
+- assign reCaptcha v3 SITE KEY into VITE_RECAPTCHA_KEY for vcap.me or localhost
   
 ```
 VITE_RECAPTCHA_KEY = ''
 ```
 
 - Run development
-    - run `project-ops` server locally to serve the back-end API
+    - run `server` server locally to serve the back-end API
     - run `yarn dev` to run development mode for the client via vite
 
 ### PRODUCTION
 
 - config `/.env.production` file
-- note that VITE_RECAPTCHA_KEY is not being used at the moment and you can safely ignore the configuration
-- use same Grecaptcha Site Key from GOKASA (project-ops)
+- assign reCaptcha v3 SITE KEY into VITE_RECAPTCHA_KEY for hostname of the website
 
 ```.env.production
 VITE_RECAPTCHA_KEY = ''
@@ -32,4 +30,4 @@ VITE_RECAPTCHA_KEY = ''
 
 - Build and deploy
     - run `yarn build`
-    - copy `/build/*` to `~/project-ops/public/admin/` (works for both local dev and production)
+    - copy `/build/*` to `~/server/public/admin/` (works for both local dev and production)
