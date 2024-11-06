@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Tuan Kiet Nguyen",
+  "type": "commonjs",
+  "main": "app.js",
+  "bin": "./bin/www.https.js",
+  "scripts": {
+    "dev": "NODE_ENV=dev && nodemon bin/www.http.js",
+    "devhttps": "NODE_ENV=dev && nodemon bin/www.https.js",
+    "start": "NODE_ENV=production && node bin/www.http.js",
+    "starthttps": "NODE_ENV=production && node bin/www.https.js",
+    "upgrade-dep": "ncu -u && yarn install"
+  },
+  "packageManager": "yarn@4.5.1",
+  "engines": {
+    "node": ">=20.4.0"
+  }
+}

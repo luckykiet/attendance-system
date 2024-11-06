@@ -1,0 +1,28 @@
+{
+  "name": "attendance-system",
+  "author": "Tuan Kiet Nguyen",
+  "engines": {
+    "node": ">=20.4.0"
+  },
+  "version": "1.0.0",
+  "description": "Attendance system",
+  "scripts": {
+    "dev": "yarn workspaces foreach -Api --topological-dev run dev",
+    "devhttps": "yarn workspaces foreach -Api --topological-dev run devhttps",
+    "install-all": "yarn install && yarn workspace admin install && yarn workspace server install",
+    "start": "yarn workspace server start",
+    "starthttps": "yarn workspace server starthttps",
+    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd .. && yarn install-all",
+    "upgrade-dep": "ncu -u && yarn install"
+  },
+  "packageManager": "yarn@4.5.1",
+  "license": "MIT",
+  "devDependencies": {
+    "npm-check-updates": "^17.1.10"
+  },
+  "workspaces": [
+    "attendance-system",
+    "server",
+    "admin"
+  ]
+}
