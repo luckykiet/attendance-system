@@ -1,0 +1,37 @@
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  font-named-instance: 'Regular';
+  src: url('Inter-roman.var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+  font-named-instance: 'Italic';
+  src: url('Inter-italic.var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter Regular', sans-serif;
+  font-optical-sizing: auto;
+  font-display: swap;
+  font-style: normal;
+  font-named-instance: 'Regular';
+  font-variation-settings: 'slnt' 0;
+  src: url('Inter-Regular.ttf') format('ttf');
+}
+
+@font-face {
+  font-family: 'Inter Bold', sans-serif;
+  font-optical-sizing: auto;
+  font-display: swap;
+  font-style: normal;
+  font-named-instance: 'Bold';
+  font-variation-settings: 'slnt' 0;
+  src: url('Inter-Bold.ttf') format('ttf');
+}

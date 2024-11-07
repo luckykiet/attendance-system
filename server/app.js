@@ -1,20 +1,17 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
-const cors = require('cors')
+// const cors = require('cors')
 const path = require('path')
 const compression = require('compression')
 const passport = require('passport')
 const expressSession = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(expressSession)
 const locale = require('locale')
-const { errorLogger, errorResponder } = require('./errors_handler')
-const HttpError = require('./http-error')
+const { errorLogger, errorResponder } = require('./errors-handler')
 const bodyParser = require('body-parser')
 const Database = require('./db');
-const axios = require('axios');
-const { CONFIG } = require('./config')
-const { utils } = require('./utils')
+const { CONFIG } = require('./configs')
 
 Database.getInstance();
 
@@ -51,49 +48,24 @@ app.use(
   }),
 )
 
-const noCache = (req, res, next) => {
-  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate')
-  res.header('Expires', '-1')
-  res.header('Pragma', 'no-cache')
-  next()
-}
+// const corsWhitelist = []
 
-const ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    next()
-  } else {
-    next(new HttpError(`srv_unauthorized`, 401))
-  }
-}
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (!origin) {
+//       return callback(null, true)
+//     }
+//     for (const pattern of corsWhitelist) {
+//       if (pattern.test(origin)) {
+//         return callback(null, true)
+//       }
+//     }
+//     callback(`${origin} Not allowed by CORS`)
+//   },
+//   credentials: true,
+// }
 
-const checkIpAddress = async (req, res, next) => {
-  try {
-    const response = await axios.get('http://httpbin.org/ip')
-    return res.status(200).json({ success: true, msg: response.data.origin })
-  } catch (error) {
-    console.log(error)
-    next(new HttpError(`srv_error`, 500))
-  }
-}
-
-const corsWhitelist = []
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) {
-      return callback(null, true)
-    }
-    for (const pattern of corsWhitelist) {
-      if (pattern.test(origin)) {
-        return callback(null, true)
-      }
-    }
-    callback(`${origin} Not allowed by CORS`)
-  },
-  credentials: true,
-}
-
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 
 app.use(bodyParser.json())
 
@@ -119,33 +91,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(locale(languages))
 
-const apiPrefix = '/api/v1'
-
-app.get(apiPrefix + '/ping', (req, res) => {
-  res.json({ success: true })
-})
-
-app.get('/api/ip', async (req, res) => {
-  await checkIpAddress(req, res)
-})
-
-app.get(apiPrefix + '/ares/:tin', async (req, res, next) => {
-  const { tin } = req.params
-  const result = await utils.fetchAresWithTin(tin)
-
-  if (!result || !result.success) {
-    return next(new HttpError(result.msg || 'srv_invalid_tin', 400))
-  }
-
-  return res.status(200).json({ success: true, msg: result.msg })
-})
-
-// public routes here
-
-app.use(apiPrefix, noCache)
-app.use(apiPrefix, ensureAuthenticated)
-
-// private routes here
+require('./routes/auth')(app, '/auth')
+require('./routes/api')(app, '/api')
+require('./routes/mod')(app, '/mod')
 
 // error handler
 app.use(errorLogger)

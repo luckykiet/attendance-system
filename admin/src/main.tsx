@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import '@/assets/fonts/inter/inter.css';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+import App from '@/App';
+import { createRoot } from 'react-dom/client';
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
+// ==============================|| MAIN - REACT DOM RENDER  ||============================== //
+
+root.render(
+  <App />
+);

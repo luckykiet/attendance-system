@@ -56,7 +56,12 @@ const utils = {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return R * c;
-    }
+    },
+    regex: {
+        username: /^[a-z0-9]{4,}$/,
+        password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+        simpleTinRegex: /^\d{7,8}$/,
+    },
 }
 
 module.exports = utils
