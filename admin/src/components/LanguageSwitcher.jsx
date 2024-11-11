@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { supportedLocales, supportedLocalesIcons } from '@/locales';
-import { useLanguage, useSetLanguage } from '@/stores/ZustandStores';
+import { useLanguage, useSetLanguage } from '@/stores/root';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import { renderIcon } from '@/utils';

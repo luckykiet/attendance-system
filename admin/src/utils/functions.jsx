@@ -1,10 +1,9 @@
-import { CONFIG, PRIVILEGES } from '@/configs'
+import { PRIVILEGES } from '@/configs'
 import _ from 'lodash'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import isBetween from 'dayjs/plugin/isBetween'
-import { jwtDecode } from 'jwt-decode'
 import { months } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
@@ -107,21 +106,6 @@ export const arraysAreEqual = (arrayA, arrayB) => {
     return false
   }
   return sortedArrayA.every((element, index) => element === sortedArrayB[index])
-}
-
-export const getItemsFromToken = (
-  token = localStorage.getItem('user-token')
-) => {
-  try {
-    if (!token) {
-      throw 'srv_no_token'
-    }
-    const payload = jwtDecode(token, CONFIG.JWT_SECRET)
-    return payload
-  } catch (error) {
-    console.error('Error decoding token:', error)
-    return 'Invalid'
-  }
 }
 
 export const addDecimalAndNonNegative = (value) => {
@@ -461,7 +445,6 @@ export const getMonthsWithYears = (start, end, t) => {
   return result
 }
 
-export const checkPrivileges = (privilegesKey) => {
-  const { role } = getItemsFromToken()
+export const checkPrivileges = (privilegesKey, role) => {
   return role && PRIVILEGES[privilegesKey] && PRIVILEGES[privilegesKey].includes(role)
 }

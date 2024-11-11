@@ -28,6 +28,14 @@ export default defineConfig({
         target: 'https://admin.vcap.me:4000',
         secure: false,
       },
+      '/auth': {
+        target: 'https://admin.vcap.me:4000',
+        secure: false,
+      },
+      '/mod': {
+        target: 'https://admin.vcap.me:4000',
+        secure: false,
+      },
     },
   },
   preview: {

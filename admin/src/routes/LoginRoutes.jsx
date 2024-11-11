@@ -3,16 +3,11 @@ import GuestGuard from '@/layouts/GuestGuard'
 import Loadable from '@/components/Loadable'
 import { lazy } from 'react'
 
-// render - login
 const Home = Loadable(lazy(() => import('@/pages/HomePage')))
 const AuthLogin = Loadable(lazy(() => import('@/pages/auth/LoginPage')))
-const AuthForgotPassword = Loadable(
-  lazy(() => import('@/pages/auth/ForgottenPasswordPage'))
-)
+const AuthForgotPassword = Loadable(lazy(() => import('@/pages/auth/ForgottenPasswordPage')))
 const AuthRegister = Loadable(lazy(() => import('@/pages/auth/RegisterPage')))
-const AuthResetPassword = Loadable(
-  lazy(() => import('@/pages/auth/RenewPasswordPage'))
-)
+const AuthResetPassword = Loadable(lazy(() => import('@/pages/auth/RenewPasswordPage')))
 
 const ErrorPage = Loadable(lazy(() => import('@/pages/ErrorPage')))
 

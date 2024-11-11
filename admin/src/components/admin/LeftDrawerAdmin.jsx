@@ -10,13 +10,12 @@ import {
   useTheme,
 } from '@mui/material'
 import { CONFIG } from '@/configs'
-import { capitalizeFirstLetterOfString, checkPrivileges, getItemsFromToken } from '@/utils'
-import { useDrawerOpen, useSetDrawerOpen } from '@/stores/ZustandStores'
+import { capitalizeFirstLetterOfString, checkPrivileges } from '@/utils'
+import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 import PropTypes from 'prop-types';
 import AddButtonDropdown from '@/components/admin/AddButtonDropdown'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import BarChartIcon from '@mui/icons-material/BarChart'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -26,14 +25,16 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { Logout } from '@mui/icons-material'
+import { Home, Logout } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import PeopleIcon from '@mui/icons-material/People'
 import PersonIcon from '@mui/icons-material/Person'
-import useAuthApi from '@/api/useAuthApi'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useAuthStore } from '@/stores/auth';
+import { logout } from '@/api/auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 const CustomListItem = ({ href, text, icon, reset }) => {
   const navigate = useNavigate()
@@ -50,10 +51,10 @@ const CustomListItem = ({ href, text, icon, reset }) => {
           }
         }}
       >
-        <Tooltip title={capitalizeFirstLetterOfString(text)}>
+        <Tooltip title={text}>
           <ListItemIcon>{icon}</ListItemIcon>
         </Tooltip>
-        <ListItemText primary={capitalizeFirstLetterOfString(text)} />
+        <ListItemText primary={text} />
       </ListItemButton>
     </ListItem>
   )
@@ -67,11 +68,10 @@ CustomListItem.propTypes = {
 };
 
 export default function LeftDrawerAdmin({ withBackButton = false }) {
-  const { username } = getItemsFromToken()
+  const { user } = useAuthStore()
   const [drawerOpen, setDrawerOpen] = [useDrawerOpen(), useSetDrawerOpen()]
   const { t } = useTranslation()
-  const { logout } = useAuthApi()
-
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.down('sm'))
@@ -83,6 +83,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
   const handleLogout = async () => {
     try {
       await logout()
+      queryClient.clear();
       navigate(`/login`, {
         state: {
           from: '',
@@ -100,7 +101,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
   const drawer = (
     <>
       <List disablePadding sx={{ display: 'block' }}>
-        {checkPrivileges('getUsers') && (
+        {checkPrivileges('getUsers', user?.role) && (
           <CustomListItem
             href={'/users'}
             text={t('misc_users')}
@@ -111,8 +112,8 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
       <Divider />
       <List disablePadding>
         <CustomListItem
-          href={`/user/${username}`}
-          text={username}
+          href={`/user/${user?.username}`}
+          text={user?.username}
           icon={<PersonIcon />}
         />
         <ListItem>
@@ -182,7 +183,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             ))}
         </Box>
         <Stack spacing={1} direction={'row'}>
-          <Tooltip title={capitalizeFirstLetterOfString(t('misc_dashboard'))}>
+          <Tooltip title={capitalizeFirstLetterOfString(t('misc_home_page'))}>
             <IconButton
               onClick={() => {
                 handleDrawerClose()
@@ -192,10 +193,10 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
               edge="end"
               color="inherit"
             >
-              <BarChartIcon />
+              <Home />
             </IconButton>
           </Tooltip>
-          {checkPrivileges('getUsers') && (
+          {checkPrivileges('getUsers', user?.role) && (
             <Tooltip title={capitalizeFirstLetterOfString(t('misc_users'))}>
               <IconButton
                 onClick={() => {
@@ -217,11 +218,11 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             flexItem
             sx={{ display: { xs: 'none', sm: 'flex' } }}
           />
-          <Tooltip title={username}>
+          <Tooltip title={user?.username}>
             <IconButton
               onClick={() => {
                 handleDrawerClose()
-                navigate(`/user/${username}`)
+                navigate(`/user/${user?.username}`)
               }}
               size="large"
               edge="end"

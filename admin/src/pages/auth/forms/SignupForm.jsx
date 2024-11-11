@@ -1,19 +1,18 @@
-import { Button, FormHelperText, Grid2, InputAdornment, InputLabel, OutlinedInput, Stack } from '@mui/material';
+import { Button, FormHelperText, Grid2, InputAdornment, TextField, IconButton } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Eye, EyeSlash } from 'iconsax-react';
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-import IconButton from '@mui/material/IconButton';
-import useAuthApi from '@/api/useAuthApi';
+import { signup } from '@/api/auth';
 import { useAuthStoreActions } from '@/stores/auth';
 import { useNavigate } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import useTranslation from '@/hooks/useTranslation';
-import useAresApi from '@/api/useAresApi';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CONFIG } from '@/configs';
+import { useTranslation } from 'react-i18next';
+import { fetchAresWithTin } from '@/api/ares';
+import FeedbackMessage from '@/components/FeedbackMessage';
 
 const SignupForm = () => {
     const { t } = useTranslation();
@@ -21,28 +20,53 @@ const SignupForm = () => {
     const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
 
     const { login: loginStore } = useAuthStoreActions();
-    const { signup } = useAuthApi();
-    const { fetchAresWithTin } = useAresApi();
+
     const [postMsg, setPostMsg] = useState('');
     const navigate = useNavigate();
 
     const signupSchema = z.object({
-        username: z.string().trim().min(4, { message: 'srv_invalid_username_length' })
-            .max(255, { message: 'srv_invalid_username_length' })
-            .regex(/^\S+$/, { message: 'srv_invalid_username' }),
-        email: z.string().email({ message: 'srv_invalid_email' }),
-        tin: z.string().regex(/^[0-9]{8}$/, { message: 'srv_invalid_tin' }),
-        name: z.string().max(255, { message: 'srv_invalid_name_length' }),
-        vin: z.string().max(255, { message: 'srv_invalid_vin' }).optional(),
+        username: z
+            .string()
+            .trim()
+            .min(4, { message: t('srv_username_min_length') })
+            .max(255, { message: t('srv_username_max_length') })
+            .regex(/^\S+$/, { message: t('srv_username_no_whitespace') }),
+        email: z
+            .string()
+            .email({ message: t('srv_wrong_email_format') }),
+        tin: z
+            .string()
+            .regex(/^[0-9]{8}$/, { message: t('srv_tin_invalid_format') }),
+        name: z
+            .string()
+            .max(255, { message: t('srv_name_max_length') }),
+        vin: z
+            .string()
+            .max(255, { message: t('srv_vin_max_length') })
+            .optional(),
         address: z.object({
-            street: z.string().max(255, { message: 'srv_invalid_street_length' }).optional(),
-            city: z.string().max(255, { message: 'srv_invalid_city_length' }).optional(),
-            zip: z.string().max(20, { message: 'srv_invalid_zip_length' }).optional(),
+            street: z
+                .string()
+                .max(255, { message: t('srv_street_max_length') })
+                .optional(),
+            city: z
+                .string()
+                .max(255, { message: t('srv_city_max_length') })
+                .optional(),
+            zip: z
+                .string()
+                .regex(/^\d{3} ?\d{2}$/, { message: t('srv_zip_invalid_format') })
+                .optional(),
         }),
-        password: z.string().min(8, { message: 'srv_invalid_password_length' }).max(255, { message: 'srv_invalid_password_length' }),
-        confirmPassword: z.string().max(255, { message: 'srv_invalid_password_length' })
+        password: z
+            .string()
+            .min(8, { message: t('srv_password_min_length') })
+            .max(255, { message: t('srv_password_max_length') }),
+        confirmPassword: z
+            .string()
+            .max(255, { message: t('srv_confirm_password_max_length') })
     }).refine((data) => data.password === data.confirmPassword, {
-        message: 'srv_passwords_not_match',
+        message: t('srv_passwords_not_match'),
         path: ['confirmPassword']
     });
 
@@ -82,11 +106,10 @@ const SignupForm = () => {
         }
     }, [setValue, tinData]);
 
-    const loginMutation = useMutation({
+    const signUpMutation = useMutation({
         mutationFn: (data) => signup(data),
         onError: (error) => {
-            console.log(error);
-            setPostMsg(error);
+            setPostMsg(new Error(error))
         },
         onSuccess: (data) => {
             loginStore(data);
@@ -97,13 +120,9 @@ const SignupForm = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
+    const handleMouseDownPassword = (event) => event.preventDefault();
 
     const onSubmit = async (data) => {
         try {
@@ -111,10 +130,9 @@ const SignupForm = () => {
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
                 throw new Error(t('err_invalid_recaptcha'));
             }
-            loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
+            signUpMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
         } catch (error) {
-            console.error('Signup failed:', error);
-            setPostMsg(error instanceof Error ? error.message : 'Unknown error');
+            setPostMsg(error.message || 'Unknown error');
         }
     };
 
@@ -127,11 +145,7 @@ const SignupForm = () => {
                             name="username"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_username')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="abcdef" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -140,11 +154,7 @@ const SignupForm = () => {
                             name="email"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_email')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="user@example.com" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -153,11 +163,7 @@ const SignupForm = () => {
                             name="tin"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_tin')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="12345678" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_tin')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                         {tinLoading && <FormHelperText>{t('loading_tin')}</FormHelperText>}
@@ -169,11 +175,7 @@ const SignupForm = () => {
                             name="name"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_name')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="John Doe" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_name')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -182,11 +184,7 @@ const SignupForm = () => {
                             name="vin"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_vin')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="VIN" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_vin')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -195,11 +193,7 @@ const SignupForm = () => {
                             name="address.street"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_street')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="Street" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_street')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -208,11 +202,7 @@ const SignupForm = () => {
                             name="address.city"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_city')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="City" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_city')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -221,11 +211,7 @@ const SignupForm = () => {
                             name="address.zip"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_postal_code')}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="ZIP Code" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField {...field} label={t('misc_postal_code')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
                             )}
                         />
                     </Grid2>
@@ -234,29 +220,27 @@ const SignupForm = () => {
                             name="password"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_password')}</InputLabel>
-                                    <OutlinedInput
-                                        {...field}
-                                        fullWidth
-                                        error={Boolean(fieldState.isTouched && fieldState.invalid)}
-                                        type={showPassword ? 'text' : 'password'}
-                                        endAdornment={
+                                <TextField
+                                    {...field}
+                                    label={t('misc_password')}
+                                    fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    error={fieldState.invalid}
+                                    helperText={fieldState.error?.message}
+                                    slotProps={{
+                                        endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    aria-label="toggle password visibility"
                                                     onClick={handleClickShowPassword}
                                                     onMouseDown={handleMouseDownPassword}
                                                     edge="end"
                                                 >
-                                                    {showPassword ? <Eye /> : <EyeSlash />}
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
                                                 </IconButton>
                                             </InputAdornment>
-                                        }
-                                        placeholder="**************"
-                                    />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                        ),
+                                    }}
+                                />
                             )}
                         />
                     </Grid2>
@@ -265,31 +249,26 @@ const SignupForm = () => {
                             name="confirmPassword"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_confirm_password')}</InputLabel>
-                                    <OutlinedInput
-                                        {...field}
-                                        fullWidth
-                                        error={Boolean(fieldState.isTouched && fieldState.invalid)}
-                                        type="password"
-                                        placeholder="**************"
-                                    />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField
+                                    {...field}
+                                    label={t('misc_confirm_password')}
+                                    fullWidth
+                                    type="password"
+                                    error={fieldState.invalid}
+                                    helperText={fieldState.error?.message}
+                                />
                             )}
                         />
                     </Grid2>
                     {postMsg && (
                         <Grid2 size={{ xs: 12 }}>
-                            <FormHelperText error>
-                                {postMsg instanceof Error ? t(postMsg.message) : t(postMsg)}
-                            </FormHelperText>
+                            <FeedbackMessage message={postMsg} />
                         </Grid2>
                     )}
                     <Grid2 size={{ xs: 12 }}>
                         <Button
                             disableElevation
-                            disabled={loginMutation.isPending}
+                            disabled={signUpMutation.isPending}
                             fullWidth
                             size="large"
                             type="submit"

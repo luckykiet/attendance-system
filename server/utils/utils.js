@@ -1,5 +1,7 @@
 const { default: axios } = require("axios")
 const _ = require('lodash')
+const jwt = require('jsonwebtoken')
+const { CONFIG } = require("../configs")
 
 const utils = {
     fetchAresWithTin: async (tin) => {
@@ -10,7 +12,6 @@ const utils = {
                 { timeout: 5000 }
             )
             const data = response.data
-            console.log(data)
             if (!data) {
                 return { success: false, msg: `srv_ares_failed` }
             }
@@ -61,6 +62,11 @@ const utils = {
         username: /^[a-z0-9]{4,}$/,
         password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
         simpleTinRegex: /^\d{7,8}$/,
+    },
+    signItemToken: (item, time) => {
+        return time
+            ? jwt.sign(item, CONFIG.jwtSecret, { expiresIn: time })
+            : jwt.sign(item, CONFIG.jwtSecret)
     },
 }
 

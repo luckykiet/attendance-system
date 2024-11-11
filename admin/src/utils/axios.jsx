@@ -17,15 +17,15 @@ const axiosServices = (route = '/mod') => {
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        return Promise.reject('srv_unauthorized')
+        return Promise.reject( error.response?.data?.msg ||'srv_unauthorized')
       } else if (error.response?.status === 403) {
-        return Promise.reject('srv_forbidden')
+        return Promise.reject(error.response?.data?.msg || 'srv_forbidden')
       } else if (error.response?.status === 404) {
-        return Promise.reject('srv_not_found')
+        return Promise.reject(error.response?.data?.msg || 'srv_not_found')
       } else if (error.response?.status === 409) {
-        return Promise.reject('srv_duplicate')
+        return Promise.reject(error.response?.data?.msg || 'srv_duplicate')
       } else if (error.response?.status === 500) {
-        return Promise.reject('srv_server_error')
+        return Promise.reject(error.response?.data?.msg || 'srv_server_error')
       }
 
       return Promise.reject(

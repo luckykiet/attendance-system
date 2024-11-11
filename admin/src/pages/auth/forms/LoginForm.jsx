@@ -1,18 +1,19 @@
-import { Button, Link, FormHelperText, Grid, InputAdornment, InputLabel, OutlinedInput, Stack } from '@mui/material';
+import { Button, Link, Grid2, InputAdornment, Stack, Typography, TextField } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { Password, Person, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import IconButton from '@mui/material/IconButton';
-import useAuthApi from '@/api/useAuthApi';
 import { useAuthStoreActions } from '@/stores/auth';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import useTranslation from '@/hooks/useTranslation';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CONFIG } from '@/configs';
+import { useTranslation } from 'react-i18next';
+import { login } from '@/api/auth';
+import FeedbackMessage from '@/components/FeedbackMessage';
 
 const LoginForm = () => {
     const { t } = useTranslation();
@@ -20,14 +21,13 @@ const LoginForm = () => {
     const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
 
     const { login: loginStore } = useAuthStoreActions();
-    const { login } = useAuthApi();
     const [postMsg, setPostMsg] = useState('');
     const navigate = useNavigate();
 
     const loginSchema = z.object({
         username: z
             .string({ required_error: t('misc_required') })
-            .regex(/^\S+$/, t('err_invalid_username', { capitalize: true }))
+            .regex(/^\S+$/, t('srv_invalid_username', { capitalize: true }))
             .max(255),
         password: z.string({ required_error: t('misc_required') }).max(255)
     });
@@ -46,8 +46,7 @@ const LoginForm = () => {
     const loginMutation = useMutation({
         mutationFn: (data) => login(data),
         onError: (error) => {
-            console.log(error);
-            setPostMsg(error);
+            setPostMsg(new Error(error))
         },
         onSuccess: (data) => {
             loginStore(data);
@@ -82,69 +81,105 @@ const LoginForm = () => {
     return (
         <FormProvider {...mainUseForm}>
             <form noValidate onSubmit={handleSubmit(onSubmit)}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                <Grid2 container spacing={3}>
+                    <Grid2 size={{ xs: 12 }}>
                         <Controller
                             name="username"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_username', { capitalize: true })}</InputLabel>
-                                    <OutlinedInput {...field} placeholder="abcdef" fullWidth error={Boolean(fieldState.isTouched && fieldState.invalid)} />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label="Username"
+                                    placeholder="Username"
+                                    variant="outlined"
+                                    onBlur={handleSubmit}
+                                    error={Boolean(fieldState.isTouched && fieldState.invalid)}
+                                    helperText={fieldState.invalid && fieldState.error.message}
+                                    required
+                                    autoComplete="off"
+                                    slotProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Person />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
                             )}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </Grid2>
+                    <Grid2 size={{ xs: 12 }}>
                         <Controller
                             name="password"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor={field.name}>{t('misc_password', { capitalize: true })}</InputLabel>
-                                    <OutlinedInput
-                                        {...field}
-                                        fullWidth
-                                        error={Boolean(fieldState.isTouched && fieldState.invalid)}
-                                        type={showPassword ? 'text' : 'password'}
-                                        endAdornment={
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label={t('misc_password')}
+                                    placeholder={t('misc_password')}
+                                    variant="outlined"
+                                    onBlur={handleSubmit}
+                                    error={Boolean(fieldState.isTouched && fieldState.invalid)}
+                                    helperText={fieldState.isTouched && fieldState.invalid && fieldState.error.message}
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    autoComplete="off"
+                                    slotProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Password />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    aria-label="toggle password visibility"
                                                     onClick={handleClickShowPassword}
                                                     onMouseDown={handleMouseDownPassword}
                                                     edge="end"
-                                                    color="secondary"
                                                 >
-                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
                                                 </IconButton>
                                             </InputAdornment>
-                                        }
-                                        placeholder="**************"
-                                    />
-                                    {fieldState.isTouched && fieldState.invalid && <FormHelperText error>{fieldState.error?.message}</FormHelperText>}
-                                </Stack>
+                                        ),
+                                    }}
+                                />
                             )}
                         />
-                    </Grid>
-
-                    <Grid item xs={12} sx={{ mt: -1 }}>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                            <Link variant="h6" component={RouterLink} to={'/forgot-password'} color="text.primary">
-                                {t('misc_forgotten_password', { capitalize: true })}?
-                            </Link>
+                    </Grid2>
+                    <Grid2 size={{ xs: 12 }} sx={{ mt: -1 }}>
+                        <Stack spacing={1}>
+                            <Typography variant="body1" gutterBottom sx={{ py: 2 }}>
+                                {t('msg_do_not_have_account')}
+                                {'? '}
+                                <Link
+                                    component={RouterLink}
+                                    variant="body1"
+                                    to={'/signup'}
+                                >
+                                    {t('misc_to_register')}
+                                </Link>
+                            </Typography>
+                            <Typography variant="body1" gutterBottom>
+                                {t('msg_have_forgotten_password')}
+                                {'? '}
+                                <Link
+                                    component={RouterLink}
+                                    variant="body1"
+                                    to={'/forgot-password'}
+                                >
+                                    {t('misc_to_recover_password')}
+                                </Link>
+                            </Typography>
                         </Stack>
-                    </Grid>
+                    </Grid2>
                     {postMsg && (
-                        <Grid item xs={12}>
-                            <FormHelperText error>
-                                {postMsg instanceof Error ? t(postMsg.message, { capitalize: true }) : t(postMsg, { capitalize: true })}
-                            </FormHelperText>
-                        </Grid>
+                        <Grid2 size={{ xs: 12 }}>
+                            <FeedbackMessage message={postMsg} />
+                        </Grid2>
                     )}
-
-                    <Grid item xs={12}>
+                    <Grid2 size={{ xs: 12 }}>
                         <Button
                             disableElevation
                             disabled={loginMutation.isPending}
@@ -156,8 +191,8 @@ const LoginForm = () => {
                         >
                             {t('misc_login', { capitalize: true })}
                         </Button>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </form>
         </FormProvider>
     );

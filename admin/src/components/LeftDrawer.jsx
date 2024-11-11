@@ -1,5 +1,5 @@
 import { CONFIG } from '@/configs'
-import { useDrawerOpen, useSetDrawerOpen } from '@/stores/ZustandStores'
+import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'

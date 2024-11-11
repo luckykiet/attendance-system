@@ -1,49 +1,50 @@
-import Loader from '@/components/Loader'
-import { Navigate } from 'react-router-dom'
-import useAuthApi from '@/api/useAuthApi'
-import { useAuthStoreActions } from '@/stores/AuthStores'
-import { useEffect } from 'react'
-import useLocalStorage from '@/hooks/useLocalStorage'
-import { useMutation } from '@tanstack/react-query'
+import Loader from '@/components/Loader';
+import { Navigate } from 'react-router-dom';
+import { checkAuth } from '@/api/auth';
+import { useAuthStoreActions } from '@/stores/auth';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
 
 const GuestGuard = ({ children }) => {
-  const { login, logout } = useAuthStoreActions()
-  const { checkAuthentication } = useAuthApi()
-  const [token, setToken] = useLocalStorage('user-token', null)
+  const { login, logout } = useAuthStoreActions();
+  const queryClient = useQueryClient();
+  const {
+    isLoading,
+    isFetching,
+    error,
+    isError,
+    data: authentication
+  } = useQuery({
+    queryKey: ['isAuthenticated'],
+    queryFn: () => checkAuth(),
+  });
 
-  const checkAuthMutation = useMutation({
-    mutationKey: ['guestGuard'],
-    mutationFn: () => checkAuthentication(),
-    onSuccess: (authentication) => {
-      const { isAuthenticated, token: authToken } = authentication
-      if (isAuthenticated) {
-        login(authentication)
-        setToken(authToken)
-      } else {
-        logout()
-      }
-    },
-    onError: () => {
-      setToken(null)
-    },
-  })
-
-  useEffect(() => {
-    if (checkAuthMutation.isIdle) {
-      checkAuthMutation.mutateAsync()
-    }
-  }, [checkAuthMutation])
-
-  if (checkAuthMutation.isIdle || checkAuthMutation.isPending) {
-    return <Loader />
+  if (isError) {
+    console.log(error.message);
   }
 
-  return token ? <Navigate to={'/'} replace /> : children
-}
+  useEffect(() => {
+    if (authentication) {
+      const { isAuthenticated } = authentication;
+      if (isAuthenticated) {
+        login(authentication);
+      } else {
+        queryClient.clear();
+        logout();
+      }
+    }
+  }, [authentication, login, logout, queryClient]);
 
-export default GuestGuard
+  if (isLoading || isFetching) {
+    return <Loader />;
+  }
+
+  return authentication?.isAuthenticated ? <Navigate to="/" replace /> : children;
+};
 
 GuestGuard.propTypes = {
   children: PropTypes.node,
-}
+};
+
+export default GuestGuard;
