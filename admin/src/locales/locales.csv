@@ -1,72 +1,9 @@
-err_company_not_found	company not found	không tìm thấy công ty	společnost nenalezena
-err_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
-err_failed_to_create	failed to create	tạo không thành công	založení selhalo
-err_failed_to_load	Failed to load	Lỗi tải trang	Chyba načítání
-err_failed_to_load_from_ares	failed to load data from ARES	tải dữ liệu từ ares không thành công	stažení dat z ARES selhalo
-err_failed_to_load_transaction	Failed to load transaction	Tải dữ liệu đơn hàng thất bại	Načítání transakce selhala
-err_failed_to_submit	failed to submit	gửi không thành công	odeslání selhalo
-err_failed_to_update	failed to update	cập nhập không thành công	aktualizace selhala
-err_failed_to_upload	failed to upload	tải lên không thành công	nahrávání selhalo
-err_file_extension_not_allowed	File extension is not allowed	Đuôi của tệp không được cho phép	Přípona souboru není povolena
-err_from_can_not_older_than_to	from cannot be older than to	từ không thể cũ hơn đến	od nemůže být starší než do
-err_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
-err_invalid_bank_account	invalid bank account	số tài khoản không hợp lệ	neplatný bankovní účet
-err_invalid_bank_id	invalid bank ID	ID ngân hàng không hợp lệ	neplatný ID banky
-err_invalid_business_name	invalid business name	tên công ty không hợp lệ	neplatné jméno společnosti
-err_invalid_business_type	invalid business type	thể loại kinh doanh không hợp lệ	neplatný typ obchodní činnosti
-err_invalid_city	Invalid city	Tên thành phố không hợp lệ	Neplatné město
-err_invalid_date	invalid date	ngày không hợp lệ	nesprávné datum
-err_invalid_domain	invalid domain	tên miền không hợp lệ	nesprávná doména
-err_invalid_email	invalid e-mail	e-mail không hợp lệ	neplatné e-mail
-err_invalid_headers	invalid headers	cột không hợp lệ	neplatné hlavičky
-err_invalid_hex	Invalid HEX	HEX không hợp lệ	Nesprávný HEX
-err_invalid_id	Invalid ID	ID không hợp lệ	Nesprávný ID
-err_invalid_image_url	Invalid image URL	URL hình ảnh không hợp lệ	Nesprávný URL pro obrázek
-err_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
-err_invalid_number	invalid number	số không hợp lệ	neplatné číslo
-err_invalid_postal_code	invalid postal code must be 11000 or 110 00	mã bưu điện không hợp lệ, phải là 11000 hoặc 110 00	neplatný PSČ, musí být 11000 nebo 110 00
-err_invalid_quantity	invalid quantity	số lương không hợp lệ	neplatné množství
-err_invalid_question	Invalid question	Câu hỏi không hợp lệ	Nesprávná otázka
-err_invalid_street	invalid street	sai địa chỉ	nesprávná ulice
-err_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không hợp lệ	neplatný typ platebního terminálu
-err_invalid_tin	invalid TIN	IČO không hợp lệ	neplatné IČO
-err_invalid_token	Invalid token or link expired	Mã khôi phục không hợp lệ hoặc đã hết hạn	Neplatný odkaz nebo váš požadavek vypršel
-err_invalid_url	Invalid URL	URL không hợp lệ	Nesprávný URL
-err_invalid_username	Invalid username	tên đăng nhập không hợp lệ	Nesprávné přihlašovací jméno
-err_invalid_vin	invalid VIN	DIČ không hợp lệ	neplatné DIČ
-err_items_empty	items are empty	mục trống	položky jsou prázdné
-err_login_expired	login expired	đăng nhập hết hạn	přihlášení expirováno
-err_mail_send_failed	failed to send email	gửi email không thành công	odeslání emailu selhalo
-err_max_ares_attempts	you have reached the maximum number of attempts. Write the data manually or start from the beginning.	bạn đã đạt đến số lần thử tối đa. Hãy viết dữ liệu theo cách thủ công hoặc bắt đầu lại từ đầu.	dosáhl(a) jste maximálního počtu pokusů. Napište data ručně nebo začněte od začátku.
-err_must_choose_store	you must choose a store	bạn phải chọn một cửa hàng	musíte vybrat provozovnu
-err_must_take_photo_of_documents	you must take photo of ID documents	quý khách phải chụp ảnh thẻ căn cước	musíte vyfotit doklady
-err_no_data	No data	Không có dữ liệu	Žádná data
-err_no_faq	no FAQs	không có FAQs	nejsou žádné FAQs
-err_no_payment_terminal	no payment terminals	không có máy trả thẻ	není žádný platební terminál
-err_no_permission	Permission denied	Không có quyền truy cập	Nemáte oprávnění
-err_no_result_found	No result found	Không tìm thấy kết quả	Žádný výsledek nenašlo
-err_non_negative_number	non negative number	số không được âm	nezáporné číslo
-err_not_found	not found	không tìm thấy	nenalezena
-err_page_not_found	page not found	trang không tìm thấy	stránka nenalezena
-err_password_requirements	Password must be atleast 10 characters, 1 uppercase, 1 lowercase and 1 number	Mật khẩu phải có ít nhất 10 ký tự, 1 chữ hoa, 1 chữ thường và 1 số	Heslo musí obsahovat alespoň 10 znaků, 1 velké, 1 malé písmeno a 1 číslici
-err_passwords_not_match	Password not match	Mật khẩu không khớp	Hesla neshodují
-err_pick_software	pick a software	hãy chọn phần mềm	vyberte software
-err_return_to	Return to	Hãy quay lại	Vraťte se na
-err_set_quantity	set quantity	hãy điền số lượng	zadejte množství
-err_something_wrong	Oops, something is wrong	Oops, trang bị lỗi	Oops, výskytla se chyba
-err_store_exists	Store already exists	Cửa hàng đã tồn tại	Obchod již existuje
-err_transactions_empty	transactions are empty	giao dịch trống	transakce jsou prázdné
-err_unknown_error	unknown error	lỗi không xác định	neznámá chyba
-err_username_requirements	Username must have 2 to 20 characters, only lowercase and no space	Tên đăng nhập phải có 6 đến 20 ký tự, chữ bé, không dấu cách và ký tự đặt biệt	Uživatelské jméno musí obsahovat 6 až 20 znaků, malé písmeno, bez mezer a speciálních znaků
-err_word	Error	Lỗi	Chyba
-err_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
+days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
+mailisc_form_reference_added	Form reference added	đã tạo tham chiếu đơn	Reference formuláře přidána
 misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
 misc_account_number	Account number	Số tài khoản	Číslo účtu
-misc_action	actions	tác vụ	akce
-misc_actions	actions	tác vụ	akce
-misc_active	active	đang hoạt động	aktivní
-misc_active	active	hoạt động	aktivní
+misc_active	active	trực tiếp	aktivní
 misc_add	Add	Tạo	Přidat
 misc_add_company	add company	thêm công ty mới	přidat novou společnost
 misc_add_faq	Add faq	Thêm FAQ	Přidat FAQ
@@ -74,28 +11,24 @@ misc_add_new_bill	Add new bill	Tạo hoá đơn mới	Přidat novou fakturu
 misc_add_new_form	Add new form	Tạo đơn mới	Přidat nový formulář
 misc_add_new_merchant	Add new merchant	Tạo nhà bán buôn mới	Přidat nový obchodník
 misc_add_payment_terminal	Add payment terminal	Tạo máy trả thẻ	Přidat platební terminál
-misc_add_staff	add staff	thêm nhân viên mới	přidat nový zaměstnanec
+misc_add_reference	add reference	tạo kết nối	vytvořit odkaz
 misc_add_store	Add store	Thêm cửa hàng	Přidat provozovnu
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
 misc_all	all	tất cả	všechny
 misc_amount	Amount	Số lượng	Počet
-misc_amount_companies	companies amount	số lượng công ty	počet firem
-misc_amount_pos	POS amount	số lượng POS	počet POS
 misc_amount_records	Records amount	Số lượng đơn	Počet záznamů
-misc_amount_staffs	staffs amount	số lượng nhân viên	počet zaměstnanců
-misc_amount_transactions	transactions amount	số lượng giao dịch	počet transakcí
 misc_answer	answer	câu trả lời	odpověď
 misc_api_documentation	API Documentation	API Documentation	API Dokumentace
 misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
+misc_at_row	at row	ở hàng	u řádku
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_average	average	trung bình	průměr
 misc_back	back	quay lại	zpět
 misc_back_side	back side	phía sau	zadní strana
 misc_back_to_app	Back to App	Quay lại App	Zpět do Aplikace
-misc_back_to_login	Back to Login	Quay lại Đăng nhập	Zpět do Přihlášení
 misc_bank	bank	ngân hàng	banka
 misc_bank_account	bank account	STK ngân hàng	bankovní účet
 misc_bank_accounts	bank accounts	STK ngân hàng	bankovní účty
@@ -111,36 +44,33 @@ misc_bill_updated	bill updated	đã cập nhập hoá đơn	faktura aktualizová
 misc_billing_information	billing information	thông tin thanh toán	fakturační údaje
 misc_billing_time	money transfer time	thời gian chuyển khoản	doba převodu peněz
 misc_bills	bills	hoá đơn	faktury
+misc_birth_number	birth number	số sinh	rodné číslo
 misc_bubble_tea	bubble tea	trà sữa	mléčný čaj
 misc_by_partners	by partners	theo đối tác	podle partnera
 misc_by_provider	by provider	theo nhà phát hành	podle zprostředkovatele
 misc_by_status	by status	theo trạng thái	podle statusu
 misc_cafe	café	quán nước	kavárna
 misc_cancel	Cancel	Huỷ	Zrušit
-misc_canceled	cancelled	đã huỷ	zrušeno
-misc_canceled_by_staff	cancelled by staff	đã huỷ bởi nhân viên	zrušeno zaměstnancem
-misc_canceled_products	cancelled products	món hàng đã huỷ	zrušené zboží
-misc_card	card	thẻ	kartou
-misc_cash	cash	tiền mặt	hotově
-misc_cash_deposit_machine	cash deposit machine	máy nhận tiền mặt	vkladomat
+misc_changes	changes	thay đổi	změny
+misc_check	check	kiểm tra	kontrola
+misc_check_merchants	check merchants	kiểm tra nhà bán buôn	kontrola obchodníků
+misc_check_signed_documents	check signed documents	kiểm tra đơn đã ký	kontrola podepsaných dokumentů
+misc_check_unsigned_documents	check unsigned documents	kiểm tra đơn chưa ký	kontrola nepodepsaných dokumentů
+misc_choose_user	choose user	chọn người dùng	vybrat uživatele
+misc_chosen_store	chosen store	cửa hàng đã chọn	vybraná provozovna
 misc_city	City	Thành phố	Město
+misc_clear_signature	clear signature	xoá chữ ký	smazat podpis
+misc_click_to_sign	Click to Sign	Bấm để ký	Klikněte pro podpis
 misc_close	Close	Đóng	Zavřít
-misc_color	color	màu	barva
-misc_combination	combination	kết hợp	kombinace
 misc_commercial_activity	commercial activity	hoạt động thương mại	obchodní činnost
-misc_companies	companies	công ty	firmy
 misc_company	Company	Công ty	Firma
-misc_company_added	company added	công ty đã thêm	společnost přidána
-misc_company_deleted	company deleted	công ty đã xoá	firma smazána
-misc_company_list	company list	danh sách công ty	seznam společností
-misc_company_updated	company updated	công ty đã cập nhập	firma aktualizována
 misc_confirm	Confirm	Xác nhận	Potvrdit
 misc_confirm_date	confirmation date	ngày xác nhận	den potvrzení
 misc_confirm_password	Confirm password	Xác nhận mật khẩu	Ověření hesla
 misc_confirmed	confirmed	đã xác nhận	potvrzeno
 misc_confirmed_by_customer	Confirmed by customer	Được khách xác nhận	Potvrzeno zákazníkem
 misc_contact	Contacts	Liên hệ	Kontakty
-misc_contact_support	Contact support	Liên hệ hỗ trợ	Kontaktovat podporu
+misc_contract_option	contract option	tuỳ chọn hợp đồng	vybrat možnost smlouvy
 misc_copied	copied	đã sao chép	kopírováno
 misc_copy_from_merchant	Copy from basement	Sao chép từ công ty	Kopírovat z sídla
 misc_country	Country	Quốc gia	Stát
@@ -150,58 +80,44 @@ misc_created_date	Created day	Ngày tạo	Den založení
 misc_creator	Creator	Người tạo	Tvůrce
 misc_creator_email	Creator's e-mail	E-mail người tạo	E-mail tvůrce
 misc_currency	Currency	Tiền tệ	Měna
-misc_daily	daily	theo ngày	denně
 misc_dashboard	Dashboard	Dashboard	Dashboard
 misc_date	Date	Ngày	Datum
 misc_day	Day	Ngày	Den
-misc_day_friday	Friday	Thứ sáu	Pátek
-misc_day_friday_short	Fri	T6	Pá
-misc_day_monday	Monday	Thứ hai	Pondělí
-misc_day_monday_short	Mon	T2	Po
-misc_day_saturday	Saturday	Thứ bảy	Sobota
-misc_day_saturday_short	Sat	T7	So
-misc_day_sunday	Sunday	Chủ nhật	Neděle
-misc_day_sunday_short	Sun	CN	Ne
-misc_day_thursday	Thursday	Thứ năm	Čtvrtek
-misc_day_thursday_short	Thu	T5	Čt
-misc_day_tuesday	Tuesday	Thứ ba	Úterý
-misc_day_tuesday_short	Tue	T3	Út
-misc_day_wednesday	Wednesday	Thứ tư	Středa
-misc_day_wednesday_short	Wed	T4	St
 misc_ddc_reward	DDC reward	thưởng DDC	odměna DDC
 misc_decided	Decided	Quyết định	Rozhodnuto
 misc_decided_date	Decided day	Ngày quyết định	Den rozhodnutí
 misc_default	default	mặc định	výchozí
 misc_delete	delete	xoá	smazat
 misc_delete_draft	delete draft	xoá nháp	smazat koncept
-misc_delete_staff	delete staff	Xoá nhân viên 	Smazat zaměstnance
+misc_delete_form	Delete form	 Xoá đơn	Smazat formulář
 misc_delete_store	Delete store	Xoá cửa hàng 	Smazat provozovnu
 misc_deleted	deleted	đã xoá	smazáno
 misc_deleted_draft	deleted draft	đã xoá nháp	koncept smazán
+misc_delimiter	delimiter	phân cách	oddělovač
 misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
 misc_devices	Devices	Máy	Zařízení
 misc_documents	documents	tài liệu	dokumenty
-misc_domain	domain	tên miền	doména
-misc_download_report	download report	tải báo cáo	stáhnout report
-misc_download_report_in_pdf	download Report in PDF	tải Báo cáo bằng PDF	stáhnout Report v PDF
+misc_download	download	tải về	stáhnout
+misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
 misc_draft_saved	draft saved	đã lưu nháp	koncept uložen
+misc_duplicate	duplicate	trùng lặp	duplikát
 misc_edit	Edit	Chỉnh sửa	Editace
-misc_edit_company	edit company	sửa công ty	upravit společnost
 misc_edit_form	Edit form	Sửa đơn	Úprava formuláře
-misc_edit_profile	edit profile	sửa profile	upravit profil
-misc_edit_staff	edit staff	sửa nhân viên	upravit zaměstnance
 misc_edit_user	Edit user	Sửa nhân viên	Upravit uživatele
 misc_email	E-mail	E-mail	E-mail
-misc_error	error	lỗi	chyba
+misc_emails	E-mails	E-mail	E-maily
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
-misc_expiration	expiration	hết hạn	expirace
+misc_example	example	ví dụ	příklad
+misc_examples	examples	ví dụ	příklady
+misc_expected	expected	mong muốn	očekávaný
 misc_expiration_date	expiration date	ngày hết hạn	den expirace
 misc_export	export	export	exportovat
 misc_exposure_date	exposure date	ngày hiệu lực	den vystavení
 misc_extend	extend	gia hạn	prodloužit
+misc_extend_pos	extend POS	mở rộng POS	rozšířit POS
+misc_extend_store	extend store	mở rộng cửa hàng	rozšířit provozovnu
 misc_extra	extra	thêm	navíc
-misc_failed	failed	thất bại	selhalo
 misc_faq_added	FAQ added	FAQ đã tạo	FAQ přidáno
 misc_faq_deleted	FAQ deleted	FAQ đã xoá	FAQ smazáno
 misc_faq_updated	FAQ updated	FAQ đã cập nhập	FAQ aktualizováno
@@ -209,36 +125,28 @@ misc_faqs	frequently asked questions	các câu hỏi thường gặp	často klad
 misc_fetch_ares	Fetch from ARES	Tải từ ARES	Načíst z ARES
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filter	Filter	Lọc	Filtr
-misc_fiscal	fiscal	tài chính	fiskální
-misc_follow_instruction_and_check_spam	follow the instruction and don't forget to check SPAM	hãy làm theo hướng dẫn và đừng quên kiểm tra hộp thư SPAM 	následujte podle instrukcí a nezapomeňte zkontrolovat SPAM složku
+misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
 misc_form	Form	Đơn	Formulář
 misc_form_addition	addition for form	chi tiết cho mẫu đơn	dodatek k formuláři
 misc_form_contact	form contact	thông tin liên hệ của đơn	kontakty formuláře
+misc_form_deleted	Form deleted	Đơn đã xoá	Formulář smazán
+misc_form_not_linked	form not linked	đơn không kết nối	formulář není odkazován
 misc_forms	Forms	Đơn	Formuláře
 misc_forms_exist	forms exist	đơn tồn tại	formuláře existují
 misc_front_side	front side	phía trước	přední strana
 misc_full_name	Surname and first name	Họ và tên	Jméno a příjmení
+misc_generate_documents	generate documents	tạo tài liệu	generovat dokumenty
 misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
-misc_generated_by	generated by	được tạo bởi	generováno
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
-misc_go_to	go to	đi đến	jít na
-misc_group	group	nhóm	skupina
-misc_groups	groups	nhóm	skupiny
+misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
 misc_hidden	hidden	ẩn	skryto
-misc_home_page	home page	trang chủ	domovská stránka
-misc_hour_revenue	hour revenue	doanh thu theo giờ	hodinová tržba
-misc_hour_transactions	hour transactions	số lượng giao dịch theo giờ	hodinová transakce
-misc_changes	changes	thay đổi	změny
-misc_cheque	cheque	tiền phiếu	stravenky
-misc_choose_company	choose company	chọn công ty	vybrat firmu
-misc_choose_user	choose user	chọn người dùng	vybrat uživatele
-misc_chosen_store	chosen store	cửa hàng đã chọn	vybraná provozovna
 misc_id_document	identity document	thẻ căn cước	osobní doklad
 misc_import	import	import	import
 misc_import_leads	import leads	tải lên leads	nahrát leady
-misc_inactive	inactive	không hoạt động	neaktivní
+misc_imported	imported	đã import	importováno
+misc_imported_list	imported list	danh sách nhập	importovaný seznam
 misc_installation_fee	installation fees	phí lắp đặt	poplatky za instalace
 misc_installed	installed	đã lắp	instalováno
 misc_issued	issued	cấp bởi	vystavil
@@ -246,27 +154,25 @@ misc_issued_bills	issued bills	hoá đơn đã cấp	vystavené faktury
 misc_issuer	issuer	nhà phát hành	vystavitel
 misc_item	item	mục	položka
 misc_items	items	mục	položky
-misc_keep_sign_in	Keep me sign in	Giữ đăng nhập	Zůstat přihlášen
 misc_key	key	chìa khoá	klíč
 misc_language	Language	Ngôn ngữ	Jazyk
-misc_last_7_days	last 7 days	7 ngày vừa qua	poslední 7 dní
+misc_last_name	last name	họ	příjmení
 misc_last_update	last update	cập nhập lần cuối	poslední aktualizace
 misc_leads	leads	leads	leads
-misc_license	license	bản quyền	license
-misc_list	list	danh sách	seznam
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
 misc_login	Login	Đăng nhập	Přihlášení
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
-misc_mark_all_read	mark all read	đánh dấu tất cả đã đọc	označit vše přečtené
-misc_merchant	Merchant	Nhà bán buôn	Obchodník
+misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
 misc_merchant_exists	merchant exists	nhà bán buôn đã tồn tại	obchodník již existuje
 misc_merchant_not_exist	merchant not exists	nhà bán buôn không tồn tại	obchodník neexistuje
 misc_merchant_telephone	merchant telephone	số điện thoại nhà bán buôn	telefonní číslo obchodníka
-misc_merchants	Merchants	Nhà bán buôn	Obchodníci
+misc_merchants	merchants	nhà bán buôn	obchodníci
+misc_message	message	thông báo	zpráva
 misc_method	Method	Phương thức	Metoda
+misc_missing	missing	thiếu	chybí
 misc_model	model	model	model
 misc_modified	modifed	đã thay đổi	modifikováno
 misc_month	month	tháng	měsíc
@@ -294,40 +200,35 @@ misc_month_october	october	tháng 10	říjen
 misc_month_october_short	oct	t10	říj
 misc_month_september	september	tháng 9	září
 misc_month_september_short	sep	t9	zář
-misc_monthly	monthly	theo tháng	měsíčně
+misc_move_from	move from	chuyển từ 	odkazován od
 misc_move_status_to	move status to	chuyển trạng thái thành	přepnout do statusu
+misc_move_to	move to	chuyển đến	odkazován na
 misc_name	Name	Tên	Název
 misc_new	new	mới	nový
 misc_new_bill	new bill	hoá đơn mới	nová faktura
 misc_new_company	new company	công ty mới	Nová společnost
+misc_new_contract	new contract	hợp đồng mới	nová smlouva
 misc_new_faq	New FAQ	FAQ mới	Nové FAQ
 misc_new_form	new form	đơn mới	nový formulář
 misc_new_merchant	New Merchant	Nhà bán buôn mới	Nový obchodník
 misc_new_password	New password	Mật khẩu mới	Nové heslo
 misc_new_payment_terminal	New payment terminal	Máy trả thẻ mới	Nový platební terminál
-misc_new_staff	new staff	nhân viên mới	nový zaměstnanec
 misc_new_store	new store	cửa hàng mới	nová provozovna
 misc_no	no	không	ne
 misc_no_columns	no columns	không có cột	nejsou žádné sloupce
-misc_no_data_for_this_period	no data in this period	Kkhông có dữ liệu cho khung giờ này	žádná data v tomto období
 misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
-misc_no_pos	no POS	không có POS	není žádný POS
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
 misc_no_terminal	no terminals	không có máy	žádný terminál
 misc_no_terminal_model	mo specific terminal model	không có model máy chính xác 	není specifický model terminálu
 misc_no_transaction	No transactions	Không có giao dịch	Žádná transakce
 misc_no_transactions	no transaction	không có giao dịch	žádná transakce
-misc_non_active	non-active	không hoạt động	neaktivní
 misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
-misc_nonfiscal	nonfiscal	không tài chính	nefiskální
+misc_not_included	not included	không được bao gồm	nezahrnuto
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
 misc_operations	Operations	Tác vụ	Operace
 misc_others	others	khác	jiné
-misc_overall_report	overall report	báo cáo tổng	souhrnná zpráva
-misc_ownership	ownership	quyền sở hữu	vlastnictví
-misc_ownerships	ownerships	quyền sở hữu	vlastnictví
 misc_partner	partner	đối tác	partner
 misc_partner_of	partner of	đối tác của	partnerem od
 misc_partners	partners	đối tác	partneři
@@ -339,50 +240,17 @@ misc_payment_terminal_added	Payment terminal added	Máy trả thẻ đã tạo	P
 misc_payment_terminal_deleted	Payment terminal deleted	Máy trả thẻ đã xoá	Platební terminál smazán
 misc_payment_terminal_updated	Payment terminal updated	Máy trả thẻ đã cập nhập	Platební terminál aktualizován
 misc_payment_terminals	payment terminals	máy trả thẻ	platební terminály
-misc_payment_type	payment type	loại thanh toán	platební typ
 misc_pending	pending	chờ xử lý	čeká na vyřízení
 misc_photo	photo	ảnh	fotka
 misc_plan	plan	gói	plán
 misc_plans	plans	gói	plány
-misc_platform	platform	platform	platforma
 misc_portal	Portal	Portal	Portál
-misc_pos	point of sales	 điểm bán hàng	pokladní místo
 misc_position	position	vị trí	pozice
 misc_postal_code	Postal code	Mã bưu điện	PSČ
-misc_previous	previous	 trước	předchozí
 misc_previous_month	previous month	tháng trước	minulý měsíc
-misc_previous_week	previous week	tuần trước	minulý týden
 misc_price	price	giá	cena
-misc_print_pos	print POS	in POS	tisknout s POS
 misc_private_key	Private key	Khóa riêng	Soukromý klíč
-misc_privileges	privileges	quyền hạn	oprávnění
-misc_privileges_allow_minus	Allow minus button	Cho phép dùng nút trừ	Povolit tlačítko minus
-misc_privileges_cash_drawer	Allow cash drawer opens	Cho phép mở két tiền	Otevírání pokladní zásuvky
-misc_privileges_customers	Creating customers	Tạo khách hàng	Vytváření odběratelů
-misc_privileges_dashboard	Dashboard	Tổng quan	Úvodní přehled
-misc_privileges_discount	Sale discount during checkout	Chức năng giảm giá khi bán hàng	Funkce slevy během prodeje
-misc_privileges_employee_select	Select employees during checkout	Chọn nhân viên khi bán hàng	Výběr zaměstnance během prodeje
-misc_privileges_inprice	Purchase price in PLU settings	Giá nhập trong phần các mặt hàng	Nákupní cena v nastavení PLU
-misc_privileges_kpi	KPI settings	Tiện ích	Pomůcky
-misc_privileges_mobile	Mobile apps	Các ứng dụng điện thoại	Mobilní aplikace
-misc_privileges_nonfiscalhistory	Nonfiscal history	Lịch sử giao dịch ngoài tài chính	Historie nefiskálních transakcí
-misc_privileges_nonfiscalperiod	Nonfiscal period settings	Chu kỳ tài chính hóa	Perioda nefiskalizace
-misc_privileges_orders	Orders history	Lịch sử đơn đặt	Historie objednávek
-misc_privileges_orsprogress	ORS progress	Theo dõi doanh thu tài chính hóa	Progres fiskalizace
-misc_privileges_paymentterminal	Payment terminal settings	Cài đặt máy trả thẻ	Nastavení platebního terminálu
-misc_privileges_peripherals	Peripherals settings	Thiết bị ngoại vi	Nastavení periferií
-misc_privileges_plu	PLU settings	Các mặt hàng	Položky PLU
-misc_privileges_purchase	Creating purchases	Tạo đơn mua hàng	Vytváření nákupu
-misc_privileges_purchaseload	Purchase load	Nhập kho theo đơn mua hàng	Naskladnit nákup
-misc_privileges_reports	Sale reports	Báo cáo tháng	Finanční zprávy
-misc_privileges_stock	Stock settings	Cài đặt quản lý kho	Správa skladu
-misc_privileges_suppliers	Suppliers settings	Nhà cung cấp	Dodavatelé
-misc_privileges_tables	Tables settings	Bàn phục vụ	Nastavení stolů
-misc_product	product	sản phẩm	zboží
 misc_product_description	Product description	Mô tả sản phẩm	Popis produktu
-misc_product_group	product group	nhóm sản phẩm	zbožní skupina
-misc_product_groups	product groups	nhóm sản phẩm	zbožní skupiny
-misc_products	products	sản phẩm	zboží
 misc_profile	Profile	Profile	Profil
 misc_provider	Provider	Nhà phát hành	Zprostředkovatel
 misc_provision	provision	phí hoa hồng	provize
@@ -403,41 +271,43 @@ misc_public_key	Public key	Khóa công khai	Veřejný klíč
 misc_purchaser	purchaser	người đăng ký	odběratel
 misc_quantity	quantity	số lượng	množství
 misc_quantity_shortcut	qty.	s.l.	poč.
-misc_quarterly	quarterly	theo quý	kvartálně
 misc_question	question	câu hỏi	otázka
 misc_questions	questions	câu hỏi	otázky
 misc_rate	rate	tỷ lệ	sazba
+misc_real_approved	real approved	số lượng đã duyệt thực tế	reálný počet schválených
+misc_real_installed	real installed	số lượng đã lắp thực tế	reálný počet instalovaných
+misc_real_returned	real returned	số lượng trả lại thực tế	reálný počet vrácených
+misc_real_submitted	real submitted	số lượng đã nhận thực tế	reálný počet zadaných
+misc_reason	Reason	Lý do	Důvod
 misc_receiver	receiver	người nhận	příjemce
 misc_recommended	recommended	khuyến khích	doporučeno
-misc_record	record	mục	záznam
-misc_records	records	mục	záznamy
-misc_records_2nd	records	mục	záznamů
+misc_reference	reference	kết nối	odkaz
+misc_references	references	kết nối	odkazy
 misc_registration	Registration	Đăng ký	Registrace
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
 misc_renew_password	Renew password	Khôi phục mật khẩu	Obnova hesla
 misc_required	Required	Cần thiết	Požadováno
 misc_resend_mail	resend email	gửi lại email	znovu poslat email
-misc_reset	reset	cài lại	resetovat
+misc_responsible_person	responsible person	người chịu trách nhiệm	zodpovědná osoba
 misc_restaurant	restaurant	nhà hàng	restaurace
 misc_result	result	kết quả	výsledek
 misc_results_2nd	results	kết quả	výsledků
 misc_retail_store	retail store	cửa hàng bán lẻ	maloobchod
 misc_returned	returned	trả lại	vráceno
 misc_returned_date	Returned date	Ngày trả lại	Den vrácení
-misc_revenue	revenue	doanh thu 	tržba
 misc_role	Role	Chức vụ	Role
-misc_round	round	làm tròn	zaokrouhlení
-misc_rounded	rounded	khoanh tròn	zaokrouhleno
+misc_row	row	hàng	řádek
 misc_rows_per_page	Rows per page	Hàng trên trang	Řádků na stránku
-misc_sales	sales	bán hàng	prodeje
+misc_same_store	same store	cùng một cửa hàng	stejný obchod
 misc_save	Save	Lưu	Uložit
 misc_save_and_back	Save and back	Lưu và trở lại	Uložit a zpět
 misc_save_and_send	Save and send	Lưu và gửi	Uložit a poslat
-misc_save_draft	save draft	lưu nháp	uložit koncept
 misc_save_changes_first	save changes first	lưu thay đổi trước	uložte nejprve změny
+misc_save_draft	save draft	lưu nháp	uložit koncept
 misc_save_merchant	save new merchant	lưu nhà bán buôn mới	uložit nového obchodníka
+misc_save_signature	save signature	lưu chữ ký	uložit podpis
 misc_save_transactions	save transactions	lưu giao dịch	uložit transakce
-misc_search	search	tìm	vyhledávat
+misc_searched	searched	tìm	vyhledávaný
 misc_select_all	select all	chọn tất cả	vybrat vše
 misc_selected	selected	đã chọn	vybráno
 misc_send	send	gửi	odeslat
@@ -448,20 +318,14 @@ misc_sent	sent	đã gửi	odesláno
 misc_service	service	dịch vụ	služby
 misc_settings	Settings	Cài đặt	Nastavení
 misc_shortcut	shortcut	viết tắt	zkratka
+misc_show	show	hiển thị	zobrazit
 misc_show_on_website	show on website	hiển thị trên trang web	zobrazit na webovou stránku
-misc_show_payment_methods	show payment methods	hiện hình thức thanh toán	zobrazit platební metody
 misc_showed	showed	hiển thị	zobrazeno
-misc_sign_in	sign in	đăng nhập	přihlásit se
 misc_signed_documents	signed documents	tài liệu đã ký	podepsané dokumenty
 misc_since_last_month	since last month	từ tháng trước	od minulého měsíce
 misc_software	Software	Phần mềm	Software
 misc_software_name	Software name	Tên phần mềm	Název softwaru
 misc_sort_by	Sort by	Xếp theo	Seřadit podle
-misc_staff	staff	nhân viên	zaměstnanec
-misc_staff_added	staff added	đã thêm nhân viên	zaměstnanec přidán
-misc_staff_deleted	staff deleted	đã xoá nhân viên	uživatel smazán
-misc_staff_updated	staff updated	nhân viên được cập nhập	zaměstnanec aktualizován
-misc_staffs	staffs	nhân viên	zaměstnanci
 misc_status	Status	Tình trạng	Stav
 misc_status_updated	status updated	trạng thái đã được cập nhập	status aktualizován
 misc_store	Store	Cửa hàng	Provozovna
@@ -474,19 +338,20 @@ misc_stores	stores	cửa hàng	provozovny
 misc_stores_list	Stores list	Danh sách cửa hàng	Seznam provozoven
 misc_stores_shortcut	stores	cửa hàng	prov.
 misc_street	Street	Đường	Ulice
-misc_subdomain	subdomain	tên miền	subdoména
 misc_submitted	submitted	đã nhận	zadáno
 misc_summary	summary	tổng kết	shrnutí
 misc_supervisor	supervisor	cấp trên	vedoucí
 misc_supervisor_email	Supervisor's e-mail	E-mail cấp trên	E-mail nadřízeného
 misc_supplier	supplier	nhà cung cấp	dodavatel
-misc_support	support	hỗ trợ	podpora
 misc_supported_extensions	supported extensions	loại tệp hỗ trợ	podporované typy souboru
 misc_table_columns	table columns	cột bảng	sloupce tabulky
 misc_take_document_photo	take ID documents photo	chụp ảnh thẻ căn cước	vyfotit ID dokumenty
 misc_taxpayer	taxpayer	người trả thuế	plátce DPH
 misc_technical_support	technical support	hỗ trợ kỹ thuật	technická podpora
 misc_telephone	Telephone	Số điện thoại	Telefon
+misc_telephones	Telephones	Số điện thoại	Telefony
+misc_template	template	mẫu	šablona
+misc_templates	templates	mẫu	šablony
 misc_terminal_esim_desc	Fee 50 CZK per month	Phí 50 CZK mỗi tháng	Poplatek 50Kč měsíčně
 misc_terminal_esim_name	eSIM terminal	Máy trả thẻ eSIM	eSIM terminál
 misc_terminal_fee	terminal rental fees	phí thuê máy trả thẻ	poplatky za pronájem terminálu
@@ -500,33 +365,25 @@ misc_terminal_wifi_desc	Wifi connecttion	Kết nối Wifi	Wifi připojení
 misc_terminal_wifi_name	Mobile terminal	Máy trả thẻ di động	Mobilní terminál
 misc_test_mode	Test mode	Test mode	Testovací režim
 misc_this_month	this month	tháng hiện tại	tento měsíc
-misc_this_quarter	this quarter	quý hiện tại	tento kvartál
-misc_this_week	this week	tuần hiện tại	tento týden
-misc_this_year	this year	năm nay	tento rok
 misc_tin	TIN	IČO	IČO
+misc_tin_changed	TIN changed	Đổi IČO	Změna IČO
+misc_title	title	bằng cấp	titul
 misc_to_change_password	Change password	Đổi mật khẩu	Změnit heslo
 misc_to_login	Login	Đăng nhập	Přihlásit se
 misc_to_logout	Logout	Đăng xuất	Odhlásit se
 misc_to_recover_password	Recover password	Khôi phục mật khẩu	Obnovte heslo
 misc_to_register	Register	Đăng ký	Registrovat
 misc_to_search	Search	Tìm	Vyhledávat
-misc_today	today	hôm nay	dnes
-misc_toggle_manual_fiscalization	Toggle fiscalization	Bật/Tắt tài chính hoá	Vypnout/Zapnout fiskalizace
 misc_total	Total	Tổng	Celkem
 misc_total_price	total price	tiền tổng	celková částka
-misc_total_sales	total sales	tổng doanh thu	celková tržba
-misc_total_vat	total VAT	tổng DPH	celková DPH
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce
-misc_transfer	transfer	chuyển khoản	převodem
 misc_transfer_fee	transfer fees	phí chuyển khoản	poplatky za převod
 misc_turnover	turn over	doanh thu	obrat
 misc_type	Type	Loại	Typ
-misc_unauthorized	unauthorized	không có quyền 	neoprávněno
 misc_unavailable	unavailable	không có sẵn 	nedostupný
 misc_unconfirmed	unconfirmed	chưa xác nhận	nepotvrzeno
 misc_undefined	undefined	chưa xác định	nedefinováno
-misc_undo	undo	hoàn tác vụ	vrátit zpět
 misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
 misc_untitled	untitled	chưa điền	nezadáno
@@ -544,39 +401,29 @@ misc_user_has_zero_provision	user has zero provision	người dùng có hoa hồ
 misc_user_support	user support	hỗ trợ khách hàng	uživatelská podpora
 misc_username	Username	Tên đăng nhập	Přihlašovací jméno
 misc_users	Users	Nhân viên	Uživatele
-misc_vat	VAT	DPH	DPH
-misc_version	version	phiên bản	verze
-misc_view	view	hiển thị	zobrazit
-misc_view_all	view all	hiển thị tất cả	zobrazit vše
+misc_valid	valid	hợp lệ 	validní
 misc_vin	VIN	DIČ	DIČ
-misc_wage	wage	mzda	lương
 misc_website	website	trang web	webová stránka
-misc_weekly	weekly	theo tuần	týdně
 misc_year	year	năm	rok
-misc_yearly	yearly	theo năm	ročně
 misc_yes	yes	có	ano
-misc_you_have_requested_reset_password	you have requested a password reset	bạn đã yêu cầu khôi phục mật khẩu 	požádal/a jste o obnovení hesla
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno
 msg_cancelled	Cancelled	Đã huỷ	Zrušeno
+msg_check_merchant_explanation	You import a list of TINs with provider and then select the providers you expect to be checked. The system will compare the entries with INSTALLED status and display the merchants that were expected to be in selected providers but are not listed. 	Bạn nhập danh sách IČ với các nhà cung cấp rồi chọn nhà cung cấp mà bạn muốn được kiểm tra. Hệ thống sẽ so sánh các mục nhập với tình trạng ĐÃ LẮP ĐẶT và hiển thị những người bán dự kiến ​​sẽ có mặt trong các nhà cung cấp được chọn nhưng không được liệt kê.	Naimportujete seznam IČ s poskytovatelem a poté vyberete poskytovatele, u kterých očekáváte kontrolu. Systém porovná záznamy se statusy INSTALOVÁNO a zobrazí obchodníky, kteří měli být u vybraných poskytovatelů, ale nejsou v seznamu uvedeni.
 msg_confirmed	Confirmed	Đã xác nhận	Potvrzeno
 msg_control_typed_field	Check filled fields	Kiểm tra ô đã điền	Zkontrolujte vyplněné údaje!
 msg_do_not_have_account	Don't have an account	Bạn chưa có tài khoản	Nemáte účet
-msg_already_have_account	Already have an account	Đã có tài khoản	Již máte účet
 msg_email_registered	Email is registered	Email đã được đăng ký	Email je již používán
 msg_finished	Finished	Đã hoàn thành	Dokončeno
 msg_from	From	Từ	Od
 msg_have_forgotten_password	Don't remember password	Bạn đã quên mật khẩu	Zapoměl(a) jste heslo
-msg_check_spam_box	Do not forgot to check SPAM box	hãy kiểm tra SPAM	nezapomeňte zkontrolovat SPAM
-msg_choose	choose	chọn	vybrat
 msg_ico_registered	IČO is registered	IČO đã được đăng ký	IČO je již registrováno
 msg_is_active	Active	Kích hoạt	Aktivní
 msg_is_deactive	Deactive	Không kích hoạt	Neaktivní
 msg_make_sure_image_not_blur_and_centered	make sure the photo is centered and not blurry	hãy chắc chắn là ảnh nằm ngay giữa và không mờ	ujistěte se, že fotka je vycentrovaná a není rozmazaná 
 msg_must_add_email	you must add email	bạn phải nhập email	musíte zadat email
 msg_must_add_unsigned_form	You must upload unsigned form	Bạn chưa tải lên mẫu đơn chưa ký	Musíte nahrát nepodepsaný formulář
-msg_need_help	Need help	Cần trợ giúp	Potřebujete pomoc
 msg_not_decided	Undecided	Chưa quyết định	Nerozhodnuto
 msg_number_short	num.	số	č.
 msg_only_send_when_no_bank_or_terminal_choosed	Only send this E-mail if customer did not apply a bank account or terminal details	Chỉ gửi E-mail này khi khách hàng chưa thêm tài khoản ngân hàng hoặc chưa chọn máy trả thẻ 	Tento E-mail posílejte jen v případě, že zákazník nezadal bankovní účet nebo nevybral si terminál
@@ -584,14 +431,15 @@ msg_or	or	hoặc	nebo
 msg_password_change_success	Password successfully changed	Mật khẩu đã đổi thành công	Heslo úspěšně změněno
 msg_please_choose_item	Please choose an item	Hãy chọn một món	Vyberte si položku
 msg_really_want_to_add	Do you really want to add	Bạn thật sự muốn thêm	Opravdu chcete přidat
-msg_really_want_to_confirm	Do you really want to confirm	Bạn thật sự muốn xác nhận	Opravdu chcete potvrdit
-msg_really_want_to_delete	Do you really want to delete	Bạn thật sự muốn xoá	Opravdu chcete smazat
 msg_really_want_to_change	Do you really want to change	Bạn thật sự muốn đổi	Opravdu chcete změnit
 msg_really_want_to_change_status	Do you really want to change status	Bạn thật sự muốn đổi trạng thái	Opravdu chcete přepnout status
+msg_really_want_to_confirm	Do you really want to confirm	Bạn thật sự muốn xác nhận	Opravdu chcete potvrdit
+msg_really_want_to_delete	Do you really want to delete	Bạn thật sự muốn xoá	Opravdu chcete smazat
 msg_really_want_to_remove	Do you really want to remove	Bạn thật sự muốn huỷ	Opravdu chcete odstranit
 msg_really_want_to_send	Do you really want to send	Bạn thật sự muốn gửi	Opravdu chcete poslat
 msg_registration_form	Registration form	Đơn đăng ký	Registrační formulář
 msg_request_sent	Request sent	Yêu cầu đã được gửi	Požadavek poslán
+msg_select_template	select template	hãy chọn mẫu	vyberte šablonu
 msg_take_back_side_of_document	take a photo of the back of the document	chụp mặt sau của thẻ căn cước	vyfoťte zadní stranu dokladu
 msg_take_front_side_of_document	take a photo of the front of the document	chụp mặt trước của thẻ căn cước	vyfoťte přední stranu dokladu
 msg_to	To	Đến	Do
@@ -601,23 +449,166 @@ msg_update_successfully	Update successfully	Cập nhập thành công	Úspěšn�
 msg_vin_required_for_taxpayer	VIN is required for taxpayer	Số thuế VIN là bắt buộc cho người trả thuế	DIČ je povinné pro plátce DPH
 msg_welcome	Welcome to	Chào mừng bạn đến	Vítáme Vás v
 msg_you_can_not_revert	Once changed, you can not revert	Một khi đã đổi, bạn không thể chuyển lại	Jakmile přepnete, nemůžete znovu přepnout
-srv_bad_request	bad request	yêu cầu không đúng	špatný požadavek
+srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
+srv_already_sent	Already sent	Đã gửi		Již odesláno
+srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
+srv_assigned_form_not_found	Assigned form not found	Không tìm thấy biểu mẫu được chỉ định	Přidělený formulář nenalezen
+srv_bank_not_found	Bank not found	Không tìm thấy ngân hàng	Banku nelze nalézt
 srv_bank_updated	bank updated	đã cập nhập ngân hàng	banka aktualizována
 srv_bill_confirmed	bill confirmed	hoá đơn đã được xác nhận	faktura potvrzena
-srv_bill_sent	bill sent	hoá đơn đã được gửi	faktura odeslána
-srv_bill_updated	bill updated	hoá đơn được cập nhập	faktura aktualizována
-srv_can_not_delete_yourself	cannot delete yourself	không thể tự xoá bản thân	nelze smazat sám sebe
+srv_bill_deleted	Bill deleted	Hóa đơn đã bị xóa	Faktura smazána
+srv_bill_not_found	Bill not found	Không tìm thấy hóa đơn	Faktura nenalezena
+srv_bill_sent	Bill sent	Đã gửi hóa đơn	Faktura odeslána
+srv_bill_updated	Bill updated	Hóa đơn đã cập nhật	Faktura aktualizována
+srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
+srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
+srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
+srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
+srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
+srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
+srv_empty_name	Empty name	Tên trống	Prázdné jméno
+srv_empty_purchaser	Empty purchaser	Người mua trống	Prázdný kupující
+srv_empty_supplier	Empty supplier	Nhà cung cấp trống	Prázdný dodavatel
 srv_error	chyba serveru	lỗi serveru	chyba serveru
+srv_exposure_is_after_expiration	Exposure date is after expiration date	Ngày hiệu lực sau ngày hết hạn	Datum vystavení je po datumu expirace
+srv_failed_to_add	failed to add	thêm mới bị lỗi 	chyba přidání
+srv_failed_to_authorize	Failed to authorize	Ủy quyền không thành công	Autorizace se nezdařila
+srv_failed_to_create	failed to create	tạo không thành công	založení selhalo
+srv_failed_to_create_pdf	Failed to create PDF	Tạo PDF không thành công		Vytvoření PDF se nezdařilo
+srv_failed_to_delete	failed to delete	xoá không thành công	smazání selhalo
+srv_failed_to_get_terminals	Failed to get terminals	Lấy thiết bị thanh toán không thành công	Získání terminálů se nezdařilo
+srv_failed_to_load	failed to load	lỗi tải trang	chyba načítání
+srv_failed_to_load_from_ares	failed to load data from ARES	tải dữ liệu từ ares không thành công	stažení dat z ARES selhalo
+srv_failed_to_load_transaction	Failed to load transaction	Tải dữ liệu đơn hàng thất bại	Načítání transakce selhala
+srv_failed_to_login	Failed to login	Đăng nhập không thành công	Přihlášení se nezdařilo
+srv_failed_to_submit	failed to submit	gửi không thành công	odeslání selhalo
+srv_failed_to_update	failed to update	cập nhập không thành công	aktualizace selhala
+srv_failed_to_upload	failed to upload	tải lên không thành công	nahrávání selhalo
+srv_file_extension_not_allowed	File extension is not allowed	Đuôi của tệp không được cho phép	Přípona souboru není povolena
 srv_file_uploaded	Files uploaded successfully	Tệp đã được tải lên thành công	Soubory úspěšně nahrány
+srv_forbidden	Forbidden	Cấm	Zakázáno
+srv_form_deleted	Form deleted	Biểu mẫu đã bị xóa	Formulář smazán
+srv_form_draft_not_found	Form draft not found	Không tìm thấy bản nháp biểu mẫu	Koncept formuláře nenalezen
+srv_form_not_found	Form not found	Không tìm thấy biểu mẫu	Formulář nenalezen
+srv_form_reference_added	Form reference added	Tham chiếu đơn được thêm	Reference formuláře přidán
+srv_form_reference_deleted	Form reference deleted	Tham chiếu đơn đã bị xóa	Reference formuláře smazána
 srv_form_updated	Form updated	Đơn đã được cập nhập	Formulář aktualizován
+srv_forms_exist	Forms exist	Các biểu mẫu đã tồn tại	Formuláře existují
+srv_invalid_action_request	Invalid action request	Yêu cầu hành động không hợp lệ	Neplatná žádost o akci
+srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
+srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
+srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
+srv_invalid_bank_account	Invalid bank account	Tài khoản ngân hàng không hợp lệ	Neplatný bankovní účet
+srv_invalid_bank_id	invalid bank ID	ID ngân hàng không hợp lệ	neplatný ID banky
+srv_invalid_bill	Invalid bill	Hóa đơn không hợp lệ	Neplatná faktura
+srv_invalid_business_name	invalid business name	tên công ty không hợp lệ	neplatné jméno společnosti
+srv_invalid_business_type	invalid business type	thể loại kinh doanh không hợp lệ	neplatný typ obchodní činnosti
+srv_invalid_city	Invalid city	Tên thành phố không hợp lệ	Neplatné město
+srv_invalid_city	Invalid city	Thành phố không hợp lệ	Neplatné město
+srv_invalid_country	Invalid country	Quốc gia không hợp lệ	Neplatná země
 srv_invalid_credentials	Invalid credentials	Sai thông tin đăng nhập	Nesprávné přihlašovací údaje
-srv_invalid_format	Invalid format	Format không đúng	Nesprávný formát
-srv_mail_sent	email sent	email đã được gửi	email poslán
-srv_no_user_remaining	no staff remaining	không còn nhân viên thừa	nezbývá žádný zaměstnanec
+srv_invalid_date	invalid date	ngày không hợp lệ	nesprávné datum
+srv_invalid_email	Invalid email	Email không hợp lệ	Neplatný email
+srv_invalid_expiration	Invalid expiration	Ngày hết hạn không hợp lệ	Neplatná expirace
+srv_invalid_exposure	Invalid exposure	Ngày hiệu lực không hợp lệ	Neplatný datum vystavení
+srv_invalid_headers	Invalid headers	Đầu đề không hợp lệ	Neplatné záhlaví
+srv_invalid_id	Invalid ID	ID không hợp lệ	Neplatné ID
+srv_invalid_image_url	Invalid image URL	URL hình ảnh không hợp lệ	Nesprávný URL pro obrázek
+srv_invalid_key	Invalid key	Khóa không hợp lệ	Neplatný klíč
+srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník
+srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
+srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
+srv_invalid_owner	Invalid owner	Chủ sở hữu không hợp lệ	Neplatný vlastník
+srv_invalid_plans	Invalid plans	Kế hoạch không hợp lệ	Neplatné plány
+srv_invalid_postal_code	Invalid postal code	Mã bưu chính không hợp lệ	Neplatné PSČ
+srv_invalid_postal_code	invalid postal code must be 11000 or 110 00	mã bưu điện không hợp lệ, phải là 11000 hoặc 110 00	neplatný PSČ, musí být 11000 nebo 110 00
+srv_invalid_provider	Invalid provider	Nhà cung cấp không hợp lệ	Neplatný poskytovatel
+srv_invalid_quantity	invalid quantity	số lương không hợp lệ	neplatné množství
+srv_invalid_question	Invalid question	Câu hỏi không hợp lệ	Nesprávná otázka
+srv_invalid_recaptcha	Invalid reCAPTCHA	reCAPTCHA không hợp lệ	Neplatná reCAPTCHA
+srv_invalid_recaptcha_request	Invalid reCAPTCHA request	Yêu cầu reCAPTCHA không hợp lệ	Neplatná žádost reCAPTCHA
+srv_invalid_refid	Invalid refID	RefID không hợp lệ	Neplatné refID
+srv_invalid_request	invalid request	yêu cầu không hợp lệ	nesprávný požadavek
+srv_invalid_settings	Invalid settings	Cài đặt không hợp lệ	Neplatná nastavení
+srv_invalid_street	Invalid street	Đường không hợp lệ	Neplatná ulice
+srv_invalid_telephone	Invalid telephone	Số điện thoại không hợp lệ	Neplatný telefon
+srv_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không hợp lệ	neplatný typ platebního terminálu
+srv_invalid_tin	invalid TIN	IČO không hợp lệ	neplatné IČO
+srv_invalid_token	Invalid token or link expired	Mã token không hợp lệ hoặc đã hết hạn	Neplatný token nebo váš požadavek vypršel
+srv_invalid_url	Invalid URL	URL không hợp lệ	Nesprávný URL
+srv_invalid_vin	invalid VIN	DIČ không hợp lệ	neplatné DIČ
+srv_invalid_year	Invalid year	Năm không hợp lệ	Neplatný rok
+srv_is_confirmed	Is confirmed	Đã xác nhận	Je potvrzeno
+srv_items_empty	items are empty	mục trống	položky jsou prázdné
+srv_leads_imported	Leads imported	Khách hàng tiềm năng đã được nhập	Zákazníci importováni
+srv_log_in_failed	Log in failed	Đăng nhập không thành công	Přihlášení se nezdařilo
+srv_login_expired	login expired	đăng nhập hết hạn	přihlášení expirováno
+srv_mail_send_failed	Mail send failed	Gửi thư không thành công	Odeslání e-mailu se nezdařilo
+srv_mail_sent	Mail sent	Thư đã được gửi	E-mail odeslán
+srv_max_ares_attempts	you have reached the maximum number of attempts. Write the data manually or start from the beginning.	bạn đã đạt đến số lần thử tối đa. Hãy viết dữ liệu theo cách thủ công hoặc bắt đầu lại từ đầu.	dosáhl(a) jste maximálního počtu pokusů. Napište data ručně nebo začněte od začátku.
+srv_merchant_deleted	Merchant deleted	Thương gia đã bị xóa	Obchodník smazán
+srv_merchant_not_found	Merchant not found	Không tìm thấy thương gia	Obchodník nenalezen
+srv_message_sent	Message sent	Tin nhắn đã gửi	Zpráva odeslána
+srv_missing	missing	thiếu	nenalezeno
+srv_missing_form	missing form	thiếu đơn	chybí formulář
+srv_missing_from_system	missing from system	không tìm thấy trong hệ thống	nenalezeno v systému
+srv_must_choose_store	you must choose a store	bạn phải chọn một cửa hàng	musíte vybrat provozovnu
+srv_must_take_photo_of_documents	you must take photo of ID documents	quý khách phải chụp ảnh thẻ căn cước	musíte vyfotit doklady
+srv_new_form_draft_deleted	New form draft deleted	Bản nháp biểu mẫu mới đã bị xóa	Koncept nového formuláře smazán
+srv_new_form_draft_not_found	New form draft not found	Không tìm thấy bản nháp biểu mẫu mới	Koncept nového formuláře nenalezen
+srv_no_content	No content	Không có nội dung	Žádný obsah
+srv_no_data	No data	Không có dữ liệu	Žádná data
+srv_no_faq	no FAQs	không có FAQs	nejsou žádné FAQs
+srv_no_form_identity	No form identity	Không có danh tính biểu mẫu		Žádná identita formuláře
+srv_no_installed	not installed	chưa được lắp đặt	není instalováno
+srv_no_payment_terminal	no payment terminals	không có máy trả thẻ	není žádný platební terminál
+srv_no_permission	No permission	Không có quyền truy cập	Bez oprávnění
+srv_no_result_found	No result found	Không tìm thấy kết quả	Žádný výsledek nenašlo
+srv_no_template_available	no template available	không có mẫu đơn sẵn	není k dispozici žádná šablona
+srv_non_negative_number	non negative number	số không được âm	nezáporné číslo
+srv_not_base64	Not Base64	Không phải Base64	Není Base64
 srv_not_found	not found	không tìm thấy	nenalezeno
+srv_not_included	not included	không được bao gồm	nezahrnuto
+srv_page_not_found	page not found	trang không tìm thấy	stránka nenalezena
+srv_password_requirements	Password must have 8 characters, 1 uppercase, 1 lowercase and 1 number	Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số	Heslo musí obsahovat alespoň 8 znaků, 1 velké, 1 malé písmeno a 1 číslici
+srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không thành công	Obnovení hesla se nezdařilo
+srv_password_reset_send_to_email	Password reset sent to email	Đặt lại mật khẩu gửi vào email	Obnovení hesla odesláno na email
 srv_passwords_changed	passwords changed	mật khẩu đã đổi	heslo změněno
+srv_passwords_not_match	Passwords do not match	Mật khẩu không khớp	Hesla se neshodují
+srv_pick_software	pick a software	hãy chọn phần mềm	vyberte software
+srv_plan_deleted	Plan deleted	Kế hoạch đã bị xóa	Plán smazán
+srv_plan_not_found	Plan not found	Không tìm thấy kế hoạch	Plán nenalezen
+srv_please_sign_document	Please sign the document	Hãy ký đơn	Podepište dokument
+srv_provider_not_selected	provider is not selected	nhà phát hành không được chọn	provider is not selected
+srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference existuje
+srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
+srv_register_failed	Register failed	Đăng ký không thành công	Registrace se nezdařila
+srv_return_to	Return to	Hãy quay lại	Vraťte se na
+srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
+srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
+srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy
+srv_signed_out	Signed out	Đã đăng xuất	Odhlášeno
+srv_something_wrong	Oops, something is wrong	Oops, trang bị lỗi	Oops, výskytla se chyba
+srv_start_can_not_older_than_end	start date cannot be after end date	ngày bắt đầu không thể sau ngày kết thúc	datum zahájení nemůže být pozdější než datum ukončení
+srv_start_day_can_not_after_end_day	Start day cannot be after end day	Ngày bắt đầu không thể sau ngày kết thúc	Den začátku nemůže být po dni ukončení
+srv_store_deleted	Store deleted	Cửa hàng đã bị xóa	Obchod smazán
+srv_store_exists	Store already exists	Cửa hàng đã tồn tại	Obchod již existuje
+srv_terminal_created	Terminal created	Thiết bị thanh toán đã được tạo	Terminál vytvořen
+srv_terminal_deleted	Terminal deleted	Thiết bị thanh toán đã bị xóa	Terminál smazán
+srv_terminal_not_found	Terminal not found	Không tìm thấy thiết bị thanh toán	Terminál nenalezen
+srv_terminal_updated	Terminal updated	Thiết bị thanh toán đã cập nhật	Terminál aktualizován
+srv_token_expired	Token expired	Mã thông báo đã hết hạn	Token vypršel
+srv_transaction_created	Transaction created	Giao dịch đã được tạo	Transakce vytvořena
+srv_transactions_checked	transactions checked	đã kiểm tra giao dịch	transakce zkontrolovány
+srv_transactions_empty	transactions are empty	giao dịch trống	transakce jsou prázdné
+srv_transactions_imported	transactions imported	đã nhập giao dịch	transakce nahrány
 srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
+srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
+srv_user_has_subordinates	User has subordinates	Người dùng có cấp dưới	Uživatel má podřízené
 srv_user_not_exists	user not exists	người dùng không tồn tại	uživatel neexistuje
 srv_user_updated	user updated	người dùng được cập nhập	uživatel aktualizován
+srv_username_requirements	Username must have 6 to 20 characters, only lowercase and no space	Tên đăng nhập phải có 6 đến 20 ký tự, chữ bé, không dấu cách và ký tự đặt biệt	Heslo musí obsahovat 6 až 20 znaků, malé písmeno, bez mezer a speciálních znaků
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
+srv_word	Error	Lỗi	Chyba
+srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
