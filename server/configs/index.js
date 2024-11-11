@@ -27,7 +27,7 @@ const CONFIG = {
             refreshToken: '',
         },
     },
-    grecaptchaSecret: '',
+    grecaptchaSecret: '***REMOVED***',
     grecaptchaSiteKey: '',
 };
 
