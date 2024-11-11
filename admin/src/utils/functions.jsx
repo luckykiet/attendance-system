@@ -4,37 +4,20 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import isBetween from 'dayjs/plugin/isBetween'
-import { months } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
-
-export const convertToBase64 = async (file) => {
-  let result_base64 = await new Promise((resolve) => {
-    let fileReader = new FileReader()
-    fileReader.onload = () => resolve(fileReader.result)
-    fileReader.onerror = (error) => {
-      console.error(error)
-    }
-    fileReader.readAsDataURL(file)
-  })
-  return result_base64
-}
-
-export const renderIcon = (icon) => {
-  const IconComponent = icon
-  return <IconComponent />
-}
-
-export const isValidHexColor = (color) => {
-  return /^#([0-9a-f]{3}){1,2}$/i.test(color)
-}
 
 export const isExpired = (startTime, timeRangeInMinut) => {
   const now = dayjs()
   const duration = dayjs.duration(now.diff(dayjs(startTime)))
   const minuts = duration.asMinutes()
   return minuts > timeRangeInMinut
+}
+
+export const renderIcon = (icon) => {
+  const IconComponent = icon
+  return <IconComponent />
 }
 
 //https://cs.wikipedia.org/wiki/Identifikačn%C3%AD_č%C3%ADslo_osonumberArrayy
@@ -181,37 +164,6 @@ export const splitBankAccountNumber = (bankAccount) => {
   }
 }
 
-export const numberWithSpaces = (x) => {
-  const numberValue = Number(x)
-  const formattedNumber = numberValue.toLocaleString('cs-CZ', {
-    minimumFractionDigits: numberValue % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: numberValue % 1 === 0 ? 0 : 2,
-  })
-
-  return formattedNumber
-}
-
-export const replaceNullWithEmptyString = (obj) => {
-  if (typeof obj !== 'object' || obj === null) {
-    if (obj === null) {
-      return ''
-    }
-    return obj
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map((item) => replaceNullWithEmptyString(item))
-  } else {
-    const newObj = {}
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        newObj[key] = replaceNullWithEmptyString(obj[key])
-      }
-    }
-    return newObj
-  }
-}
-
 export const checkBankAccount = (prefix, accountNumber) => {
   if ((prefix !== '' && isNaN(prefix)) || isNaN(accountNumber)) {
     return false
@@ -242,28 +194,6 @@ export const checkBankAccount = (prefix, accountNumber) => {
   return true
 }
 
-export const getBase64 = (file) => {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => {
-      const baseURL = reader.result
-      resolve(baseURL)
-    }
-  })
-}
-
-export const dirtyValues = (dirtyFields, allValues) => {
-  if (dirtyFields === true || Array.isArray(dirtyFields)) {
-    return allValues
-  }
-  return Object.fromEntries(
-    Object.keys(dirtyFields).map((key) => [
-      key,
-      dirtyValues(dirtyFields[key], allValues[key]),
-    ])
-  )
-}
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
@@ -293,69 +223,8 @@ export const stableSort = (array, comparator) => {
   return stabilizedThis.map((el) => el[0])
 }
 
-export const getStorageFormData = ({
-  formDataKey = '',
-  defaultValues = {},
-}) => {
-  let data = localStorage.getItem(formDataKey)
-  if (data) {
-    try {
-      data = JSON.parse(data)
-    } catch (err) {
-      console.log(err)
-    }
-    return data
-  }
-  return defaultValues
-}
-
 export const mergeObjects = (obj1, obj2) => {
   return _.merge(obj1, obj2)
-}
-
-export const filterObjectWithValue = (object, value, excludes = []) => {
-  const isExcluded = (key) =>
-    excludes.some((excludedKey) => _.startsWith(key, excludedKey))
-
-  if (_.isPlainObject(object)) {
-    const resultObject = {}
-    Object.keys(object).forEach((key) => {
-      if (!isExcluded(key)) {
-        const filteredValue = filterObjectWithValue(
-          object[key],
-          value,
-          excludes
-        )
-        if (filteredValue !== undefined) {
-          resultObject[key] = filteredValue
-        }
-      }
-    })
-    return Object.keys(resultObject).length ? resultObject : undefined
-  } else if (_.isArray(object)) {
-    const result = []
-    object.forEach((item) => {
-      const resultObject = {}
-      Object.keys(item).forEach((key) => {
-        if (!isExcluded(key)) {
-          const filteredValue = filterObjectWithValue(
-            item[key],
-            value,
-            excludes
-          )
-          if (filteredValue !== undefined) {
-            resultObject[key] = filteredValue
-          }
-        }
-      })
-      if (Object.keys(resultObject).length) {
-        result.push(resultObject)
-      }
-    })
-    return result.length ? result : undefined
-  } else {
-    return object === value ? object : undefined
-  }
 }
 
 export const mergeSameKeys = (obj1, obj2) => {
@@ -370,79 +239,6 @@ export const mergeSameKeys = (obj1, obj2) => {
   } else {
     return obj2 ? obj2 : obj1
   }
-}
-
-export const errorFormHandler = (error, t, setError, fields) => {
-  let err = ''
-  if (error) {
-    if (error instanceof Object) {
-      Object.keys(error).map((field) => {
-        if (fields[field]) {
-          setError(
-            field,
-            {
-              type: 'custom',
-              message: capitalizeFirstLetterOfString(t(error[field])),
-            },
-            {
-              shouldFocus: true,
-            }
-          )
-        }
-      })
-    } else {
-      err = new Error(capitalizeFirstLetterOfString(t(error)))
-    }
-  }
-
-  return err
-}
-
-export const getMonthsWithYears = (start, end, t) => {
-  const startDate = dayjs(start, 'DDMMYYYY', true).isValid()
-    ? dayjs(start, 'DDMMYYYY').startOf('month')
-    : null
-
-  const endDate = dayjs(end, 'DDMMYYYY', true).isValid()
-    ? dayjs(end, 'DDMMYYYY').endOf('month')
-    : null
-
-  if (!endDate || !endDate || startDate.isAfter(endDate)) {
-    console.error(
-      capitalizeFirstLetterOfString(t('srv_start_day_can_not_after_end_day'))
-    )
-    return []
-  }
-
-  const startYear = startDate.year()
-  const endYear = endDate.year()
-
-  const startMonth = startDate.month()
-  const endMonth = endDate.month()
-
-  const result = []
-
-  for (let year = startYear; year <= endYear; year++) {
-    let monthStart = 0
-    let monthEnd = 11
-
-    if (year === startYear) {
-      monthStart = startMonth
-    }
-    if (year === endYear) {
-      monthEnd = endMonth
-    }
-
-    for (let month = monthStart; month <= monthEnd; month++) {
-      const monthName = months[month].shortcut
-      const formattedMonth = `${capitalizeFirstLetterOfString(
-        t(monthName)
-      )} (${String(year).slice(2)})`
-      result.push(formattedMonth)
-    }
-  }
-
-  return result
 }
 
 export const checkPrivileges = (privilegesKey, role) => {

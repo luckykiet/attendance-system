@@ -31,7 +31,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import PersonIcon from '@mui/icons-material/Person'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import { useAuthStore } from '@/stores/auth';
 import { logout } from '@/api/auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -113,7 +113,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
       <List disablePadding>
         <CustomListItem
           href={`/user/${user?.username}`}
-          text={user?.username}
+          text={user?.username|| t('misc_user')}
           icon={<PersonIcon />}
         />
         <ListItem>

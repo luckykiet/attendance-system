@@ -15,7 +15,7 @@ import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import { LoadingButton } from '@mui/lab';
 import { capitalizeFirstLetterOfString } from '@/utils';
 import { useMutation } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
+import useTranslation from '@/hooks/useTranslation';
 import { forgotPassword } from '@/api/auth';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -94,19 +94,21 @@ export default function ForgottenPasswordPage() {
                       type="email"
                       placeholder="abc@def.com"
                       required
-                      error={Boolean(fieldState.error)}
-                      helperText={fieldState.error?.message}
+                      error={fieldState.invalid}
+                      helperText={fieldState.invalid && t(fieldState.error.message)}
                       slotProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <EmailRoundedIcon />
-                          </InputAdornment>
-                        ),
-                        endAdornment: field.value && !fieldState.error && (
-                          <InputAdornment position="end">
-                            <CheckRoundedIcon color="success" />
-                          </InputAdornment>
-                        ),
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <EmailRoundedIcon />
+                            </InputAdornment>
+                          ),
+                          endAdornment: field.value && !fieldState.error && (
+                            <InputAdornment position="end">
+                              <CheckRoundedIcon color="success" />
+                            </InputAdornment>
+                          ),
+                        }
                       }}
                     />
                   )}

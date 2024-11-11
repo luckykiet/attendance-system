@@ -2,8 +2,10 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Grid2, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, InputAdornment, FormControlLabel, FormLabel, RadioGroup, Radio } from '@mui/material';
 import CopyButton from '@/components/admin/CopyButton';
 import { Fragment } from 'react';
+import useTranslation from './useTranslation';
 
 const useDynamicForm = ({ items, form }) => {
+    const { t } = useTranslation();
     const context = useFormContext();
     const { control, watch, handleSubmit, formState: { dirtyFields } } = form || context;
     return items.map((item) => {
@@ -47,6 +49,8 @@ const useDynamicForm = ({ items, form }) => {
                             fullWidth
                             onChange={(e) => onChange ? onChange(e) : field.onChange(e.target.value)}
                             onBlur={handleSubmit}
+                            error={fieldState.invalid}
+                            helperText={fieldState.invalid && t(fieldState.error.message)}
                             disabled={disabledCondition?.(watch)}
                             slotProps={{
                                 input:
@@ -80,6 +84,7 @@ const useDynamicForm = ({ items, form }) => {
                                 onBlur={handleSubmit}
                                 className={isDirty && classes?.selectModified ? classes.selectModified : undefined}
                                 disabled={disabledCondition?.(watch)}
+                                error={fieldState.invalid}
                             >
                                 {options.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>

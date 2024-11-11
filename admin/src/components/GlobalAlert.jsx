@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import SlideTransition from '@/components/Transitions'
 import Snackbar from '@mui/material/Snackbar'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 // const alertMessage = { title: '', msg: '', duration: 4000, severity: 'error' }
 export default function GlobalAlert() {

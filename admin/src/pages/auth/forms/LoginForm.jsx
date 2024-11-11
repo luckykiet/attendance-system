@@ -11,9 +11,17 @@ import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CONFIG } from '@/configs';
-import { useTranslation } from 'react-i18next';
+import useTranslation from '@/hooks/useTranslation';
 import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
+
+const loginSchema = z.object({
+    username: z
+        .string({ required_error: 'misc_required' })
+        .regex(/^\S+$/, 'srv_invalid_username')
+        .max(255),
+    password: z.string({ required_error: 'misc_required' }).max(255)
+});
 
 const LoginForm = () => {
     const { t } = useTranslation();
@@ -24,13 +32,6 @@ const LoginForm = () => {
     const [postMsg, setPostMsg] = useState('');
     const navigate = useNavigate();
 
-    const loginSchema = z.object({
-        username: z
-            .string({ required_error: t('misc_required') })
-            .regex(/^\S+$/, t('srv_invalid_username', { capitalize: true }))
-            .max(255),
-        password: z.string({ required_error: t('misc_required') }).max(255)
-    });
 
     const mainUseForm = useForm({
         resolver: zodResolver(loginSchema),
@@ -69,7 +70,7 @@ const LoginForm = () => {
         try {
             const recaptchaToken = await executeRecaptcha('login');
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
-                throw new Error(t('err_invalid_recaptcha'));
+                throw new Error(t('srv_invalid_recaptcha'));
             }
             loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
         } catch (error) {
@@ -86,27 +87,29 @@ const LoginForm = () => {
                         <Controller
                             name="username"
                             control={control}
-                            render={({ field, fieldState }) => (
-                                <TextField
+                            render={({ field, fieldState }) => {
+                                return <TextField
                                     {...field}
                                     fullWidth
-                                    label="Username"
+                                    label={t('misc_username')}
                                     placeholder="Username"
                                     variant="outlined"
                                     onBlur={handleSubmit}
-                                    error={Boolean(fieldState.isTouched && fieldState.invalid)}
-                                    helperText={fieldState.invalid && fieldState.error.message}
+                                    error={fieldState.invalid}
+                                    helperText={fieldState.invalid && t(fieldState.error.message)}
                                     required
                                     autoComplete="off"
                                     slotProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Person />
-                                            </InputAdornment>
-                                        )
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Person />
+                                                </InputAdornment>
+                                            )
+                                        }
                                     }}
                                 />
-                            )}
+                            }}
                         />
                     </Grid2>
                     <Grid2 size={{ xs: 12 }}>
@@ -121,28 +124,30 @@ const LoginForm = () => {
                                     placeholder={t('misc_password')}
                                     variant="outlined"
                                     onBlur={handleSubmit}
-                                    error={Boolean(fieldState.isTouched && fieldState.invalid)}
-                                    helperText={fieldState.isTouched && fieldState.invalid && fieldState.error.message}
+                                    error={fieldState.invalid}
+                                    helperText={fieldState.invalid && t(fieldState.error.message)}
                                     type={showPassword ? 'text' : 'password'}
                                     required
                                     autoComplete="off"
                                     slotProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Password />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Password />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }
                                     }}
                                 />
                             )}

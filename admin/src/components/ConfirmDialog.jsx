@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@mui/material'
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 export default function ConfirmDialog({
   title,

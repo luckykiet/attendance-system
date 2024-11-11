@@ -1,7 +1,6 @@
 // FeedbackMessage.js
 import { Typography } from '@mui/material'
-import { capitalizeFirstLetterOfString } from '@/utils'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import PropTypes from 'prop-types'
 
 const FeedbackMessage = ({ message }) => {
@@ -15,9 +14,9 @@ const FeedbackMessage = ({ message }) => {
             sx={{ mt: 2 }}
         >
             {message instanceof Error
-                ? capitalizeFirstLetterOfString(t(message.message))
+                ? t(message.message)
                 : typeof message === 'string' &&
-                capitalizeFirstLetterOfString(t(message))}
+                t(message)}
         </Typography>
     )
 }

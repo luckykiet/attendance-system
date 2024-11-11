@@ -14,7 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import { renderIcon } from '@/utils';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 
 export default function LanguageSwitcher({ sx, withText = true }) {

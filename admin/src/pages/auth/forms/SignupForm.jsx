@@ -10,9 +10,56 @@ import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CONFIG } from '@/configs';
-import { useTranslation } from 'react-i18next';
+import useTranslation from '@/hooks/useTranslation';
 import { fetchAresWithTin } from '@/api/ares';
 import FeedbackMessage from '@/components/FeedbackMessage';
+import { getDefaultAddress } from '@/utils';
+
+const signupSchema = z.object({
+    username: z
+        .string()
+        .trim()
+        .min(4, { message: 'srv_username_min_length' })
+        .max(255, { message: 'srv_username_max_length' })
+        .regex(/^\S+$/, { message: 'srv_username_no_whitespace' }),
+    email: z
+        .string()
+        .email({ message: 'srv_wrong_email_format' }),
+    tin: z
+        .string()
+        .regex(/^[0-9]{8}$/, { message: 'srv_invalid_tin' }),
+    name: z
+        .string()
+        .max(255, { message: 'srv_name_max_length' }),
+    vin: z
+        .string()
+        .max(255, { message: 'srv_vin_max_length' })
+        .optional(),
+    address: z.object({
+        street: z
+            .string()
+            .max(255, { message: 'srv_street_max_length' })
+            .optional(),
+        city: z
+            .string()
+            .max(255, { message: 'srv_city_max_length' })
+            .optional(),
+        zip: z
+            .string()
+            .regex(/^\d{3} ?\d{2}$/, { message: 'srv_invalid_zip' })
+            .optional(),
+    }),
+    password: z
+        .string()
+        .min(8, { message: 'srv_password_min_length' })
+        .max(255, { message: 'srv_password_max_length' }),
+    confirmPassword: z
+        .string()
+        .max(255, { message: 'srv_confirm_password_max_length' })
+}).refine((data) => data.password === data.confirmPassword, {
+    message: 'srv_passwords_not_match',
+    path: ['confirmPassword']
+});
 
 const SignupForm = () => {
     const { t } = useTranslation();
@@ -24,52 +71,6 @@ const SignupForm = () => {
     const [postMsg, setPostMsg] = useState('');
     const navigate = useNavigate();
 
-    const signupSchema = z.object({
-        username: z
-            .string()
-            .trim()
-            .min(4, { message: t('srv_username_min_length') })
-            .max(255, { message: t('srv_username_max_length') })
-            .regex(/^\S+$/, { message: t('srv_username_no_whitespace') }),
-        email: z
-            .string()
-            .email({ message: t('srv_wrong_email_format') }),
-        tin: z
-            .string()
-            .regex(/^[0-9]{8}$/, { message: t('srv_tin_invalid_format') }),
-        name: z
-            .string()
-            .max(255, { message: t('srv_name_max_length') }),
-        vin: z
-            .string()
-            .max(255, { message: t('srv_vin_max_length') })
-            .optional(),
-        address: z.object({
-            street: z
-                .string()
-                .max(255, { message: t('srv_street_max_length') })
-                .optional(),
-            city: z
-                .string()
-                .max(255, { message: t('srv_city_max_length') })
-                .optional(),
-            zip: z
-                .string()
-                .regex(/^\d{3} ?\d{2}$/, { message: t('srv_zip_invalid_format') })
-                .optional(),
-        }),
-        password: z
-            .string()
-            .min(8, { message: t('srv_password_min_length') })
-            .max(255, { message: t('srv_password_max_length') }),
-        confirmPassword: z
-            .string()
-            .max(255, { message: t('srv_confirm_password_max_length') })
-    }).refine((data) => data.password === data.confirmPassword, {
-        message: t('srv_passwords_not_match'),
-        path: ['confirmPassword']
-    });
-
     const mainUseForm = useForm({
         resolver: zodResolver(signupSchema),
         defaultValues: {
@@ -80,11 +81,7 @@ const SignupForm = () => {
             tin: '',
             name: '',
             vin: '',
-            address: {
-                street: '',
-                city: '',
-                zip: ''
-            }
+            address: getDefaultAddress(),
         },
         mode: 'all'
     });
@@ -128,7 +125,7 @@ const SignupForm = () => {
         try {
             const recaptchaToken = await executeRecaptcha('signup');
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
-                throw new Error(t('err_invalid_recaptcha'));
+                throw new Error(t('srv_invalid_recaptcha'));
             }
             signUpMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
         } catch (error) {
@@ -145,7 +142,7 @@ const SignupForm = () => {
                             name="username"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -154,7 +151,7 @@ const SignupForm = () => {
                             name="email"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -163,7 +160,7 @@ const SignupForm = () => {
                             name="tin"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_tin')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_tin')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                         {tinLoading && <FormHelperText>{t('loading_tin')}</FormHelperText>}
@@ -175,7 +172,7 @@ const SignupForm = () => {
                             name="name"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_name')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_name')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -184,7 +181,7 @@ const SignupForm = () => {
                             name="vin"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_vin')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_vin')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -193,7 +190,7 @@ const SignupForm = () => {
                             name="address.street"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_street')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_street')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -202,7 +199,7 @@ const SignupForm = () => {
                             name="address.city"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_city')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_city')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -211,7 +208,7 @@ const SignupForm = () => {
                             name="address.zip"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} label={t('misc_postal_code')} fullWidth error={fieldState.invalid} helperText={fieldState.error?.message} />
+                                <TextField {...field} variant="outlined" label={t('misc_postal_code')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -222,23 +219,26 @@ const SignupForm = () => {
                             render={({ field, fieldState }) => (
                                 <TextField
                                     {...field}
+                                    variant="outlined"
                                     label={t('misc_password')}
                                     fullWidth
                                     type={showPassword ? 'text' : 'password'}
                                     error={fieldState.invalid}
-                                    helperText={fieldState.error?.message}
+                                    helperText={fieldState.invalid && t(fieldState.error.message)}
                                     slotProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }
                                     }}
                                 />
                             )}
@@ -251,11 +251,12 @@ const SignupForm = () => {
                             render={({ field, fieldState }) => (
                                 <TextField
                                     {...field}
+                                    variant="outlined"
                                     label={t('misc_confirm_password')}
                                     fullWidth
                                     type="password"
                                     error={fieldState.invalid}
-                                    helperText={fieldState.error?.message}
+                                    helperText={fieldState.invalid && t(fieldState.error.message)}
                                 />
                             )}
                         />

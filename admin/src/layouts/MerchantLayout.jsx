@@ -5,7 +5,7 @@ import LeftDrawerAdmin from '@/components/admin/LeftDrawerAdmin'
 import { Outlet } from 'react-router-dom'
 import RootLayout from './RootLayout'
 import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 export default function MerchantLayout() {
   const { t } = useTranslation()

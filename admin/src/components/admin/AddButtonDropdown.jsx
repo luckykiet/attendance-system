@@ -7,9 +7,8 @@ import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import PostAddIcon from '@mui/icons-material/PostAdd'
 import React from 'react'
-import { capitalizeFirstLetterOfString } from '@/utils'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 export default function AddButtonDropdown() {
   const { t } = useTranslation()
@@ -37,7 +36,7 @@ export default function AddButtonDropdown() {
         variant="contained"
         id="basic-button"
       >
-        {capitalizeFirstLetterOfString(t('misc_add'))}
+        {t('misc_add')}
       </Button>
 
       <Menu
@@ -61,7 +60,7 @@ export default function AddButtonDropdown() {
               <PostAddIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>
-              {capitalizeFirstLetterOfString(t('misc_new_form'))}
+              {t('misc_new_form')}
             </ListItemText>
           </MenuItem>
         </MenuList>

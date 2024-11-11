@@ -3,7 +3,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import LoginForm from './forms/LoginForm'
 
 export default function LoginPage() {

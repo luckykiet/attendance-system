@@ -4,7 +4,7 @@ import {
   Typography,
 } from '@mui/material'
 import { capitalizeFirstLetterOfString } from '@/utils'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import SignupForm from './forms/SignupForm'
 
 export default function RegisterPage() {
