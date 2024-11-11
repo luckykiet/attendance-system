@@ -9,5 +9,6 @@ export const CONFIG = {
   HOST: HOST,
   JWT_SECRET: '',
   RECAPTCHA_SITE_KEY: '',
+  GOOGLE_MAPS_API_KEY: '',
   WEB_PUBLIC_URL: HOSTNAME,
 }

@@ -26,8 +26,8 @@ import { CONFIG } from '@/configs';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OpeningTimeInputs from '../OpeningHoursInputs';
+import LocationPicker from '../LocationPicker';
 dayjs.extend(customParseFormat);
-
 
 const timeValidation = (open, close) => dayjs(close, TIME_FORMAT).isAfter(dayjs(open, TIME_FORMAT));
 
@@ -103,7 +103,6 @@ const registerSchema = z.object({
   }),
   isAvailable: z.boolean(),
 });
-
 
 export default function DialogRegister() {
   const { t } = useTranslation();
@@ -258,6 +257,9 @@ export default function DialogRegister() {
                   />
                 )}
               />
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
+              <LocationPicker />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 4 }}>
               <Controller
