@@ -11,7 +11,8 @@ const UserSchema = new Schema(
         password: { type: String, required: true },
         role: { type: String, default: 'Admin', },
         notes: { type: String, trim: true, default: '' },
-
+        
+        tokens: { type: [String], default: [] },
         retailId: { type: Schema.Types.ObjectId, required: true },
         isAvailable: { type: Boolean, required: true, default: true },
     },

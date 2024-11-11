@@ -4,10 +4,7 @@ import MerchantLayout from '@/layouts/MerchantLayout'
 import { lazy } from 'react'
 
 const HomePage = Loadable(lazy(() => import('@/pages/admin/HomePage')))
-
 const ErrorPage = Loadable(lazy(() => import('@/pages/ErrorPage')))
-
-// ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
   path: '/',

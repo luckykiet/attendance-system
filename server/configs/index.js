@@ -3,10 +3,12 @@ const subdomain = 'app.';
 const www = 'www.';
 const realm = 'me';
 const domain = `vcap.${realm}`;
+const admin_subdomain = 'admin';
 
 const CONFIG = {
     protocol: protocol,
     domain: domain,
+    admin_subdomain: admin_subdomain,
     realm: realm,
     host: protocol + subdomain + domain,
     www: protocol + www + domain,
@@ -15,19 +17,18 @@ const CONFIG = {
     appName: 'ATTENDANCE SYSTEM',
     jwtSecret: '',
     mail_transport: {
-        host: 'smtp.gmail.com',
+        service: 'gmail',
         port: 465,
         secure: true,
         auth: {
             type: 'OAuth2',
-            user: `no-reply@${domain}`,
-            // secrets
+            user: '',
             clientId: '',
             clientSecret: '',
-            refreshToken: '',
-        },
+            refreshToken: ''
+        }
     },
-    grecaptchaSecret: '***REMOVED***',
+    grecaptchaSecret: '',
     grecaptchaSiteKey: '',
 };
 

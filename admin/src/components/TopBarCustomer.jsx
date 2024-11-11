@@ -7,7 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { Link as RouterLink } from 'react-router-dom'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import { useSetDrawerOpen } from '@/stores/ZustandStores'
+import { useSetDrawerOpen } from '@/stores/root'
 
 export default function TopBarCustomer() {
   const setDrawerOpen = useSetDrawerOpen()

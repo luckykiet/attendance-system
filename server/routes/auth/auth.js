@@ -5,7 +5,7 @@ const { checkReCaptcha } = require('../../middlewares/recaptcha');
 const { validate } = require('../../middlewares/validation');
 const { body } = require('express-validator')
 const utils = require('../../utils/utils');
-const { signup, signout, login } = require('../../controllers/auth/signup');
+const { signup, signout, login, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword } = require('../../controllers/auth/auth');
 
 router.post('/isAuthenticated', (req, res, next) => {
     try {
@@ -98,5 +98,14 @@ router.post(
     signup
 );
 
+router.post('/forgot-password', sendRequestRenewPassword)
+
+router.put('/reset-password', passwordResetTokenVerifyMiddleware, updatePassword)
+
+router.get('/forgot-password', passwordResetTokenVerifyMiddleware,
+    (req, res) => {
+        res.status(200).json({ success: true, msg: { email: req.email } })
+    }
+)
 
 module.exports = router
