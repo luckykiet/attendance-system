@@ -22,11 +22,11 @@ const getRegister = async (req, res, next) => {
 
 const createRegister = async (req, res, next) => {
     try {
-        const newRegister = new Register(req.body);
+        const newRegister = new Register({ ...req.body, retailId: req.user.retailId });
         await newRegister.save();
         return res.status(201).json({ success: true, msg: newRegister });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_register_creation_failed', 400));
+        return next(error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : 'srv_register_creation_failed', 400));
     }
 };
 

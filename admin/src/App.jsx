@@ -1,9 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { CacheProvider } from '@emotion/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { I18nextProvider } from 'react-i18next';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Router from './routes';
 import { RouterProvider } from 'react-router-dom';
@@ -34,7 +32,6 @@ export default function App(props) {
 
   return (
     <CacheProvider value={emotionCache}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
         <ThemeProvider theme={theme}>
           <ThemeProviderStyles theme={theme}>
             <CssBaseline />
@@ -46,7 +43,6 @@ export default function App(props) {
             </QueryClientProvider>
           </ThemeProviderStyles>
         </ThemeProvider>
-      </LocalizationProvider>
     </CacheProvider>
   );
 }

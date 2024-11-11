@@ -5,6 +5,7 @@ const initialState = {
   language: localStorage.getItem('i18n-lang') || 'cs',
   drawerOpen: false,
   alertMessage: {},
+  retail: null,
 }
 const useStore = create((set) => ({
   ...initialState,
@@ -18,7 +19,13 @@ const useStore = create((set) => ({
     set({ language })
   },
   setDrawerOpen: (drawerOpen) => set({ drawerOpen }),
-  setAlertMessage: (alertMessage) => set({ alertMessage }),
+  setRetail: (retail) => set({ retail }),
+  setAlertMessage: (alertMessage) => {
+    if (typeof alertMessage === 'string') {
+      alertMessage = { message: alertMessage, severity: 'success' }
+    }
+    set({ alertMessage })
+  },
 }))
 
 export const useTheme = () => useStore((state) => state.theme)
@@ -32,3 +39,6 @@ export const useSetDrawerOpen = () => useStore((state) => state.setDrawerOpen)
 
 export const useAlertMessage = () => useStore((state) => state.alertMessage)
 export const useSetAlertMessage = () => useStore((state) => state.setAlertMessage)
+
+export const useRetail = () => useStore((state) => state.retail)
+export const useSetRetail = () => useStore((state) => state.setRetail)

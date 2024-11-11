@@ -11,7 +11,7 @@ export const fetchRegister = async (id) => {
 };
 
 export const updateRegister = async (data) => {
-    const { data: { success, msg } } = await axios.put(`/`, { data },
+    const { data: { success, msg } } = await axios.put(`/`, data,
         {
             headers: {
                 'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export const updateRegister = async (data) => {
 };
 
 export const createRegister = async (data) => {
-    const { data: { success, msg } } = await axios.post(`/`, { data },
+    const { data: { success, msg } } = await axios.post(`/`, data,
         {
             headers: {
                 'Content-Type': 'application/json',

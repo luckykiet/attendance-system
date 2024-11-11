@@ -1,3 +1,17 @@
+day_friday_name	Friday	Thứ sáu	Pátek
+day_friday_shortcut	Fri	T6	Pá
+day_monday_name	Monday	Thứ hai	Pondělí
+day_monday_shortcut	Mon	T2	Po
+day_saturday_name	Saturday	Thứ bảy	Sobota
+day_saturday_shortcut	Sat	T7	So
+day_sunday_name	Sunday	Chủ nhật	Neděle
+day_sunday_shortcut	Sun	CN	Ne
+day_thursday_name	Thursday	Thứ năm	Čtvrtek
+day_thursday_shortcut	Thu	T5	Čt
+day_tuesday_name	Tuesday	Thứ ba	Úterý
+day_tuesday_shortcut	Tue	T3	Út
+day_wednesday_name	Wednesday	Thứ tư	Středa
+day_wednesday_shortcut	Wed	T4	St
 days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
 mailisc_form_reference_added	Form reference added	đã tạo tham chiếu đơn	Reference formuláře přidána
 misc_about_us	About	Thông tin	O nás
@@ -16,6 +30,7 @@ misc_add_store	Add store	Thêm cửa hàng	Přidat provozovnu
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
 misc_all	all	tất cả	všechny
+misc_allowed_radius	allowed radius	bán kính cho phép	povolený poloměr
 misc_amount	Amount	Số lượng	Počet
 misc_amount_records	Records amount	Số lượng đơn	Počet záznamů
 misc_answer	answer	câu trả lời	odpověď
@@ -63,6 +78,7 @@ misc_clear_signature	clear signature	xoá chữ ký	smazat podpis
 misc_click_to_sign	Click to Sign	Bấm để ký	Klikněte pro podpis
 misc_close	Close	Đóng	Zavřít
 misc_commercial_activity	commercial activity	hoạt động thương mại	obchodní činnost
+misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
 misc_confirm	Confirm	Xác nhận	Potvrdit
 misc_confirm_date	confirmation date	ngày xác nhận	den potvrzení
@@ -74,6 +90,8 @@ misc_contract_option	contract option	tuỳ chọn hợp đồng	vybrat možnost 
 misc_copied	copied	đã sao chép	kopírováno
 misc_copy_from_merchant	Copy from basement	Sao chép từ công ty	Kopírovat z sídla
 misc_country	Country	Quốc gia	Stát
+misc_create	create	tạo	založit
+misc_create_company	create a company	tạo công ty	vytvořit společnost
 misc_created	created	tạo	založeno
 misc_created_bills	Created bills	Hoá đơn được tạo	Vytvořené faktury
 misc_created_date	Created day	Ngày tạo	Den založení
@@ -149,6 +167,7 @@ misc_imported	imported	đã import	importováno
 misc_imported_list	imported list	danh sách nhập	importovaný seznam
 misc_installation_fee	installation fees	phí lắp đặt	poplatky za instalace
 misc_installed	installed	đã lắp	instalováno
+misc_is_available	is available	có sẵn 	dostupný
 misc_issued	issued	cấp bởi	vystavil
 misc_issued_bills	issued bills	hoá đơn đã cấp	vystavené faktury
 misc_issuer	issuer	nhà phát hành	vystavitel
@@ -158,10 +177,12 @@ misc_key	key	chìa khoá	klíč
 misc_language	Language	Ngôn ngữ	Jazyk
 misc_last_name	last name	họ	příjmení
 misc_last_update	last update	cập nhập lần cuối	poslední aktualizace
+misc_latitude	latitude	vĩ độ 	zeměpisná šířka
 misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
 misc_login	Login	Đăng nhập	Přihlášení
+misc_longitude	longitude	kinh độ 	zeměpisná délka
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
 misc_merchant	merchant	nhà bán buôn	obchodník
@@ -216,6 +237,7 @@ misc_new_payment_terminal	New payment terminal	Máy trả thẻ mới	Nový plat
 misc_new_store	new store	cửa hàng mới	nová provozovna
 misc_no	no	không	ne
 misc_no_columns	no columns	không có cột	nejsou žádné sloupce
+misc_no_company	no company	không có công ty	není žádná společnost
 misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
@@ -462,6 +484,7 @@ srv_bill_sent	Bill sent	Đã gửi hóa đơn	Faktura odeslána
 srv_bill_updated	Bill updated	Hóa đơn đã cập nhật	Faktura aktualizována
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
+srv_close_time_before_open_time	close time is before open time	thời gian kết thúc trước thời gian bắt đầu	čas ukončení je před časem otevření
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
@@ -537,6 +560,7 @@ srv_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không h
 srv_invalid_tin	invalid TIN	IČO không hợp lệ	neplatné IČO
 srv_invalid_token	Invalid token or link expired	Mã token không hợp lệ hoặc đã hết hạn	Neplatný token nebo váš požadavek vypršel
 srv_invalid_url	Invalid URL	URL không hợp lệ	Nesprávný URL
+srv_invalid_username	invalid username	tên đăng nhập không đúng	nesprávné uživatelské jméno
 srv_invalid_vin	invalid VIN	DIČ không hợp lệ	neplatné DIČ
 srv_invalid_year	Invalid year	Năm không hợp lệ	Neplatný rok
 srv_is_confirmed	Is confirmed	Đã xác nhận	Je potvrzeno

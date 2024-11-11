@@ -3,7 +3,6 @@ import GuestGuard from '@/layouts/GuestGuard'
 import Loadable from '@/components/Loadable'
 import { lazy } from 'react'
 
-const Home = Loadable(lazy(() => import('@/pages/HomePage')))
 const AuthLogin = Loadable(lazy(() => import('@/pages/auth/LoginPage')))
 const AuthForgotPassword = Loadable(lazy(() => import('@/pages/auth/ForgottenPasswordPage')))
 const AuthRegister = Loadable(lazy(() => import('@/pages/auth/RegisterPage')))
@@ -23,10 +22,6 @@ const LoginRoutes = {
         </GuestGuard>
       ),
       children: [
-        {
-          path: '',
-          element: <Home />,
-        },
         {
           path: 'login',
           element: <AuthLogin />,

@@ -3,9 +3,8 @@ import { FormControl, FormHelperText, Grid, IconButton, Stack } from '@mui/mater
 import { useEffect, useState } from 'react'
 
 import { DatePicker } from '@mui/x-date-pickers'
-import { capitalizeFirstLetterOfString } from '@/utils'
 import dayjs from 'dayjs'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import PropTypes from 'prop-types';
@@ -72,15 +71,13 @@ export default function FromToDatePicker({
             <Controller
               name="start"
               rules={{
-                required: capitalizeFirstLetterOfString(t('misc_required')),
+                required: t('misc_required'),
                 validate: (value) => {
                   if (watch('end') && dayjs(value).isAfter(watch('end'))) {
-                    return capitalizeFirstLetterOfString(
-                      t('srv_start_can_not_older_than_end')
-                    )
+                    return t('srv_start_can_not_older_than_end')
                   }
                   return !dayjs(value).isValid()
-                    ? capitalizeFirstLetterOfString(t('srv_invalid_date'))
+                    ? t('srv_invalid_date')
                     : true
                 },
               }}
@@ -124,10 +121,10 @@ export default function FromToDatePicker({
             <Controller
               name="end"
               rules={{
-                required: capitalizeFirstLetterOfString(t('misc_required')),
+                required: t('misc_required'),
                 validate: (value) => {
                   return !dayjs(value).isValid()
-                    ? capitalizeFirstLetterOfString(t('srv_invalid_date'))
+                    ? t('srv_invalid_date')
                     : true
                 },
               }}

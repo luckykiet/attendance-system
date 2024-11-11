@@ -8,7 +8,7 @@ import LeftDrawer from '@/components/LeftDrawer'
 import { Paper } from '@mui/material'
 import TopBarCustomer from '@/components/TopBarCustomer'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 export default function ErrorPage() {
   const error = useRouteError()

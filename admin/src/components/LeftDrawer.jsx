@@ -16,7 +16,7 @@ import LoginIcon from '@mui/icons-material/Login'
 import Stack from '@mui/material/Stack'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 
 const DrawerItems = () => {
   const navigate = useNavigate()

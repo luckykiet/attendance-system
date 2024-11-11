@@ -18,7 +18,7 @@ import LoadingCircle from '@/components/LoadingCircle'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import { capitalizeFirstLetterOfString } from '@/utils'
 import { resetPassword, checkChangePasswordToken } from '@/api/auth'
-import { useTranslation } from 'react-i18next'
+import useTranslation from '@/hooks/useTranslation'
 import { CONFIG } from '@/configs'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -142,18 +142,20 @@ export default function RenewPasswordPage() {
                           required
                           autoComplete="off"
                           error={fieldState.invalid}
-                          helperText={fieldState.error?.message}
+                          helperText={fieldState.invalid && t(fieldState.error.message)}
                           slotProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LockRoundedIcon />
-                              </InputAdornment>
-                            ),
-                            endAdornment: field.value && !fieldState.invalid && (
-                              <InputAdornment position="end">
-                                <CheckRoundedIcon color="success" />
-                              </InputAdornment>
-                            ),
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <LockRoundedIcon />
+                                </InputAdornment>
+                              ),
+                              endAdornment: field.value && !fieldState.invalid && (
+                                <InputAdornment position="end">
+                                  <CheckRoundedIcon color="success" />
+                                </InputAdornment>
+                              ),
+                            }
                           }}
                         />
                       )}
@@ -173,18 +175,20 @@ export default function RenewPasswordPage() {
                           required
                           autoComplete="off"
                           error={fieldState.invalid}
-                          helperText={fieldState.error?.message}
+                          helperText={fieldState.invalid && t(fieldState.error.message)}
                           slotProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LockRoundedIcon />
-                              </InputAdornment>
-                            ),
-                            endAdornment: field.value && !fieldState.invalid && (
-                              <InputAdornment position="end">
-                                <CheckRoundedIcon color="success" />
-                              </InputAdornment>
-                            ),
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <LockRoundedIcon />
+                                </InputAdornment>
+                              ),
+                              endAdornment: field.value && !fieldState.invalid && (
+                                <InputAdornment position="end">
+                                  <CheckRoundedIcon color="success" />
+                                </InputAdornment>
+                              ),
+                            }
                           }}
                         />
                       )}
