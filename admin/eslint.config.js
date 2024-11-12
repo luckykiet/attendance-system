@@ -31,5 +31,8 @@ export default [
       'react/jsx-no-target-blank': 'off',
       'react-refresh/only-export-components': 'off',
     },
+    globals: {
+      google: 'readonly',
+    },
   },
 ];

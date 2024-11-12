@@ -33,7 +33,7 @@ export const getDefaultRegister = () => ({
   isAvailable: true,
 });
 
-export const DAYS_OF_WEEK = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+export const DAYS_OF_WEEK = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 export const daysOfWeeksTranslations = {
   sun: {
