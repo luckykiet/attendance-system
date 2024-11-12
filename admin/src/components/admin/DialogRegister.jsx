@@ -18,7 +18,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { useIsModalOpen, useRegisterId, useReset, useSetIsModalOpen } from '@/stores/register';
 import { getDefaultRegister, TIME_FORMAT } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createRegister, fetchRegister, updateRegister } from '@/api/register';
+import { createRegister, deleteRegister, fetchRegister, updateRegister } from '@/api/register';
 import FeedbackMessage from '../FeedbackMessage';
 import { useRetail, useSetAlertMessage } from '@/stores/root';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
@@ -27,6 +27,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OpeningTimeInputs from '../OpeningHoursInputs';
 import LocationPicker from '../LocationPicker';
+import { useSetConfirmBox } from '@/stores/confirm';
+
 dayjs.extend(customParseFormat);
 
 const timeValidation = (open, close) => dayjs(close, TIME_FORMAT).isAfter(dayjs(open, TIME_FORMAT));
@@ -115,6 +117,7 @@ export default function DialogRegister() {
   const setAlertMessage = useSetAlertMessage();
   const queryClient = useQueryClient();
   const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
+  const setConfirmBox = useSetConfirmBox();
 
   const mainForm = useForm({
     mode: 'onBlur',
@@ -152,6 +155,18 @@ export default function DialogRegister() {
     }
   })
 
+  const deleteRegisterMutation = useMutation({
+    mutationFn: () => deleteRegister(registerId),
+    onError: (error) => {
+      setPostMsg(new Error(error))
+    },
+    onSuccess: (data) => {
+      setAlertMessage({ message: data, severity: 'success' });
+      queryClient.invalidateQueries(['register']);
+      resetRegister();
+    }
+  })
+
   const onSubmit = async (data) => {
     try {
       const recaptchaToken = await executeRecaptcha(`${registerId ? 'update' : 'create'}register`);
@@ -161,7 +176,7 @@ export default function DialogRegister() {
       }
 
       if (registerId) {
-        updateRegisterMutation.mutate({ ...data, recaptcha: recaptchaToken || '' })
+        updateRegisterMutation.mutate({ ...data, _id: registerId, recaptcha: recaptchaToken || '' })
       } else {
         createNewRegisterMutation.mutate({ ...data, recaptcha: recaptchaToken || '' })
       }
@@ -177,7 +192,7 @@ export default function DialogRegister() {
     enabled: !!registerId,
   })
 
-  const { data: register } = registerQuery;
+  const { data: register, isLoading, isFetching } = registerQuery;
 
   useEffect(() => {
     if (register) {
@@ -186,12 +201,26 @@ export default function DialogRegister() {
       setValue('name', retail.name);
       setValue('address', retail.address);
     }
-  }, [retail, register, reset, setValue]);
+  }, [retail, register, reset, setValue, isModalOpen]);
+
+  const handleClose = () => {
+    reset(getDefaultRegister());
+    resetRegister();
+  };
+
+  const handleDelete = () => {
+    setConfirmBox({
+      mainText: `${t('misc_delete')} ${register.name}?`,
+      onConfirm: () => {
+        deleteRegisterMutation.mutate();
+      },
+    })
+  }
 
   return (
     <Dialog fullWidth maxWidth="md" open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <FormProvider {...mainForm}>
-        <DialogTitle>{t('misc_create_company')}</DialogTitle>
+        <DialogTitle>{register ? register.name : t('misc_create_company')}</DialogTitle>
         <DialogContent>
           <Grid2 container spacing={2} sx={{ marginY: 2 }}>
             <Grid2 size={{ xs: 12 }}>
@@ -268,6 +297,7 @@ export default function DialogRegister() {
                 render={({ field, fieldState }) => (
                   <TextField
                     {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     fullWidth
                     label={t('misc_latitude')}
                     variant="outlined"
@@ -285,6 +315,7 @@ export default function DialogRegister() {
                 render={({ field, fieldState }) => (
                   <TextField
                     {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     fullWidth
                     label={t('misc_longitude')}
                     variant="outlined"
@@ -302,8 +333,9 @@ export default function DialogRegister() {
                 render={({ field, fieldState }) => (
                   <TextField
                     {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     fullWidth
-                    label={t('misc_allowed_radius')}
+                    label={`${t('misc_allowed_radius')} (m)`}
                     variant="outlined"
                     type="number"
                     error={fieldState.invalid}
@@ -333,10 +365,13 @@ export default function DialogRegister() {
           </Grid2>
         </DialogContent>
         <DialogActions>
-          <LoadingButton variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
-            {t('misc_create')}
+          <LoadingButton loading={isLoading || isFetching || createNewRegisterMutation.isPending || updateRegisterMutation.isPending} disabled={deleteRegisterMutation.isPending} variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+            {register ? t('misc_save') : t('misc_create')}
           </LoadingButton>
-          <Button variant="contained" color="error" onClick={() => resetRegister()}>
+          {register && <LoadingButton loading={isLoading || isFetching || deleteRegisterMutation.isPending} disabled={createNewRegisterMutation.isPending || updateRegisterMutation.isPending} variant="contained" color="error" onClick={handleDelete}>
+            {t('misc_delete')}
+          </LoadingButton>}
+          <Button variant="outlined" color="error" onClick={handleClose}>
             {t('misc_cancel')}
           </Button>
         </DialogActions>

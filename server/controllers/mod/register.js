@@ -33,7 +33,7 @@ const createRegister = async (req, res, next) => {
 const updateRegister = async (req, res, next) => {
     try {
         const updatedRegister = await Register.findOneAndUpdate(
-            { _id: req.params.id, retailId: req.user.retailId },
+            { _id: req.body._id, retailId: req.user.retailId },
             { $set: req.body },
             { new: true, runValidators: true }
         );

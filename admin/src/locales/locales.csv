@@ -39,6 +39,8 @@ misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
 misc_at_row	at row	ở hàng	u řádku
+misc_attendances	attendance	điểm danh	docházka
+misc_attendances	attendances	điểm danh	docházky
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_average	average	trung bình	průměr
 misc_back	back	quay lại	zpět
@@ -77,6 +79,7 @@ misc_city	City	Thành phố	Město
 misc_clear_signature	clear signature	xoá chữ ký	smazat podpis
 misc_click_to_sign	Click to Sign	Bấm để ký	Klikněte pro podpis
 misc_close	Close	Đóng	Zavřít
+misc_closed	closed	đã đóng	zavřeno
 misc_commercial_activity	commercial activity	hoạt động thương mại	obchodní činnost
 misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
@@ -141,6 +144,7 @@ misc_faq_deleted	FAQ deleted	FAQ đã xoá	FAQ smazáno
 misc_faq_updated	FAQ updated	FAQ đã cập nhập	FAQ aktualizováno
 misc_faqs	frequently asked questions	các câu hỏi thường gặp	často kladené otázky
 misc_fetch_ares	Fetch from ARES	Tải từ ARES	Načíst z ARES
+misc_fetch_coordinates	fetch coordinates	lấy toạ độ	získat souřadnice
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filter	Filter	Lọc	Filtr
 misc_first_name	first name	tên	jméno
@@ -519,6 +523,7 @@ srv_form_reference_deleted	Form reference deleted	Tham chiếu đơn đã bị x
 srv_form_updated	Form updated	Đơn đã được cập nhập	Formulář aktualizován
 srv_forms_exist	Forms exist	Các biểu mẫu đã tồn tại	Formuláře existují
 srv_invalid_action_request	Invalid action request	Yêu cầu hành động không hợp lệ	Neplatná žádost o akci
+srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
 srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
