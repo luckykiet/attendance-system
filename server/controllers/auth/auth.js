@@ -94,7 +94,7 @@ const signup = async (req, res, next) => {
         } catch (rollbackError) {
             console.error('Rollback failed:', rollbackError);
         }
-        next(error instanceof HttpError ? error : new HttpError('srv_unexpected_error', 500));
+        return next(utils.parseExpressErrors(error, 'srv_signup_failed', 500));
     }
 };
 

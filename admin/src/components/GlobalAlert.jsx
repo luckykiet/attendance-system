@@ -22,7 +22,7 @@ export default function GlobalAlert() {
   }
 
   useEffect(() => {
-    setOpen(alertMessage.msg ? true : false)
+    setOpen(!!alertMessage.msg)
   }, [alertMessage.msg])
 
   return (
@@ -40,8 +40,8 @@ export default function GlobalAlert() {
         severity={alertMessage?.severity || 'info'}
         sx={{ width: '100%' }}
       >
-        <AlertTitle>{alertMessage.title || t('misc_notification')}</AlertTitle>
-        {alertMessage.msg}
+        <AlertTitle>{alertMessage.title ? t(alertMessage.title) : t('misc_notification')}</AlertTitle>
+        {t(alertMessage.msg)}
       </Alert>
     </Snackbar>
   )

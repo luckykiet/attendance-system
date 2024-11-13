@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { CONFIG } from '@/configs'
-import { capitalizeFirstLetterOfString, checkPrivileges } from '@/utils'
+import { checkPrivileges } from '@/utils'
 import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 import PropTypes from 'prop-types';
 import AddButtonDropdown from '@/components/admin/AddButtonDropdown'
@@ -27,7 +27,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { Home, Logout } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
-import PeopleIcon from '@mui/icons-material/People'
 import PersonIcon from '@mui/icons-material/Person'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -35,6 +34,7 @@ import useTranslation from '@/hooks/useTranslation'
 import { useAuthStore } from '@/stores/auth';
 import { logout } from '@/api/auth';
 import { useQueryClient } from '@tanstack/react-query';
+import BadgeIcon from '@mui/icons-material/Badge';
 
 const CustomListItem = ({ href, text, icon, reset }) => {
   const navigate = useNavigate()
@@ -101,11 +101,11 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
   const drawer = (
     <>
       <List disablePadding sx={{ display: 'block' }}>
-        {checkPrivileges('getUsers', user?.role) && (
+        {checkPrivileges('getEmployees', user?.role) && (
           <CustomListItem
-            href={'/users'}
-            text={t('misc_users')}
-            icon={<PeopleIcon />}
+            href={'/employees'}
+            text={t('misc_employees')}
+            icon={<BadgeIcon />}
           />
         )}
       </List>
@@ -113,18 +113,18 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
       <List disablePadding>
         <CustomListItem
           href={`/user/${user?.username}`}
-          text={user?.username|| t('misc_user')}
+          text={user?.username || t('misc_user')}
           icon={<PersonIcon />}
         />
         <ListItem>
           <ListItemButton onClick={handleLogout}>
-            <Tooltip title={capitalizeFirstLetterOfString(t('misc_to_logout'))}>
+            <Tooltip title={t('misc_to_logout')}>
               <ListItemIcon>
                 <Logout />
               </ListItemIcon>
             </Tooltip>
             <ListItemText
-              primary={capitalizeFirstLetterOfString(t('misc_to_logout'))}
+              primary={t('misc_to_logout')}
             />
           </ListItemButton>
         </ListItem>
@@ -178,12 +178,12 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
                 onClick={() => navigate(-1)}
                 variant="contained"
               >
-                {capitalizeFirstLetterOfString(t('misc_back'))}
+                {t('misc_back')}
               </Button>
             ))}
         </Box>
         <Stack spacing={1} direction={'row'}>
-          <Tooltip title={capitalizeFirstLetterOfString(t('misc_home_page'))}>
+          <Tooltip title={t('misc_home_page')}>
             <IconButton
               onClick={() => {
                 handleDrawerClose()
@@ -196,23 +196,22 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
               <Home />
             </IconButton>
           </Tooltip>
-          {checkPrivileges('getUsers', user?.role) && (
-            <Tooltip title={capitalizeFirstLetterOfString(t('misc_users'))}>
+          {checkPrivileges('getEmployees', user?.role) && (
+            <Tooltip title={t('misc_employees')}>
               <IconButton
                 onClick={() => {
                   handleDrawerClose()
-                  navigate('/users')
+                  navigate('/employees')
                 }}
                 size="large"
                 edge="end"
                 color="inherit"
                 sx={{ display: { xs: 'none', sm: 'flex' } }}
               >
-                <PeopleIcon />
+                <BadgeIcon />
               </IconButton>
             </Tooltip>
           )}
-
           <Divider
             orientation="vertical"
             flexItem
@@ -233,7 +232,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             </IconButton>
           </Tooltip>
           <LanguageSwitcher withText={false} />
-          <Tooltip title={capitalizeFirstLetterOfString(t('misc_to_logout'))}>
+          <Tooltip title={t('misc_to_logout')}>
             <IconButton
               onClick={handleLogout}
               size="large"

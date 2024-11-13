@@ -5,15 +5,15 @@ const dayjs = require('dayjs');
 const EmployeeSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
-        email: { type: String, trim: true },
+        email: { type: String, trim: true, required: true },
         phone: { type: String, trim: true },
 
-        registerIds: [{ type: Schema.Types.ObjectId, default: [], required: true }],
+        retailId: { type: Schema.Types.ObjectId, required: true },
 
-        publicKey: { type: String, required: true },
+        publicKey: { type: String },
 
-        position: { type: String, trim: true },
-        isActive: { type: Boolean, default: true }
+        deviceId: { type: String, trim: true },
+        isAvailable: { type: Boolean, default: true }
     },
     {
         timestamps: true,
@@ -27,6 +27,11 @@ EmployeeSchema.pre(
         next();
     }
 );
+
+EmployeeSchema.index({ email: 1, retailId: 1, }, { unique: true });
+
+EmployeeSchema.index({ name: 1, }, { name: 'name_index' });
+EmployeeSchema.index({ deviceId: 1, }, { deviceId: 'device_id_index' });
 
 EmployeeSchema.methods.verifyPublicKey = function (providedKey) {
     return this.publicKey === providedKey;

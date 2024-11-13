@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { useIsModalOpen, useRegisterId, useReset, useSetIsModalOpen } from '@/stores/register';
-import { getDefaultRegister, TIME_FORMAT } from '@/utils';
+import { getDefaultRegister, TIME_FORMAT, timeStartEndValidation } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createRegister, deleteRegister, fetchRegister, updateRegister } from '@/api/register';
 import FeedbackMessage from '../FeedbackMessage';
@@ -25,13 +25,20 @@ import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { CONFIG } from '@/configs';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import OpeningTimeInputs from '../OpeningHoursInputs';
+import OpeningTimeInputs from '../WorkingHoursInputs';
 import LocationPicker from '../LocationPicker';
 import { useSetConfirmBox } from '@/stores/confirm';
 
 dayjs.extend(customParseFormat);
 
-const timeValidation = (open, close) => dayjs(close, TIME_FORMAT).isAfter(dayjs(open, TIME_FORMAT));
+const workingHourSchema = z.object({
+  start: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
+  end: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
+  isAvailable: z.boolean(),
+}).refine(({ start, end }) => timeStartEndValidation(start, end), {
+  message: 'srv_close_time_before_open_time',
+  path: ['close'],
+})
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'misc_required' }).max(255),
@@ -45,63 +52,14 @@ const registerSchema = z.object({
     longitude: z.number().min(-180, { message: 'srv_invalid_longitude' }).max(180),
     allowedRadius: z.number().positive().max(5000),
   }),
-  openingHours: z.object({
-    mon: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    tue: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    wed: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    thu: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    fri: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    sat: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
-    sun: z.object({
-      open: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      close: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-      isOpen: z.boolean(),
-    }).refine(({ open, close }) => timeValidation(open, close), {
-      message: 'srv_close_time_before_open_time',
-      path: ['close'],
-    }),
+  workingHours: z.object({
+    mon: workingHourSchema,
+    tue: workingHourSchema,
+    wed: workingHourSchema,
+    thu: workingHourSchema,
+    fri: workingHourSchema,
+    sat: workingHourSchema,
+    sun: workingHourSchema,
   }),
   isAvailable: z.boolean(),
 });
@@ -120,7 +78,7 @@ export default function DialogRegister() {
   const setConfirmBox = useSetConfirmBox();
 
   const mainForm = useForm({
-    mode: 'onBlur',
+    mode: 'all',
     resolver: zodResolver(registerSchema),
     defaultValues: getDefaultRegister(),
   });
@@ -137,8 +95,8 @@ export default function DialogRegister() {
     onError: (error) => {
       setPostMsg(new Error(error))
     },
-    onSuccess: (data) => {
-      setAlertMessage({ message: data, severity: 'success' });
+    onSuccess: () => {
+      setAlertMessage({ msg: 'srv_created', severity: 'success' });
       queryClient.invalidateQueries(['register']);
       resetRegister();
     }
@@ -149,8 +107,8 @@ export default function DialogRegister() {
     onError: (error) => {
       setPostMsg(new Error(error))
     },
-    onSuccess: (data) => {
-      setAlertMessage({ message: data, severity: 'success' });
+    onSuccess: () => {
+      setAlertMessage({ msg: 'srv_updated', severity: 'success' });
       queryClient.invalidateQueries(['register']);
     }
   })
@@ -161,7 +119,7 @@ export default function DialogRegister() {
       setPostMsg(new Error(error))
     },
     onSuccess: (data) => {
-      setAlertMessage({ message: data, severity: 'success' });
+      setAlertMessage({ msg: data, severity: 'success' });
       queryClient.invalidateQueries(['register']);
       resetRegister();
     }
@@ -354,7 +312,7 @@ export default function DialogRegister() {
                 render={({ field }) => (
                   <FormControlLabel
                     control={<Switch {...field} checked={field.value} />}
-                    label={t('msg_is_active')}
+                    label={t('misc_available')}
                   />
                 )}
               />

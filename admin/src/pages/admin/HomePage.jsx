@@ -16,23 +16,24 @@ import { DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
 
 dayjs.extend(customParseFormat);
 
-const getTodayOpeningHours = (openingHours) => {
+const getTodayWorkingHours = (workingHours) => {
   const today = dayjs().day();
-  const hours = openingHours[DAYS_OF_WEEK[today]];
+  const todayKey = DAYS_OF_WEEK[today];
+  const hours = workingHours[todayKey];
 
-  if (!hours?.isOpen) {
+  if (!hours?.isAvailable) {
     return { status: 'closed', message: 'misc_closed' };
   }
 
   const currentTime = dayjs();
-  const openTime = dayjs(hours.open, TIME_FORMAT);
-  const closeTime = dayjs(hours.close, TIME_FORMAT);
+  const openTime = dayjs(hours.start, TIME_FORMAT);
+  const closeTime = dayjs(hours.end, TIME_FORMAT);
 
   if (currentTime.isBetween(openTime, closeTime)) {
-    return { status: 'open', message: `${hours.open} - ${hours.close}` };
+    return { status: 'open', message: `${hours.start} - ${hours.end}` };
   }
 
-  return { status: 'out_of_time', message: `${hours.open} - ${hours.close}` };
+  return { status: 'out_of_time', message: `${hours.start} - ${hours.end}` };
 };
 
 export default function HomePage() {
@@ -106,7 +107,7 @@ export default function HomePage() {
               </Typography>
               <Grid2 container spacing={2}>
                 {registers.map((register) => {
-                  const { status, message } = getTodayOpeningHours(register.openingHours);
+                  const { status, message } = getTodayWorkingHours(register.workingHours);
                   return (
                     <Grid2 size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                       <Card variant="outlined" sx={{ position: 'relative' }}>
@@ -133,7 +134,7 @@ export default function HomePage() {
                               color: status === 'open' ? 'success.main' : 'error.main',
                             }}
                           >
-                            {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_open') : t('misc_closed')}: ${t(message)}`}
+                            {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}: ${t(message)}`}
                           </Typography>
                         </CardContent>
                         <IconButton

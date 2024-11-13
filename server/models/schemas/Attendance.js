@@ -5,10 +5,8 @@ const AttendanceSchema = new Schema(
     {
         employeeId: { type: Schema.Types.ObjectId, required: true },
         registerId: { type: Schema.Types.ObjectId, required: true },
-        checkInTime: { type: Date, required: true },
-        checkOutTime: { type: Date },
-
-        // GPS data for location verification
+        checkInTime: { type: String, required: true },
+        checkOutTime: { type: String },
         checkInLocation: {
             latitude: { type: Number, required: true },
             longitude: { type: Number, required: true }

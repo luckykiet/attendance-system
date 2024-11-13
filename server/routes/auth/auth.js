@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router()
-const HttpError = require('../../constants/http-error');
 const { checkReCaptcha } = require('../../middlewares/recaptcha');
 const { validate } = require('../../middlewares/validation');
 const { body } = require('express-validator')
@@ -21,7 +20,7 @@ router.post('/isAuthenticated', (req, res, next) => {
             retailId: req.user.registerId,
         });
     } catch (error) {
-        return next(error instanceof Error ? error.message : new HttpError('srv_unexpected_error', 500))
+        return next(utils.parseExpressErrors(error, 'srv_unexpected_error', 500));
     }
 });
 

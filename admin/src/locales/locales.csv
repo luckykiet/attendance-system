@@ -18,6 +18,7 @@ misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
 misc_account_number	Account number	Số tài khoản	Číslo účtu
 misc_active	active	trực tiếp	aktivní
+misc_actual_workplace	actual workplace	nơi việc hiện tại	aktuální pracoviště
 misc_add	Add	Tạo	Přidat
 misc_add_company	add company	thêm công ty mới	přidat novou společnost
 misc_add_faq	Add faq	Thêm FAQ	Přidat FAQ
@@ -42,6 +43,7 @@ misc_at_row	at row	ở hàng	u řádku
 misc_attendances	attendance	điểm danh	docházka
 misc_attendances	attendances	điểm danh	docházky
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
+misc_available	is available	có sẵn 	dostupný
 misc_average	average	trung bình	průměr
 misc_back	back	quay lại	zpět
 misc_back_side	back side	phía sau	zadní strana
@@ -95,6 +97,7 @@ misc_copy_from_merchant	Copy from basement	Sao chép từ công ty	Kopírovat z 
 misc_country	Country	Quốc gia	Stát
 misc_create	create	tạo	založit
 misc_create_company	create a company	tạo công ty	vytvořit společnost
+misc_create_employee	create a employee	tạo nhân viên mới	vytvořit nový zaměstnanec
 misc_created	created	tạo	založeno
 misc_created_bills	Created bills	Hoá đơn được tạo	Vytvořené faktury
 misc_created_date	Created day	Ngày tạo	Den založení
@@ -128,6 +131,8 @@ misc_edit_form	Edit form	Sửa đơn	Úprava formuláře
 misc_edit_user	Edit user	Sửa nhân viên	Upravit uživatele
 misc_email	E-mail	E-mail	E-mail
 misc_emails	E-mails	E-mail	E-maily
+misc_employee	employee	nhân viên	zaměstnanec
+misc_employees	employees	nhân viên	zaměstnanci
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
 misc_examples	examples	ví dụ	příklady
@@ -139,6 +144,7 @@ misc_extend	extend	gia hạn	prodloužit
 misc_extend_pos	extend POS	mở rộng POS	rozšířit POS
 misc_extend_store	extend store	mở rộng cửa hàng	rozšířit provozovnu
 misc_extra	extra	thêm	navíc
+misc_false	false	không đúng	špatně
 misc_faq_added	FAQ added	FAQ đã tạo	FAQ přidáno
 misc_faq_deleted	FAQ deleted	FAQ đã xoá	FAQ smazáno
 misc_faq_updated	FAQ updated	FAQ đã cập nhập	FAQ aktualizováno
@@ -163,6 +169,7 @@ misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
 misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
+misc_has_registered_device	has registered device	đã đăng ký thiết bị 	má registrované zařízení
 misc_hidden	hidden	ẩn	skryto
 misc_id_document	identity document	thẻ căn cước	osobní doklad
 misc_import	import	import	import
@@ -233,6 +240,7 @@ misc_new	new	mới	nový
 misc_new_bill	new bill	hoá đơn mới	nová faktura
 misc_new_company	new company	công ty mới	Nová společnost
 misc_new_contract	new contract	hợp đồng mới	nová smlouva
+misc_new_employee	new employee	nhân viên mới	nový zaměstnanec
 misc_new_faq	New FAQ	FAQ mới	Nové FAQ
 misc_new_form	new form	đơn mới	nový formulář
 misc_new_merchant	New Merchant	Nhà bán buôn mới	Nový obchodník
@@ -253,6 +261,7 @@ misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
 misc_not_included	not included	không được bao gồm	nezahrnuto
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
+misc_opening	opening	đang mở	otevřeno
 misc_operations	Operations	Tác vụ	Operace
 misc_others	others	khác	jiné
 misc_partner	partner	đối tác	partner
@@ -405,6 +414,7 @@ misc_total_price	total price	tiền tổng	celková částka
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce
 misc_transfer_fee	transfer fees	phí chuyển khoản	poplatky za převod
+misc_true	true	đúng	správně
 misc_turnover	turn over	doanh thu	obrat
 misc_type	Type	Loại	Typ
 misc_unavailable	unavailable	không có sẵn 	nedostupný
@@ -430,6 +440,10 @@ misc_users	Users	Nhân viên	Uživatele
 misc_valid	valid	hợp lệ 	validní
 misc_vin	VIN	DIČ	DIČ
 misc_website	website	trang web	webová stránka
+misc_working_at	working at	làm việc tại	pracuje v
+misc_working_hours	working hours	thời gian làm việc	pracovní doba
+misc_workplace	workplace	nơi làm việc	pracoviště
+misc_workplaces	workplaces	nơi làm việc	pracoviště
 misc_year	year	năm	rok
 misc_yes	yes	có	ano
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
@@ -445,7 +459,6 @@ msg_finished	Finished	Đã hoàn thành	Dokončeno
 msg_from	From	Từ	Od
 msg_have_forgotten_password	Don't remember password	Bạn đã quên mật khẩu	Zapoměl(a) jste heslo
 msg_ico_registered	IČO is registered	IČO đã được đăng ký	IČO je již registrováno
-msg_is_active	Active	Kích hoạt	Aktivní
 msg_is_deactive	Deactive	Không kích hoạt	Neaktivní
 msg_make_sure_image_not_blur_and_centered	make sure the photo is centered and not blurry	hãy chắc chắn là ảnh nằm ngay giữa và không mờ	ujistěte se, že fotka je vycentrovaná a není rozmazaná 
 msg_must_add_email	you must add email	bạn phải nhập email	musíte zadat email
@@ -490,10 +503,12 @@ srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
 srv_close_time_before_open_time	close time is before open time	thời gian kết thúc trước thời gian bắt đầu	čas ukončení je před časem otevření
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
+srv_created	created	đã được tạo	vytvořeno
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
 srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
+srv_employee_not_found	employee not found	không tìm thấy nhân viên	zaměstnanec nenalezen
 srv_empty_name	Empty name	Tên trống	Prázdné jméno
 srv_empty_purchaser	Empty purchaser	Người mua trống	Prázdný kupující
 srv_empty_supplier	Empty supplier	Nhà cung cấp trống	Prázdný dodavatel
@@ -634,6 +649,7 @@ srv_transactions_empty	transactions are empty	giao dịch trống	transakce jsou
 srv_transactions_imported	transactions imported	đã nhập giao dịch	transakce nahrány
 srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
 srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
+srv_updated	updated	đã được cập nhập	aktualizováno
 srv_user_has_subordinates	User has subordinates	Người dùng có cấp dưới	Uživatel má podřízené
 srv_user_not_exists	user not exists	người dùng không tồn tại	uživatel neexistuje
 srv_user_updated	user updated	người dùng được cập nhập	uživatel aktualizován

@@ -5,15 +5,21 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
-import PostAddIcon from '@mui/icons-material/PostAdd'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import useTranslation from '@/hooks/useTranslation'
+import { useSetIsModalOpen as useSetIsRegisterModalOpen, useSetRegisterId } from '@/stores/register'
+import { useAuthStore } from '@/stores/auth'
+import { checkPrivileges } from '@/utils'
+import { AddBusiness } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 
 export default function AddButtonDropdown() {
   const { t } = useTranslation()
+  const { user } = useAuthStore()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
+  const setIsRegisterModalOpen = useSetIsRegisterModalOpen()
+  const setRegisterId = useSetRegisterId()
   const navigate = useNavigate()
 
   const handleClick = (event) => {
@@ -22,6 +28,13 @@ export default function AddButtonDropdown() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+  const handleAddRegister = () => {
+    navigate('/')
+    setRegisterId('')
+    setIsRegisterModalOpen(true)
+    handleClose()
+  }
+  
   return (
     <>
       <Button
@@ -50,19 +63,16 @@ export default function AddButtonDropdown() {
         sx={{ mt: 0.5, minWidth: 320, maxWidth: '100%', height: 'auto' }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              navigate('/company/add')
-              handleClose()
-            }}
+          {checkPrivileges('addRegister', user?.role) && <MenuItem
+            onClick={handleAddRegister}
           >
             <ListItemIcon>
-              <PostAddIcon fontSize="small" />
+              <AddBusiness />
             </ListItemIcon>
             <ListItemText>
-              {t('misc_new_form')}
+              {t('misc_create_company')}
             </ListItemText>
-          </MenuItem>
+          </MenuItem>}
         </MenuList>
       </Menu>
     </>

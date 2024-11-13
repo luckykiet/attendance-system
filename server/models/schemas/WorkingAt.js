@@ -1,21 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const AddressSchema = require('./Address');
-const WorkingHourSchema = require('./WorkingHour');
 const dayjs = require('dayjs');
+const WorkingHourSchema = require('./WorkingHour');
 
-const RegisterSchema = new Schema(
+const WorkingAtSchema = new Schema(
     {
-        retailId: { type: Schema.Types.ObjectId, required: true },
-        name: { type: String, required: true, trim: true },
-        address: { type: AddressSchema, required: true },
-
-        location: {
-            latitude: { type: Number, required: true },
-            longitude: { type: Number, required: true },
-            allowedRadius: { type: Number, required: true, default: 100 } // Radius in meters for allowed check-ins
-        },
-
+        employeeId: { type: Schema.Types.ObjectId, required: true },
+        registerId: { type: Schema.Types.ObjectId, required: true },
         workingHours: {
             mon: { type: WorkingHourSchema, required: true },
             tue: { type: WorkingHourSchema, required: true },
@@ -25,16 +16,18 @@ const RegisterSchema = new Schema(
             sat: { type: WorkingHourSchema, required: true },
             sun: { type: WorkingHourSchema, required: true },
         },
-
-        isAvailable: { type: Boolean, required: true, default: true },
+        position: { type: String, trim: true },
+        userId: { type: Schema.Types.ObjectId, required: true },
+        isAvailable: { type: Boolean, default: true }
     },
     {
-        strict: true,
         timestamps: true,
     }
 );
 
-RegisterSchema.pre(
+WorkingAtSchema.index({ employeeId: 1, registerId: 1 }, { unique: true });
+
+WorkingAtSchema.pre(
     ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
     function (next) {
         this.updatedAt = dayjs().toDate();
@@ -42,4 +35,4 @@ RegisterSchema.pre(
     }
 );
 
-module.exports = RegisterSchema;
+module.exports = WorkingAtSchema;

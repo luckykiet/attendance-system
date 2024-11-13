@@ -1,5 +1,6 @@
 const HttpError = require('../../constants/http-error');
 const Register = require('../../models/Register');
+const utils = require('../../utils');
 
 const getRegisterById = async (id, retailId) => {
     if (!id) {
@@ -16,7 +17,7 @@ const getRegister = async (req, res, next) => {
         }
         return res.status(200).json({ success: true, msg: register });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_register_not_found', 404));
+        return next(utils.parseExpressErrors(error, 'srv_register_not_found', 404));
     }
 };
 
@@ -26,7 +27,7 @@ const createRegister = async (req, res, next) => {
         await newRegister.save();
         return res.status(201).json({ success: true, msg: newRegister });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : 'srv_register_creation_failed', 400));
+        return next(utils.parseExpressErrors(error, 'srv_register_creation_failed', 400));
     }
 };
 
@@ -42,7 +43,7 @@ const updateRegister = async (req, res, next) => {
         }
         return res.status(200).json({ success: true, msg: updatedRegister });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_register_update_failed', 400));
+        return next(utils.parseExpressErrors(error, 'srv_register_update_failed', 400));
     }
 };
 
@@ -54,7 +55,7 @@ const deleteRegister = async (req, res, next) => {
         }
         return res.status(200).json({ success: true, msg: 'srv_register_deleted' });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_register_deletion_failed', 400));
+        return next(utils.parseExpressErrors(error, 'srv_register_deletion_failed', 400));
     }
 };
 

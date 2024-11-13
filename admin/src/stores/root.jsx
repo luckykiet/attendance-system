@@ -22,7 +22,7 @@ const useStore = create((set) => ({
   setRetail: (retail) => set({ retail }),
   setAlertMessage: (alertMessage) => {
     if (typeof alertMessage === 'string') {
-      alertMessage = { message: alertMessage, severity: 'success' }
+      alertMessage = { msg: alertMessage, severity: 'success' }
     }
     set({ alertMessage })
   },
