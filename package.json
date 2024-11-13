@@ -9,16 +9,16 @@
   "scripts": {
     "dev": "yarn workspaces foreach -Api --topological-dev run dev",
     "devhttps": "yarn workspaces foreach -Api --topological-dev run devhttps",
-    "install-all": "yarn install && yarn workspace admin install && yarn workspace server install",
+    "install-all": "yarn install && yarn workspace admin install && yarn workspace server install && yarn workspace mobile install",
     "start": "yarn workspace server start",
     "starthttps": "yarn workspace server starthttps",
-    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd .. && yarn install-all",
+    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install"
   },
   "packageManager": "yarn@4.5.1",
   "license": "MIT",
   "devDependencies": {
-    "npm-check-updates": "^17.1.10"
+    "npm-check-updates": "^17.1.11"
   },
   "workspaces": [
     "attendance-system",
