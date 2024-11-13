@@ -4,6 +4,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import isBetween from 'dayjs/plugin/isBetween'
+import { TIME_FORMAT } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
@@ -244,3 +245,5 @@ export const mergeSameKeys = (obj1, obj2) => {
 export const checkPrivileges = (privilegesKey, role) => {
   return role && PRIVILEGES[privilegesKey] && PRIVILEGES[privilegesKey].includes(role)
 }
+
+export const timeStartEndValidation = (start, end) => dayjs(end, TIME_FORMAT).isAfter(dayjs(start, TIME_FORMAT));

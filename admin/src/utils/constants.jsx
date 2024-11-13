@@ -10,10 +10,10 @@ export const getDefaultLocation = () => ({
   allowedRadius: 100,
 });
 
-export const getDefaultOpeningHour = () => ({
-  open: '08:00',
-  close: '17:00',
-  isOpen: true,
+export const getDefaultWorkingHour = () => ({
+  start: '08:00',
+  end: '17:00',
+  isAvailable: true,
 });
 
 export const getDefaultRegister = () => ({
@@ -21,17 +21,43 @@ export const getDefaultRegister = () => ({
   name: '',
   address: getDefaultAddress(),
   location: getDefaultLocation(),
-  openingHours: {
-    mon: getDefaultOpeningHour(),
-    tue: getDefaultOpeningHour(),
-    wed: getDefaultOpeningHour(),
-    thu: getDefaultOpeningHour(),
-    fri: getDefaultOpeningHour(),
-    sat: getDefaultOpeningHour(),
-    sun: getDefaultOpeningHour(),
+  workingHours: {
+    mon: getDefaultWorkingHour(),
+    tue: getDefaultWorkingHour(),
+    wed: getDefaultWorkingHour(),
+    thu: getDefaultWorkingHour(),
+    fri: getDefaultWorkingHour(),
+    sat: getDefaultWorkingHour(),
+    sun: getDefaultWorkingHour(),
   },
   isAvailable: true,
 });
+
+export const getDefaultEmployee = () => ({
+  name: '',
+  email: '',
+  phone: '',
+  position: '',
+  deviceId: '',
+  isAvailable: true,
+});
+
+export const getDefaultWorkingAt = () => ({
+  registerId: '',
+  position: '',
+  workingHours: {
+    mon: getDefaultWorkingHour(),
+    tue: getDefaultWorkingHour(),
+    wed: getDefaultWorkingHour(),
+    thu: getDefaultWorkingHour(),
+    fri: getDefaultWorkingHour(),
+    sat: getDefaultWorkingHour(),
+    sun: getDefaultWorkingHour(),
+  },
+});
+
+
+export const BOOLEAN_SELECT_OPTIONS = ['all', 'true', 'false'];
 
 export const DAYS_OF_WEEK = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
@@ -64,6 +90,10 @@ export const daysOfWeeksTranslations = {
     shortcut: 'day_saturday_shortcut',
     name: 'day_saturday_name',
   },
+}
+
+export const REGEX = {
+  phone: /^(\+420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/
 }
 
 export const TIME_FORMAT = 'HH:mm';

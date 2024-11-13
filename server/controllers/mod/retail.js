@@ -1,5 +1,6 @@
 const HttpError = require('../../constants/http-error');
 const Retail = require('../../models/Retail');
+const utils = require('../../utils');
 
 const getRetailById = async (id) => {
     if (!id) {
@@ -16,7 +17,7 @@ const getRetail = async (req, res, next) => {
         }
         return res.status(200).json({ success: true, msg: retail });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_retail_not_found', 404));
+        return next(utils.parseExpressErrors(error, 'srv_retail_not_found', 404));
     }
 };
 
@@ -32,7 +33,7 @@ const updateRetail = async (req, res, next) => {
         }
         return res.status(200).json({ success: true, msg: updatedRetail });
     } catch (error) {
-        return next(error instanceof HttpError ? error : new HttpError('srv_retail_update_failed', 400));
+        return next(utils.parseExpressErrors(error, 'srv_retail_update_failed', 400));
     }
 };
 

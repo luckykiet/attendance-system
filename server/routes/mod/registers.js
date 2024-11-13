@@ -3,6 +3,6 @@ const { getRegisters } = require('../../controllers/mod/registers');
 
 const router = express.Router();
 
-router.get('/', getRegisters);
+router.post('/', getRegisters);
 
 module.exports = router;

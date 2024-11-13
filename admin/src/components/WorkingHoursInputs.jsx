@@ -7,40 +7,38 @@ import {
     Switch,
     Typography,
 } from '@mui/material';
-import { capitalizeFirstLetterOfString, daysOfWeeksTranslations, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, TIME_FORMAT } from '@/utils';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import _ from 'lodash';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
+import useTranslation from '@/hooks/useTranslation';
 
 dayjs.extend(customParseFormat);
 
-export default function OpeningHoursInputs() {
+export default function WorkingHoursInputs() {
     const { watch, control, handleSubmit } = useFormContext();
     const { t } = useTranslation();
 
     return (
-        !_.isEmpty(watch('openingHours')) &&
-        Object.keys(watch('openingHours')).map((key) => (
+        !_.isEmpty(watch('workingHours')) &&
+        Object.keys(watch('workingHours')).map((key) => (
             <Grid2 size={{ xs: 12 }} key={key}>
                 <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
                     <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h5">
-                            {capitalizeFirstLetterOfString(
-                                t(daysOfWeeksTranslations[key].name)
-                            )}
+                        <Typography variant="h6">
+                            {t(daysOfWeeksTranslations[key].name)}
                         </Typography>
                         <Controller
-                            name={`openingHours[${key}].isOpen`}
+                            name={`workingHours[${key}].isAvailable`}
                             control={control}
                             render={({ field: { ref, ...field } }) => (
                                 <FormGroup>
                                     <FormControlLabel
                                         inputRef={ref}
-                                        label={t('msg_is_active')}
+                                        label={t('misc_available')}
                                         labelPlacement="start"
                                         control={
                                             <Switch
@@ -49,7 +47,7 @@ export default function OpeningHoursInputs() {
                                                 {...field}
                                                 color="success"
                                                 onBlur={handleSubmit}
-                                                id={`switch-openingHours[${key}]-isOpen`}
+                                                id={`switch-workingHours[${key}]-isAvailable`}
                                             />
                                         }
                                     />
@@ -59,7 +57,7 @@ export default function OpeningHoursInputs() {
                     </Grid2>
                     <Grid2 size={{ xs: 6 }}>
                         <Controller
-                            name={`openingHours[${key}].open`}
+                            name={`workingHours[${key}].start`}
                             control={control}
                             render={({ field, fieldState }) => (
                                 <FormControl fullWidth>
@@ -72,12 +70,12 @@ export default function OpeningHoursInputs() {
                                             }}
                                             label={t('msg_from')}
                                             maxTime={dayjs(
-                                                watch(`openingHours[${key}].close`),
+                                                watch(`workingHours[${key}].end`),
                                                 TIME_FORMAT
                                             )}
                                             id={`picker-${key}-start`}
                                             format={TIME_FORMAT}
-                                            disabled={!watch(`openingHours[${key}].isOpen`)}
+                                            disabled={!watch(`workingHours[${key}].isAvailable`)}
                                             views={['hours', 'minutes']}
                                             slotProps={{
                                                 textField: {
@@ -95,7 +93,7 @@ export default function OpeningHoursInputs() {
                     </Grid2>
                     <Grid2 size={{ xs: 6 }}>
                         <Controller
-                            name={`openingHours[${key}].close`}
+                            name={`workingHours[${key}].end`}
                             control={control}
                             render={({ field, fieldState }) => (
                                 <FormControl fullWidth>
@@ -108,12 +106,12 @@ export default function OpeningHoursInputs() {
                                             }}
                                             label={t('msg_to')}
                                             minTime={dayjs(
-                                                watch(`openingHours[${key}].open`),
+                                                watch(`workingHours[${key}].start`),
                                                 TIME_FORMAT
                                             )}
                                             id={`picker-${key}-end`}
                                             format={TIME_FORMAT}
-                                            disabled={!watch(`openingHours[${key}].isOpen`)}
+                                            disabled={!watch(`workingHours[${key}].isAvailable`)}
                                             views={['hours', 'minutes']}
                                             slotProps={{
                                                 textField: {

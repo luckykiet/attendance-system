@@ -11,4 +11,8 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/retail', require('./retail'));
     app.use(apiPrefix + '/register', require('./register'));
     app.use(apiPrefix + '/registers', require('./registers'));
+    app.use(apiPrefix + '/employee', require('./employee'));
+    app.use(apiPrefix + '/employees', require('./employees'));
+    app.use(apiPrefix + '/working-at', require('./working-at'));
+    app.use(apiPrefix + '/working-ats', require('./working-ats'));
 };

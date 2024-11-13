@@ -13,13 +13,19 @@ import { CONFIG } from '@/configs';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import { LoadingButton } from '@mui/lab';
-import { capitalizeFirstLetterOfString } from '@/utils';
 import { useMutation } from '@tanstack/react-query';
 import useTranslation from '@/hooks/useTranslation';
 import { forgotPassword } from '@/api/auth';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FeedbackMessage from '@/components/FeedbackMessage';
+
+const forgotPasswordSchema = z.object({
+  email: z
+    .string({ required_error: 'misc_required' })
+    .email('srv_wrong_email_format'),
+});
+
 
 export default function ForgottenPasswordPage() {
   const [postMsg, setPostMsg] = useState('');
@@ -28,11 +34,6 @@ export default function ForgottenPasswordPage() {
   useEffect(() => {
     document.title = `${t('misc_forgotten_password')} | ${CONFIG.APP_NAME}`;
   }, [t]);
-  const forgotPasswordSchema = z.object({
-    email: z
-      .string({ required_error: capitalizeFirstLetterOfString(t('misc_required')) })
-      .email(capitalizeFirstLetterOfString(t('srv_wrong_email_format')))
-  });
 
   const mainUseForm = useForm({
     resolver: zodResolver(forgotPasswordSchema),

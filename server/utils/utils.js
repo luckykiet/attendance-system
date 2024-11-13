@@ -2,6 +2,7 @@ const { default: axios } = require("axios")
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
+const HttpError = require("../constants/http-error")
 
 const utils = {
     fetchAresWithTin: async (tin) => {
@@ -68,6 +69,8 @@ const utils = {
             ? jwt.sign(item, CONFIG.jwtSecret, { expiresIn: time })
             : jwt.sign(item, CONFIG.jwtSecret)
     },
+    parseExpressErrors: (error, defaultMsg = 'srv_error', defaultStatusCode = 500) => {
+        return error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : defaultMsg, defaultStatusCode)
+    }
 }
-
 module.exports = utils

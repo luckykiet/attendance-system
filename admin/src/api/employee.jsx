@@ -1,8 +1,8 @@
 import axiosServices from '@/utils/axios';
 
-const axios = axiosServices('/mod/register');
+const axios = axiosServices('/mod/employee');
 
-export const fetchRegister = async (id) => {
+export const fetchEmployee = async (id) => {
     const { data: { success, msg } } = await axios.get(`/${id}`);
     if (!success) {
         throw new Error(msg);
@@ -10,13 +10,21 @@ export const fetchRegister = async (id) => {
     return msg;
 };
 
-export const updateRegister = async (data) => {
+export const fetchEmployeeWorkingAt = async (id) => {
+    const { data: { success, msg } } = await axios.get(`/working-at/${id}`);
+    if (!success) {
+        throw new Error(msg);
+    }
+    return msg;
+};
+
+export const updateEmployee = async (data) => {
     const { data: { success, msg } } = await axios.put(`/`, data,
         {
             headers: {
                 'Content-Type': 'application/json',
                 recaptcha: data.recaptcha,
-                action: 'updateregister',
+                action: 'updateemployee',
             },
         }
     );
@@ -26,13 +34,13 @@ export const updateRegister = async (data) => {
     return msg;
 };
 
-export const createRegister = async (data) => {
+export const createEmployee = async (data) => {
     const { data: { success, msg } } = await axios.post(`/`, data,
         {
             headers: {
                 'Content-Type': 'application/json',
                 recaptcha: data.recaptcha,
-                action: 'createregister',
+                action: 'createemployee',
             },
         }
     );
@@ -42,13 +50,13 @@ export const createRegister = async (data) => {
     return msg;
 };
 
-export const deleteRegister = async (id, recaptcha) => {
+export const deleteEmployee = async (id, recaptcha) => {
     const { data: { success, msg } } = await axios.delete(`/${id}`,
         {
             headers: {
                 'Content-Type': 'application/json',
                 recaptcha: recaptcha,
-                action: 'deleteregister',
+                action: 'deleteemployee',
             },
         }
     );

@@ -16,7 +16,6 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { LoadingButton } from '@mui/lab'
 import LoadingCircle from '@/components/LoadingCircle'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
-import { capitalizeFirstLetterOfString } from '@/utils'
 import { resetPassword, checkChangePasswordToken } from '@/api/auth'
 import useTranslation from '@/hooks/useTranslation'
 import { CONFIG } from '@/configs'
@@ -24,26 +23,24 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import FeedbackMessage from '@/components/FeedbackMessage'
 
+const passwordSchema = z
+  .string()
+  .min(8, 'srv_password_requirements')
+  .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, 'srv_password_requirements')
+
+const renewPasswordSchema = z.object({
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: 'srv_passwords_not_match',
+    path: ['confirmPassword'],
+  })
+
 export default function RenewPasswordPage() {
   const { token } = useParams()
   const [postMsg, setPostMsg] = useState({})
   const [passwordChanged, setPasswordChanged] = useState(false)
   const { t } = useTranslation()
-
-  const passwordSchema = z
-    .string()
-    .min(8, capitalizeFirstLetterOfString(t('srv_password_requirements')))
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, t('srv_password_requirements'))
-
-  const renewPasswordSchema = z
-    .object({
-      password: passwordSchema,
-      confirmPassword: passwordSchema,
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t('srv_passwords_not_match'),
-      path: ['confirmPassword'],
-    })
 
   const mainUseForm = useForm({
     resolver: zodResolver(renewPasswordSchema),

@@ -15,7 +15,7 @@ export default function MerchantLayout() {
 
   return (
     <RootLayout>
-      <LeftDrawerAdmin />
+      <LeftDrawerAdmin withBackButton />
       <Container
         component={'main'}
         sx={{
