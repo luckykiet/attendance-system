@@ -15,6 +15,7 @@
     "start": "yarn workspace server start",
     "starthttps": "yarn workspace server starthttps",
     "mergetranslations": "node ./mergeTranslations.mjs",
+    "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
     "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install"
   },
@@ -28,9 +29,5 @@
     "server",
     "admin",
     "mobile"
-  ],
-  "dependencies": {
-    "csv-parser": "^3.0.0",
-    "csv-writer": "^1.6.0"
-  }
+  ]
 }
