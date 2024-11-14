@@ -1,73 +1,70 @@
-import fs from 'fs';
-import csv from 'csv-parser';
-import path from 'path';
+import { dirname, join } from 'path';
+import { readFile, writeFile } from 'fs/promises';
+import { fileURLToPath } from 'url';
 
-const csvFiles = [
-    'admin/src/locales/locales.csv',
-    'mobile/locales/locales.csv',
-];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const delimiter = '\t';
 
-const translations = {};
-let baseHeaders = [];
+const uniqueTranslation = new Map();
+let maxColumns = 0;
 
-function parseCsvFile(filePath) {
-    return new Promise((resolve) => {
-        let headersCount = 0;
+const readCsvFile = async (path) => {
+    return readFile(path, 'utf8')
+        .then((csv) => {
+            const allLines = csv.split('\n');
+            const headers = allLines[0].split(delimiter);
+            maxColumns = Math.max(maxColumns, headers.length);
+            const linesWithoutHeaders = allLines.slice(1);
 
-        fs.createReadStream(filePath)
-            .pipe(csv({ separator: '\t' })) // Specify tab as delimiter for reading
-            .on('headers', (headers) => {
-                if (headers.length > headersCount) {
-                    headersCount = headers.length;
-                    baseHeaders = headers; // Set base headers to the file with the most columns
-                }
-            })
-            .on('data', (row) => {
-                const key = row['key']; // Assuming the first column is 'key'
-
-                if (!translations[key]) {
-                    translations[key] = { key };
-                }
-
-                // Union each language column from the row into the translations object
-                Object.keys(row).forEach((col) => {
-                    if (col !== 'key' && row[col] !== undefined) {
-                        translations[key][col] = row[col];
+            linesWithoutHeaders
+                .filter((line) => !!line.trim())
+                .forEach((line) => {
+                    const fields = line.split(delimiter);
+                    const key = fields[0];
+                    const texts = fields.slice(1);
+                    const locales = {};
+                    headers.slice(1).forEach((locale, index) => {
+                        locales[locale] = texts[index];
+                    });
+                    if (!uniqueTranslation.has(key)) {
+                        uniqueTranslation.set(key, locales);
                     }
                 });
-            })
-            .on('end', resolve);
-    });
-}
-
-// Function to save the unioned translations back to each original CSV with tabs
-async function saveUnionedTranslationsToFiles() {
-    for (const file of csvFiles) {
-        // Prepare records for writing, filling missing columns with the first column value
-        const records = Object.values(translations).map((row) => {
-            return baseHeaders.map((header) => row[header] || row[baseHeaders[0]] || ''); // Fill with first column value if missing
+        })
+        .catch((error) => {
+            console.error('Error reading file:', error);
         });
+};
 
-        // Write updated unioned records back to the file with tab delimiters
-        const outputFilePath = path.resolve(file);
-        const headerLine = baseHeaders.join('\t');
-        const dataLines = records.map(record => record.join('\t')).join('\n');
-        const finalOutput = `${headerLine}\n${dataLines}`;
+const csvFiles = [
+    join(__dirname, 'admin', 'src', 'locales', 'locales.csv'),
+    join(__dirname, 'mobile', 'locales', 'locales.csv')
+];
 
-        fs.writeFileSync(outputFilePath, finalOutput, 'utf8');
-        console.log(`Unioned translations saved to ${file}`);
+const writeUniqueTranslationsToFiles = async () => {
+    const headers = ['key', ...Array.from(uniqueTranslation.values())[0] ? Object.keys(Array.from(uniqueTranslation.values())[0]) : []];
+    const lines = [headers.join(delimiter)];
+
+    uniqueTranslation.forEach((locales, key) => {
+        const row = [key, ...headers.slice(1).map((locale) => locales[locale] || '')];
+        lines.push(row.join(delimiter));
+    });
+
+    // Write to each original CSV file
+    for (const csvFile of csvFiles) {
+        try {
+            await writeFile(csvFile, lines.join('\n'), 'utf8');
+            console.log(`Unique translations written to ${csvFile}`);
+        } catch (error) {
+            console.error(`Error writing to file ${csvFile}:`, error);
+        }
     }
-}
+};
 
-// Main function to union CSV files and update originals
-async function unionAndApplyCsvFiles() {
-    for (const file of csvFiles) {
-        await parseCsvFile(file);
+(async () => {
+    for (const csvFile of csvFiles) {
+        await readCsvFile(csvFile);
     }
-
-    // Save the unioned translations back to each original file
-    await saveUnionedTranslationsToFiles();
-}
-
-// Run the script
-unionAndApplyCsvFiles();
+    await writeUniqueTranslationsToFiles();
+})();

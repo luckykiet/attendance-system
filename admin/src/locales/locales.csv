@@ -653,17 +653,23 @@ srv_username_requirements	Username must have 6 to 20 characters, only lowercase 
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
 srv_word	Error	Lỗi	Chyba
 srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
-day_sunday_name	Sunday	Chủ nhật	Neděle
-day_sunday_shortcut	Sun	CN	Ne
-day_monday_name	Monday	Thứ hai	Pondělí
-day_monday_shortcut	Mon	T2	Po
-day_tuesday_name	Tuesday	Thứ ba	Úterý
-day_tuesday_shortcut	Tue	T3	Út
-day_wednesday_name	Wednesday	Thứ tư	Středa
-day_wednesday_shortcut	Wed	T4	St
-day_thursday_name	Thursday	Thứ năm	Čtvrtek
-day_thursday_shortcut	Thu	T5	Čt
-day_friday_name	Friday	Thứ sáu	Pátek
-day_friday_shortcut	Fri	T6	Pá
-day_saturday_name	Saturday	Thứ bảy	Sobota
-day_saturday_shortcut	Sat	T7	So
+days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
+misc_app_id	App ID	ID ứng dụng	ID aplikace
+misc_app_id_copied	App ID has been copied	đã sao chép ID của ứng dụng	kopírováno ID aplikace
+misc_copied_to_clipboard	copied to Clipboard	đã sao chép vào bộ nhớ	kopírováno do schránky
+misc_distance	distance	khoảng cách	vzdálenost
+misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
+misc_error	chyba	lỗi	chyba
+misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
+misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
+misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
+misc_nearby_workplaces	nearby workplaces	chỗ làm gần đây	blízká pracoviště
+misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
+misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
+misc_permission_denied	permission denied	quyền truy cập bị từ chối	přístup odepřen
+misc_refresh_location	refresh location	làm mới vị trí	obnovit polohu
+misc_unable_to_open_settings	unable to open settings	không thể mở cài đặt	není možné otevřít nastavení
+misc_add_url	add URL	thêm URL	přidat URL
+misc_url_already_added	This URL has already been added	URL này đã được thêm vào	Tento URL již byl přidán
+srv_server_error	chyba serveru	lỗi serveru	chyba serveru
+srv_url_exists	URL exists	URL đã tồn tại	

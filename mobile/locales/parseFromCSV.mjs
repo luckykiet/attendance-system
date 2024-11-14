@@ -1,4 +1,4 @@
-import { days as _days } from './config.js'
+import { days as _days } from './config.mjs'
 import { dirname, join } from 'path'
 import { readFile, writeFile } from 'fs/promises'
 
