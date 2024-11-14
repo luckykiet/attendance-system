@@ -1,3 +1,4 @@
+key	en	vi	cs
 day_friday_name	Friday	Thứ sáu	Pátek
 day_friday_shortcut	Fri	T6	Pá
 day_monday_name	Monday	Thứ hai	Pondělí
@@ -12,7 +13,6 @@ day_tuesday_name	Tuesday	Thứ ba	Úterý
 day_tuesday_shortcut	Tue	T3	Út
 day_wednesday_name	Wednesday	Thứ tư	Středa
 day_wednesday_shortcut	Wed	T4	St
-days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
 mailisc_form_reference_added	Form reference added	đã tạo tham chiếu đơn	Reference formuláře přidána
 misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
@@ -40,7 +40,6 @@ misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
 misc_at_row	at row	ở hàng	u řádku
-misc_attendances	attendance	điểm danh	docházka
 misc_attendances	attendances	điểm danh	docházky
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_available	is available	có sẵn 	dostupný
@@ -489,7 +488,7 @@ msg_vin_required_for_taxpayer	VIN is required for taxpayer	Số thuế VIN là b
 msg_welcome	Welcome to	Chào mừng bạn đến	Vítáme Vás v
 msg_you_can_not_revert	Once changed, you can not revert	Một khi đã đổi, bạn không thể chuyển lại	Jakmile přepnete, nemůžete znovu přepnout
 srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
-srv_already_sent	Already sent	Đã gửi		Již odesláno
+srv_already_sent	Already sent	Đã gửi	
 srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
 srv_assigned_form_not_found	Assigned form not found	Không tìm thấy biểu mẫu được chỉ định	Přidělený formulář nenalezen
 srv_bank_not_found	Bank not found	Không tìm thấy ngân hàng	Banku nelze nalézt
@@ -517,7 +516,7 @@ srv_exposure_is_after_expiration	Exposure date is after expiration date	Ngày hi
 srv_failed_to_add	failed to add	thêm mới bị lỗi 	chyba přidání
 srv_failed_to_authorize	Failed to authorize	Ủy quyền không thành công	Autorizace se nezdařila
 srv_failed_to_create	failed to create	tạo không thành công	založení selhalo
-srv_failed_to_create_pdf	Failed to create PDF	Tạo PDF không thành công		Vytvoření PDF se nezdařilo
+srv_failed_to_create_pdf	Failed to create PDF	Tạo PDF không thành công	
 srv_failed_to_delete	failed to delete	xoá không thành công	smazání selhalo
 srv_failed_to_get_terminals	Failed to get terminals	Lấy thiết bị thanh toán không thành công	Získání terminálů se nezdařilo
 srv_failed_to_load	failed to load	lỗi tải trang	chyba načítání
@@ -539,7 +538,6 @@ srv_form_updated	Form updated	Đơn đã được cập nhập	Formulář aktual
 srv_forms_exist	Forms exist	Các biểu mẫu đã tồn tại	Formuláře existují
 srv_invalid_action_request	Invalid action request	Yêu cầu hành động không hợp lệ	Neplatná žádost o akci
 srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
-srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
 srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
 srv_invalid_bank_account	Invalid bank account	Tài khoản ngân hàng không hợp lệ	Neplatný bankovní účet
@@ -547,7 +545,6 @@ srv_invalid_bank_id	invalid bank ID	ID ngân hàng không hợp lệ	neplatný I
 srv_invalid_bill	Invalid bill	Hóa đơn không hợp lệ	Neplatná faktura
 srv_invalid_business_name	invalid business name	tên công ty không hợp lệ	neplatné jméno společnosti
 srv_invalid_business_type	invalid business type	thể loại kinh doanh không hợp lệ	neplatný typ obchodní činnosti
-srv_invalid_city	Invalid city	Tên thành phố không hợp lệ	Neplatné město
 srv_invalid_city	Invalid city	Thành phố không hợp lệ	Neplatné město
 srv_invalid_country	Invalid country	Quốc gia không hợp lệ	Neplatná země
 srv_invalid_credentials	Invalid credentials	Sai thông tin đăng nhập	Nesprávné přihlašovací údaje
@@ -564,7 +561,6 @@ srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
 srv_invalid_owner	Invalid owner	Chủ sở hữu không hợp lệ	Neplatný vlastník
 srv_invalid_plans	Invalid plans	Kế hoạch không hợp lệ	Neplatné plány
-srv_invalid_postal_code	Invalid postal code	Mã bưu chính không hợp lệ	Neplatné PSČ
 srv_invalid_postal_code	invalid postal code must be 11000 or 110 00	mã bưu điện không hợp lệ, phải là 11000 hoặc 110 00	neplatný PSČ, musí být 11000 nebo 110 00
 srv_invalid_provider	Invalid provider	Nhà cung cấp không hợp lệ	Neplatný poskytovatel
 srv_invalid_quantity	invalid quantity	số lương không hợp lệ	neplatné množství
@@ -604,7 +600,7 @@ srv_new_form_draft_not_found	New form draft not found	Không tìm thấy bản n
 srv_no_content	No content	Không có nội dung	Žádný obsah
 srv_no_data	No data	Không có dữ liệu	Žádná data
 srv_no_faq	no FAQs	không có FAQs	nejsou žádné FAQs
-srv_no_form_identity	No form identity	Không có danh tính biểu mẫu		Žádná identita formuláře
+srv_no_form_identity	No form identity	Không có danh tính biểu mẫu	
 srv_no_installed	not installed	chưa được lắp đặt	není instalováno
 srv_no_payment_terminal	no payment terminals	không có máy trả thẻ	není žádný platební terminál
 srv_no_permission	No permission	Không có quyền truy cập	Bez oprávnění
@@ -657,3 +653,17 @@ srv_username_requirements	Username must have 6 to 20 characters, only lowercase 
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
 srv_word	Error	Lỗi	Chyba
 srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
+day_sunday_name	Sunday	Chủ nhật	Neděle
+day_sunday_shortcut	Sun	CN	Ne
+day_monday_name	Monday	Thứ hai	Pondělí
+day_monday_shortcut	Mon	T2	Po
+day_tuesday_name	Tuesday	Thứ ba	Úterý
+day_tuesday_shortcut	Tue	T3	Út
+day_wednesday_name	Wednesday	Thứ tư	Středa
+day_wednesday_shortcut	Wed	T4	St
+day_thursday_name	Thursday	Thứ năm	Čtvrtek
+day_thursday_shortcut	Thu	T5	Čt
+day_friday_name	Friday	Thứ sáu	Pátek
+day_friday_shortcut	Fri	T6	Pá
+day_saturday_name	Saturday	Thứ bảy	Sobota
+day_saturday_shortcut	Sat	T7	So
