@@ -70,9 +70,9 @@ const URLSelection: React.FC = () => {
                     />
                 )}
             />
-            {errors.url && <Text style={styles.error}>{errors.url.message}</Text>}
+            {errors.url?.message && <Text style={styles.error}>{t(errors.url.message)}</Text>}
             <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                <Text style={styles.buttonText}>Add URL</Text>
+                <Text style={styles.buttonText}>{t('misc_add_url')}</Text>
             </TouchableOpacity>
 
             {urls.length > 0 && (

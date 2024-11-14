@@ -1,30 +1,37 @@
-const fs = require('fs');
-const csv = require('csv-parser');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const path = require('path');
+import fs from 'fs';
+import csv from 'csv-parser';
+import path from 'path';
 
 const csvFiles = [
-    'path/to/your/file1.csv',
-    'path/to/your/file2.csv',
-    'path/to/your/file3.csv'
+    'admin/src/locales/locales.csv',
+    'mobile/locales/locales.csv',
 ];
 
-
 const translations = {};
+let baseHeaders = [];
 
 function parseCsvFile(filePath) {
     return new Promise((resolve) => {
+        let headersCount = 0;
+
         fs.createReadStream(filePath)
-            .pipe(csv())
+            .pipe(csv({ separator: '\t' })) // Specify tab as delimiter for reading
+            .on('headers', (headers) => {
+                if (headers.length > headersCount) {
+                    headersCount = headers.length;
+                    baseHeaders = headers; // Set base headers to the file with the most columns
+                }
+            })
             .on('data', (row) => {
-                const key = row['key'];
+                const key = row['key']; // Assuming the first column is 'key'
 
                 if (!translations[key]) {
                     translations[key] = { key };
                 }
 
+                // Union each language column from the row into the translations object
                 Object.keys(row).forEach((col) => {
-                    if (col !== 'key') {
+                    if (col !== 'key' && row[col] !== undefined) {
                         translations[key][col] = row[col];
                     }
                 });
@@ -32,44 +39,35 @@ function parseCsvFile(filePath) {
             .on('end', resolve);
     });
 }
-async function saveTranslationsToOriginalFiles() {
+
+// Function to save the unioned translations back to each original CSV with tabs
+async function saveUnionedTranslationsToFiles() {
     for (const file of csvFiles) {
-
-        const headers = await new Promise((resolve) => {
-            const headers = [];
-            fs.createReadStream(file)
-                .pipe(csv())
-                .on('headers', (headerRow) => {
-                    headerRow.forEach((header) => headers.push(header));
-                    resolve(headers);
-                });
-        });
-
+        // Prepare records for writing, filling missing columns with the first column value
         const records = Object.values(translations).map((row) => {
-            const filteredRow = {};
-            headers.forEach((header) => {
-                filteredRow[header] = row[header] || '';
-            });
-            return filteredRow;
+            return baseHeaders.map((header) => row[header] || row[baseHeaders[0]] || ''); // Fill with first column value if missing
         });
 
-        const csvWriter = createCsvWriter({
-            path: file,
-            header: headers.map((header) => ({ id: header, title: header })),
-        });
+        // Write updated unioned records back to the file with tab delimiters
+        const outputFilePath = path.resolve(file);
+        const headerLine = baseHeaders.join('\t');
+        const dataLines = records.map(record => record.join('\t')).join('\n');
+        const finalOutput = `${headerLine}\n${dataLines}`;
 
-        await csvWriter.writeRecords(records);
-        console.log(`Updated translations saved to ${file}`);
+        fs.writeFileSync(outputFilePath, finalOutput, 'utf8');
+        console.log(`Unioned translations saved to ${file}`);
     }
 }
 
-async function mergeAndApplyCsvFiles() {
+// Main function to union CSV files and update originals
+async function unionAndApplyCsvFiles() {
     for (const file of csvFiles) {
         await parseCsvFile(file);
     }
 
-    await saveTranslationsToOriginalFiles();
+    // Save the unioned translations back to each original file
+    await saveUnionedTranslationsToFiles();
 }
 
-
-mergeAndApplyCsvFiles();
+// Run the script
+unionAndApplyCsvFiles();

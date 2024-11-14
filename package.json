@@ -6,6 +6,7 @@
   },
   "version": "1.0.0",
   "description": "Attendance system",
+  "type": "module",
   "scripts": {
     "dev": "yarn workspaces foreach -Api --topological-dev run dev",
     "devhttps": "yarn workspaces foreach -Api --topological-dev run devhttps",

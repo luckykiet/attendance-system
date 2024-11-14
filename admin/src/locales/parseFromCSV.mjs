@@ -1,4 +1,4 @@
-import { days as _days, supportedLocales } from './config.js'
+import { days as _days } from './config.js'
 import { dirname, join } from 'path'
 import { readFile, writeFile } from 'fs/promises'
 
@@ -6,19 +6,24 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const delimiter = '\t';
 
 readFile('locales.csv', 'utf8')
   .then((csv) => {
     const translations = {}
-    csv
-      .split('\n')
+    const allLines = csv.split('\n')
+    const headers = allLines[0].split(delimiter)
+    const linesWithoutHeaders = allLines.slice(1)
+
+    linesWithoutHeaders
       .filter((line) => !!line.trim())
       .forEach((line) => {
-        const fields = line.split('\t')
+        const fields = line.split(delimiter)
         const key = fields[0]
+        const texts = fields.slice(1)
         const locales = {}
-        Object.keys(supportedLocales).forEach((locale, index) => {
-          locales[locale] = fields[index + 1]
+        headers.slice(1).forEach((locale, index) => {
+          locales[locale] = texts[index]
         })
         translations[key] = locales
       })
@@ -44,7 +49,7 @@ readFile('locales.csv', 'utf8')
     translations.days_of_week = td
 
     return Promise.all(
-      Object.keys(supportedLocales).map(async (locale) => {
+      headers.slice(1).map(async (locale) => {
         const data = {}
         Object.keys(translations).forEach((key) => {
           data[key] = translations[key][locale]
