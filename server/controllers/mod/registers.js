@@ -1,4 +1,4 @@
-const Register = require('../../models/Register');
+const Register = require('../../models/register');
 const utils = require('../../utils');
 
 const getRegisters = async (req, res, next) => {

@@ -1,5 +1,5 @@
 const HttpError = require('../../constants/http-error');
-const Register = require('../../models/Register');
+const Register = require('../../models/register');
 const utils = require('../../utils');
 
 const getRegisterById = async (id, retailId) => {
@@ -23,7 +23,18 @@ const getRegister = async (req, res, next) => {
 
 const createRegister = async (req, res, next) => {
     try {
-        const newRegister = new Register({ ...req.body, retailId: req.user.retailId });
+        const { latitude, longitude, allowedRadius } = req.body.location;
+
+        const newRegister = new Register({
+            ...req.body,
+            retailId: req.user.retailId,
+            location: {
+                type: 'Point',
+                coordinates: [longitude, latitude],
+                allowedRadius: allowedRadius || 100,
+            },
+        });
+
         await newRegister.save();
         return res.status(201).json({ success: true, msg: newRegister });
     } catch (error) {
@@ -33,11 +44,23 @@ const createRegister = async (req, res, next) => {
 
 const updateRegister = async (req, res, next) => {
     try {
+        const { latitude, longitude, allowedRadius } = req.body.location;
+
         const updatedRegister = await Register.findOneAndUpdate(
             { _id: req.body._id, retailId: req.user.retailId },
-            { $set: req.body },
+            {
+                $set: {
+                    ...req.body,
+                    location: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude],
+                        allowedRadius: allowedRadius || 100,
+                    },
+                },
+            },
             { new: true, runValidators: true }
         );
+
         if (!updatedRegister) {
             throw new HttpError('srv_register_not_found', 404);
         }

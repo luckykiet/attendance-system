@@ -1,4 +1,4 @@
-const Employee = require('../../models/Employee');
+const Employee = require('../../models/employee');
 const utils = require('../../utils/utils');
 
 const getEmployees = async (req, res, next) => {

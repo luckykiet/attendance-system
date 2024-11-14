@@ -71,6 +71,6 @@ const utils = {
     },
     parseExpressErrors: (error, defaultMsg = 'srv_error', defaultStatusCode = 500) => {
         return error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : defaultMsg, defaultStatusCode)
-    }
+    },
 }
 module.exports = utils

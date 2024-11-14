@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AddressSchema = require('./Address');
 const WorkingHourSchema = require('./WorkingHour');
-const dayjs = require('dayjs');
 
 const RegisterSchema = new Schema(
     {
@@ -11,8 +10,17 @@ const RegisterSchema = new Schema(
         address: { type: AddressSchema, required: true },
 
         location: {
-            latitude: { type: Number, required: true },
-            longitude: { type: Number, required: true },
+            type: { type: String, enum: ['Point'], required: true, default: 'Point' },
+            coordinates: {
+                type: [Number], // [longitude, latitude]
+                required: true,
+                validate: {
+                    validator: function (value) {
+                        return value.length === 2;
+                    },
+                    message: 'Coordinates must be an array of [longitude, latitude]'
+                }
+            },
             allowedRadius: { type: Number, required: true, default: 100 } // Radius in meters for allowed check-ins
         },
 
@@ -31,15 +39,23 @@ const RegisterSchema = new Schema(
     {
         strict: true,
         timestamps: true,
+        toObject: { virtuals: true, transform: transformLocation },
+        toJSON: { virtuals: true, transform: transformLocation },
     }
 );
 
-RegisterSchema.pre(
-    ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
-    function (next) {
-        this.updatedAt = dayjs().toDate();
-        next();
+// Transform function to reshape `location` field
+function transformLocation(doc, ret) {
+    if (ret.location && ret.location.type === 'Point') {
+        ret.location = {
+            latitude: ret.location.coordinates[1],
+            longitude: ret.location.coordinates[0],
+            allowedRadius: ret.location.allowedRadius,
+        };
     }
-);
+    return ret;
+}
+
+RegisterSchema.index({ location: '2dsphere' });
 
 module.exports = RegisterSchema;

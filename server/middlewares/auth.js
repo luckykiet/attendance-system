@@ -8,6 +8,17 @@ const ensureAuthenticated = (req, res, next) => {
     }
 }
 
+const ensureDeviceId = (req, res, next) => {
+    const appId = req.get('App-Id');
+    if (appId) {
+        req.deviceId = appId;
+        next();
+    } else {
+        next(new HttpError(`srv_unauthorized`, 401));
+    }
+};
+
 module.exports = {
-    ensureAuthenticated
+    ensureAuthenticated,
+    ensureDeviceId
 }

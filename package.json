@@ -9,9 +9,11 @@
   "scripts": {
     "dev": "yarn workspaces foreach -Api --topological-dev run dev",
     "devhttps": "yarn workspaces foreach -Api --topological-dev run devhttps",
+    "devmobile": "yarn workspace mobile start",
     "install-all": "yarn install && yarn workspace admin install && yarn workspace server install && yarn workspace mobile install",
     "start": "yarn workspace server start",
     "starthttps": "yarn workspace server starthttps",
+    "mergetranslations": "node ./mergeTranslations.mjs",
     "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install"
   },
@@ -25,5 +27,9 @@
     "server",
     "admin",
     "mobile"
-  ]
+  ],
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0"
+  }
 }
