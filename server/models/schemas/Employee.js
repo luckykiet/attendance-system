@@ -29,9 +29,9 @@ EmployeeSchema.pre(
 );
 
 EmployeeSchema.index({ email: 1, retailId: 1, }, { unique: true });
+EmployeeSchema.index({ deviceId: 1, }, { unique: true });
 
 EmployeeSchema.index({ name: 1, }, { name: 'name_index' });
-EmployeeSchema.index({ deviceId: 1, }, { deviceId: 'device_id_index' });
 
 EmployeeSchema.methods.verifyPublicKey = function (providedKey) {
     return this.publicKey === providedKey;

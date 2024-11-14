@@ -1,5 +1,5 @@
 const HttpError = require('../../constants/http-error');
-const Employee = require('../../models/Employee');
+const Employee = require('../../models/employee');
 const WorkingAt = require('../../models/WorkingAt');
 const utils = require('../../utils');
 

@@ -21,19 +21,19 @@ export default defineConfig({
     outDir: 'build',
   },
   server: {
-    host: 'admin.vcap.me',
+    host: 'vcap.me',
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://admin.vcap.me:4000',
+        target: 'https://vcap.me:4000',
         secure: false,
       },
       '/auth': {
-        target: 'https://admin.vcap.me:4000',
+        target: 'https://vcap.me:4000',
         secure: false,
       },
       '/mod': {
-        target: 'https://admin.vcap.me:4000',
+        target: 'https://vcap.me:4000',
         secure: false,
       },
     },

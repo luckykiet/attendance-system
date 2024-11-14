@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "Attendance System",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,22 +12,30 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "cz.ethereal.gowork",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan QR Codes for registration or for making attendance.",
+        "NSLocalNetworkUsageDescription": "This app needs access to local network to communicate with the authenticated local attendance server."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      },
+      "package": "cz.ethereal.gowork",
+      "permissions": [
+        "CAMERA"
+      ],
+      "versionCode": 636,
+      "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

@@ -9,7 +9,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { ThemeProvider as ThemeProviderStyles } from '@mui/styles';
 import { createEmotionCache } from '@/utils/createEmotionCache';
 import { createTheme } from '@/theme';
-import i18n from '@/configs/i18n';
+import i18n from '@/i18n';
 import PropTypes from 'prop-types';
 
 const queryClient = new QueryClient({
