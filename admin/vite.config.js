@@ -21,7 +21,7 @@ export default defineConfig({
     outDir: 'build',
   },
   server: {
-    host: 'attendance.local',
+    host: 'admin.attendance.local',
     port: 5173,
     proxy: {
       '/api': {
