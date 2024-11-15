@@ -6,7 +6,7 @@ export const useCompaniesApi = () => {
         if (!formData) {
             return [];
         }
-        const axiosInstance = createAxiosService(serverUrl, routePrefix);
+        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: 5000 });
         const { data: { success, msg } } = await axiosInstance.post('/nearby-companies', {
             longitude: formData.longitude,
             latitude: formData.latitude,
@@ -15,7 +15,7 @@ export const useCompaniesApi = () => {
         if (!success) {
             throw new Error(msg);
         }
-        
+
         return msg;
     };
 

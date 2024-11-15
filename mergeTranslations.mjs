@@ -46,12 +46,15 @@ const writeUniqueTranslationsToFiles = async () => {
     const headers = ['key', ...Array.from(uniqueTranslation.values())[0] ? Object.keys(Array.from(uniqueTranslation.values())[0]) : []];
     const lines = [headers.join(delimiter)];
 
+    const rows = [];
     uniqueTranslation.forEach((locales, key) => {
         const row = [key, ...headers.slice(1).map((locale) => locales[locale] || '')];
-        lines.push(row.join(delimiter));
+        rows.push(row);
     });
 
-    // Write to each original CSV file
+    rows.sort((a, b) => a[0].localeCompare(b[0]));
+    rows.forEach((row) => lines.push(row.join(delimiter)));
+
     for (const csvFile of csvFiles) {
         try {
             await writeFile(csvFile, lines.join('\n'), 'utf8');

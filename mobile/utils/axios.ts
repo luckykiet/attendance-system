@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { useAppStore } from '@/stores/useAppStore';
 
-const createAxiosService = (serverUrl: string, route = '/api') => {
+const createAxiosService = ({ serverUrl, route = '/api', timeout }: { serverUrl: string, route: string, timeout?: number }) => {
   const instance = axios.create({
     baseURL: `${serverUrl}${route}`,
     withCredentials: true,
+    timeout: timeout || 0,
   });
 
   instance.interceptors.request.use(

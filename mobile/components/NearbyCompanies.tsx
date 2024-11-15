@@ -105,9 +105,8 @@ const NearbyCompanies = () => {
   return (
     <View style={styles.nearbyContainer}>
       <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_nearby_workplaces')}:</ThemedText>
-      {isLoading || isGettingLocation ? (
-        <ThemedActivityIndicator size={'large'} />
-      ) : nearbyCompanies.length > 0 ? (
+      {(isLoading || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
+      {nearbyCompanies.length > 0 ? (
         <>
           <FlatList
             ref={scrollViewRef}
@@ -129,7 +128,7 @@ const NearbyCompanies = () => {
                         : { color: Colors.error },
                   ]}
                 >
-                  {t('misc_status')}: {company.status === 'open' ? t('misc_open') : company.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
+                  {t('misc_status')}: {company.status === 'open' ? t('misc_opening') : company.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
                 </ThemedText>
                 <ThemedText style={styles.companyDetail}>
                   {t('misc_distance')}: {company.distanceInMeters} m

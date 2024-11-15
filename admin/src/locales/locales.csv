@@ -13,6 +13,7 @@ day_tuesday_name	Tuesday	Thứ ba	Úterý
 day_tuesday_shortcut	Tue	T3	Út
 day_wednesday_name	Wednesday	Thứ tư	Středa
 day_wednesday_shortcut	Wed	T4	St
+days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
 mailisc_form_reference_added	Form reference added	đã tạo tham chiếu đơn	Reference formuláře přidána
 misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
@@ -28,6 +29,7 @@ misc_add_new_merchant	Add new merchant	Tạo nhà bán buôn mới	Přidat nový
 misc_add_payment_terminal	Add payment terminal	Tạo máy trả thẻ	Přidat platební terminál
 misc_add_reference	add reference	tạo kết nối	vytvořit odkaz
 misc_add_store	Add store	Thêm cửa hàng	Přidat provozovnu
+misc_add_url	add URL	thêm URL	přidat URL
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
 misc_all	all	tất cả	všechny
@@ -36,6 +38,8 @@ misc_amount	Amount	Số lượng	Počet
 misc_amount_records	Records amount	Số lượng đơn	Počet záznamů
 misc_answer	answer	câu trả lời	odpověď
 misc_api_documentation	API Documentation	API Documentation	API Dokumentace
+misc_app_id	App ID	ID ứng dụng	ID aplikace
+misc_app_id_copied	App ID has been copied	đã sao chép ID của ứng dụng	kopírováno ID aplikace
 misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
@@ -92,6 +96,7 @@ misc_confirmed_by_customer	Confirmed by customer	Được khách xác nhận	Pot
 misc_contact	Contacts	Liên hệ	Kontakty
 misc_contract_option	contract option	tuỳ chọn hợp đồng	vybrat možnost smlouvy
 misc_copied	copied	đã sao chép	kopírováno
+misc_copied_to_clipboard	copied to Clipboard	đã sao chép vào bộ nhớ	kopírováno do schránky
 misc_copy_from_merchant	Copy from basement	Sao chép từ công ty	Kopírovat z sídla
 misc_country	Country	Quốc gia	Stát
 misc_create	create	tạo	založit
@@ -120,6 +125,8 @@ misc_delimiter	delimiter	phân cách	oddělovač
 misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
 misc_devices	Devices	Máy	Zařízení
+misc_distance	distance	khoảng cách	vzdálenost
+misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
 misc_documents	documents	tài liệu	dokumenty
 misc_download	download	tải về	stáhnout
 misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
@@ -132,6 +139,7 @@ misc_email	E-mail	E-mail	E-mail
 misc_emails	E-mails	E-mail	E-maily
 misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
+misc_error	chyba	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
 misc_examples	examples	ví dụ	příklady
@@ -167,6 +175,7 @@ misc_generate_documents	generate documents	tạo tài liệu	generovat dokumenty
 misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
+misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
 misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
 misc_has_registered_device	has registered device	đã đăng ký thiết bị 	má registrované zařízení
 misc_hidden	hidden	ẩn	skryto
@@ -191,6 +200,7 @@ misc_latitude	latitude	vĩ độ 	zeměpisná šířka
 misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
+misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
 misc_login	Login	Đăng nhập	Přihlášení
 misc_longitude	longitude	kinh độ 	zeměpisná délka
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
@@ -234,7 +244,9 @@ misc_month_september_short	sep	t9	zář
 misc_move_from	move from	chuyển từ 	odkazován od
 misc_move_status_to	move status to	chuyển trạng thái thành	přepnout do statusu
 misc_move_to	move to	chuyển đến	odkazován na
+misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
 misc_name	Name	Tên	Název
+misc_nearby_workplaces	nearby workplaces	chỗ làm gần đây	blízká pracoviště
 misc_new	new	mới	nový
 misc_new_bill	new bill	hoá đơn mới	nová faktura
 misc_new_company	new company	công ty mới	Nová společnost
@@ -251,6 +263,7 @@ misc_no_columns	no columns	không có cột	nejsou žádné sloupce
 misc_no_company	no company	không có công ty	není žádná společnost
 misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
+misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
 misc_no_terminal	no terminals	không có máy	žádný terminál
 misc_no_terminal_model	mo specific terminal model	không có model máy chính xác 	není specifický model terminálu
@@ -261,8 +274,10 @@ misc_not_included	not included	không được bao gồm	nezahrnuto
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
 misc_opening	opening	đang mở	otevřeno
+misc_opening_soon	opening soon	sắp mở cửa	brzy otevřeno
 misc_operations	Operations	Tác vụ	Operace
 misc_others	others	khác	jiné
+misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
 misc_partner	partner	đối tác	partner
 misc_partner_of	partner of	đối tác của	partnerem od
 misc_partners	partners	đối tác	partneři
@@ -275,6 +290,7 @@ misc_payment_terminal_deleted	Payment terminal deleted	Máy trả thẻ đã xo�
 misc_payment_terminal_updated	Payment terminal updated	Máy trả thẻ đã cập nhập	Platební terminál aktualizován
 misc_payment_terminals	payment terminals	máy trả thẻ	platební terminály
 misc_pending	pending	chờ xử lý	čeká na vyřízení
+misc_permission_denied	permission denied	quyền truy cập bị từ chối	přístup odepřen
 misc_photo	photo	ảnh	fotka
 misc_plan	plan	gói	plán
 misc_plans	plans	gói	plány
@@ -317,6 +333,7 @@ misc_receiver	receiver	người nhận	příjemce
 misc_recommended	recommended	khuyến khích	doporučeno
 misc_reference	reference	kết nối	odkaz
 misc_references	references	kết nối	odkazy
+misc_refresh_location	refresh location	làm mới vị trí	obnovit polohu
 misc_registration	Registration	Đăng ký	Registrace
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
 misc_renew_password	Renew password	Khôi phục mật khẩu	Obnova hesla
@@ -416,6 +433,7 @@ misc_transfer_fee	transfer fees	phí chuyển khoản	poplatky za převod
 misc_true	true	đúng	správně
 misc_turnover	turn over	doanh thu	obrat
 misc_type	Type	Loại	Typ
+misc_unable_to_open_settings	unable to open settings	không thể mở cài đặt	není možné otevřít nastavení
 misc_unavailable	unavailable	không có sẵn 	nedostupný
 misc_unconfirmed	unconfirmed	chưa xác nhận	nepotvrzeno
 misc_undefined	undefined	chưa xác định	nedefinováno
@@ -431,6 +449,7 @@ misc_upload_mail_sent	email for signature sent	Gửi email để ký	Email pro p
 misc_upload_photos	upload photos	tải lên ảnh	nahrát fotky
 misc_upload_signed_documents	Uploading signed documents	Tải lên tài liệu đã ký	Nahrávání podepsaných dokumentů
 misc_upload_unsigned_form	Upload unsigned form	Tải lên mẫu đơn chưa ký	Nahrát nepodepsaný dokument
+misc_url_already_added	This URL has already been added	URL này đã được thêm vào	Tento URL již byl přidán
 misc_user	User	Nhân viên	Uživatel
 misc_user_has_zero_provision	user has zero provision	người dùng có hoa hồng bằng 0	uživatel má nulovou provizi
 misc_user_support	user support	hỗ trợ khách hàng	uživatelská podpora
@@ -625,6 +644,7 @@ srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference ex
 srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
 srv_register_failed	Register failed	Đăng ký không thành công	Registrace se nezdařila
 srv_return_to	Return to	Hãy quay lại	Vraťte se na
+srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
 srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy
@@ -646,6 +666,7 @@ srv_transactions_imported	transactions imported	đã nhập giao dịch	transakc
 srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
 srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
 srv_updated	updated	đã được cập nhập	aktualizováno
+srv_url_exists	URL exists	URL đã tồn tại	
 srv_user_has_subordinates	User has subordinates	Người dùng có cấp dưới	Uživatel má podřízené
 srv_user_not_exists	user not exists	người dùng không tồn tại	uživatel neexistuje
 srv_user_updated	user updated	người dùng được cập nhập	uživatel aktualizován
@@ -653,23 +674,3 @@ srv_username_requirements	Username must have 6 to 20 characters, only lowercase 
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
 srv_word	Error	Lỗi	Chyba
 srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
-days_of_week	name;shortcut,Sunday;Sun,Monday;Mon,Tuesday;Tue,Wednesday;Wed,Thursday;Thu,Friday;Fri,Saturday;Sat	name;shortcut,Chủ nhật;CN,Thứ hai;T2,Thứ ba;T3,Thứ tư;T4,Thứ năm;T5,Thứ sáu;T6,Thứ bảy;T7	name;shortcut,Neděle;Ne,Pondělí;Po,Úterý;Út,Středa;St,Čtvrtek;Čt,Pátek;Pá,Sobota;So
-misc_app_id	App ID	ID ứng dụng	ID aplikace
-misc_app_id_copied	App ID has been copied	đã sao chép ID của ứng dụng	kopírováno ID aplikace
-misc_copied_to_clipboard	copied to Clipboard	đã sao chép vào bộ nhớ	kopírováno do schránky
-misc_distance	distance	khoảng cách	vzdálenost
-misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
-misc_error	chyba	lỗi	chyba
-misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
-misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
-misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
-misc_nearby_workplaces	nearby workplaces	chỗ làm gần đây	blízká pracoviště
-misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
-misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
-misc_permission_denied	permission denied	quyền truy cập bị từ chối	přístup odepřen
-misc_refresh_location	refresh location	làm mới vị trí	obnovit polohu
-misc_unable_to_open_settings	unable to open settings	không thể mở cài đặt	není možné otevřít nastavení
-misc_add_url	add URL	thêm URL	přidat URL
-misc_url_already_added	This URL has already been added	URL này đã được thêm vào	Tento URL již byl přidán
-srv_server_error	chyba serveru	lỗi serveru	chyba serveru
-srv_url_exists	URL exists	URL đã tồn tại	
