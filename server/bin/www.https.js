@@ -4,7 +4,8 @@ const app = require('../app');
 const debug = require('debug')('attendance:server');
 const http = require('http');
 const https = require('https');
-const devcert = require('@expo/devcert');
+const devcert = require('devcert');
+const { CONFIG } = require('../configs');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -34,8 +35,12 @@ app.set('port', httpsPort); // Set the HTTPS port in the app
  */
 const startServer = async () => {
   try {
+    const domains = ['attendance.local']
+    if (CONFIG.admin_subdomain) {
+      domains.push(`${CONFIG.admin_subdomain}.attendance.local`)
+    }
     // Create HTTPS server with certificate from devcert
-    const ssl = await devcert.certificateFor('attendance.local');
+    const ssl = await devcert.certificateFor(domains);
     const httpsServer = https.createServer(
       {
         key: ssl.key,
@@ -46,6 +51,7 @@ const startServer = async () => {
 
     const httpServer = http.createServer(app);
 
+    console.log('Configured HTTPS for domains:', devcert.configuredDomains().join(', '));
     /**
      * Event listener for HTTP and HTTPS server "error" event.
      */

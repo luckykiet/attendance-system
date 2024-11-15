@@ -11,7 +11,10 @@
     "devhttps": "yarn dev",
     "start": "NODE_ENV=production && node bin/www.https.js",
     "starthttps": "yarn start",
-    "upgrade-dep": "ncu -u && yarn install"
+    "upgrade-dep": "ncu -u && yarn install",
+    "clean": "node ./scripts/clean-devcert.js",
+    "install-devcert": "node ./scripts/install-devcert.js",
+    "postinstall": "yarn install-devcert"
   },
   "packageManager": "yarn@4.5.1",
   "engines": {
@@ -44,7 +47,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
-    "@expo/devcert": "^1.1.4",
+    "devcert": "^1.2.2",
     "eslint": "^9.14.0",
     "globals": "^15.12.0",
     "jest": "^29.7.0",
