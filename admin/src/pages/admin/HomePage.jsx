@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
 import { DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
+import LoadingCircle from '@/components/LoadingCircle';
 
 dayjs.extend(customParseFormat);
 
@@ -47,14 +48,14 @@ export default function HomePage() {
     queryFn: () => fetchRetail(),
   });
 
-  const { data: retail } = retailQuery;
+  const { data: retail, isFetching: isRetailFetching, isLoading: isRetailLoading } = retailQuery;
 
   const registersQuery = useQuery({
     queryKey: ['registers'],
     queryFn: () => fetchRegisters(),
   });
 
-  const { data: registers } = registersQuery;
+  const { data: registers, isFetching: isRegistersFetching, isLoading: isRegistersLoading } = registersQuery;
 
   const handleCreateNewRegister = () => {
     setRegisterId('');
@@ -100,65 +101,67 @@ export default function HomePage() {
         </Grid2>
         <Grid2 size={{ xs: 12 }}>
           <DialogRegister />
-          {registers && registers.length ? (
-            <Stack spacing={2}>
+          {isRegistersFetching || isRegistersLoading || isRetailFetching || isRetailLoading ?
+            <LoadingCircle /> :
+            registers && registers.length ? (
+              <Stack spacing={2}>
+                <Typography align="center" variant="h5" gutterBottom>
+                  {t('misc_companies')}: {registers.length}
+                </Typography>
+                <Grid2 container spacing={2}>
+                  {registers.map((register) => {
+                    const { status, message } = getTodayWorkingHours(register.workingHours);
+                    return (
+                      <Grid2 size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
+                        <Card variant="outlined" sx={{ position: 'relative' }}>
+                          <CardContent>
+                            <Typography variant="h6" gutterBottom>
+                              {register.name}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {register.address.street}, {register.address.city}, {register.address.zip}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                color: register.isAvailable ? 'success.main' : 'error.main',
+                              }}
+                            >
+                              {register.isAvailable ? t('misc_active') : t('misc_unavailable')}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                color: status === 'open' ? 'success.main' : 'error.main',
+                              }}
+                            >
+                              {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}: ${t(message)}`}
+                            </Typography>
+                          </CardContent>
+                          <IconButton
+                            onClick={() => handleEditRegister(register._id)}
+                            sx={{ position: 'absolute', top: 8, right: 8 }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button variant='contained'>
+                              {t('misc_attendances')}
+                            </Button>
+                          </CardActions>
+                        </Card>
+                      </Grid2>
+                    );
+                  })}
+                </Grid2>
+              </Stack>
+            ) : (
               <Typography align="center" variant="h5" gutterBottom>
-                {t('misc_companies')}: {registers.length}
+                {t('misc_no_company')}
               </Typography>
-              <Grid2 container spacing={2}>
-                {registers.map((register) => {
-                  const { status, message } = getTodayWorkingHours(register.workingHours);
-                  return (
-                    <Grid2 size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
-                      <Card variant="outlined" sx={{ position: 'relative' }}>
-                        <CardContent>
-                          <Typography variant="h6" gutterBottom>
-                            {register.name}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {register.address.street}, {register.address.city}, {register.address.zip}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              mt: 1,
-                              color: register.isAvailable ? 'success.main' : 'error.main',
-                            }}
-                          >
-                            {register.isAvailable ? t('misc_active') : t('misc_unavailable')}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              mt: 1,
-                              color: status === 'open' ? 'success.main' : 'error.main',
-                            }}
-                          >
-                            {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}: ${t(message)}`}
-                          </Typography>
-                        </CardContent>
-                        <IconButton
-                          onClick={() => handleEditRegister(register._id)}
-                          sx={{ position: 'absolute', top: 8, right: 8 }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                          <Button variant='contained'>
-                            {t('misc_attendances')}
-                          </Button>
-                        </CardActions>
-                      </Card>
-                    </Grid2>
-                  );
-                })}
-              </Grid2>
-            </Stack>
-          ) : (
-            <Typography align="center" variant="h5" gutterBottom>
-              {t('misc_no_company')}
-            </Typography>
-          )}
+            )}
         </Grid2>
       </Grid2>
     </Container>
