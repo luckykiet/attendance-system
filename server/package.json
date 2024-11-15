@@ -7,10 +7,10 @@
   "main": "app.js",
   "bin": "./bin/www.https.js",
   "scripts": {
-    "dev": "NODE_ENV=dev && nodemon bin/www.http.js",
-    "devhttps": "NODE_ENV=dev && nodemon bin/www.https.js",
-    "start": "NODE_ENV=production && node bin/www.http.js",
-    "starthttps": "NODE_ENV=production && node bin/www.https.js",
+    "dev": "NODE_ENV=dev && nodemon bin/www.https.js",
+    "devhttps": "yarn dev",
+    "start": "NODE_ENV=production && node bin/www.https.js",
+    "starthttps": "yarn start",
     "upgrade-dep": "ncu -u && yarn install"
   },
   "packageManager": "yarn@4.5.1",

@@ -5973,8 +5973,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "attendance-system@workspace:."
   dependencies:
-    csv-parser: "npm:^3.0.0"
-    csv-writer: "npm:^1.6.0"
     npm-check-updates: "npm:^17.1.11"
   languageName: unknown
   linkType: soft
@@ -7402,24 +7400,6 @@ __metadata:
   version: 3.1.3
   resolution: "csstype@npm:3.1.3"
   checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
-  languageName: node
-  linkType: hard
-
-"csv-parser@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "csv-parser@npm:3.0.0"
-  dependencies:
-    minimist: "npm:^1.2.0"
-  bin:
-    csv-parser: bin/csv-parser
-  checksum: 10c0/206aef102c10d532a31c7d85e6b1b0e53c7cb8346037eb9f23e0bd7369788960d8f2431639ea9f62e34ddf54d0182dfb345691c11c666802324f25c51dba79bc
-  languageName: node
-  linkType: hard
-
-"csv-writer@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "csv-writer@npm:1.6.0"
-  checksum: 10c0/9d30518c6cc7489e0cd8a3a83d6b014c27ed537d6e4a866f901065ddf49e06e4815a4204ce02c3c0024fd8e648e4a2efbdb318a1c63ddb3026282682d3a665e3
   languageName: node
   linkType: hard
 

@@ -21,19 +21,19 @@ export default defineConfig({
     outDir: 'build',
   },
   server: {
-    host: 'vcap.me',
+    host: 'attendance.local',
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://vcap.me:4000',
+        target: 'https://attendance.local:4000',
         secure: false,
       },
       '/auth': {
-        target: 'https://vcap.me:4000',
+        target: 'https://attendance.local:4000',
         secure: false,
       },
       '/mod': {
-        target: 'https://vcap.me:4000',
+        target: 'https://attendance.local:4000',
         secure: false,
       },
     },

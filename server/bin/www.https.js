@@ -35,7 +35,7 @@ app.set('port', httpsPort); // Set the HTTPS port in the app
 const startServer = async () => {
   try {
     // Create HTTPS server with certificate from devcert
-    const ssl = await devcert.certificateFor('vcap.me');
+    const ssl = await devcert.certificateFor('attendance.local');
     const httpsServer = https.createServer(
       {
         key: ssl.key,
