@@ -1,14 +1,19 @@
+const development = process.env.NODE_ENV === 'development';
 const protocol = 'https://';
 const subdomain = 'app.';
 const www = 'www.';
-const realm = 'me';
-const domain = `vcap.${realm}`;
+const realm = 'local';
+const domain = `attendance.${realm}`;
 const admin_subdomain = 'admin';
+const admin_port = '5173'
+const admin_domain = `${admin_subdomain}.${domain}${development ? `:${admin_port}` : ''}`;
 
 const CONFIG = {
     protocol: protocol,
     domain: domain,
+    admin_port: admin_port,
     admin_subdomain: admin_subdomain,
+    admin_domain: admin_domain,
     realm: realm,
     host: protocol + subdomain + domain,
     www: protocol + www + domain,
@@ -29,7 +34,6 @@ const CONFIG = {
         }
     },
     grecaptchaSecret: '',
-    grecaptchaSiteKey: '',
 };
 
 module.exports = { CONFIG };

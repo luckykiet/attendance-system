@@ -175,7 +175,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
         mailSender.sendMailResetPassword(
             email,
             user.username,
-            `${CONFIG.protocol}://${CONFIG.admin_subdomain}.${CONFIG.domain}/reset-password/${token}`
+            `${CONFIG.protocol}://${CONFIG.admin_domain}/reset-password/${token}`
         )
 
         return res.status(200).json({
