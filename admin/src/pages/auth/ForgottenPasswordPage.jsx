@@ -120,6 +120,7 @@ export default function ForgottenPasswordPage() {
                   variant="contained"
                   color="primary"
                   loading={sendForgottenPasswordMutation.isPending}
+                  disabled={sendForgottenPasswordMutation.isSuccess}
                 >
                   {t('misc_to_recover_password')}
                 </LoadingButton>

@@ -1,5 +1,5 @@
 const HttpError = require('../../constants/http-error');
-const Register = require('../../models/register');
+const Register = require('../../models/Register');
 const utils = require('../../utils');
 
 const getRegisterById = async (id, retailId) => {

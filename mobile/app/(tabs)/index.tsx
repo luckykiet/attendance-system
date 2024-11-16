@@ -26,7 +26,7 @@ const HomeScreen: React.FC = () => {
             </TouchableOpacity>
           </Link>
         )}
-        <NearbyCompanies />
+        {urls.length > 0 && <NearbyCompanies />}
         <LocationRequest />
       </ThemedView>
     </MainScreenLayout>

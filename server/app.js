@@ -91,6 +91,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(locale(languages))
 
+app.use('/', require('./routes/index'))
+
+require('./routes/public')(app, '/public')
 require('./routes/auth')(app, '/auth')
 require('./routes/api')(app, '/api')
 require('./routes/mod')(app, '/mod')

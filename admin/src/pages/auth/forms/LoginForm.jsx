@@ -1,4 +1,4 @@
-import { Button, Link, Grid2, InputAdornment, Stack, Typography, TextField } from '@mui/material';
+import { Link, Grid2, InputAdornment, Stack, Typography, TextField } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Password, Person, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useState } from 'react';
@@ -14,6 +14,7 @@ import { CONFIG } from '@/configs';
 import useTranslation from '@/hooks/useTranslation';
 import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
+import { LoadingButton } from '@mui/lab';
 
 const loginSchema = z.object({
     username: z
@@ -185,9 +186,9 @@ const LoginForm = () => {
                         </Grid2>
                     )}
                     <Grid2 size={{ xs: 12 }}>
-                        <Button
+                        <LoadingButton
                             disableElevation
-                            disabled={loginMutation.isPending}
+                            loading={loginMutation.isPending}
                             fullWidth
                             size="large"
                             type="submit"
@@ -195,7 +196,7 @@ const LoginForm = () => {
                             color="primary"
                         >
                             {t('misc_login', { capitalize: true })}
-                        </Button>
+                        </LoadingButton>
                     </Grid2>
                 </Grid2>
             </form>

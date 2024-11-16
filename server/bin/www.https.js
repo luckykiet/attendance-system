@@ -10,88 +10,75 @@ const { CONFIG } = require('../configs');
 /**
  * Normalize a port into a number, string, or false.
  */
-
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
-  if (isNaN(port)) {
-    return val;
+  return isNaN(port) ? val : port >= 0 ? port : false;
+};
+
+// Define ports for HTTP and HTTPS
+const httpPort = normalizePort(process.env.HTTP_PORT || '3000');
+const httpsPort = normalizePort(process.env.HTTPS_PORT || '4000');
+app.set('port', httpsPort);
+
+/**
+ * Event listener for HTTP and HTTPS server "error" event.
+ */
+const onError = (error, port) => {
+  if (error.syscall !== 'listen') throw error;
+  const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
+  if (error.code === 'EACCES') {
+    console.error(`${bind} requires elevated privileges`);
+    process.exit(1);
+  } else if (error.code === 'EADDRINUSE') {
+    console.error(`${bind} is already in use`);
+    process.exit(1);
+  } else {
+    throw error;
   }
-  if (port >= 0) {
-    return port;
-  }
-  return false;
 };
 
 /**
- * Get ports from environment and store in Express.
+ * Event listener for HTTP and HTTPS server "listening" event.
  */
-
-const httpPort = normalizePort(process.env.HTTP_PORT || '3000'); // HTTP port
-const httpsPort = normalizePort(process.env.HTTPS_PORT || '4000'); // HTTPS port
-app.set('port', httpsPort); // Set the HTTPS port in the app
+const onListening = (server, protocol) => {
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+  console.log(`Server running on ${bind} (${protocol})`);
+  debug(`Listening on ${bind}`);
+};
 
 /**
- * Create HTTP and HTTPS servers with devcert.
+ * Initialize and start HTTP and HTTPS servers with devcert.
  */
 const startServer = async () => {
   try {
-    const domains = ['attendance.local']
-    if (CONFIG.admin_subdomain) {
-      domains.push(`${CONFIG.admin_subdomain}.attendance.local`)
-    }
-    // Create HTTPS server with certificate from devcert
-    const ssl = await devcert.certificateFor(domains);
-    const httpsServer = https.createServer(
-      {
-        key: ssl.key,
-        cert: ssl.cert,
-      },
-      app
-    );
 
+    const defaultDomains = CONFIG.domain || 'attendance.local'
+    const domains = [defaultDomains]
+
+    if (CONFIG.admin_subdomain) {
+      domains.push(`${CONFIG.admin_subdomain}.${defaultDomains}`);
+    }
+    if (CONFIG.subdomain) {
+      domains.push(`${CONFIG.subdomain}.${defaultDomains}`)
+    }
+
+    // Generate SSL certificate
+    const ssl = await devcert.certificateFor(domains);
+    const httpsServer = https.createServer({ key: ssl.key, cert: ssl.cert }, app);
     const httpServer = http.createServer(app);
 
-    console.log('Configured HTTPS for domains:', devcert.configuredDomains().join(', '));
-    /**
-     * Event listener for HTTP and HTTPS server "error" event.
-     */
-    const onError = (error, serverType) => {
-      if (error.syscall !== 'listen') {
-        throw error;
-      }
-      const bind = typeof serverType === 'string' ? `Pipe ${serverType}` : `Port ${serverType}`;
-      switch (error.code) {
-        case 'EACCES':
-          console.error(`${bind} requires elevated privileges`);
-          process.exit(1);
-          break;
-        case 'EADDRINUSE':
-          console.error(`${bind} is already in use`);
-          process.exit(1);
-          break;
-        default:
-          throw error;
-      }
-    };
+    console.log('Configured HTTPS for domains:', domains.join(', '));
 
-    /**
-     * Event listener for HTTP and HTTPS server "listening" event.
-     */
-    const onListening = (serverType, serverPort) => {
-      const addr = serverType.address();
-      const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-      console.log(`Server running on ${bind} (${serverPort === httpsPort ? 'HTTPS' : 'HTTP'})`);
-      debug(`Listening on ${bind}`);
-    };
-
-    // Start HTTP and HTTPS servers
-    httpServer.listen(httpPort);
+    // Start HTTP server and bind to 0.0.0.0
+    httpServer.listen(httpPort, '0.0.0.0');
     httpServer.on('error', (error) => onError(error, httpPort));
-    httpServer.on('listening', () => onListening(httpServer, httpPort));
+    httpServer.on('listening', () => onListening(httpServer, 'HTTP', httpPort));
 
-    httpsServer.listen(httpsPort);
+    // Start HTTPS server and bind to 0.0.0.0
+    httpsServer.listen(httpsPort, '0.0.0.0');
     httpsServer.on('error', (error) => onError(error, httpsPort));
-    httpsServer.on('listening', () => onListening(httpsServer, httpsPort));
+    httpsServer.on('listening', () => onListening(httpsServer, 'HTTPS', httpsPort));
 
   } catch (error) {
     console.error('Failed to start servers:', error);
@@ -99,4 +86,4 @@ const startServer = async () => {
   }
 };
 
-startServer(); // Call the async function to start both servers
+startServer();

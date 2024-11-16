@@ -3715,6 +3715,7 @@ __metadata:
     pdf-lib: "npm:^1.17.1"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
+    qrcode.react: "npm:^4.1.0"
     react: "npm:^18.3.1"
     react-apexcharts: "npm:^1.5.0"
     react-beautiful-dnd: "npm:^13.1.1"
@@ -7429,6 +7430,15 @@ __metadata:
   version: 1.4.4
   resolution: "qrcode-generator@npm:1.4.4"
   checksum: 10c0/3249fcff98cb9fa17c21329d3dfd895e294a2d6ea48161f7b377010779d41f0cd88668b7fb3478a659725061bb0a770b40a227c2f4853e8c4a6b947a9e8bf17a
+  languageName: node
+  linkType: hard
+
+"qrcode.react@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "qrcode.react@npm:4.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/716ed23e094613e89b9692d0c11720adf3724133607e097f5221815bfe4ac48235ac312b4991d08a42f3b7735768da9e8f8dd745b5bf87ac2efd5127fba5943f
   languageName: node
   linkType: hard
 

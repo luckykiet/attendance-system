@@ -1,5 +1,5 @@
 const express = require('express');
-const { getEmployee, updateEmployee, createEmployee, deleteEmployee, getEmployeeWorkingAt } = require('../../controllers/mod/employee');
+const { getEmployee, updateEmployee, createEmployee, deleteEmployee, getEmployeeWorkingAt, employeeRegistration } = require('../../controllers/mod/employee');
 
 const router = express.Router();
 
@@ -11,5 +11,11 @@ router.put('/', updateEmployee);
 router.post('/', createEmployee);
 
 router.delete('/:id', deleteEmployee);
+
+router.post('/registration', employeeRegistration);
+router.post('/registration/send', (req, res, next) => {
+    req.action = 'sendEmployeeDeviceRegistration';
+    next();
+}, employeeRegistration);
 
 module.exports = router;

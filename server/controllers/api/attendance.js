@@ -1,7 +1,7 @@
 const { utils } = require("../../utils");
 
-const Employee = require('../../models/employee');
-const Register = require('../../models/register');
+const Employee = require('../../models/Employee');
+const Register = require('../../models/Register');
 
 const makeAttendance = async (req, res) => {
     const { employeeId, publicKey, latitude, longitude, registerId } = req.body;

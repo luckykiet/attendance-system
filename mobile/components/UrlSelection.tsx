@@ -9,7 +9,7 @@ import useTranslation from '@/hooks/useTranslation';
 
 const schema = z.object({
     url: z.string().regex(
-        /^(https?:\/\/)(?:\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$|^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/.*)?$/,
+        /^(https?:\/\/)(?:\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$r|^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/[^\\/]*)?$/,
         { message: 'srv_invalid_url' }
     ),
 });
@@ -33,7 +33,8 @@ const URLSelection: React.FC = () => {
     };
 
     const onSubmit: SubmitHandler<FormData> = (data) => {
-        const formattedUrl = data.url.toLowerCase().trim();
+        let formattedUrl = data.url.toLowerCase().trim();
+        formattedUrl = formattedUrl.endsWith('/') ? formattedUrl.slice(0, -1) : formattedUrl;
         if (urls.includes(formattedUrl)) {
             Alert.alert(t('srv_url_exists'), `${t('misc_url_already_added')}.`);
         } else {

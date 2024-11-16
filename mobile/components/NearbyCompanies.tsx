@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -48,7 +48,7 @@ const getTodayWorkingHours = (workingHours: WorkingHours): { status: string; mes
   const currentTime = dayjs();
   const openTime = dayjs(hours.start, TIME_FORMAT);
   const closeTime = dayjs(hours.end, TIME_FORMAT);
-  const warningTime = openTime.subtract(1, 'hour'); // 1 hour before opening
+  const warningTime = openTime.subtract(1, 'hour');
 
   if (currentTime.isBetween(openTime, closeTime)) {
     return { status: 'open', message: `${hours.start} - ${hours.end}` };
@@ -101,6 +101,14 @@ const NearbyCompanies = () => {
   const scrollToBottom = () => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   };
+
+  useEffect(() => {
+    if (location) {
+      queryResults.forEach((result) => {
+        result.refetch();
+      });
+    }
+  }, [location]);
 
   return (
     <View style={styles.nearbyContainer}>

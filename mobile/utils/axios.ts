@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { useAppStore } from '@/stores/useAppStore';
 
-const createAxiosService = ({ serverUrl, route = '/api', timeout }: { serverUrl: string, route: string, timeout?: number }) => {
+const createAxiosService = ({ serverUrl = '', route = '/api', timeout }: { serverUrl?: string, route?: string, timeout?: number } = {}) => {
+  const baseURL = serverUrl || route ? `${serverUrl}${route}` : undefined;
+
   const instance = axios.create({
-    baseURL: `${serverUrl}${route}`,
+    baseURL,
     withCredentials: true,
     timeout: timeout || 0,
   });

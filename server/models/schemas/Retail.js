@@ -10,16 +10,6 @@ const RetailSchema = new Schema(
         name: { type: String, required: true, trim: true },
         address: { type: AddressSchema, required: true },
 
-        registerIds: {
-            type: [
-                {
-                    registerId: { type: String, required: true },
-                    active: { type: Boolean, required: true, default: true },
-                    _id: false,
-                },
-            ], default: [], required: true
-        },
-
         isAvailable: { type: Boolean, required: true, default: true },
     },
     {

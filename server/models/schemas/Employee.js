@@ -11,6 +11,8 @@ const EmployeeSchema = new Schema(
         retailId: { type: Schema.Types.ObjectId, required: true },
 
         publicKey: { type: String },
+        registrationToken: { type: String },
+        registeredAt: { type: Date },
 
         deviceId: { type: String, trim: true },
         isAvailable: { type: Boolean, default: true }
