@@ -8,25 +8,22 @@
   "description": "Attendance system",
   "type": "module",
   "scripts": {
-    "dev": "yarn workspaces foreach -Api --topological-dev run dev",
-    "devhttps": "yarn workspaces foreach -Api --topological-dev run devhttps",
+    "dev": "concurrently \"cd admin && yarn dev\" \"cd server && yarn dev\"",
+    "devhttps": "concurrently \"cd admin && yarn devhttps\" \"cd server && yarn devhttps\"",
     "devmobile": "cd mobile && yarn start",
-    "install-all": "yarn install && yarn workspace admin install && yarn workspace server install && cd mobile && yarn install",
-    "start": "yarn workspace server start",
-    "starthttps": "yarn workspace server starthttps",
+    "install-all": "cd admin && yarn install && cd ../server && yarn install && cd ../mobile && yarn install",
+    "postinstall": "yarn install-all",
+    "start": "concurrently \"cd admin && yarn start\" \"yarn start\"",
+    "starthttps": "concurrently \"cd admin && yarn starthttps\" \"cd server && yarn starthttps\"",
     "mergetranslations": "node ./mergeTranslations.mjs",
     "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
-    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
+    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install"
   },
   "packageManager": "yarn@4.5.1",
   "license": "MIT",
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "npm-check-updates": "^17.1.11"
-  },
-  "workspaces": [
-    "attendance-system",
-    "server",
-    "admin"
-  ]
+  }
 }
