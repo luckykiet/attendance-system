@@ -39,6 +39,7 @@ export const getDefaultEmployee = () => ({
   phone: '',
   position: '',
   deviceId: '',
+  registrationToken: '',
   isAvailable: true,
 });
 

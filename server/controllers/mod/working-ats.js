@@ -1,6 +1,6 @@
 const WorkingAt = require('../../models/WorkingAt');
-const Register = require('../../models/register');
-const Employee = require('../../models/employee');
+const Register = require('../../models/Register');
+const Employee = require('../../models/Employee');
 const HttpError = require('../../constants/http-error');
 const utils = require('../../utils');
 

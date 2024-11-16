@@ -7,6 +7,7 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/ares', require('./ares'));
 
     app.use(apiPrefix, auth.ensureDeviceId);
+    app.use(apiPrefix + '/registration', require('./registration'));
     app.use(apiPrefix + '/nearby-companies', require('./nearby-companies'));
     app.use(apiPrefix + '/attendance', require('./attendance'));
 

@@ -1,4 +1,5 @@
-const Register = require('../../models/register');
+const Register = require('../../models/Register');
+const Employee = require('../../models/Employee');
 const HttpError = require("../../constants/http-error");
 const utils = require('../../utils');
 
@@ -10,6 +11,12 @@ const getNearbyCompanies = async (req, res, next) => {
             throw new HttpError('srv_missing_coordinates', 400);
         }
 
+        const employee = await Employee.findOne({ deviceId: req.deviceId }).select('retailId').exec();
+
+        if (!employee) {
+            return res.status(200).json({ success: true, msg: [] });
+        }
+
         const maxDistance = 500;
 
         const nearbyRegisters = await Register.find({
@@ -18,7 +25,8 @@ const getNearbyCompanies = async (req, res, next) => {
                     $geometry: { type: "Point", coordinates: [longitude, latitude] },
                     $maxDistance: maxDistance
                 }
-            }
+            },
+            retailId: employee.retailId
         }).select('name workingHours location');
 
         const leanNearbyRegisters = nearbyRegisters.map(register => {

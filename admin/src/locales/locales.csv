@@ -32,6 +32,7 @@ misc_add_store	Add store	Thêm cửa hàng	Přidat provozovnu
 misc_add_url	add URL	thêm URL	přidat URL
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
+misc_align_camera_to_qr_code	align camera to QR code	di chuyển camera đến mã QR	zaměřte kameru na QR kód
 misc_all	all	tất cả	všechny
 misc_allowed_radius	allowed radius	bán kính cho phép	povolený poloměr
 misc_amount	Amount	Số lượng	Počet
@@ -124,6 +125,7 @@ misc_deleted_draft	deleted draft	đã xoá nháp	koncept smazán
 misc_delimiter	delimiter	phân cách	oddělovač
 misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
+misc_device_id	device ID	ID thiết bị	ID zařízení
 misc_devices	Devices	Máy	Zařízení
 misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
@@ -174,8 +176,11 @@ misc_full_name	Surname and first name	Họ và tên	Jméno a příjmení
 misc_generate_documents	generate documents	tạo tài liệu	generovat dokumenty
 misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
+misc_generate_token	generate token	tạo token	generovat token
+misc_generate_token_and_send	generate token and send	tạo token và gửi	generovat token a odeslat
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
 misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
+misc_grant_permission	grant permission	cho phép quyền	udělit povolení
 misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
 misc_has_registered_device	has registered device	đã đăng ký thiết bị 	má registrované zařízení
 misc_hidden	hidden	ẩn	skryto
@@ -200,6 +205,7 @@ misc_latitude	latitude	vĩ độ 	zeměpisná šířka
 misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
+misc_loading_data	loading data	đang tải dữ liệu	data se načítá
 misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
 misc_login	Login	Đăng nhập	Přihlášení
 misc_longitude	longitude	kinh độ 	zeměpisná délka
@@ -247,6 +253,7 @@ misc_move_to	move to	chuyển đến	odkazován na
 misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
 misc_name	Name	Tên	Název
 misc_nearby_workplaces	nearby workplaces	chỗ làm gần đây	blízká pracoviště
+misc_need_camera_permission_to_scan	we need camera permission to scan	chúng tôi cần quyền truy cập camera để scan	potřebujeme povolení k použití kamery pro skenování
 misc_new	new	mới	nový
 misc_new_bill	new bill	hoá đơn mới	nová faktura
 misc_new_company	new company	công ty mới	Nová společnost
@@ -335,6 +342,7 @@ misc_reference	reference	kết nối	odkaz
 misc_references	references	kết nối	odkazy
 misc_refresh_location	refresh location	làm mới vị trí	obnovit polohu
 misc_registration	Registration	Đăng ký	Registrace
+misc_registration_token	registrion token	mã đăng ký	registrační token
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
 misc_renew_password	Renew password	Khôi phục mật khẩu	Obnova hesla
 misc_required	Required	Cần thiết	Požadováno
@@ -368,6 +376,7 @@ misc_send_upload_signed_mail	Send email to sign	Gửi email để ký	Poslat ema
 misc_sent	sent	đã gửi	odesláno
 misc_service	service	dịch vụ	služby
 misc_settings	Settings	Cài đặt	Nastavení
+misc_setup_urls	set up URLS	cài đặt URL	nastavit URL
 misc_shortcut	shortcut	viết tắt	zkratka
 misc_show	show	hiển thị	zobrazit
 misc_show_on_website	show on website	hiển thị trên trang web	zobrazit na webovou stránku
@@ -643,6 +652,7 @@ srv_provider_not_selected	provider is not selected	nhà phát hành không đư�
 srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference existuje
 srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
 srv_register_failed	Register failed	Đăng ký không thành công	Registrace se nezdařila
+srv_registration_not_found	registration not found or expired	yêu cầu đăng ký không tìm thấy hoặc đã hết hạn	registrace nenalezena nebo vypršela
 srv_return_to	Return to	Hãy quay lại	Vraťte se na
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství

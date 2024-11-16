@@ -8,18 +8,18 @@ import useTranslation from '@/hooks/useTranslation';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import LoadingCircle from '@/components/LoadingCircle';
-import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee } from '@/api/employee';
+import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee, createEmployeeDeviceRegistration } from '@/api/employee';
 import { checkPrivileges, getDefaultEmployee, REGEX } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { CONFIG } from '@/configs';
+import { CONFIG, HOSTNAME, PROTOCOL, PROXY_URL } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import { useSetAlertMessage } from '@/stores/root';
 import { useAuthStore } from '@/stores/auth';
 import { useSetConfirmBox } from '@/stores/confirm';
-
+import { QRCodeCanvas } from 'qrcode.react';
 import TransferListEmployees from '@/components/admin/TransferListEmployees';
 
 dayjs.extend(customParseFormat);
@@ -28,6 +28,8 @@ const employeeSchema = z.object({
     name: z.string().min(1, { message: 'misc_required' }).max(255),
     email: z.string().email({ message: 'srv_invalid_email' }),
     phone: z.string().optional().refine((val) => !val || REGEX.phone.test(val), { message: 'srv_invalid_phone' }),
+    registrationToken: z.string().optional(),
+    deviceId: z.string().optional(),
     isAvailable: z.boolean(),
 });
 
@@ -60,6 +62,7 @@ export default function EmployeePage() {
         control,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors },
     } = mainForm;
 
@@ -98,9 +101,18 @@ export default function EmployeePage() {
         }
     })
 
+    const generateEmployeeTokenMutation = useMutation({
+        mutationFn: (isSend = false) => createEmployeeDeviceRegistration(employeeId, isSend),
+        onError: (error) => {
+            setPostMsg(new Error(error))
+        },
+        onSuccess: (data) => {
+            setValue('registrationToken', data);
+        },
+    });
+
     const onSubmit = async (data) => {
         try {
-            console.log(data)
             const recaptchaToken = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
@@ -212,6 +224,45 @@ export default function EmployeePage() {
                                         )}
                                     />
                                 </Grid2>
+                                <Grid2 size={{ xs: 12 }}>
+                                    <Controller
+                                        name="registrationToken"
+                                        control={control}
+                                        render={({ field }) => {
+                                            const qrValue = CONFIG.MOBILE_INTENT && field.value ? `${CONFIG.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${PROXY_URL ? PROXY_URL : `${PROTOCOL}${HOSTNAME}`}`)}` : '';
+                                            return qrValue ? (
+                                                <Stack sx={{ display: 'flex', justifyContent: 'center' }} spacing={2}>
+                                                    <Typography variant="subtitle1">{t('misc_registration_token')}</Typography>
+                                                    <QRCodeCanvas value={qrValue} size={150} />
+                                                </Stack>
+                                            ) : (
+                                                <TextField
+                                                    {...field}
+                                                    fullWidth
+                                                    label={t('misc_registration_token')}
+                                                    variant="outlined"
+                                                    disabled
+                                                />
+                                            )
+                                        }
+                                        }
+                                    />
+                                </Grid2>
+                                <Grid2 size={{ xs: 12 }}>
+                                    <Controller
+                                        name="deviceId"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                fullWidth
+                                                label={t('misc_device_id')}
+                                                variant="outlined"
+                                                disabled
+                                            />
+                                        )}
+                                    />
+                                </Grid2>
                             </Grid2>
                             <Grid2 container spacing={2} sx={{ mt: 3 }}>
                                 <Grid2 size={{ xs: 12 }}>
@@ -222,7 +273,17 @@ export default function EmployeePage() {
                                         <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
                                             {employeeId ? t('misc_save') : t('misc_create')}
                                         </LoadingButton>
-                                        {checkPrivileges('deleteEmployee', user?.role) && employeeId &&
+                                        {employee &&
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => generateEmployeeTokenMutation.mutate()} loading={generateEmployeeTokenMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                                {t('misc_generate_token')}
+                                            </LoadingButton>
+                                        }
+                                        {employee &&
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => generateEmployeeTokenMutation.mutate(true)} loading={generateEmployeeTokenMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                                {t('misc_generate_token_and_send')}
+                                            </LoadingButton>
+                                        }
+                                        {employee && checkPrivileges('deleteEmployee', user?.role) &&
                                             <LoadingButton sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
                                                 {t('misc_delete')}
                                             </LoadingButton>}

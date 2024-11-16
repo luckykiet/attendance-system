@@ -1,5 +1,5 @@
 const WorkingAt = require('../../models/WorkingAt');
-const Register = require('../../models/register');
+const Register = require('../../models/Register');
 const HttpError = require('../../constants/http-error');
 const utils = require('../../utils');
 
