@@ -3,9 +3,10 @@
     "name": "Attendance System",
     "slug": "mobile",
     "version": "1.0.0",
+    "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "attendance",
+    "scheme": "gowork",
     "platforms": [
       "ios",
       "android"
@@ -22,6 +23,7 @@
       "bundleIdentifier": "cz.ethereal.gowork",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR Codes for registration or for making attendance.",
+        "NSLocal": "This app uses the camera to scan QR Codes for registration or for making attendance.",
         "NSLocalNetworkUsageDescription": "This app needs access to local network to communicate with the authenticated local attendance server."
       },
       "config": {
@@ -35,14 +37,28 @@
       },
       "package": "cz.ethereal.gowork",
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ],
-      "versionCode": 636,
+      "versionCode": 100,
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
       "expo-router",
       "expo-localization",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
       [
         "expo-camera",
         {
@@ -75,6 +91,12 @@
       "eas": {
         "projectId": "ca7497c0-5655-4a75-9e7e-8413291d0eec"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ca7497c0-5655-4a75-9e7e-8413291d0eec"
     }
   }
 }
