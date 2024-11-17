@@ -35,6 +35,7 @@ interface Company {
   distanceInMeters: number;
   checkInTime: string | null;
   checkOutTime: string | null;
+  domain: string;
 }
 
 interface CompanyWithStatus extends Company {
@@ -153,18 +154,35 @@ const NearbyCompanies = () => {
       };
     });
 
-  const handleAttendance = async (company: { registerId: string, domain: string }) => {
-    const { registerId, domain } = company;
-    const deviceKey = await SecureStore.getItemAsync('deviceKey');
-    if (!deviceKey) {
-      Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
-      return;
-    }
-    if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
-      Alert.alert(t('misc_error'), t('misc_location_not_found'));
-      return;
-    }
-    makeAttendanceMutation.mutate({ registerId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude });
+  const handleAttendance = async (company: Company) => {
+    const { _id: registerId, domain, checkInTime } = company;
+
+    Alert.alert(
+      t(_.isEmpty(checkInTime) ? 'misc_confirm_check_in' : 'misc_confirm_check_out'),
+      `${t('misc_cannot_revert_action')}!`,
+      [
+        {
+          text: t('misc_cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('misc_confirm'),
+          onPress: async () => {
+            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+            if (!deviceKey) {
+              Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+              return;
+            }
+            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
+              Alert.alert(t('misc_error'), t('misc_location_not_found'));
+              return;
+            }
+            makeAttendanceMutation.mutate({ registerId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleScroll = (event: { nativeEvent: { contentSize: { height: number; width: number }; layoutMeasurement: { height: number; width: number }; contentOffset: { x: number; y: number } } }) => {
@@ -197,7 +215,7 @@ const NearbyCompanies = () => {
             style={styles.scrollView}
             data={nearbyCompanies}
             renderItem={({ item: company }) => {
-              return <TouchableOpacity onPress={() => handleAttendance({ registerId: company._id, domain: company.domain })}>
+              return <TouchableOpacity onPress={() => handleAttendance({ ...company, registerId: company._id })}>
                 <View key={company._id} style={styles.companyItem}>
                   <ThemedText style={styles.companyText}>{company.name}</ThemedText>
                   <ThemedText style={styles.companyDetail}>
@@ -229,7 +247,7 @@ const NearbyCompanies = () => {
                   >
                     {t('misc_distance_left')}: {company.distanceLeft} m
                   </ThemedText>
-                  
+
                   <View style={styles.divider} />
 
                   <ThemedText style={styles.companyDetail}>

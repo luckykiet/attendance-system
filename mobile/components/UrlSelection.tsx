@@ -29,9 +29,22 @@ const URLSelection: React.FC = () => {
     };
 
     const handleDeleteUrl = async (url: string) => {
-        await deleteUrl(url);
+        Alert.alert(
+            t('misc_confirm_delete'), 
+            t('misc_you_will_not_see_workplace_until_add_again'), 
+            [
+                { text: t('misc_cancel'), style: 'cancel' },
+                {
+                    text: t('misc_confirm'),
+                    onPress: async () => {
+                        await deleteUrl(url);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
     };
-
+    
     const onSubmit: SubmitHandler<FormData> = (data) => {
         let formattedUrl = data.url.toLowerCase().trim();
         formattedUrl = formattedUrl.endsWith('/') ? formattedUrl.slice(0, -1) : formattedUrl;
@@ -48,7 +61,7 @@ const URLSelection: React.FC = () => {
                 <Text style={styles.itemText}>{item}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteUrl(item)}>
-                <Text style={styles.deleteButtonText}>Delete</Text>
+                <Text style={styles.deleteButtonText}>{t('misc_delete')}</Text>
             </TouchableOpacity>
         </View>
     );
