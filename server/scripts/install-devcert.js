@@ -1,7 +1,7 @@
 const devcert = require('devcert');
 const { CONFIG } = require('../configs');
 
-const defaultDomains = CONFIG.domain || 'attendance.local'
+const defaultDomains = CONFIG.domain || 'vcap.me'
 const domains = [defaultDomains]
 
 const generateDevCert = async () => {

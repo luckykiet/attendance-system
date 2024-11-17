@@ -76,6 +76,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
 
     const onSubmit = async (data) => {
         try {
+            setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${register ? 'update' : 'create'}register`);
 
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {

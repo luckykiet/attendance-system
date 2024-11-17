@@ -34,7 +34,7 @@ const template = (title, body) => {
           .button {
             display: inline-block;
             padding: 12px 24px;
-            color: #ffffff;
+            color: #ffffff !important;
             background-color: #007bff;
             text-decoration: none;
             border-radius: 5px;

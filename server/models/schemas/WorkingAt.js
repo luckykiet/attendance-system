@@ -26,6 +26,14 @@ const WorkingAtSchema = new Schema(
 );
 
 WorkingAtSchema.index({ employeeId: 1, registerId: 1 }, { unique: true });
+WorkingAtSchema.index({ registerId: 1 });
+WorkingAtSchema.index({ 'workingHours.mon': 1 }, { name: 'mon_idx' });
+WorkingAtSchema.index({ 'workingHours.tue': 1 }, { name: 'tue_idx' });
+WorkingAtSchema.index({ 'workingHours.wed': 1 }, { name: 'wed_idx' });
+WorkingAtSchema.index({ 'workingHours.thu': 1 }, { name: 'thu_idx' });
+WorkingAtSchema.index({ 'workingHours.fri': 1 }, { name: 'fri_idx' });
+WorkingAtSchema.index({ 'workingHours.sat': 1 }, { name: 'sat_idx' });
+WorkingAtSchema.index({ 'workingHours.sun': 1 }, { name: 'sun_idx' });
 
 WorkingAtSchema.pre(
     ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],

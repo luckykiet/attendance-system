@@ -30,6 +30,7 @@ const GoogleMapPicker = () => {
     const zip = watch('address.zip');
 
     const fetchCoordinates = useCallback(async () => {
+        setPostMsg('');
         if (!street || !city || !zip) {
             setPostMsg(t("misc_address_required"));
             return;
@@ -74,6 +75,28 @@ const GoogleMapPicker = () => {
         setValue('location.longitude', longitude);
     };
 
+    const handleGetCurrentLocation = () => {
+        setPostMsg('');
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setSelectedPosition({ lat: latitude, lng: longitude });
+                    setValue('location.latitude', latitude);
+                    setValue('location.longitude', longitude);
+                    setValue('address.street', '');
+                    setValue('address.city', '');
+                    setValue('address.zip', '');
+                },
+                () => {
+                    setPostMsg(t("srv_failed_to_get_location"));
+                }
+            );
+        } else {
+            setPostMsg(t("srv_geolocation_not_supported"));
+        }
+    };
+
     useEffect(() => {
         if (street && city && zip && searchedLocation !== `${street}, ${city}, ${zip}`) {
             fetchCoordinates();
@@ -96,9 +119,14 @@ const GoogleMapPicker = () => {
                     onDragEnd={handleMarkerDragEnd}
                 />
             </GoogleMap>
-            <Button disabled={isButtonDisabled} variant="contained" onClick={fetchCoordinates} sx={{ mt: 1, mb: 2 }}>
-                {t('misc_fetch_coordinates')}
-            </Button>
+            <Stack direction='row' spacing={2}>
+                <Button disabled={isButtonDisabled} variant="contained" onClick={fetchCoordinates} sx={{ mt: 1, mb: 2 }}>
+                    {t('misc_fetch_coordinates')}
+                </Button>
+                <Button variant="contained" onClick={handleGetCurrentLocation} sx={{ mt: 1, mb: 2 }}>
+                    {t('misc_get_current_location')}
+                </Button>
+            </Stack>
             {postMsg && <FeedbackMessage message={postMsg} />}
         </Stack>
     );

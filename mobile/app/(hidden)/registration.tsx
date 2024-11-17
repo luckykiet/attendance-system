@@ -58,6 +58,7 @@ const RegistrationScreen: React.FC = () => {
     });
 
     const onSubmit = async (data: RegistrationFormValues) => {
+        setPostMsg('');
         const publicKey = await SecureStore.getItemAsync('deviceKey');
         if (publicKey) {
             const formData: RegistrationSubmitForm = {

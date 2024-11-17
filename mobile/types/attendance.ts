@@ -1,0 +1,1 @@
+export type AttendanceMutation = { registerId: string, deviceKey: string, domain: string, longitude: number, latitude: number };

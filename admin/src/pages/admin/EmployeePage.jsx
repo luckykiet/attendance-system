@@ -113,6 +113,7 @@ export default function EmployeePage() {
 
     const onSubmit = async (data) => {
         try {
+            setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
