@@ -53,7 +53,7 @@ const onListening = (server, protocol) => {
 const startServer = async () => {
   try {
 
-    const defaultDomains = CONFIG.domain || 'attendance.local'
+    const defaultDomains = CONFIG.domain || 'vcap.me'
     const domains = [defaultDomains]
 
     if (CONFIG.admin_subdomain) {

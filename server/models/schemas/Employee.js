@@ -31,16 +31,10 @@ EmployeeSchema.pre(
 );
 
 EmployeeSchema.index({ email: 1, retailId: 1, }, { unique: true });
-EmployeeSchema.index({ deviceId: 1, }, { unique: true });
+EmployeeSchema.index(
+    { deviceId: 1, retailId: 1 },
+    { unique: true, partialFilterExpression: { deviceId: { $exists: true, $ne: "" } } }
+);
 
 EmployeeSchema.index({ name: 1, }, { name: 'name_index' });
-
-EmployeeSchema.methods.verifyPublicKey = function (providedKey) {
-    return this.publicKey === providedKey;
-};
-
-EmployeeSchema.methods.isAssociatedWithCompany = function (registerId) {
-    return this.registerIds.includes(registerId);
-};
-
 module.exports = EmployeeSchema;

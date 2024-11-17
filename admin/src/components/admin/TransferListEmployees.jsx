@@ -305,6 +305,7 @@ export default function TransferListEmployees({ employeeId }) {
 
   const onSubmit = async (data) => {
     try {
+      setPostMsg('')
       const recaptchaToken = await executeRecaptcha('updateworkingats');
 
       if (import.meta.env.MODE !== 'development' && !recaptchaToken) {

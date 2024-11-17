@@ -127,6 +127,7 @@ export default function DialogRegister() {
 
   const onSubmit = async (data) => {
     try {
+      setPostMsg('');
       const recaptchaToken = await executeRecaptcha(`${registerId ? 'update' : 'create'}register`);
 
       if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
@@ -152,15 +153,6 @@ export default function DialogRegister() {
 
   const { data: register, isLoading, isFetching } = registerQuery;
 
-  useEffect(() => {
-    if (register) {
-      reset(register);
-    } else if (retail) {
-      setValue('name', retail.name);
-      setValue('address', retail.address);
-    }
-  }, [retail, register, reset, setValue, isModalOpen]);
-
   const handleClose = () => {
     reset(getDefaultRegister());
     resetRegister();
@@ -174,6 +166,16 @@ export default function DialogRegister() {
       },
     })
   }
+
+
+  useEffect(() => {
+    if (register) {
+      reset(register);
+    } else if (retail) {
+      setValue('name', retail.name);
+      setValue('address', retail.address);
+    }
+  }, [retail, register, reset, setValue, isModalOpen]);
 
   return (
     <Dialog fullWidth maxWidth="md" open={isModalOpen} onClose={() => setIsModalOpen(false)}>

@@ -23,7 +23,7 @@ const createOrUpdateWorkingAt = async (req, res, next) => {
                 { new: true, runValidators: true }
             );
         } else {
-            workingAt = new WorkingAt(req.body);
+            workingAt = new WorkingAt({ ...req.body, workingHours: foundRegister.workingHours });
             workingAt.userId = req.user._id;
             workingAt = await workingAt.save();
         }

@@ -1,26 +1,33 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const checkSchema = new Schema(
+    {
+        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: true },
+        distance: { type: Number, required: true }
+    },
+    {
+        _id: false
+    }
+)
+
 const AttendanceSchema = new Schema(
     {
         employeeId: { type: Schema.Types.ObjectId, required: true },
         registerId: { type: Schema.Types.ObjectId, required: true },
-        checkInTime: { type: String, required: true },
-        checkOutTime: { type: String },
-        checkInLocation: {
-            latitude: { type: Number, required: true },
-            longitude: { type: Number, required: true }
-        },
-        checkOutLocation: {
-            latitude: { type: Number },
-            longitude: { type: Number }
-        },
-
-        isWithinRange: { type: Boolean, default: false },
+        dailyAttendanceId: { type: Schema.Types.ObjectId, required: true },
+        checkInTime: { type: Date, required: true },
+        checkInLocation: { type: checkSchema, required: true },
+        checkOutTime: { type: Date },
+        checkOutLocation: { type: checkSchema }
     },
     {
         timestamps: true,
     }
 );
 
-module.exports = mongoose.model('Attendance', AttendanceSchema);
+AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, }, { unique: true });
+AttendanceSchema.index({ registerId: 1 });
+
+module.exports = AttendanceSchema;

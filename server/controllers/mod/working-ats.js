@@ -4,7 +4,7 @@ const Employee = require('../../models/Employee');
 const HttpError = require('../../constants/http-error');
 const utils = require('../../utils');
 
-const updateWorkingAts = async (req, res, next) => {
+const updateOrCreateWorkingAts = async (req, res, next) => {
     try {
         const { employeeId, workingAts } = req.body;
 
@@ -26,8 +26,26 @@ const updateWorkingAts = async (req, res, next) => {
         const toAddWorkingAts = workingAts.filter((workingAt) => workingAt.isAvailable);
         const toRemoveWorkingAts = workingAts.filter((workingAt) => !workingAt.isAvailable);
 
-        await WorkingAt.updateMany({ employeeId, registerId: { $in: toAddWorkingAts.map((reg) => reg.registerId) } }, { $set: { isAvailable: true } }, { runValidators: true });
-        await WorkingAt.updateMany({ employeeId, registerId: { $in: toRemoveWorkingAts.map((reg) => reg.registerId) } }, { $set: { isAvailable: false } }, { runValidators: true });
+        for (const workingAt of toAddWorkingAts) {
+            const foundWorkingAt = await WorkingAt.findOneAndUpdate(
+                { employeeId, registerId: workingAt.registerId },
+                { $set: { isAvailable: true } },
+                { runValidators: true }
+            );
+            if (!foundWorkingAt) {
+                const register = registers.find((reg) => reg._id.equals(workingAt.registerId));
+                const newWorkingAt = new WorkingAt({ registerId: register._id, workingHours: register.workingHours, employeeId, userId: req.user._id });
+                await newWorkingAt.save();
+            }
+        }
+
+        for (const workingAt of toRemoveWorkingAts) {
+            await WorkingAt.updateOne(
+                { employeeId, registerId: workingAt.registerId },
+                { $set: { isAvailable: false } },
+                { runValidators: true }
+            );
+        }
 
         return res.status(201).json({ success: true, msg: 'srv_working_ats_updated' });
     } catch (error) {
@@ -36,5 +54,5 @@ const updateWorkingAts = async (req, res, next) => {
 };
 
 module.exports = {
-    updateWorkingAts,
+    updateOrCreateWorkingAts,
 };

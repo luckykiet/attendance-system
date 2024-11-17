@@ -1,6 +1,10 @@
 const HttpError = require('../../constants/http-error');
 const Register = require('../../models/Register');
+const WorkingAt = require('../../models/WorkingAt');
+const DailyAttendance = require('../../models/DailyAttendance');
 const utils = require('../../utils');
+const dayjs = require('dayjs');
+const { DAYS_OF_WEEK } = require('../../constants');
 
 const getRegisterById = async (id, retailId) => {
     if (!id) {
@@ -61,8 +65,19 @@ const updateRegister = async (req, res, next) => {
             { new: true, runValidators: true }
         );
 
+
         if (!updatedRegister) {
             throw new HttpError('srv_register_not_found', 404);
+        }
+
+        // update daily attendance working hours
+        const today = dayjs()
+        const todayAttendance = await DailyAttendance.findOne({ date: parseInt(today.format('YYYYMMDD')), registerId: updatedRegister._id, })
+        const todayIndex = today.day()
+        const todayKey = DAYS_OF_WEEK[todayIndex];
+        const workingHour = updatedRegister.workingHours[todayKey]
+        if (todayAttendance) {
+            await DailyAttendance.findOneAndUpdate({ _id: todayAttendance._id }, { $set: { workingHour } })
         }
         return res.status(200).json({ success: true, msg: updatedRegister });
     } catch (error) {
@@ -76,6 +91,7 @@ const deleteRegister = async (req, res, next) => {
         if (!deletedRegister) {
             throw new HttpError('srv_register_not_found', 404);
         }
+        await WorkingAt.deleteMany({ registerId: req.params.id });
         return res.status(200).json({ success: true, msg: 'srv_register_deleted' });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_register_deletion_failed', 400));

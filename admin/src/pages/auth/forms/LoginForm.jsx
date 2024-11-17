@@ -69,6 +69,7 @@ const LoginForm = () => {
 
     const onSubmit = async (data) => {
         try {
+            setPostMsg('');
             const recaptchaToken = await executeRecaptcha('login');
             if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));

@@ -15,9 +15,8 @@ export const useCompaniesApi = () => {
         if (!success) {
             throw new Error(msg);
         }
-
-        return msg;
+        
+        return msg.map((company: any) => ({ ...company, domain: serverUrl }));;
     };
-
     return { getNearbyCompanies };
 };

@@ -1,5 +1,5 @@
 key	en	vi	cs
-day_friday_name	Friday	Thứ sáu	Pátek
+day_friday_friday	Friday	Thứ sáu	Pátek
 day_friday_shortcut	Fri	T6	Pá
 day_monday_name	Monday	Thứ hai	Pondělí
 day_monday_shortcut	Mon	T2	Po
@@ -45,6 +45,8 @@ misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
 misc_at_row	at row	ở hàng	u řádku
+misc_attendance_failed	attendance failed	điểm danh thất bại	docházka neúspěšná
+misc_attendance_success	attendance success	điểm danh thành công	docházka úspěšná
 misc_attendances	attendances	điểm danh	docházky
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_available	is available	có sẵn 	dostupný
@@ -76,9 +78,13 @@ misc_cafe	café	quán nước	kavárna
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
+misc_check_in	check-in	check-in	příchod
 misc_check_merchants	check merchants	kiểm tra nhà bán buôn	kontrola obchodníků
+misc_check_out	check-out	check-out	odchod
 misc_check_signed_documents	check signed documents	kiểm tra đơn đã ký	kontrola podepsaných dokumentů
 misc_check_unsigned_documents	check unsigned documents	kiểm tra đơn chưa ký	kontrola nepodepsaných dokumentů
+misc_checked_in_on_time	checked in on time	check in đúng giờ	příchod včas
+misc_checked_out_on_time	checked out on time	check out đúng giờ	odchod včas
 misc_choose_user	choose user	chọn người dùng	vybrat uživatele
 misc_chosen_store	chosen store	cửa hàng đã chọn	vybraná provozovna
 misc_city	City	Thành phố	Město
@@ -134,6 +140,7 @@ misc_download	download	tải về	stáhnout
 misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
 misc_draft_saved	draft saved	đã lưu nháp	koncept uložen
 misc_duplicate	duplicate	trùng lặp	duplikát
+misc_early	early	sớm	dříve
 misc_edit	Edit	Chỉnh sửa	Editace
 misc_edit_form	Edit form	Sửa đơn	Úprava formuláře
 misc_edit_user	Edit user	Sửa nhân viên	Upravit uživatele
@@ -178,6 +185,7 @@ misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
 misc_generate_token	generate token	tạo token	generovat token
 misc_generate_token_and_send	generate token and send	tạo token và gửi	generovat token a odeslat
+misc_get_current_location	get current location	lấy vị trí hiện tại	získat aktuální polohu
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
 misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
 misc_grant_permission	grant permission	cho phép quyền	udělit povolení
@@ -201,11 +209,13 @@ misc_key	key	chìa khoá	klíč
 misc_language	Language	Ngôn ngữ	Jazyk
 misc_last_name	last name	họ	příjmení
 misc_last_update	last update	cập nhập lần cuối	poslední aktualizace
+misc_late	late	trễ	pozdě
 misc_latitude	latitude	vĩ độ 	zeměpisná šířka
 misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
 misc_loading_data	loading data	đang tải dữ liệu	data se načítá
+misc_location_not_found	location not found	không tìm thấy vị trí	poloha nenalezena
 misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
 misc_login	Login	Đăng nhập	Přihlášení
 misc_longitude	longitude	kinh độ 	zeměpisná délka
@@ -219,6 +229,7 @@ misc_merchant_telephone	merchant telephone	số điện thoại nhà bán buôn	
 misc_merchants	merchants	nhà bán buôn	obchodníci
 misc_message	message	thông báo	zpráva
 misc_method	Method	Phương thức	Metoda
+misc_min_short	min.	phút	min.
 misc_missing	missing	thiếu	chybí
 misc_model	model	model	model
 misc_modified	modifed	đã thay đổi	modifikováno
@@ -251,6 +262,7 @@ misc_move_from	move from	chuyển từ 	odkazován od
 misc_move_status_to	move status to	chuyển trạng thái thành	přepnout do statusu
 misc_move_to	move to	chuyển đến	odkazován na
 misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
+misc_my_working_hours	my working hours	thời gian làm việc của tôi	moje pracovní doba
 misc_name	Name	Tên	Název
 misc_nearby_workplaces	nearby workplaces	chỗ làm gần đây	blízká pracoviště
 misc_need_camera_permission_to_scan	we need camera permission to scan	chúng tôi cần quyền truy cập camera để scan	potřebujeme povolení k použití kamery pro skenování
@@ -434,6 +446,7 @@ misc_to_logout	Logout	Đăng xuất	Odhlásit se
 misc_to_recover_password	Recover password	Khôi phục mật khẩu	Obnovte heslo
 misc_to_register	Register	Đăng ký	Registrovat
 misc_to_search	Search	Tìm	Vyhledávat
+misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_total	Total	Tổng	Celkem
 misc_total_price	total price	tiền tổng	celková částka
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
@@ -473,6 +486,7 @@ misc_workplace	workplace	nơi làm việc	pracoviště
 misc_workplaces	workplaces	nơi làm việc	pracoviště
 misc_year	year	năm	rok
 misc_yes	yes	có	ano
+misc_you_must_register_device	you must register your device	bạn phải đăng ký thiết bị này	musíte registrovat toto zařízení
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno
@@ -515,6 +529,7 @@ msg_update_successfully	Update successfully	Cập nhập thành công	Úspěšn�
 msg_vin_required_for_taxpayer	VIN is required for taxpayer	Số thuế VIN là bắt buộc cho người trả thuế	DIČ je povinné pro plátce DPH
 msg_welcome	Welcome to	Chào mừng bạn đến	Vítáme Vás v
 msg_you_can_not_revert	Once changed, you can not revert	Một khi đã đổi, bạn không thể chuyển lại	Jakmile přepnete, nemůžete znovu přepnout
+srv_already_checked_out	already checked out	bạn đã check out	odchod byl již zaznamenán
 srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
 srv_already_sent	Already sent	Đã gửi	
 srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
@@ -528,6 +543,8 @@ srv_bill_sent	Bill sent	Đã gửi hóa đơn	Faktura odeslána
 srv_bill_updated	Bill updated	Hóa đơn đã cập nhật	Faktura aktualizována
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
+srv_checked_in_successfully	check in successfully	check in thành công	příchod úspěšně zaznamenán
+srv_checked_ou_successfully	check out successfully	check out thành công	odchod úspěšně zaznamenán
 srv_close_time_before_open_time	close time is before open time	thời gian kết thúc trước thời gian bắt đầu	čas ukončení je před časem otevření
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
 srv_created	created	đã được tạo	vytvořeno
@@ -535,6 +552,8 @@ srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
 srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
+srv_employee_exists	employee exists	nhân viên đã tồn tại	zaměstnanec již existuje
+srv_employee_not_employed	you are not employed for this workplace	bạn không được chỉ định làm việc tại đây	nejste zaměstnán na tomto pracovišti
 srv_employee_not_found	employee not found	không tìm thấy nhân viên	zaměstnanec nenalezen
 srv_empty_name	Empty name	Tên trống	Prázdné jméno
 srv_empty_purchaser	Empty purchaser	Người mua trống	Prázdný kupující
@@ -551,9 +570,11 @@ srv_failed_to_load	failed to load	lỗi tải trang	chyba načítání
 srv_failed_to_load_from_ares	failed to load data from ARES	tải dữ liệu từ ares không thành công	stažení dat z ARES selhalo
 srv_failed_to_load_transaction	Failed to load transaction	Tải dữ liệu đơn hàng thất bại	Načítání transakce selhala
 srv_failed_to_login	Failed to login	Đăng nhập không thành công	Přihlášení se nezdařilo
+srv_failed_to_make_attendance	failed to make attendance	điểm danh thất bại	neúspěšné zaznamenání docházky
 srv_failed_to_submit	failed to submit	gửi không thành công	odeslání selhalo
 srv_failed_to_update	failed to update	cập nhập không thành công	aktualizace selhala
 srv_failed_to_upload	failed to upload	tải lên không thành công	nahrávání selhalo
+srv_failed_update_daily_attendance	failed to update attendance	cập nhập điểm danh thất bại	aktualizace docházky selhala
 srv_file_extension_not_allowed	File extension is not allowed	Đuôi của tệp không được cho phép	Přípona souboru není povolena
 srv_file_uploaded	Files uploaded successfully	Tệp đã được tải lên thành công	Soubory úspěšně nahrány
 srv_forbidden	Forbidden	Cấm	Zakázáno
@@ -588,6 +609,7 @@ srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatn�
 srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
 srv_invalid_owner	Invalid owner	Chủ sở hữu không hợp lệ	Neplatný vlastník
+srv_invalid_phone	Invalid telephone	Số điện thoại không hợp lệ	Neplatný telefon
 srv_invalid_plans	Invalid plans	Kế hoạch không hợp lệ	Neplatné plány
 srv_invalid_postal_code	invalid postal code must be 11000 or 110 00	mã bưu điện không hợp lệ, phải là 11000 hoặc 110 00	neplatný PSČ, musí být 11000 nebo 110 00
 srv_invalid_provider	Invalid provider	Nhà cung cấp không hợp lệ	Neplatný poskytovatel
@@ -599,7 +621,6 @@ srv_invalid_refid	Invalid refID	RefID không hợp lệ	Neplatné refID
 srv_invalid_request	invalid request	yêu cầu không hợp lệ	nesprávný požadavek
 srv_invalid_settings	Invalid settings	Cài đặt không hợp lệ	Neplatná nastavení
 srv_invalid_street	Invalid street	Đường không hợp lệ	Neplatná ulice
-srv_invalid_telephone	Invalid telephone	Số điện thoại không hợp lệ	Neplatný telefon
 srv_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không hợp lệ	neplatný typ platebního terminálu
 srv_invalid_tin	invalid TIN	IČO không hợp lệ	neplatné IČO
 srv_invalid_token	Invalid token or link expired	Mã token không hợp lệ hoặc đã hết hạn	Neplatný token nebo váš požadavek vypršel
@@ -621,6 +642,7 @@ srv_message_sent	Message sent	Tin nhắn đã gửi	Zpráva odeslána
 srv_missing	missing	thiếu	nenalezeno
 srv_missing_form	missing form	thiếu đơn	chybí formulář
 srv_missing_from_system	missing from system	không tìm thấy trong hệ thống	nenalezeno v systému
+srv_missing_type	missing type	thiếu loại	chybí typ
 srv_must_choose_store	you must choose a store	bạn phải chọn một cửa hàng	musíte vybrat provozovnu
 srv_must_take_photo_of_documents	you must take photo of ID documents	quý khách phải chụp ảnh thẻ căn cước	musíte vyfotit doklady
 srv_new_form_draft_deleted	New form draft deleted	Bản nháp biểu mẫu mới đã bị xóa	Koncept nového formuláře smazán
@@ -638,6 +660,7 @@ srv_non_negative_number	non negative number	số không được âm	nezáporné
 srv_not_base64	Not Base64	Không phải Base64	Není Base64
 srv_not_found	not found	không tìm thấy	nenalezeno
 srv_not_included	not included	không được bao gồm	nezahrnuto
+srv_outside_allowed_radius	you are outside allowed location	bạn đang ở ngoài vị trí cho phép	jste mimo povolené lokace
 srv_page_not_found	page not found	trang không tìm thấy	stránka nenalezena
 srv_password_requirements	Password must have 8 characters, 1 uppercase, 1 lowercase and 1 number	Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số	Heslo musí obsahovat alespoň 8 znaků, 1 velké, 1 malé písmeno a 1 číslici
 srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không thành công	Obnovení hesla se nezdařilo
@@ -652,7 +675,9 @@ srv_provider_not_selected	provider is not selected	nhà phát hành không đư�
 srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference existuje
 srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
 srv_register_failed	Register failed	Đăng ký không thành công	Registrace se nezdařila
+srv_register_not_found	workplace not found	không tìm thấy nơi làm việc	pracoviště nenalezeno
 srv_registration_not_found	registration not found or expired	yêu cầu đăng ký không tìm thấy hoặc đã hết hạn	registrace nenalezena nebo vypršela
+srv_retail_not_found	retail not found	không tìm thấy doanh nghiệp	podnik nenalezen
 srv_return_to	Return to	Hãy quay lại	Vraťte se na
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
@@ -683,4 +708,6 @@ srv_user_updated	user updated	người dùng được cập nhập	uživatel akt
 srv_username_requirements	Username must have 6 to 20 characters, only lowercase and no space	Tên đăng nhập phải có 6 đến 20 ký tự, chữ bé, không dấu cách và ký tự đặt biệt	Heslo musí obsahovat 6 až 20 znaků, malé písmeno, bez mezer a speciálních znaků
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
 srv_word	Error	Lỗi	Chyba
+srv_workplace_closed_today	workplace closed today	chỗ làm việc đóng cửa hôm nay	pracoviště má zavřeno dnes
 srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
+srv_you_not_working_today	you are not working today	bạn không làm việc hôm nay	dnes nepracujete
