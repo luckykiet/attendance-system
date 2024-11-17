@@ -2,13 +2,13 @@ const development = process.env.NODE_ENV === 'development';
 const protocol = 'https://';
 const subdomain = 'app';
 const www = 'www.';
-const realm = 'local';
-const domain = `attendance.${realm}`;
+const realm = 'me';
+const domain = `vcap.${realm}`;
 const admin_subdomain = 'admin';
 const admin_port = '5173'
 const admin_domain = `${admin_subdomain}.${domain}${development ? `:${admin_port}` : ''}`;
 const proxy_domain = development ? '' : '';
-const mobile_intent = 'attendance://';
+const mobile_intent = 'gowork://';
 
 const CONFIG = {
     protocol: protocol,

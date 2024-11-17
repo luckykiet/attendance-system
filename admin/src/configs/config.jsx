@@ -1,5 +1,5 @@
 const APP_NAME = 'ATTENDANCE SYSTEM Admin';
-const MOBILE_INTENT = 'attendance://';
+const MOBILE_INTENT = 'gowork://';
 
 export const HOSTNAME = window.location.hostname.split('.').slice(-2).join('.');
 export const HOST = HOSTNAME + (window.location.port ? `:${window.location.port}` : '');
