@@ -76,6 +76,7 @@ misc_by_provider	by provider	theo nhà phát hành	podle zprostředkovatele
 misc_by_status	by status	theo trạng thái	podle statusu
 misc_cafe	café	quán nước	kavárna
 misc_cancel	Cancel	Huỷ	Zrušit
+misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
 misc_check_in	check-in	check-in	příchod
@@ -96,7 +97,10 @@ misc_commercial_activity	commercial activity	hoạt động thương mại	obcho
 misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
 misc_confirm	Confirm	Xác nhận	Potvrdit
+misc_confirm_check_in	confirm check in	xác nhận check in	potvrdit příchod
+misc_confirm_check_out	confirm check out	xác nhận check out	potvrdit odchod
 misc_confirm_date	confirmation date	ngày xác nhận	den potvrzení
+misc_confirm_delete	confirm delete	xác nhận xoá	potvrdit smazání
 misc_confirm_password	Confirm password	Xác nhận mật khẩu	Ověření hesla
 misc_confirmed	confirmed	đã xác nhận	potvrzeno
 misc_confirmed_by_customer	Confirmed by customer	Được khách xác nhận	Potvrzeno zákazníkem
@@ -487,6 +491,7 @@ misc_workplaces	workplaces	nơi làm việc	pracoviště
 misc_year	year	năm	rok
 misc_yes	yes	có	ano
 misc_you_must_register_device	you must register your device	bạn phải đăng ký thiết bị này	musíte registrovat toto zařízení
+misc_you_will_not_see_workplace_until_add_again	you will not see the workplaces until you add URL again	bạn sẽ không nhìn thấy nơi làm việc cho đến khi bạn thêm lại URL	neuvidíte pracoviště, dokud znovu nepřidáte URL
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno
