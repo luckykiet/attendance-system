@@ -27,7 +27,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { Home, Logout } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
-import PersonIcon from '@mui/icons-material/Person'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import useTranslation from '@/hooks/useTranslation'
@@ -101,6 +100,13 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
   const drawer = (
     <>
       <List disablePadding sx={{ display: 'block' }}>
+        <CustomListItem
+          href={'/'}
+          text={t('misc_home_page')}
+          icon={<Home />}
+        />
+      </List>
+      <List disablePadding sx={{ display: 'block' }}>
         {checkPrivileges('getEmployees', user?.role) && (
           <CustomListItem
             href={'/employees'}
@@ -108,26 +114,6 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             icon={<BadgeIcon />}
           />
         )}
-      </List>
-      <Divider />
-      <List disablePadding>
-        <CustomListItem
-          href={`/user/${user?.username}`}
-          text={user?.username || t('misc_user')}
-          icon={<PersonIcon />}
-        />
-        <ListItem>
-          <ListItemButton onClick={handleLogout}>
-            <Tooltip title={t('misc_to_logout')}>
-              <ListItemIcon>
-                <Logout />
-              </ListItemIcon>
-            </Tooltip>
-            <ListItemText
-              primary={t('misc_to_logout')}
-            />
-          </ListItemButton>
-        </ListItem>
       </List>
       <List disablePadding sx={{ display: drawerOpen ? 'block' : 'none' }}>
         <Divider />
@@ -217,20 +203,6 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             flexItem
             sx={{ display: { xs: 'none', sm: 'flex' } }}
           />
-          <Tooltip title={user?.username}>
-            <IconButton
-              onClick={() => {
-                handleDrawerClose()
-                navigate(`/user/${user?.username}`)
-              }}
-              size="large"
-              edge="end"
-              color="inherit"
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
-            >
-              <PersonIcon />
-            </IconButton>
-          </Tooltip>
           <LanguageSwitcher withText={false} />
           <Tooltip title={t('misc_to_logout')}>
             <IconButton

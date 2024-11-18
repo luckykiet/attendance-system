@@ -167,7 +167,6 @@ export default function DialogRegister() {
     })
   }
 
-
   useEffect(() => {
     if (register) {
       reset(register);

@@ -94,17 +94,24 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
             throw 'srv_invalid_type';
         }
 
+        const attendance = await Attendance.findOne({ _id: attendanceId }).exec();
+        if (!attendance) {
+            throw 'srv_attendance_not_found';
+        }
+
         if (type === 'checkIn') {
             dailyAttendance.checkIns.push(attendanceId);
             const registerCheckInTime = dayjs(dailyAttendance.workingHour.start, 'HH:mm', true);
             if (dateToUse.isAfter(registerCheckInTime)) {
                 dailyAttendance.checkInsLate.push(attendanceId);
+                dailyAttendance.checkInsLateByEmployee.push(attendance.employeeId);
             }
         } else {
             dailyAttendance.checkOuts.push(attendanceId);
             const registerCheckOutTime = dayjs(dailyAttendance.workingHour.end, 'HH:mm', true);
             if (dateToUse.isBefore(registerCheckOutTime)) {
                 dailyAttendance.checkOutsEarly.push(attendanceId);
+                dailyAttendance.checkOutsEarlyByEmployee.push(attendance.employeeId);
             }
         }
         await dailyAttendance.save();
