@@ -55,10 +55,24 @@ const MyCompanies = () => {
       queryFn: () => getMyCompanies(url),
       enabled: !!appId && urls.length > 0,
     })),
+    combine: (results) => {
+      return {
+        isLoading: results.some((result) => result.isLoading),
+        isFetching: results.some((result) => result.isFetching),
+        data: results
+          .map((result) => result.data)
+          .filter((data) => !!data)
+          .map((data) => {
+            const { registers, workingAts } = data;
+            return registers.map((company: Company) => {
+              const workingAt = workingAts.find((wa: WorkingAt) => wa.registerId === company._id);
+              return { ...company, employeeWorkingHour: workingAt?.workingHours };
+            });
+          }).flat(),
+        refetch: () => results.forEach((result) => result.refetch()),
+      };
+    }
   });
-
-  const isLoading = queryResults.some((result) => result.isLoading);
-  const isFetching = queryResults.some((result) => result.isFetching);
 
   const handleScroll = (event: { nativeEvent: { contentSize: { height: number; width: number }; layoutMeasurement: { height: number; width: number }; contentOffset: { x: number; y: number } } }) => {
     const { contentSize, layoutMeasurement, contentOffset } = event.nativeEvent;
@@ -73,38 +87,25 @@ const MyCompanies = () => {
 
   useEffect(() => {
     if (location) {
-      queryResults.forEach((result) => {
-        result.refetch();
-      });
+      queryResults.refetch();
     }
   }, [location]);
-
-  const companies = queryResults
-    .map((result) => result.data)
-    .filter((data) => !!data)
-    .map((data) => {
-      const { registers, workingAts } = data;
-      return registers.map((company: Company) => {
-        const workingAt = workingAts.find((wa: WorkingAt) => wa.registerId === company._id);
-        return { ...company, employeeWorkingHour: workingAt?.workingHours };
-      });
-    }).flat();
 
   return (
     <ThemedView style={styles.nearbyContainer}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_workplaces')}:</ThemedText>
-        <TouchableOpacity onPress={() => queryResults.forEach((result) => result.refetch())} style={styles.refreshButton}>
+        <TouchableOpacity onPress={() => queryResults.refetch} style={styles.refreshButton}>
           <MaterialIcons name="refresh" size={24} color={colorScheme === 'light' ? "black" : "white"} />
         </TouchableOpacity>
       </ThemedView>
-      {(isLoading || isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
-      {companies.length > 0 ? (
+      {(queryResults.isLoading || queryResults.isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
+      {queryResults.data.length > 0 ? (
         <>
           <FlatList
             ref={scrollViewRef}
             style={styles.scrollView}
-            data={companies}
+            data={queryResults.data}
             renderItem={({ item: company }) => {
               return <View key={company._id} style={styles.companyItem}>
                 <ThemedText style={styles.companyText}>{company.name}</ThemedText>

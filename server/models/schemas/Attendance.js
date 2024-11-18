@@ -29,5 +29,7 @@ const AttendanceSchema = new Schema(
 
 AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, }, { unique: true });
 AttendanceSchema.index({ registerId: 1 });
+AttendanceSchema.index({ employeeId: 1 });
+AttendanceSchema.index({ checkInTime: 1 });
 
 module.exports = AttendanceSchema;

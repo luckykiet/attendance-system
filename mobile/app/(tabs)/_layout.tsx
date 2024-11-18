@@ -25,6 +25,15 @@ export default function TabLayout() {
           ),
         }}
       />
+       <Tabs.Screen
+        name="attendance"
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'calendar' : 'calendar-outline'} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="company"
         options={{
