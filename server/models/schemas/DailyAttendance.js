@@ -11,7 +11,9 @@ const DailyAttendanceSchema = new Schema(
         checkIns: { type: [Schema.Types.ObjectId], default: [] },
         checkOuts: { type: [Schema.Types.ObjectId], default: [] },
         checkInsLate: { type: [Schema.Types.ObjectId], default: [] }, // Array of Attendance IDs who checked in late
+        checkInsLateByEmployee: { type: [Schema.Types.ObjectId], default: [] }, // Array of Employee IDs who checked in late
         checkOutsEarly: { type: [Schema.Types.ObjectId], default: [] }, // Array of Attendance IDs who checked out early
+        checkOutsEarlyByEmployee: { type: [Schema.Types.ObjectId], default: [] }, // Array of Employee IDs who checked out early
     },
     {
         timestamps: true,

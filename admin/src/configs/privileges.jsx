@@ -4,4 +4,5 @@ export const PRIVILEGES = {
     deleteEmployee: ['Admin'],
     getUsers: ['Admin'],
     getEmployees: ['Admin'],
+    addEmployee: ['Admin'],
 }

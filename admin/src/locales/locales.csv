@@ -45,6 +45,7 @@ misc_apply	apply	áp dụng	použít
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
 misc_at_row	at row	ở hàng	u řádku
+misc_attendance	attendance	điểm danh	docházka
 misc_attendance_failed	attendance failed	điểm danh thất bại	docházka neúspěšná
 misc_attendance_success	attendance success	điểm danh thành công	docházka úspěšná
 misc_attendances	attendances	điểm danh	docházky
@@ -84,7 +85,13 @@ misc_check_merchants	check merchants	kiểm tra nhà bán buôn	kontrola obchodn
 misc_check_out	check-out	check-out	odchod
 misc_check_signed_documents	check signed documents	kiểm tra đơn đã ký	kontrola podepsaných dokumentů
 misc_check_unsigned_documents	check unsigned documents	kiểm tra đơn chưa ký	kontrola nepodepsaných dokumentů
+misc_checked_in	checked in	đã check-in	provedl příchod
+misc_checked_in_late	checked in late	đã check-in trễ	provedl příchod pozdě
+misc_checked_in_late_by_employee	checked in late by employee	đã check-in trễ bởi nhân viên	provedl příchod pozdě podle zaměstnance
 misc_checked_in_on_time	checked in on time	check in đúng giờ	příchod včas
+misc_checked_out	checked out	đã check-out	provedl odchod
+misc_checked_out_early	checked out early	đã check-out sớm	provedl odchod dříve
+misc_checked_out_early_by_employee	checked out early by employee	đã check-out sớm bởi nhân viên	provedl odchod dříve podle zaměstnance
 misc_checked_out_on_time	checked out on time	check out đúng giờ	odchod včas
 misc_choose_user	choose user	chọn người dùng	vybrat uživatele
 misc_chosen_store	chosen store	cửa hàng đã chọn	vybraná provozovna
@@ -196,6 +203,7 @@ misc_grant_permission	grant permission	cho phép quyền	udělit povolení
 misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
 misc_has_registered_device	has registered device	đã đăng ký thiết bị 	má registrované zařízení
 misc_hidden	hidden	ẩn	skryto
+misc_home_page	home page	trang chính	domovská stránka
 misc_hour	hour	giờ 	hodina
 misc_hour_short	h.	giờ 	hod.
 misc_hours	hours	giờ 	hodiny
@@ -492,6 +500,8 @@ misc_valid	valid	hợp lệ 	validní
 misc_vin	VIN	DIČ	DIČ
 misc_website	website	trang web	webová stránka
 misc_working_at	working at	làm việc tại	pracuje v
+misc_working_employees	working employees	nhân viện làm việc	pracující zaměstnanci
+misc_working_hour	working hour	thời gian làm việc	pracovní doba
 misc_working_hours	working hours	thời gian làm việc	pracovní doba
 misc_workplace	workplace	nơi làm việc	pracoviště
 misc_workplaces	workplaces	nơi làm việc	pracoviště
@@ -546,6 +556,7 @@ srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
 srv_already_sent	Already sent	Đã gửi	
 srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
 srv_assigned_form_not_found	Assigned form not found	Không tìm thấy biểu mẫu được chỉ định	Přidělený formulář nenalezen
+srv_attendance_not_found	attendance not found	Không tìm thấy dữ liệu điểm danh	Docházka nenalezena
 srv_bank_not_found	Bank not found	Không tìm thấy ngân hàng	Banku nelze nalézt
 srv_bank_updated	bank updated	đã cập nhập ngân hàng	banka aktualizována
 srv_bill_confirmed	bill confirmed	hoá đơn đã được xác nhận	faktura potvrzena

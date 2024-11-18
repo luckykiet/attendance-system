@@ -6,6 +6,7 @@ import { lazy } from 'react'
 const HomePage = Loadable(lazy(() => import('@/pages/admin/HomePage')))
 const EmployeesPage = Loadable(lazy(() => import('@/pages/admin/EmployeesPage')))
 const EmployeePage = Loadable(lazy(() => import('@/pages/admin/EmployeePage')))
+const RegisterAttendancePage = Loadable(lazy(() => import('@/pages/admin/RegisterAttendance')))
 const ErrorPage = Loadable(lazy(() => import('@/pages/ErrorPage')))
 
 const MainRoutes = {
@@ -25,7 +26,7 @@ const MainRoutes = {
           element: <HomePage />,
         },
         {
-        path: 'employee',
+          path: 'employee',
           element: <EmployeePage />,
         },
         {
@@ -36,6 +37,10 @@ const MainRoutes = {
           path: 'employees',
           element: <EmployeesPage />,
         },
+        {
+          path: 'attendance/:registerId',
+          element: <RegisterAttendancePage />,
+        }
       ],
     },
   ],

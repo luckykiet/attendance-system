@@ -14,6 +14,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
 import { DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
+import { useNavigate } from 'react-router-dom';
 
 dayjs.extend(customParseFormat);
 
@@ -39,6 +40,7 @@ const getTodayWorkingHours = (workingHours) => {
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const setRegisterId = useSetRegisterId();
   const setRegisterIsModalOpen = useSetIsModalOpen();
   const setRetail = useSetRetail();
@@ -147,7 +149,7 @@ export default function HomePage() {
                             <EditIcon />
                           </IconButton>
                           <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button variant='contained'>
+                            <Button onClick={() => navigate(`/attendance/${register._id}`)} variant='contained'>
                               {t('misc_attendances')}
                             </Button>
                           </CardActions>
