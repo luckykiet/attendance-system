@@ -1,4 +1,6 @@
-export const DAYS_OF_WEEK = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+export const DAYS_OF_WEEK: Array<keyof typeof daysOfWeeksTranslations> = [
+    'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
+];
 
 export const daysOfWeeksTranslations = {
     sun: {

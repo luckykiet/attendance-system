@@ -2,15 +2,22 @@ const Register = require('../../models/Register');
 const Employee = require('../../models/Employee');
 const WorkingAt = require('../../models/WorkingAt');
 const Attendance = require('../../models/Attendance');
-const HttpError = require("../../constants/http-error");
+const DailyAttendance = require('../../models/DailyAttendance');
 const utils = require('../../utils');
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+const { DAYS_OF_WEEK } = require('../../constants');
 
-const getNearbyCompanies = async (req, res, next) => {
+dayjs.extend(customParseFormat);
+
+const getTodayWorkplaces = async (req, res, next) => {
     try {
-        const { longitude, latitude } = req.body;
+        // date is optional, if not provided, it will take the current date; date format: YYYYMMDD
+        const { longitude, latitude, date } = req.body;
 
+        let hasLocation = true;
         if (!longitude || !latitude) {
-            throw new HttpError('srv_missing_coordinates', 400);
+            hasLocation = false;
         }
 
         // get the employee(s) by the deviceId
@@ -20,25 +27,24 @@ const getNearbyCompanies = async (req, res, next) => {
             return res.status(200).json({ success: true, msg: [] });
         }
 
-        // get only the registerIds where the employee is working
-        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, isAvailable: true }).select('registerId workingHours').exec();
+        const dateToUse = date ? dayjs(date) : dayjs();
+        const dayIndex = dateToUse.day();
+        const dayKey = DAYS_OF_WEEK[dayIndex];
+
+        const workingHourKey = `workingHours.${dayKey}.isAvailable`;
+
+        // get only the registerIds where the employee is working today
+        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, [workingHourKey]: true, isAvailable: true }).select('registerId workingHours').exec();
 
         if (!workingAts.length) {
             return res.status(200).json({ success: true, msg: [] });
         }
 
-        const attendances = await Attendance.find({ registerId: { $in: workingAts.map((w) => w.registerId) } }).select('registerId checkInTime checkOutTime').exec();
+        const dailyAttendances = await DailyAttendance.find({ date: parseInt(dateToUse.format('YYYYMMDD')), registerId: { $in: workingAts.map((wa) => wa.registerId) } }).exec();
+        const attendances = await Attendance.find({ dailyAttendanceId: { $in: dailyAttendances.map((da) => da._id) } }).select('registerId checkInTime checkOutTime').exec()
 
-        const maxDistance = 500;
-
-        // get all registers near the employee, where the employee is working at and belongs to the same company
+        // get all registers, where the employee is working at and belongs to the same company
         const nearbyRegisters = await Register.find({
-            location: {
-                $near: {
-                    $geometry: { type: "Point", coordinates: [longitude, latitude] },
-                    $maxDistance: maxDistance
-                }
-            },
             _id: { $in: workingAts.map(w => w.registerId) }
         }).select('name workingHours location address');
 
@@ -54,11 +60,14 @@ const getNearbyCompanies = async (req, res, next) => {
 
             const regLongitude = registerObj.location.longitude;
             const regLatitude = registerObj.location.latitude;
-            registerObj.distanceInMeters = utils.calculateDistance({ originLat: latitude, originLon: longitude, newLat: regLatitude, newLon: regLongitude });
+            registerObj.distanceInMeters = hasLocation ? utils.calculateDistance({ originLat: latitude, originLon: longitude, newLat: regLatitude, newLon: regLongitude }) : null;
             return registerObj;
         });
-
-        leanNearbyRegisters.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+        if (hasLocation) {
+            leanNearbyRegisters.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+        } else {
+            leanNearbyRegisters.sort((a, b) => a.name.localeCompare(b.name));
+        }
 
         return res.status(200).json({ success: true, msg: leanNearbyRegisters });
     } catch (error) {
@@ -92,6 +101,6 @@ const getMyWorkingPlaces = async (req, res, next) => {
 };
 
 module.exports = {
-    getNearbyCompanies,
+    getTodayWorkplaces,
     getMyWorkingPlaces
 };

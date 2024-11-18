@@ -12,7 +12,7 @@
     "start": "NODE_ENV=production && node bin/www.http.js",
     "starthttps": "NODE_ENV=production && node bin/www.https.js",
     "upgrade-dep": "ncu -u && yarn install",
-    "clean": "node ./scripts/clean-devcert.js",
+    "clean-devcert": "node ./scripts/clean-devcert.js",
     "install-devcert": "node ./scripts/install-devcert.js",
     "postinstall": "yarn install-devcert"
   },

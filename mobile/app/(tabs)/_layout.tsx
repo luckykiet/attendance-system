@@ -26,6 +26,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="company"
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'business' : 'business-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="scanner"
         options={{
           tabBarShowLabel: false,

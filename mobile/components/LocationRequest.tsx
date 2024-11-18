@@ -22,7 +22,7 @@ export const LocationRequest = () => {
             setPermissionDenied(true);
             Alert.alert(
                 t('misc_permission_denied'),
-                t('misc_location_permission_required')
+                t('srv_location_required_to_make_attendance')
             );
             setIsGettingLocation(false);
             return;

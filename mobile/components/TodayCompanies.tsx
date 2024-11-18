@@ -20,6 +20,8 @@ import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator'
 import { useAttendanceApi } from '@/api/useAttendanceApi';
 import { AttendanceMutation } from '@/types/attendance';
 import _ from 'lodash';
+import { calculateHoursFromMinutes, calculateKilometersFromMeters } from '@/utils';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
@@ -32,7 +34,7 @@ interface Company {
   location: Location & { allowedRadius: number },
   workingHours: WorkingHours;
   employeeWorkingHours: WorkingHours;
-  distanceInMeters: number;
+  distanceInMeters: number | null;
   checkInTime: string | null;
   checkOutTime: string | null;
   domain: string;
@@ -106,12 +108,13 @@ const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, workingH
   return result;
 };
 
-const NearbyCompanies = () => {
+const TodayCompanies = () => {
   const { t } = useTranslation();
   const nonCap = useTranslation({ capitalize: false });
   const { location, appId, urls, isGettingLocation } = useAppStore();
-  const { getNearbyCompanies } = useCompaniesApi();
+  const { getTodayWorkplaces } = useCompaniesApi();
   const { logAttendance } = useAttendanceApi();
+  const colorScheme = useColorScheme();
 
   const scrollViewRef = useRef<FlatList>(null);
   const [showScrollArrow, setShowScrollArrow] = useState(false);
@@ -119,20 +122,26 @@ const NearbyCompanies = () => {
   const makeAttendanceMutation = useMutation(
     {
       mutationFn: (data: AttendanceMutation) => logAttendance(data),
-      onSuccess: (data) => Alert.alert(t('misc_attendance_success'), t(data)),
+      onSuccess: (data) => {
+        Alert.alert(t('misc_attendance_success'), t(data))
+        queryResults.forEach((result) => {
+          result.refetch();
+        });
+      },
       onError: (error) => Alert.alert(t('misc_attendance_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_make_attendance')),
     }
   )
 
   const queryResults = useQueries({
     queries: urls.map((url) => ({
-      queryKey: ['nearbyCompanies', location, appId, url],
-      queryFn: () => getNearbyCompanies(url, location),
-      enabled: !!location && !!appId && urls.length > 0,
+      queryKey: ['todayWorkplaces', location, appId, url],
+      queryFn: () => getTodayWorkplaces(url, location),
+      enabled: !!appId && urls.length > 0,
     })),
   });
 
   const isLoading = queryResults.some((result) => result.isLoading);
+  const isFetching = queryResults.some((result) => result.isFetching);
 
   const nearbyCompanies: CompanyWithStatus[] = queryResults
     .map((result) => (result.data as Company[]) || [])
@@ -146,8 +155,8 @@ const NearbyCompanies = () => {
         ...company,
         openingHours: t(message),
         status,
-        distanceInMeters: Math.round(company.distanceInMeters),
-        distanceLeft: Math.round(company.location.allowedRadius - company.distanceInMeters),
+        distanceInMeters: company.distanceInMeters ? Math.round(company.distanceInMeters) : null,
+        distanceLeft: company.distanceInMeters ? Math.round(company.location.allowedRadius - company.distanceInMeters) : null,
         checkInTimeStatus: attendanceStatus.checkInTime,
         checkOutTimeStatus: attendanceStatus.checkOutTime,
         employeeWorkingHour: employeeWorkingHourMessage
@@ -155,11 +164,46 @@ const NearbyCompanies = () => {
     });
 
   const handleAttendance = async (company: Company) => {
-    const { _id: registerId, domain, checkInTime } = company;
+    const { _id: registerId, domain, checkInTime, checkOutTime, employeeWorkingHours } = company;
+
+    if (checkInTime && checkOutTime) {
+      Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
+      return;
+    }
+
+    const todayIndex = dayjs().day();
+    const todayKey = DAYS_OF_WEEK[todayIndex];
+    const wh = employeeWorkingHours[todayKey];
+
+    const currentTime = dayjs();
+    const openTime = dayjs(wh.start, TIME_FORMAT);
+    const closeTime = dayjs(wh.end, TIME_FORMAT);
+
+    let diff = 0;
+    let text = `${t('misc_cannot_revert_action')}!`;
+
+    if (_.isEmpty(checkInTime)) {
+      diff = currentTime.diff(openTime, 'minute');
+      if (currentTime.isBefore(openTime)) {
+        text += `\n${t('misc_early')}: `;
+      } else {
+        text += `\n${t('misc_late')}: `;
+      }
+    } else {
+      diff = currentTime.diff(closeTime, 'minute');
+      if (currentTime.isBefore(closeTime)) {
+        text += `\n${t('misc_early')}: `;
+      } else {
+        text += `\n${t('misc_late')}: `;
+      }
+    }
+
+    const { hours, minutes } = calculateHoursFromMinutes(diff);
+    text += `${hours} ${nonCap.t('misc_hour_short')} ${minutes} ${nonCap.t('misc_min_short')}`;
 
     Alert.alert(
       t(_.isEmpty(checkInTime) ? 'misc_confirm_check_in' : 'misc_confirm_check_out'),
-      `${t('misc_cannot_revert_action')}!`,
+      text,
       [
         {
           text: t('misc_cancel'),
@@ -174,7 +218,7 @@ const NearbyCompanies = () => {
               return;
             }
             if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
-              Alert.alert(t('misc_error'), t('misc_location_not_found'));
+              Alert.alert(t('misc_error'), t('srv_location_required_to_make_attendance'));
               return;
             }
             makeAttendanceMutation.mutate({ registerId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude });
@@ -205,9 +249,14 @@ const NearbyCompanies = () => {
   }, [location]);
 
   return (
-    <View style={styles.nearbyContainer}>
-      <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_nearby_workplaces')}:</ThemedText>
-      {(isLoading || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
+    <ThemedView style={styles.nearbyContainer}>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_my_today_workplaces')}:</ThemedText>
+        <TouchableOpacity onPress={() => queryResults.forEach((result) => result.refetch())} style={styles.refreshButton}>
+          <MaterialIcons name="refresh" size={24} color={colorScheme === 'light' ? "black" : "white"} />
+        </TouchableOpacity>
+      </ThemedView>
+      {(isLoading || isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
       {nearbyCompanies.length > 0 ? (
         <>
           <FlatList
@@ -215,6 +264,11 @@ const NearbyCompanies = () => {
             style={styles.scrollView}
             data={nearbyCompanies}
             renderItem={({ item: company }) => {
+              const { kilometers, meters } = company.distanceInMeters ? calculateKilometersFromMeters(company.distanceInMeters) : { kilometers: 0, meters: 0 };
+              const { kilometers: kmLeft, meters: mLeft } = company.distanceLeft ? calculateKilometersFromMeters(company.distanceLeft) : { kilometers: 0, meters: 0 };
+              const { hours: checkOutH, minutes: checkOutM } = company.checkOutTimeStatus ? calculateHoursFromMinutes(company.checkOutTimeStatus) : { hours: 0, minutes: 0 };
+              const { hours: checkInH, minutes: checkInM } = company.checkInTimeStatus ? calculateHoursFromMinutes(company.checkInTimeStatus) : { hours: 0, minutes: 0 };
+
               return <TouchableOpacity onPress={() => handleAttendance({ ...company, registerId: company._id })}>
                 <View key={company._id} style={styles.companyItem}>
                   <ThemedText style={styles.companyText}>{company.name}</ThemedText>
@@ -236,17 +290,17 @@ const NearbyCompanies = () => {
                   >
                     {t('misc_status')}: {company.status === 'open' ? t('misc_opening') : company.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
                   </ThemedText>
-                  <ThemedText style={styles.companyDetail}>
-                    {t('misc_distance')}: {company.distanceInMeters} m
-                  </ThemedText>
-                  <ThemedText
+                  {company.distanceInMeters && <ThemedText style={styles.companyDetail}>
+                    {t('misc_distance')}: {kilometers > 0 ? `${kilometers} km` : ''} {`${meters} m`}
+                  </ThemedText>}
+                  {company.distanceInMeters && <ThemedText
                     style={[
                       styles.companyDetail,
                       company.distanceLeft > 0 ? { color: Colors.success } : { color: Colors.error },
                     ]}
                   >
-                    {t('misc_distance_left')}: {company.distanceLeft} m
-                  </ThemedText>
+                    {t('misc_distance_left')}: {company.distanceLeft > 0 ? '-' : ''}{kmLeft > 0 ? `${kmLeft} km ` : ''}{`${mLeft} m`}
+                  </ThemedText>}
 
                   <View style={styles.divider} />
 
@@ -258,7 +312,7 @@ const NearbyCompanies = () => {
                       styles.companyDetail,
                       isNaN(company.checkInTimeStatus) ? { color: Colors.success } : { color: Colors.error },
                     ]}>
-                      {isNaN(company.checkInTimeStatus) ? t(company.checkInTimeStatus) : `${company.checkInTimeStatus} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_late')}`}
+                      {isNaN(company.checkInTimeStatus) ? t(company.checkInTimeStatus) : `${checkInH > 0 ? `${checkInH} ${nonCap.t('misc_hour_short')} ` : ''}${checkInM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_late')}`}
                     </ThemedText>
                   </ThemedText>}
                   {!_.isEmpty(company.checkOutTime) && dayjs(company.checkOutTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_out')}: {dayjs(company.checkOutTime).format('HH:mm:ss')} -&nbsp;
@@ -266,7 +320,7 @@ const NearbyCompanies = () => {
                       styles.companyDetail,
                       isNaN(company.checkOutTimeStatus) ? { color: Colors.success } : { color: Colors.error },
                     ]}>
-                      {isNaN(company.checkOutTimeStatus) ? t(company.checkOutTimeStatus) : `${Math.abs(company.checkOutTimeStatus)} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_early')}`}
+                      {isNaN(company.checkOutTimeStatus) ? t(company.checkOutTimeStatus) : `${checkOutH > 0 ? `${checkOutH} ${nonCap.t('misc_hour_short')} ` : ''}${checkOutM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_early')}`}
                     </ThemedText>
                   </ThemedText>}
                 </View>
@@ -277,8 +331,8 @@ const NearbyCompanies = () => {
             scrollEventThrottle={16}
           />
           {showScrollArrow && (
-            <TouchableOpacity style={styles.arrowContainer} onPress={scrollToBottom}>
-              <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+            <TouchableOpacity style={[styles.arrowContainer, { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' },]} onPress={scrollToBottom}>
+              <MaterialIcons name="keyboard-arrow-down" size={24} color={colorScheme === 'light' ? "black" : "white"} />
             </TouchableOpacity>
           )}
         </>
@@ -288,7 +342,7 @@ const NearbyCompanies = () => {
           <ThemedText>{t('misc_must_be_registered_by_employer')}.</ThemedText>
         </ThemedView>
       )}
-    </View>
+    </ThemedView>
   );
 };
 
@@ -298,6 +352,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  nearbyLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  refreshButton: {
+    padding: 8,
+  },
   scrollView: {
     marginVertical: 10,
   },
@@ -305,13 +372,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     alignSelf: 'center',
-    backgroundColor: '#fff',
     borderRadius: 15,
     padding: 5,
-  },
-  nearbyLabel: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   companyItem: {
     marginVertical: 8,
@@ -334,4 +396,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NearbyCompanies;
+export default TodayCompanies;

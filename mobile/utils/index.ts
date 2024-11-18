@@ -36,3 +36,17 @@ export const delay = (time: number) => {
         setTimeout(() => resolve(undefined), time);
     });
 }
+
+export const calculateHoursFromMinutes = (diffInMinutes: number) => {
+    const absMin = Math.abs(diffInMinutes);
+    const hours = Math.floor(absMin / 60);
+    const minutes = absMin % 60;
+    return { hours, minutes };
+};
+
+export const calculateKilometersFromMeters = (pureMeters: number) => {
+    const absMeters = Math.abs(pureMeters);
+    const kilometers = Math.floor(absMeters / 1000);
+    const meters = absMeters % 1000;
+    return { kilometers, meters: absMeters % 1000 };
+};
