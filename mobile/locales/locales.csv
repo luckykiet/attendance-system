@@ -288,6 +288,7 @@ misc_new_password	New password	Mật khẩu mới	Nové heslo
 misc_new_payment_terminal	New payment terminal	Máy trả thẻ mới	Nový platební terminál
 misc_new_store	new store	cửa hàng mới	nová provozovna
 misc_no	no	không	ne
+misc_no_attendance	no attendance	không có dữ liệu điểm danh	není žádná docházka
 misc_no_columns	no columns	không có cột	nejsou žádné sloupce
 misc_no_company	no company	không có công ty	není žádná společnost
 misc_no_document	no document	không có tài liệu	žádný dokument

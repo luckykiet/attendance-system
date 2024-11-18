@@ -124,9 +124,7 @@ const TodayCompanies = () => {
       mutationFn: (data: AttendanceMutation) => logAttendance(data),
       onSuccess: (data) => {
         Alert.alert(t('misc_attendance_success'), t(data))
-        queryResults.forEach((result) => {
-          result.refetch();
-        });
+        queryResults.refetch();
       },
       onError: (error) => Alert.alert(t('misc_attendance_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_make_attendance')),
     }
@@ -138,30 +136,33 @@ const TodayCompanies = () => {
       queryFn: () => getTodayWorkplaces(url, location),
       enabled: !!appId && urls.length > 0,
     })),
-  });
-
-  const isLoading = queryResults.some((result) => result.isLoading);
-  const isFetching = queryResults.some((result) => result.isFetching);
-
-  const nearbyCompanies: CompanyWithStatus[] = queryResults
-    .map((result) => (result.data as Company[]) || [])
-    .flat()
-    .filter((company, index, self) => self.findIndex(c => c._id === company._id) === index)
-    .map((company) => {
-      const { status, message } = getTodayWorkingHours(company.workingHours);
-      const { message: employeeWorkingHourMessage } = getTodayWorkingHours(company.employeeWorkingHours);
-      const attendanceStatus = getAttendanceStatus({ checkInTime: company.checkInTime, checkOutTime: company.checkOutTime, workingHours: company.employeeWorkingHours });
+    combine: (results) => {
       return {
-        ...company,
-        openingHours: t(message),
-        status,
-        distanceInMeters: company.distanceInMeters ? Math.round(company.distanceInMeters) : null,
-        distanceLeft: company.distanceInMeters ? Math.round(company.location.allowedRadius - company.distanceInMeters) : null,
-        checkInTimeStatus: attendanceStatus.checkInTime,
-        checkOutTimeStatus: attendanceStatus.checkOutTime,
-        employeeWorkingHour: employeeWorkingHourMessage
+        isLoading: results.some((result) => result.isLoading),
+        isFetching: results.some((result) => result.isFetching),
+        data: results
+          .map((result) => (result.data as Company[]) || [])
+          .flat()
+          .filter((company, index, self) => self.findIndex(c => c._id === company._id) === index)
+          .map((company) => {
+            const { status, message } = getTodayWorkingHours(company.workingHours);
+            const { message: employeeWorkingHourMessage } = getTodayWorkingHours(company.employeeWorkingHours);
+            const attendanceStatus = getAttendanceStatus({ checkInTime: company.checkInTime, checkOutTime: company.checkOutTime, workingHours: company.employeeWorkingHours });
+            return {
+              ...company,
+              openingHours: t(message),
+              status,
+              distanceInMeters: company.distanceInMeters ? Math.round(company.distanceInMeters) : null,
+              distanceLeft: company.distanceInMeters ? Math.round(company.location.allowedRadius - company.distanceInMeters) : null,
+              checkInTimeStatus: attendanceStatus.checkInTime,
+              checkOutTimeStatus: attendanceStatus.checkOutTime,
+              employeeWorkingHour: employeeWorkingHourMessage
+            };
+          }),
+        refetch: () => results.forEach((result) => result.refetch()),
       };
-    });
+    }
+  });
 
   const handleAttendance = async (company: Company) => {
     const { _id: registerId, domain, checkInTime, checkOutTime, employeeWorkingHours } = company;
@@ -242,9 +243,7 @@ const TodayCompanies = () => {
 
   useEffect(() => {
     if (location) {
-      queryResults.forEach((result) => {
-        result.refetch();
-      });
+      queryResults.refetch();
     }
   }, [location]);
 
@@ -252,97 +251,99 @@ const TodayCompanies = () => {
     <ThemedView style={styles.nearbyContainer}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_my_today_workplaces')}:</ThemedText>
-        <TouchableOpacity onPress={() => queryResults.forEach((result) => result.refetch())} style={styles.refreshButton}>
+        <TouchableOpacity onPress={() => queryResults.refetch()} style={styles.refreshButton}>
           <MaterialIcons name="refresh" size={24} color={colorScheme === 'light' ? "black" : "white"} />
         </TouchableOpacity>
       </ThemedView>
-      {(isLoading || isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
-      {nearbyCompanies.length > 0 ? (
-        <>
-          <FlatList
-            ref={scrollViewRef}
-            style={styles.scrollView}
-            data={nearbyCompanies}
-            renderItem={({ item: company }) => {
-              const { kilometers, meters } = company.distanceInMeters ? calculateKilometersFromMeters(company.distanceInMeters) : { kilometers: 0, meters: 0 };
-              const { kilometers: kmLeft, meters: mLeft } = company.distanceLeft ? calculateKilometersFromMeters(company.distanceLeft) : { kilometers: 0, meters: 0 };
-              const { hours: checkOutH, minutes: checkOutM } = company.checkOutTimeStatus ? calculateHoursFromMinutes(company.checkOutTimeStatus) : { hours: 0, minutes: 0 };
-              const { hours: checkInH, minutes: checkInM } = company.checkInTimeStatus ? calculateHoursFromMinutes(company.checkInTimeStatus) : { hours: 0, minutes: 0 };
+      {(queryResults.isLoading || queryResults.isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
+      {
+        queryResults.data.length > 0 ? (
+          <>
+            <FlatList
+              ref={scrollViewRef}
+              style={styles.scrollView}
+              data={queryResults.data}
+              renderItem={({ item: company }) => {
+                const { kilometers, meters } = company.distanceInMeters ? calculateKilometersFromMeters(company.distanceInMeters) : { kilometers: 0, meters: 0 };
+                const { kilometers: kmLeft, meters: mLeft } = company.distanceLeft ? calculateKilometersFromMeters(company.distanceLeft) : { kilometers: 0, meters: 0 };
+                const { hours: checkOutH, minutes: checkOutM } = company.checkOutTimeStatus ? calculateHoursFromMinutes(company.checkOutTimeStatus) : { hours: 0, minutes: 0 };
+                const { hours: checkInH, minutes: checkInM } = company.checkInTimeStatus ? calculateHoursFromMinutes(company.checkInTimeStatus) : { hours: 0, minutes: 0 };
 
-              return <TouchableOpacity onPress={() => handleAttendance({ ...company, registerId: company._id })}>
-                <View key={company._id} style={styles.companyItem}>
-                  <ThemedText style={styles.companyText}>{company.name}</ThemedText>
-                  <ThemedText style={styles.companyDetail}>
-                    {company.address.street}, {company.address.zip} {company.address.city}
-                  </ThemedText>
-                  <ThemedText style={styles.companyDetail}>
-                    {t('misc_working_hours')}: {company.openingHours}
-                  </ThemedText>
-                  <ThemedText
-                    style={[
-                      styles.companyDetail,
-                      company.status === 'open'
-                        ? { color: Colors.success }
-                        : company.status === 'warning'
-                          ? { color: Colors.warning }
-                          : { color: Colors.error },
-                    ]}
-                  >
-                    {t('misc_status')}: {company.status === 'open' ? t('misc_opening') : company.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
-                  </ThemedText>
-                  {company.distanceInMeters && <ThemedText style={styles.companyDetail}>
-                    {t('misc_distance')}: {kilometers > 0 ? `${kilometers} km` : ''} {`${meters} m`}
-                  </ThemedText>}
-                  {company.distanceInMeters && <ThemedText
-                    style={[
-                      styles.companyDetail,
-                      company.distanceLeft > 0 ? { color: Colors.success } : { color: Colors.error },
-                    ]}
-                  >
-                    {t('misc_distance_left')}: {company.distanceLeft > 0 ? '-' : ''}{kmLeft > 0 ? `${kmLeft} km ` : ''}{`${mLeft} m`}
-                  </ThemedText>}
-
-                  <View style={styles.divider} />
-
-                  <ThemedText style={styles.companyDetail}>
-                    {t('misc_my_working_hours')}: {company.employeeWorkingHour}
-                  </ThemedText>
-                  {!_.isEmpty(company.checkInTime) && dayjs(company.checkInTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_in')}: {dayjs(company.checkInTime).format('HH:mm:ss')} -&nbsp;
-                    <ThemedText style={[
-                      styles.companyDetail,
-                      isNaN(company.checkInTimeStatus) ? { color: Colors.success } : { color: Colors.error },
-                    ]}>
-                      {isNaN(company.checkInTimeStatus) ? t(company.checkInTimeStatus) : `${checkInH > 0 ? `${checkInH} ${nonCap.t('misc_hour_short')} ` : ''}${checkInM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_late')}`}
+                return <TouchableOpacity onPress={() => handleAttendance({ ...company, registerId: company._id })}>
+                  <View key={company._id} style={styles.companyItem}>
+                    <ThemedText style={styles.companyText}>{company.name}</ThemedText>
+                    <ThemedText style={styles.companyDetail}>
+                      {company.address.street}, {company.address.zip} {company.address.city}
                     </ThemedText>
-                  </ThemedText>}
-                  {!_.isEmpty(company.checkOutTime) && dayjs(company.checkOutTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_out')}: {dayjs(company.checkOutTime).format('HH:mm:ss')} -&nbsp;
-                    <ThemedText style={[
-                      styles.companyDetail,
-                      isNaN(company.checkOutTimeStatus) ? { color: Colors.success } : { color: Colors.error },
-                    ]}>
-                      {isNaN(company.checkOutTimeStatus) ? t(company.checkOutTimeStatus) : `${checkOutH > 0 ? `${checkOutH} ${nonCap.t('misc_hour_short')} ` : ''}${checkOutM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_early')}`}
+                    <ThemedText style={styles.companyDetail}>
+                      {t('misc_working_hours')}: {company.openingHours}
                     </ThemedText>
-                  </ThemedText>}
-                </View>
+                    <ThemedText
+                      style={[
+                        styles.companyDetail,
+                        company.status === 'open'
+                          ? { color: Colors.success }
+                          : company.status === 'warning'
+                            ? { color: Colors.warning }
+                            : { color: Colors.error },
+                      ]}
+                    >
+                      {t('misc_status')}: {company.status === 'open' ? t('misc_opening') : company.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
+                    </ThemedText>
+                    {company.distanceInMeters && <ThemedText style={styles.companyDetail}>
+                      {t('misc_distance')}: {kilometers > 0 ? `${kilometers} km` : ''} {`${meters} m`}
+                    </ThemedText>}
+                    {company.distanceInMeters && <ThemedText
+                      style={[
+                        styles.companyDetail,
+                        company.distanceLeft > 0 ? { color: Colors.success } : { color: Colors.error },
+                      ]}
+                    >
+                      {t('misc_distance_left')}: {company.distanceLeft > 0 ? '-' : ''}{kmLeft > 0 ? `${kmLeft} km ` : ''}{`${mLeft} m`}
+                    </ThemedText>}
+
+                    <View style={styles.divider} />
+
+                    <ThemedText style={styles.companyDetail}>
+                      {t('misc_my_working_hours')}: {company.employeeWorkingHour}
+                    </ThemedText>
+                    {!_.isEmpty(company.checkInTime) && dayjs(company.checkInTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_in')}: {dayjs(company.checkInTime).format('HH:mm:ss')} -&nbsp;
+                      <ThemedText style={[
+                        styles.companyDetail,
+                        isNaN(company.checkInTimeStatus) ? { color: Colors.success } : { color: Colors.error },
+                      ]}>
+                        {isNaN(company.checkInTimeStatus) ? t(company.checkInTimeStatus) : `${checkInH > 0 ? `${checkInH} ${nonCap.t('misc_hour_short')} ` : ''}${checkInM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_late')}`}
+                      </ThemedText>
+                    </ThemedText>}
+                    {!_.isEmpty(company.checkOutTime) && dayjs(company.checkOutTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_out')}: {dayjs(company.checkOutTime).format('HH:mm:ss')} -&nbsp;
+                      <ThemedText style={[
+                        styles.companyDetail,
+                        isNaN(company.checkOutTimeStatus) ? { color: Colors.success } : { color: Colors.error },
+                      ]}>
+                        {isNaN(company.checkOutTimeStatus) ? t(company.checkOutTimeStatus) : `${checkOutH > 0 ? `${checkOutH} ${nonCap.t('misc_hour_short')} ` : ''}${checkOutM} ${nonCap.t('misc_min_short')} ${nonCap.t('misc_early')}`}
+                      </ThemedText>
+                    </ThemedText>}
+                  </View>
+                </TouchableOpacity>
+              }}
+              keyExtractor={(company) => company._id}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+            />
+            {showScrollArrow && (
+              <TouchableOpacity style={[styles.arrowContainer, { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' },]} onPress={scrollToBottom}>
+                <MaterialIcons name="keyboard-arrow-down" size={24} color={colorScheme === 'light' ? "black" : "white"} />
               </TouchableOpacity>
-            }}
-            keyExtractor={(company) => company._id}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-          />
-          {showScrollArrow && (
-            <TouchableOpacity style={[styles.arrowContainer, { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' },]} onPress={scrollToBottom}>
-              <MaterialIcons name="keyboard-arrow-down" size={24} color={colorScheme === 'light' ? "black" : "white"} />
-            </TouchableOpacity>
-          )}
-        </>
-      ) : (
-        <ThemedView>
-          <ThemedText>{t('misc_no_nearby_workplace')}.</ThemedText>
-          <ThemedText>{t('misc_must_be_registered_by_employer')}.</ThemedText>
-        </ThemedView>
-      )}
-    </ThemedView>
+            )}
+          </>
+        ) : (
+          <ThemedView>
+            <ThemedText>{t('misc_no_nearby_workplace')}.</ThemedText>
+            <ThemedText>{t('misc_must_be_registered_by_employer')}.</ThemedText>
+          </ThemedView>
+        )
+      }
+    </ThemedView >
   );
 };
 
