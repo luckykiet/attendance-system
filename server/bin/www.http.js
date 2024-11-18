@@ -6,9 +6,7 @@
 
 const app = require('../app');
 const debug = require('debug')('attendance-system:server');
-const https = require('https');
-// const spdy = require('spdy');
-const fs = require('fs');
+const http = require('http');
 
 
 /**
@@ -32,7 +30,7 @@ const normalizePort = (val) => {
 };
 
 /**
- * Event listener for HTTPS server "error" event.
+ * Event listener for HTTP server "error" event.
  */
 
 const onError = (error) => {
@@ -60,7 +58,7 @@ const onError = (error) => {
 };
 
 /**
- * Event listener for HTTPS server "listening" event.
+ * Event listener for HTTP server "listening" event.
  */
 
 const onListening = () => {
@@ -75,22 +73,14 @@ const onListening = () => {
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '4000');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTPS server.
+ * Create HTTP server.
  */
 
-if (!fs.existsSync('./certs/tls.key') || !fs.existsSync('./certs/tls.cert')) {
-  console.error('Missing certificates. Please run `yarn install-devcert` or run http');
-  process.exit(1);
-}
-
-const server = https.createServer({
-  key: fs.readFileSync('./certs/tls.key'),
-  cert: fs.readFileSync('./certs/tls.cert'),
-}, app);
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
