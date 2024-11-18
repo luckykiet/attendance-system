@@ -232,5 +232,6 @@ const makeAttendance = async (req, res, next) => {
 };
 
 module.exports = {
-    makeAttendance
+    makeAttendance,
+    getDailyAttendance,
 }

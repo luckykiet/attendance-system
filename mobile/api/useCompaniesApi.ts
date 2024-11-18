@@ -1,22 +1,30 @@
 import createAxiosService from '@/utils/axios';
 
 export const useCompaniesApi = () => {
-    const routePrefix = '/api';
-    const getNearbyCompanies = async (serverUrl: string, formData: { longitude: number; latitude: number } | null) => {
-        if (!formData) {
-            return [];
-        }
+    const routePrefix = '/api/workplaces';
+    const getTodayWorkplaces = async (serverUrl: string, formData: { longitude: number; latitude: number } | null) => {
         const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: 5000 });
-        const { data: { success, msg } } = await axiosInstance.post('/nearby-companies', {
-            longitude: formData.longitude,
-            latitude: formData.latitude,
+        const { data: { success, msg } } = await axiosInstance.post('/', {
+            longitude: formData?.longitude || null,
+            latitude: formData?.latitude || null,
         });
 
         if (!success) {
             throw new Error(msg);
         }
-        
+
         return msg.map((company: any) => ({ ...company, domain: serverUrl }));;
     };
-    return { getNearbyCompanies };
+
+    const getMyCompanies = async (serverUrl: string) => {
+        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: 5000 });
+        const { data: { success, msg } } = await axiosInstance.get('/');
+
+        if (!success) {
+            throw new Error(msg);
+        }
+        
+        return { ...msg, domain: serverUrl }
+    };
+    return { getTodayWorkplaces, getMyCompanies };
 };
