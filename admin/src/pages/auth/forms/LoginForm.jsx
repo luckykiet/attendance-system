@@ -27,7 +27,7 @@ const loginSchema = z.object({
 const LoginForm = () => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
+    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
 
     const { login: loginStore } = useAuthStoreActions();
     const [postMsg, setPostMsg] = useState('');
@@ -71,7 +71,7 @@ const LoginForm = () => {
         try {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha('login');
-            if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));
             }
             loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });

@@ -13,19 +13,25 @@ const bodyParser = require('body-parser')
 const Database = require('./db');
 const { CONFIG } = require('./configs')
 
-Database.getInstance();
+if (process.env.NODE_ENV !== 'test') {
+  Database.getInstance();
+}
 
-const store = new MongoDBStore({
-  uri: CONFIG.mongodb_host,
-  collection: 'sessions',
-  connectionOptions: {
-    serverSelectionTimeoutMS: 10000,
-  },
-});
+let store;
 
-store.on('error', function (error) {
-  console.log(error);
-});
+if (process.env.NODE_ENV !== 'test') {
+  store = new MongoDBStore({
+    uri: CONFIG.mongodb_host,
+    collection: 'sessions',
+    connectionOptions: {
+      serverSelectionTimeoutMS: 10000,
+    },
+  });
+
+  store.on('error', function (error) {
+    console.log(error);
+  });
+}
 
 require('./security/passport')
 
@@ -77,7 +83,7 @@ app.use(
 app.use(
   expressSession({
     secret: 'SomeR@aLLy$3crEt!@#',
-    store: store,
+    store: process.env.NODE_ENV !== 'test' ? store : undefined,
     cookie: { maxAge: 1000 * 60 * 60 * 2 }, // 2 hours
     // if not set the cookies will not be saved in the browser after closing it
     resave: true, // Forces the session to be saved back to the session store,

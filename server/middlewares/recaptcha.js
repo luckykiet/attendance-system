@@ -4,6 +4,9 @@ const HttpError = require('../constants/http-error')
 
 const checkReCaptcha = async (req, res, next) => {
     try {
+        if (!CONFIG.isUsingRecaptcha) {
+            return next()
+        }
         const recaptcha = req.headers['recaptcha']
         const action = req.headers['action']
 

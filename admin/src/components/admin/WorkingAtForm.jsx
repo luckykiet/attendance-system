@@ -93,7 +93,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const [postMsg, setPostMsg] = useState('');
     const [postAttendanceMsg, setPostAttendanceMsg] = useState('');
     const setAlertMessage = useSetAlertMessage();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
+    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
     const [date, setDate] = useState(today);
 
     const dateForm = useForm({
@@ -147,7 +147,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${register ? 'update' : 'create'}register`);
 
-            if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));
             }
 
@@ -163,7 +163,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
             setPostAttendanceMsg('');
             const recaptchaToken = await executeRecaptcha(`updateRegister`);
 
-            if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));
             }
 
