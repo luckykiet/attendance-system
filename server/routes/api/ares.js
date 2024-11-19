@@ -2,8 +2,8 @@
 const express = require('express')
 const router = express.Router()
 
-const { utils } = require('../../utils')
 const HttpError = require('../../constants/http-error')
+const utils = require('../../utils')
 
 router.get('/:tin', async (req, res, next) => {
     const { tin } = req.params

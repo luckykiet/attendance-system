@@ -52,6 +52,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ url }) => {
         isFetching,
         isLoading,
         isFetchingNextPage,
+        refetch
     } = useInfiniteQuery({
         queryKey: ['attendances', url],
         queryFn: ({ pageParam = 0 }) => getAttendances({ domain: url, limit, skip: pageParam * limit }),
@@ -91,9 +92,15 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ url }) => {
 
     return (
         <ThemedView style={styles.container}>
-            <View style={styles.header}>
-                <ThemedText style={styles.headerText}>My Attendances ({url})</ThemedText>
-            </View>
+            <ThemedView style={styles.header}>
+                <ThemedText type="subtitle" style={styles.headerText}>{url}</ThemedText>
+            </ThemedView>
+            <ThemedView style={styles.titleContainer}>
+                <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_attendances')}:</ThemedText>
+                <TouchableOpacity onPress={() => refetch()} style={styles.refreshButton}>
+                    <MaterialIcons name="refresh" size={24} color={colorScheme === 'light' ? "black" : "white"} />
+                </TouchableOpacity>
+            </ThemedView>
             {(isLoading || isFetching) && <ThemedActivityIndicator size="large" />}
             {attendances.length > 0 ? (
                 <FlatList
@@ -102,8 +109,8 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ url }) => {
                     renderItem={({ item }) => (
                         <View style={styles.attendanceItem}>
                             <ThemedText style={styles.attendanceText}>{`${t('misc_date')}: ${dayjs(item.date).format('DD-MM-YYYY')}`}</ThemedText>
-                            <ThemedText style={styles.attendanceText}>{`${t('misc_check_in')}: ${dayjs(item.checkInTime).format('HH:mm:ss') || '-'}`}</ThemedText>
-                            <ThemedText style={styles.attendanceText}>{`${t('misc_check_out')}: ${dayjs(item.checkOutTime).format('HH:mm:ss') || '-'}`}</ThemedText>
+                            <ThemedText style={styles.attendanceText}>{`${t('misc_check_in')}: ${item.checkInTime ? dayjs(item.checkInTime).format('HH:mm:ss') : '-'}`}</ThemedText>
+                            <ThemedText style={styles.attendanceText}>{`${t('misc_check_out')}: ${item.checkOutTime ? dayjs(item.checkOutTime).format('HH:mm:ss') : '-'}`}</ThemedText>
                             {item.register && (
                                 <>
                                     <ThemedText style={styles.registerText}>{`${t('misc_workplace')}: ${item.register.name}`}</ThemedText>
@@ -145,10 +152,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
+        marginVertical: 10,
     },
     headerText: {
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     attendanceItem: {
@@ -176,6 +183,24 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 15,
         padding: 5,
+    },
+    nearbyContainer: {
+        paddingHorizontal: 10,
+        flex: 1,
+        justifyContent: 'center',
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    nearbyLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    refreshButton: {
+        padding: 8,
     },
 });
 

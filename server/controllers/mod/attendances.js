@@ -31,8 +31,14 @@ const getAttendancesByRegisterAndDate = async (req, res, next) => {
             throw new HttpError('srv_attendance_not_found', 404);
         }
 
-        const employees = await Employee.find({ _id: { $in: attendance.employeeIds } });
-
+        const employees = await Employee.find({ _id: { $in: attendance.employeeIds } }).lean();
+        const workingAts = await WorkingAt.find({ registerId, employeeId: { $in: attendance.employeeIds } });
+        employees.forEach(employee => {
+            const workingAt = workingAts.find(workingAt => workingAt.employeeId.toString() === employee._id.toString());
+            if (workingAt) {
+                employee.workingHours = workingAt.workingHours;
+            }
+        });
         const attendances = await Attendance.find({ dailyAttendanceId: attendance._id });
 
         return res.status(200).json({ success: true, msg: { attendance, employees, attendances } });

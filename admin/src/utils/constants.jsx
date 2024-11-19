@@ -1,3 +1,5 @@
+import { ROLES } from "@/configs";
+
 export const getDefaultAddress = () => ({
   street: '',
   city: '',
@@ -40,6 +42,18 @@ export const getDefaultEmployee = () => ({
   position: '',
   deviceId: '',
   registrationToken: '',
+  isAvailable: true,
+});
+
+export const getDefaultUser = () => ({
+  name: '',
+  username: '',
+  email: '',
+  phone: '',
+  role: ROLES[0],
+  notes: '',
+  password: '',
+  confirmPassword: '',
   isAvailable: true,
 });
 
@@ -105,7 +119,8 @@ export const daysOfWeeksTranslations = {
 }
 
 export const REGEX = {
-  phone: /^(\+420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/
+  phone: /^(\+420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/,
+  username: /^[a-z0-9]+$/,
 }
 
 export const TIME_FORMAT = 'HH:mm';

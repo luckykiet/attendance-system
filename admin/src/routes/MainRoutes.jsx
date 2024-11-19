@@ -4,6 +4,8 @@ import MerchantLayout from '@/layouts/MerchantLayout'
 import { lazy } from 'react'
 
 const HomePage = Loadable(lazy(() => import('@/pages/admin/HomePage')))
+const UserPage = Loadable(lazy(() => import('@/pages/admin/UserPage')))
+const UsersPage = Loadable(lazy(() => import('@/pages/admin/UsersPage')))
 const EmployeesPage = Loadable(lazy(() => import('@/pages/admin/EmployeesPage')))
 const EmployeePage = Loadable(lazy(() => import('@/pages/admin/EmployeePage')))
 const RegisterAttendancePage = Loadable(lazy(() => import('@/pages/admin/RegisterAttendance')))
@@ -36,6 +38,18 @@ const MainRoutes = {
         {
           path: 'employees',
           element: <EmployeesPage />,
+        },
+        {
+          path: 'user',
+          element: <UserPage />,
+        },
+        {
+          path: 'user/:userId',
+          element: <UserPage />,
+        },
+        {
+          path: 'users',
+          element: <UsersPage />,
         },
         {
           path: 'attendance/:registerId',

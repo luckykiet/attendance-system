@@ -1,5 +1,5 @@
 import { Button, MenuItem, Select, Stack, styled } from '@mui/material'
-import { CONFIG } from '@/configs'
+import { CONFIG, useRolesObject } from '@/configs'
 import {
   checkPrivileges,
   formatPhoneNumber,
@@ -15,7 +15,7 @@ import {
   useSetIsModalOpen,
   useSetLimit,
   useSetSearch,
-} from '@/stores/employees'
+} from '@/stores/users'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -43,8 +43,8 @@ import _ from 'lodash'
 
 import useTranslation from '@/hooks/useTranslation'
 import { visuallyHidden } from '@mui/utils'
-import DialogEmployeesFilter from '@/components/admin/filters/DialogEmployeesFilter'
-import { fetchEmployees } from '@/api/employees'
+import DialogUsersFilter from '@/components/admin/filters/DialogUsersFilter'
+import { fetchUsers } from '@/api/users'
 import { useAuthStore } from '@/stores/auth'
 import { useNavigate } from 'react-router-dom'
 import { PersonAdd } from '@mui/icons-material'
@@ -76,6 +76,12 @@ const EnhancedTableHead = (props) => {
       label: t('misc_full_name'),
     },
     {
+      id: 'username',
+      numeric: false,
+      disablePadding: false,
+      label: t('misc_username'),
+    },
+    {
       id: 'email',
       numeric: false,
       disablePadding: false,
@@ -88,10 +94,10 @@ const EnhancedTableHead = (props) => {
       label: t('misc_telephone'),
     },
     {
-      id: 'deviceId',
+      id: 'role',
       numeric: false,
       disablePadding: false,
-      label: t('misc_has_registered_device'),
+      label: t('misc_role'),
     },
     {
       id: 'isAvailable',
@@ -180,7 +186,7 @@ const EnhancedTableToolbar = () => {
         id="tableTitle"
         component="div"
       >
-        {t('misc_employees')}
+        {t('misc_users')}
       </Typography>
       <Select
         sx={{
@@ -230,6 +236,7 @@ const ReactTable = ({ items, loading }) => {
   const [selected, setSelected] = useState([])
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const ROLE_OBJECT = useRolesObject()
 
   useEffect(() => {
     setPage(0)
@@ -316,11 +323,12 @@ const ReactTable = ({ items, loading }) => {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        navigate(`/employee/${row._id}`)
+                        navigate(`/user/${row._id}`)
                       }}
                     >
                       <TableCell sx={{ fontWeight: 700 }}>{row._id ? row._id.slice(-5) : ''}</TableCell>
                       <TableCell sx={{ fontWeight: 700 }}>{row.name}</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>{row.username}</TableCell>
                       <TableCell sx={{ fontWeight: 700 }}>
                         <Typography
                           component={'a'}
@@ -346,10 +354,10 @@ const ReactTable = ({ items, loading }) => {
                       <TableCell>
                         <Typography
                           variant="body2"
-                          color={_.isEmpty(row.deviceId) ? 'error' : 'success'}
+                          color={ROLE_OBJECT[row.role].color}
                           sx={{ fontWeight: 700 }}
                         >
-                          {_.isEmpty(row.deviceId) ? t('misc_no') : t('misc_yes')}
+                          {t(ROLE_OBJECT[row.role].name)}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -397,7 +405,7 @@ ReactTable.propTypes = {
   loading: PropTypes.bool.isRequired,
 }
 
-export default function EmployeesPage() {
+export default function UsersPage() {
   const { user } = useAuthStore()
   const limit = useLimit()
   const search = useSearch()
@@ -408,7 +416,7 @@ export default function EmployeesPage() {
 
   const { isLoading, isFetching, data, error, isError } = useQuery({
     queryKey: [
-      'employees',
+      'users',
       {
         limit: limit,
         search: search,
@@ -416,12 +424,12 @@ export default function EmployeesPage() {
       },
     ],
     queryFn: () =>
-      fetchEmployees({
+      fetchUsers({
         limit: limit,
         search: search,
         filters: formFilters,
       }),
-    enabled: checkPrivileges('getEmployees', user?.role),
+    enabled: checkPrivileges('getUsers', user?.role),
   })
 
   if (isError) {
@@ -433,29 +441,29 @@ export default function EmployeesPage() {
   }
 
   useEffect(() => {
-    document.title = `${t('misc_employees')} | ${CONFIG.APP_NAME}`
+    document.title = `${t('misc_users')} | ${CONFIG.APP_NAME}`
   }, [t])
 
   return (
     <Stack spacing={3}>
-      <Box sx={{ display: 'flex', justifyContent: 'end', mb: 3 }}>
-        <Button
-          variant="contained"
-          color="warning"
-          onClick={() => {
-            navigate('/employee')
-          }}
-          startIcon={<PersonAdd />}
-        >
-          {t('misc_create_employee')}
-        </Button>
-      </Box>
-      {!checkPrivileges('getEmployees', user?.role) ? (
+      {!checkPrivileges('getUsers', user?.role) ? (
         <Typography color={'error.main'} variant="h6" align="center">
           {t('srv_no_permission')}
         </Typography>
       ) : (
         <>
+          <Box sx={{ display: 'flex', justifyContent: 'end', mb: 3 }}>
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => {
+                navigate('/user')
+              }}
+              startIcon={<PersonAdd />}
+            >
+              {t('misc_create_user')}
+            </Button>
+          </Box>
           <SearchBar
             defaultSearch={search}
             handleSearchChange={handleSearchChange}
@@ -466,7 +474,7 @@ export default function EmployeesPage() {
               )} ...`}
           />
           <ReactTable loading={isLoading || isFetching} items={data || []} />
-          <DialogEmployeesFilter />
+          <DialogUsersFilter />
         </>
       )}
     </Stack>

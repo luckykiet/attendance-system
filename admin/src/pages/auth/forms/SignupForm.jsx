@@ -13,7 +13,7 @@ import { CONFIG } from '@/configs';
 import useTranslation from '@/hooks/useTranslation';
 import { fetchAresWithTin } from '@/api/ares';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { getDefaultAddress } from '@/utils';
+import { getDefaultAddress, REGEX } from '@/utils';
 
 const signupSchema = z.object({
     username: z
@@ -21,7 +21,7 @@ const signupSchema = z.object({
         .trim()
         .min(4, { message: 'srv_username_min_length' })
         .max(255, { message: 'srv_username_max_length' })
-        .regex(/^\S+$/, { message: 'srv_username_no_whitespace' }),
+        .regex(REGEX.username, { message: 'srv_username_no_whitespace' }),
     email: z
         .string()
         .email({ message: 'srv_wrong_email_format' }),
@@ -165,8 +165,8 @@ const SignupForm = () => {
                             )}
                         />
                         {tinLoading && <FormHelperText>{t('loading_tin')}</FormHelperText>}
-                        {tinError && <FormHelperText error>{t('err_invalid_tin_data')}</FormHelperText>}
-                        {tinFetched && !tinData && <FormHelperText>{t('err_merchant_not_found')}</FormHelperText>}
+                        {tinError && <FormHelperText error>{t('srv_invalid_tin')}</FormHelperText>}
+                        {tinFetched && !tinData && <FormHelperText>{t('srv_merchant_not_found')}</FormHelperText>}
                     </Grid2>
                     <Grid2 size={{ xs: 12 }}>
                         <Controller

@@ -139,7 +139,7 @@ const RegisterAttendance = () => {
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_missing')}:</Typography>
-                                                <Typography color='error' variant="h6">{(data.attendance.checkIns?.length - data.attendance.checkOuts?.length) || 0}</Typography>
+                                                <Typography color='error' variant="h6">{(data.attendance.employeeIds?.length - data.attendance.checkIns?.length) || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_checked_in_late')}:</Typography>
@@ -183,7 +183,7 @@ const RegisterAttendance = () => {
                                                                     return (
                                                                         <TableRow key={employee._id}>
                                                                             <TableCell><Link component={RouterLink} target='_blank' to={`/employee/${employee._id}`} variant='h6'>{employee ? employee.name : attendance?.employeeId}</Link></TableCell>
-                                                                            <TableCell><Typography variant='h6' color={isCheckInLate || !attendance?.checkInTime ? 'error' : 'success'}>{attendance?.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_early')}`}</Typography></TableCell>
+                                                                            <TableCell><Typography variant='h6' color={isCheckInLate || !attendance?.checkInTime ? 'error' : 'success'}>{attendance?.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_late')}`}</Typography></TableCell>
                                                                             <TableCell><Typography variant='h6' color={isCheckOutEarly || !attendance?.checkOutTime ? 'error' : 'success'}>{attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('HH:mm:ss') : '-'}{isCheckOutEarly && ` - ${t('misc_early')}`}</Typography></TableCell>
                                                                         </TableRow>
                                                                     );

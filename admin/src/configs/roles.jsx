@@ -1,22 +1,20 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import { useTheme } from '@mui/material'
-
+export const ROLES = ['Admin', 'Manager']
 export const useRoles = () => {
   const theme = useTheme()
   return [
     {
-      key: 'Admin',
+      key: ROLES[0],
       name: 'admin',
       color: theme.palette.error.main,
-      order: 1,
       icon: SupervisorAccountIcon,
     },
     {
-      key: 'Manager',
+      key: ROLES[1],
       name: 'misc_manager',
       color: theme.palette.warning.main,
-      order: 3,
       icon: ManageAccountsIcon,
     },
   ]

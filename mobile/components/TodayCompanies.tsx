@@ -275,9 +275,9 @@ const TodayCompanies = () => {
                     <ThemedText style={styles.companyDetail}>
                       {company.address.street}, {company.address.zip} {company.address.city}
                     </ThemedText>
-                    <ThemedText style={styles.companyDetail}>
+                    {company.status !== 'closed' && <ThemedText style={styles.companyDetail}>
                       {t('misc_working_hours')}: {company.openingHours}
-                    </ThemedText>
+                    </ThemedText>}
                     <ThemedText
                       style={[
                         styles.companyDetail,

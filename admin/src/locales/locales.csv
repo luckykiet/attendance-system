@@ -120,6 +120,7 @@ misc_country	Country	Quốc gia	Stát
 misc_create	create	tạo	založit
 misc_create_company	create a company	tạo công ty	vytvořit společnost
 misc_create_employee	create a employee	tạo nhân viên mới	vytvořit nový zaměstnanec
+misc_create_user	create new user	tạo người dùng mới	založit nový uživatel
 misc_created	created	tạo	založeno
 misc_created_bills	Created bills	Hoá đơn được tạo	Vytvořené faktury
 misc_created_date	Created day	Ngày tạo	Den založení
@@ -295,6 +296,7 @@ misc_new_merchant	New Merchant	Nhà bán buôn mới	Nový obchodník
 misc_new_password	New password	Mật khẩu mới	Nové heslo
 misc_new_payment_terminal	New payment terminal	Máy trả thẻ mới	Nový platební terminál
 misc_new_store	new store	cửa hàng mới	nová provozovna
+misc_new_user	new user	người dùng mới	nový uživatel
 misc_no	no	không	ne
 misc_no_attendance	no attendance	không có dữ liệu điểm danh	není žádná docházka
 misc_no_columns	no columns	không có cột	nejsou žádné sloupce
@@ -495,7 +497,7 @@ misc_user	User	Nhân viên	Uživatel
 misc_user_has_zero_provision	user has zero provision	người dùng có hoa hồng bằng 0	uživatel má nulovou provizi
 misc_user_support	user support	hỗ trợ khách hàng	uživatelská podpora
 misc_username	Username	Tên đăng nhập	Přihlašovací jméno
-misc_users	Users	Nhân viên	Uživatele
+misc_users	Users	Người dùng	Uživatele
 misc_valid	valid	hợp lệ 	validní
 misc_vin	VIN	DIČ	DIČ
 misc_website	website	trang web	webová stránka
@@ -577,6 +579,7 @@ srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
 srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
+srv_email_exists	E-mail exists	E-mail tồn tại	E-mail existuje
 srv_employee_exists	employee exists	nhân viên đã tồn tại	zaměstnanec již existuje
 srv_employee_not_employed	you are not employed for this workplace	bạn không được chỉ định làm việc tại đây	nejste zaměstnán na tomto pracovišti
 srv_employee_not_found	employee not found	không tìm thấy nhân viên	zaměstnanec nenalezen
@@ -682,11 +685,13 @@ srv_no_payment_terminal	no payment terminals	không có máy trả thẻ	není �
 srv_no_permission	No permission	Không có quyền truy cập	Bez oprávnění
 srv_no_result_found	No result found	Không tìm thấy kết quả	Žádný výsledek nenašlo
 srv_no_template_available	no template available	không có mẫu đơn sẵn	není k dispozici žádná šablona
+srv_no_user_found	no user found	không tìm thấy người dùng	nebyl nalezen žádný uživatel
 srv_non_negative_number	non negative number	số không được âm	nezáporné číslo
 srv_not_base64	Not Base64	Không phải Base64	Není Base64
 srv_not_found	not found	không tìm thấy	nenalezeno
 srv_not_included	not included	không được bao gồm	nezahrnuto
 srv_outside_allowed_radius	you are outside allowed location	bạn đang ở ngoài vị trí cho phép	jste mimo povolené lokace
+srv_outside_working_hours	outside working hours	ngoài giờ làm việc	mimo pracovní dobu
 srv_page_not_found	page not found	trang không tìm thấy	stránka nenalezena
 srv_password_requirements	Password must have 8 characters, 1 uppercase, 1 lowercase and 1 number	Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số	Heslo musí obsahovat alespoň 8 znaků, 1 velké, 1 malé písmeno a 1 číslici
 srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không thành công	Obnovení hesla se nezdařilo
@@ -728,9 +733,15 @@ srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
 srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
 srv_updated	updated	đã được cập nhập	aktualizováno
 srv_url_exists	URL exists	URL đã tồn tại	
+srv_user_cannot_change_own_role	user cannot change own role	người dùng không thể đổi chức vụ của mình	uživatel nemůže změnit svou roli
+srv_user_cannot_change_own_status	user cannot change own status	người dùng không thể đổi trạng thái của mình	uživatel nemůže změnit svůj status
+srv_user_creation_failed	user creation failed	tạo người dùng thất bại	vytvoření uživatele selhalo
+srv_user_exists	userexists	người dùng tồn tại	uživatel existuje
 srv_user_has_subordinates	User has subordinates	Người dùng có cấp dưới	Uživatel má podřízené
 srv_user_not_exists	user not exists	người dùng không tồn tại	uživatel neexistuje
+srv_user_not_found	user not found	không tìm thấy người dùng	uživatel nenalezen
 srv_user_updated	user updated	người dùng được cập nhập	uživatel aktualizován
+srv_username_exists	username exists	tên người dùng tồn tại	uživatelské jméno existuje
 srv_username_requirements	Username must have 6 to 20 characters, only lowercase and no space	Tên đăng nhập phải có 6 đến 20 ký tự, chữ bé, không dấu cách và ký tự đặt biệt	Heslo musí obsahovat 6 až 20 znaků, malé písmeno, bez mezer a speciálních znaků
 srv_validation_error	not allowed input	nguồn vào không hợp lệ	nesprávný vstup
 srv_word	Error	Lỗi	Chyba

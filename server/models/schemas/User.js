@@ -8,10 +8,11 @@ const UserSchema = new Schema(
         username: { type: String, trim: true, required: true, unique: true, match: [/^(?!.*__)[a-z0-9_]+$/] },
 
         name: { type: String, trim: true, default: '' },
-        password: { type: String, required: true },
+        phone: { type: String, trim: true, default: '' },
+        password: { type: String },
         role: { type: String, default: 'Admin', },
         notes: { type: String, trim: true, default: '' },
-        
+
         tokens: { type: [String], default: [] },
         retailId: { type: Schema.Types.ObjectId, required: true },
         isAvailable: { type: Boolean, required: true, default: true },

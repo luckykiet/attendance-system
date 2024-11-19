@@ -15,6 +15,10 @@ passport.use(
         return done(null, false, { message: 'srv_invalid_credentials' });
       }
 
+      if (!foundUser.isAvailable) {
+        return done(null, false, { message: 'srv_user_not_available' });
+      }
+
       const isMatch = await bcrypt.compare(decodedPassword, foundUser.password);
 
       if (!isMatch) {
