@@ -291,3 +291,87 @@ describe(`POST ${routePrefix}/signup`, () => {
     });
 });
 
+describe(`POST ${routePrefix}/forgot-password`, () => {
+    test('should send reset password email successfully', async () => {
+        const user = new User({ username: 'forgotuser', email: 'forgot@example.com', password: 'password123', retailId: new ObjectId() });
+        await user.save();
+
+        const response = await request.post(`${routePrefix}/forgot-password`).send({ email: 'forgot@example.com' });
+        expect(response.status).toBe(200);
+        expect(response.body.msg).toBe('srv_password_reset_send_to_email');
+    });
+
+    test('should not send reset email for non-existent user', async () => {
+        const response = await request.post(`${routePrefix}/forgot-password`).send({ email: 'nonexistent@example.com' });
+        expect(response.status).toBe(200);
+        expect(response.body.msg).toBe('srv_password_reset_send_to_email');
+    });
+});
+
+describe(`PUT ${routePrefix}/reset-password`, () => {
+
+    test('should reset password successfully with valid token', async () => {
+        await new User({
+            email: 'reset@example.com',
+            username: 'resetuser',
+            password: await bcrypt.hash('oldPassword123', 10),
+            retailId: new ObjectId(),
+        }).save();
+
+        await request.post(`${routePrefix}/forgot-password`).send({ email: 'reset@example.com' });
+        const user = await User.findOne({ email: 'reset@example.com' });
+        const token = user.tokens[0];
+
+        const response = await request
+            .put(`${routePrefix}/reset-password`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                newPassword: 'newPassword123',
+                confirmNewPassword: 'newPassword123',
+            });
+
+        expect(response.status).toBe(200);
+        expect(response.body.msg).toBe('srv_passwords_changed');
+
+        const updatedUser = await User.findOne({ email: 'reset@example.com' });
+        const isPasswordUpdated = await bcrypt.compare('newPassword123', updatedUser.password);
+        expect(isPasswordUpdated).toBe(true);
+    });
+
+    test('should not reset password with invalid token', async () => {
+        const response = await request
+            .put(`${routePrefix}/reset-password`)
+            .set('Authorization', 'Bearer invalidtoken')
+            .send({
+                newPassword: 'newPassword123',
+                confirmNewPassword: 'newPassword123',
+            });
+
+        expect(response.status).toBe(401);
+        expect(response.body.msg).toBe('srv_token_expired');
+    });
+
+    test('should not reset password if passwords do not match', async () => {
+        await new User({
+            email: 'reset@example.com',
+            username: 'resetuser',
+            password: await bcrypt.hash('oldPassword123', 10),
+            retailId: new ObjectId(),
+        }).save();
+
+        await request.post(`${routePrefix}/forgot-password`).send({ email: 'reset@example.com' });
+        const user = await User.findOne({ email: 'reset@example.com' });
+        const token = user.tokens[0];
+        const response = await request
+            .put(`${routePrefix}/reset-password`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                newPassword: 'newPassword123',
+                confirmNewPassword: 'differentPassword',
+            });
+
+        expect(response.status).toBe(400);
+        expect(response.body.msg).toBe('srv_passwords_not_match');
+    });
+});
+
