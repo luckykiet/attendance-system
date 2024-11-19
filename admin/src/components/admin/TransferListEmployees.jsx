@@ -229,7 +229,7 @@ export default function TransferListEmployees({ employeeId }) {
   const [postMsg, setPostMsg] = useState('')
   const setAlertMessage = useSetAlertMessage()
   const queryClient = useQueryClient()
-  const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY)
+  const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA)
 
   const mainForm = useForm({
     defaultValues: {
@@ -308,7 +308,7 @@ export default function TransferListEmployees({ employeeId }) {
       setPostMsg('')
       const recaptchaToken = await executeRecaptcha('updateworkingats');
 
-      if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+      if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
         throw new Error(t('srv_invalid_recaptcha'));
       }
       const newLeft = data.left.filter((register) => register.isDirty).map((register) => ({ registerId: register._id, isAvailable: true }))

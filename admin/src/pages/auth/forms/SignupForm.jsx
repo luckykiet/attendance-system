@@ -64,7 +64,7 @@ const signupSchema = z.object({
 const SignupForm = () => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
+    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
 
     const { login: loginStore } = useAuthStoreActions();
 
@@ -125,7 +125,7 @@ const SignupForm = () => {
         try {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha('signup');
-            if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));
             }
             signUpMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });

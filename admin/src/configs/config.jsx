@@ -1,5 +1,6 @@
 const APP_NAME = 'ATTENDANCE SYSTEM Admin';
 const MOBILE_INTENT = 'gowork://';
+const IS_USING_RECAPTCHA = true;
 
 export const HOSTNAME = window.location.hostname.split('.').slice(-2).join('.');
 export const HOST = HOSTNAME + (window.location.port ? `:${window.location.port}` : '');
@@ -16,4 +17,5 @@ export const CONFIG = {
   GOOGLE_MAPS_API_KEY: '',
   WEB_PUBLIC_URL: HOSTNAME,
   MOBILE_INTENT: MOBILE_INTENT,
+  IS_USING_RECAPTCHA: IS_USING_RECAPTCHA,
 };

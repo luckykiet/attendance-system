@@ -39,7 +39,7 @@ export default function EmployeePage() {
     const { t } = useTranslation();
     const { user } = useAuthStore();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY);
+    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
     const [postMsg, setPostMsg] = useState('');
     const setAlertMessage = useSetAlertMessage();
     const setConfirmBox = useSetConfirmBox();
@@ -116,7 +116,7 @@ export default function EmployeePage() {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
-            if (import.meta.env.MODE !== 'development' && !recaptchaToken) {
+            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
                 throw new Error(t('srv_invalid_recaptcha'));
             }
 
