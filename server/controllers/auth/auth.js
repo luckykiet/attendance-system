@@ -30,7 +30,11 @@ const signup = async (req, res, next) => {
             throw new HttpError('srv_retail_exists', 409);
         }
 
-        let userAddress = address;
+        let userAddress = address || {
+            street: '',
+            city: '',
+            zip: '',
+        };
         if (!address || !address.street || !address.city || !address.zip) {
             try {
                 const aresData = await utils.fetchAresWithTin(tin);
