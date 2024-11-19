@@ -13,6 +13,7 @@ router.post('/isAuthenticated', (req, res, next) => {
         }
         return res.json({
             isAuthenticated: true,
+            id: req.user.id,
             username: req.user.username,
             email: req.user.email,
             name: req.user.name,

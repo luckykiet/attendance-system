@@ -98,18 +98,25 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
         if (!attendance) {
             throw 'srv_attendance_not_found';
         }
+        const workingAt = await WorkingAt.findOne({ employeeId: attendance.employeeId, registerId: dailyAttendance.registerId }).exec();
+        if (!workingAt) {
+            throw 'srv_employee_not_working_here';
+        }
 
+        const dayIndex = dateToUse.day();
+        const dayKey = DAYS_OF_WEEK[dayIndex];
+        // get individual check in/out times
         if (type === 'checkIn') {
             dailyAttendance.checkIns.push(attendanceId);
-            const registerCheckInTime = dayjs(dailyAttendance.workingHour.start, 'HH:mm', true);
-            if (dateToUse.isAfter(registerCheckInTime)) {
+            const employeeCheckInTime = dayjs(workingAt.workingHours[dayKey].start, 'HH:mm', true);
+            if (dateToUse.isAfter(employeeCheckInTime)) {
                 dailyAttendance.checkInsLate.push(attendanceId);
                 dailyAttendance.checkInsLateByEmployee.push(attendance.employeeId);
             }
         } else {
             dailyAttendance.checkOuts.push(attendanceId);
-            const registerCheckOutTime = dayjs(dailyAttendance.workingHour.end, 'HH:mm', true);
-            if (dateToUse.isBefore(registerCheckOutTime)) {
+            const employeeCheckOutTime = dayjs(workingAt.workingHours[dayKey].end, 'HH:mm', true);
+            if (dateToUse.isBefore(employeeCheckOutTime)) {
                 dailyAttendance.checkOutsEarly.push(attendanceId);
                 dailyAttendance.checkOutsEarlyByEmployee.push(attendance.employeeId);
             }
@@ -189,7 +196,7 @@ const makeAttendance = async (req, res, next) => {
 
         const attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
 
-        // if attendanace exists, that means the employee has already checked in
+        // if attendance exists, that means the employee has already checked in
         if (attendance) {
             if (attendance.checkOutTime) {
                 throw new HttpError('srv_already_checked_out', 400);
@@ -215,7 +222,7 @@ const makeAttendance = async (req, res, next) => {
         // checking in
         const checkInLocation = { latitude, longitude, distance: distanceInMeters };
         const checkInTime = now.toDate();
-        const newAttendace = await new Attendance({
+        const newAttendance = await new Attendance({
             registerId,
             dailyAttendanceId: dailyAttendance._id,
             employeeId: employee._id,
@@ -224,7 +231,7 @@ const makeAttendance = async (req, res, next) => {
         }).save();
 
         try {
-            const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendace._id, dailyAttendanceId: dailyAttendance._id });
+            const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
             if (typeof update === 'string') {
                 throw update;
             }
@@ -241,12 +248,12 @@ const makeAttendance = async (req, res, next) => {
 const getAttendances = async (req, res, next) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
-        const employee = await Employee.findOne({ deviceId: req.deviceId }).exec();
-        if (!employee) {
+        const employees = await Employee.find({ deviceId: req.deviceId }).exec();
+        if (!employees.length) {
             throw 'srv_employee_not_found';
         }
-        const attendances = await Attendance.find({ employeeId: employee._id })
-            .sort({ checkInTime: -1 })
+        const attendances = await Attendance.find({ employeeId: { $in: employees.map(e => e._id) } })
+            .sort({ createdAt: -1 })
             .skip(parseInt(skip) || 0)
             .limit(parseInt(limit) + 1 || 11)
             .exec();

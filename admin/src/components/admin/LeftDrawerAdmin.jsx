@@ -25,7 +25,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { Home, Logout } from '@mui/icons-material'
+import { Home, Logout, People, Person } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -114,6 +114,13 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             icon={<BadgeIcon />}
           />
         )}
+        {checkPrivileges('getUsers', user?.role) && (
+          <CustomListItem
+            href={'/users'}
+            text={t('misc_users')}
+            icon={<People />}
+          />
+        )}
       </List>
       <List disablePadding sx={{ display: drawerOpen ? 'block' : 'none' }}>
         <Divider />
@@ -182,6 +189,22 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
               <Home />
             </IconButton>
           </Tooltip>
+          {checkPrivileges('getUsers', user?.role) && (
+            <Tooltip title={t('misc_users')}>
+              <IconButton
+                onClick={() => {
+                  handleDrawerClose()
+                  navigate('/users')
+                }}
+                size="large"
+                edge="end"
+                color="inherit"
+                sx={{ display: { xs: 'none', sm: 'flex' } }}
+              >
+                <People />
+              </IconButton>
+            </Tooltip>
+          )}
           {checkPrivileges('getEmployees', user?.role) && (
             <Tooltip title={t('misc_employees')}>
               <IconButton
@@ -203,6 +226,17 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             flexItem
             sx={{ display: { xs: 'none', sm: 'flex' } }}
           />
+          <Tooltip title={user?.name}>
+            <IconButton
+              onClick={() => navigate('/user/' + user?.id)}
+              size="large"
+              edge="end"
+              color="inherit"
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            >
+              <Person />
+            </IconButton>
+          </Tooltip>
           <LanguageSwitcher withText={false} />
           <Tooltip title={t('misc_to_logout')}>
             <IconButton

@@ -1,4 +1,4 @@
-const { default: axios } = require("axios")
+const axios = require("axios")
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
@@ -40,7 +40,6 @@ const utils = {
                 },
             }
         } catch (error) {
-            console.log(error.response?.data)
             return { success: false, msg: error.response?.data || `srv_ares_failed` }
         }
     },
