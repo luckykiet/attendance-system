@@ -57,6 +57,17 @@ export const getDefaultWorkingAt = () => ({
   },
 });
 
+export const getDefaultAttendance = () => ({
+  _id: '',
+  employeeId: '',
+  registerId: '',
+  dailyAttendanceId: '',
+  checkInLocation: { latitude: '', longitude: '', distance: '' },
+  checkInTime: '',
+  checkOutTime: '',
+  checkOutLocation: { latitude: '', longitude: '', distance: '' },
+})
+
 
 export const BOOLEAN_SELECT_OPTIONS = ['all', 'true', 'false'];
 

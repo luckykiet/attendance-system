@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Container, Typography, FormHelperText, FormControl, Stack, Grid2, Divider, TableContainer, Table, TableCell, Paper, TableHead, TableRow, TableBody } from '@mui/material';
+import { Container, Link, Typography, FormHelperText, FormControl, Stack, Grid2, Divider, TableContainer, Table, TableCell, Paper, TableHead, TableRow, TableBody } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import dayjs from 'dayjs';
-import { useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { z } from 'zod';
@@ -176,15 +176,15 @@ const RegisterAttendance = () => {
                                                                 </TableRow>
                                                             </TableHead>
                                                             <TableBody>
-                                                                {data.attendances.length > 0 ? data.attendances.map((attendance) => {
-                                                                    const employee = data.employees.find(emp => emp._id === attendance.employeeId);
-                                                                    const isCheckInLate = data.attendance.checkInsLate?.includes(attendance._id);
-                                                                    const isCheckOutEarly = data.attendance.checkOutsEarly?.includes(attendance._id);
+                                                                {data.employees.length > 0 ? data.employees.map((employee) => {
+                                                                    const attendance = data.attendances.find((att) => att.employeeId === employee._id);
+                                                                    const isCheckInLate = attendance ? data.attendance.checkInsLate?.includes(attendance._id) : '';
+                                                                    const isCheckOutEarly = attendance ? data.attendance.checkOutsEarly?.includes(attendance._id) : '';
                                                                     return (
-                                                                        <TableRow key={attendance._id}>
-                                                                            <TableCell><Typography variant='h6'>{employee ? employee.name : attendance.employeeId}</Typography></TableCell>
-                                                                            <TableCell ><Typography variant='h6' color={isCheckInLate || !attendance.checkInTime ? 'error' : 'success'}>{attendance.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_early')}`}</Typography></TableCell>
-                                                                            <TableCell ><Typography variant='h6' color={isCheckOutEarly || !attendance.checkOutTime ? 'error' : 'success'}>{attendance.checkOutTime ? dayjs(attendance.checkOutTime).format('HH:mm:ss') : '-'}{isCheckOutEarly && ` - ${t('misc_early')}`}</Typography></TableCell>
+                                                                        <TableRow key={employee._id}>
+                                                                            <TableCell><Link component={RouterLink} target='_blank' to={`/employee/${employee._id}`} variant='h6'>{employee ? employee.name : attendance?.employeeId}</Link></TableCell>
+                                                                            <TableCell><Typography variant='h6' color={isCheckInLate || !attendance?.checkInTime ? 'error' : 'success'}>{attendance?.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_early')}`}</Typography></TableCell>
+                                                                            <TableCell><Typography variant='h6' color={isCheckOutEarly || !attendance?.checkOutTime ? 'error' : 'success'}>{attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('HH:mm:ss') : '-'}{isCheckOutEarly && ` - ${t('misc_early')}`}</Typography></TableCell>
                                                                         </TableRow>
                                                                     );
                                                                 }) : <TableRow><TableCell colSpan={3} align='center'>{t('srv_attendance_not_found')}</TableCell></TableRow>}
