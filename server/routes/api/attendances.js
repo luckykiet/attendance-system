@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getAttendances } = require('../../controllers/api/attendance')
+const { getAttendances } = require('../../controllers/api/attendances')
 
 router.get('/', getAttendances);
 
