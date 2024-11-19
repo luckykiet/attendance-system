@@ -235,10 +235,11 @@ describe(`POST ${routePrefix}/signup`, () => {
         });
 
         expect(response.status).toBe(200);
-        expect(response.body.address).toBeDefined();
-        expect(response.body.address.street).toBeDefined();
-        expect(response.body.address.city).toBeDefined();
-        expect(response.body.address.zip).toBeDefined();
+        expect(response.body.email).toBe('aresuser@example.com');
+        expect(response.body.name).toBe('ARES User');
+        expect(response.body.username).toBe('aresuser');
+        expect(response.body.role).toBe('Admin');
+        expect(response.headers['set-cookie']).toBeDefined();
     });
 
     test('should return error for non-matching passwords', async () => {
@@ -252,7 +253,9 @@ describe(`POST ${routePrefix}/signup`, () => {
         });
 
         expect(response.status).toBe(400);
-        expect(response.body.msg).toBe('srv_passwords_not_match');
+        expect(response.body.msg).toBeDefined();
+        expect(response.body.msg.errors).toBeDefined();
+        expect(response.body.msg.errors[0].confirmPassword).toBe('srv_passwords_not_match');
     });
 
     test('should assign default role if none is provided', async () => {
