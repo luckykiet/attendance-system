@@ -418,14 +418,14 @@ export default function TransferListEmployees({ employeeId }) {
               {t('misc_working_at')}
             </Typography>
           </Grid2>
-          {calculation.leftData.map((register) => {
-            const workingAt = workingAts.find((workingAt) => workingAt.registerId === register._id)
-            return (
-              <Grid2 size={{ xs: 12, sm: 6 }} key={register._id}>
+          <Grid2 size={{ xs: 12 }}>
+            {calculation.leftData.map((register) => {
+              const workingAt = workingAts.find((workingAt) => workingAt.registerId === register._id)
+              return (
                 <WorkingAtForm key={register._id} employeeId={employeeId} register={register} workingAt={workingAt} />
-              </Grid2>
-            )
-          })}
+              )
+            })}
+          </Grid2>
         </Grid2>
       </>}
     </Stack>

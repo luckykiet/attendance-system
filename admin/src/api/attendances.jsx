@@ -9,3 +9,11 @@ export const fetchAttendanceByRegisterAndDate = async (data) => {
     }
     return msg;
 };
+
+export const fetchAttendanceByEmployeeAndDate = async (data) => {
+    const { data: { success, msg } } = await axios.post(`/employee`, data);
+    if (!success) {
+        throw new Error(msg);
+    }
+    return msg;
+};
