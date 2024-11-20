@@ -18,7 +18,8 @@
     "mergetranslations": "node ./mergeTranslations.mjs",
     "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
     "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && yarn install-all",
-    "upgrade-dep": "ncu -u && yarn install"
+    "upgrade-dep": "ncu -u && yarn install",
+    "build": "cd admin && yarn build"
   },
   "packageManager": "yarn@4.5.1",
   "license": "MIT",
