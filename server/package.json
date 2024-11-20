@@ -14,7 +14,6 @@
     "upgrade-dep": "ncu -u && yarn install",
     "clean-devcert": "node ./scripts/clean-devcert.js",
     "install-devcert": "node ./scripts/install-devcert.js",
-    "postinstall": "yarn install-devcert",
     "test": "yarn test:unit && yarn test:api",
 		"test:auth": "NODE_ENV=test && jest --silent --testPathPattern='test/auth' --detectOpenHandles --forceExit",
 		"test:mod": "NODE_ENV=test && jest --silent --testPathPattern='test/mod' --detectOpenHandles --forceExit",
