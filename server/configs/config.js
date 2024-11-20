@@ -1,7 +1,7 @@
 const development = process.env.NODE_ENV === 'development';
 const isUsingRecaptcha = process.env.NODE_ENV !== 'test'
 const protocol = 'https://';
-const subdomain = 'app';
+const subdomain = 'attendance';
 const www = 'www.';
 const realm = 'me';
 const domain = `vcap.${realm}`;
