@@ -17,7 +17,7 @@ router.get('/redirect', async (req, res, next) => {
 
         const host = CONFIG.host;
         const appLink = `${CONFIG.mobile_intent}registration?tokenId=${tokenId}&domain=${host}`;
-        res.json(appLink);
+        res.redirect(appLink);
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_bad_request', 400));
     }
