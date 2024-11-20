@@ -8,7 +8,7 @@ const domain = `vcap.${realm}`;
 const admin_subdomain = 'admin';
 const admin_port = '5173'
 const admin_domain = `${admin_subdomain}.${domain}${development ? `:${admin_port}` : ''}`;
-const proxy_domain = development ? 'https://hkj8bh1h-4000.euw.devtunnels.ms' : '';
+const proxy_domain = development ? '' : '';
 const mobile_intent = 'gowork://';
 
 const CONFIG = {
@@ -25,20 +25,20 @@ const CONFIG = {
     mongodb_host: 'mongodb://127.0.0.1:27017/attendance',
     companyName: domain.toUpperCase(),
     appName: 'ATTENDANCE SYSTEM',
-    jwtSecret: '***REMOVED***',
+    jwtSecret: '',
     mail_transport: {
         service: 'gmail',
         port: 465,
         secure: true,
         auth: {
             type: 'OAuth2',
-            user: '***REMOVED***',
-            clientId: '***REMOVED***',
-            clientSecret: '***REMOVED***',
-            refreshToken: '***REMOVED***'
+            user: '',
+            clientId: '',
+            clientSecret: '',
+            refreshToken: ''
         }
     },
-    grecaptchaSecret: '***REMOVED***',
+    grecaptchaSecret: '',
     isUsingRecaptcha: isUsingRecaptcha,
 };
 
