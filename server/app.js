@@ -77,7 +77,7 @@ app.use(bodyParser.json())
 
 const languages = ['cs', 'en', 'vi']
 app.use(
-  express.static(path.join(__dirname, 'public', 'admin'), { index: false }),
+  express.static(path.join(__dirname, 'public'), { index: false }),
 )
 
 app.use(
@@ -111,7 +111,7 @@ app.use(errorResponder)
 // serve static files
 app.get('*', async (req, res) => {
   return res.sendFile(
-    path.resolve(__dirname, 'public', 'admin', 'index.html'),
+    path.resolve(__dirname, 'public', 'index.html'),
   )
 })
 module.exports = app

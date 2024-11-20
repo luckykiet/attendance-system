@@ -6,3 +6,4 @@
 .pnp.*
 
 certs/
+public/
