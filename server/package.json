@@ -15,10 +15,10 @@
     "clean-devcert": "node ./scripts/clean-devcert.js",
     "install-devcert": "node ./scripts/install-devcert.js",
     "test": "yarn test:unit && yarn test:api",
-		"test:auth": "NODE_ENV=test && jest --silent --testPathPattern='test/auth' --detectOpenHandles --forceExit",
-		"test:mod": "NODE_ENV=test && jest --silent --testPathPattern='test/mod' --detectOpenHandles --forceExit",
-		"test:api": "NODE_ENV=test && jest --testPathPattern='test/api' --detectOpenHandles --forceExit",
-		"test:unit": "NODE_ENV=test && jest --silent --testPathPattern='test/unit' --detectOpenHandles --forceExit"
+    "test:auth": "NODE_ENV=test && jest --silent --testPathPattern='test/auth' --detectOpenHandles --forceExit",
+    "test:mod": "NODE_ENV=test && jest --silent --testPathPattern='test/mod' --detectOpenHandles --forceExit",
+    "test:api": "NODE_ENV=test && jest --testPathPattern='test/api' --detectOpenHandles --forceExit",
+    "test:unit": "NODE_ENV=test && jest --silent --testPathPattern='test/unit' --detectOpenHandles --forceExit"
   },
   "packageManager": "yarn@4.5.1",
   "engines": {
