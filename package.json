@@ -21,7 +21,8 @@
     "upgrade-dep": "ncu -u && yarn install",
     "build": "cd admin && yarn build",
     "deploy": "cd admin && yarn deploy",
-    "deploy-win": "cd admin && yarn deploy-win"
+    "deploy-win": "cd admin && yarn deploy-win",
+    "zip-build": "cd admin && yarn zip-build"
   },
   "packageManager": "yarn@4.5.1",
   "license": "MIT",
