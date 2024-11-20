@@ -25,6 +25,7 @@ const GoogleMapPicker = () => {
     const [postMsg, setPostMsg] = useState('');
     const [searchedLocation, setSearchedLocation] = useState('');
 
+
     const street = watch('address.street');
     const city = watch('address.city');
     const zip = watch('address.zip');
@@ -32,7 +33,7 @@ const GoogleMapPicker = () => {
     const fetchCoordinates = useCallback(async () => {
         setPostMsg('');
         if (!street || !city || !zip) {
-            setPostMsg(t("misc_address_required"));
+            setPostMsg(t("srv_address_required"));
             return;
         }
 
@@ -57,24 +58,6 @@ const GoogleMapPicker = () => {
         }
     }, [city, setValue, street, zip, t]);
 
-    const handleMapClick = (event) => {
-        const latitude = Number(event.latLng.lat());
-        const longitude = Number(event.latLng.lng());
-
-        setSelectedPosition({ lat: latitude, lng: longitude });
-        setValue('location.latitude', latitude);
-        setValue('location.longitude', longitude);
-    };
-
-    const handleMarkerDragEnd = (event) => {
-        const latitude = Number(event.latLng.lat());
-        const longitude = Number(event.latLng.lng());
-
-        setSelectedPosition({ lat: latitude, lng: longitude });
-        setValue('location.latitude', latitude);
-        setValue('location.longitude', longitude);
-    };
-
     const handleGetCurrentLocation = () => {
         setPostMsg('');
         if (navigator.geolocation) {
@@ -84,9 +67,6 @@ const GoogleMapPicker = () => {
                     setSelectedPosition({ lat: latitude, lng: longitude });
                     setValue('location.latitude', latitude);
                     setValue('location.longitude', longitude);
-                    setValue('address.street', '');
-                    setValue('address.city', '');
-                    setValue('address.zip', '');
                 },
                 () => {
                     setPostMsg(t("srv_failed_to_get_location"));
@@ -97,11 +77,67 @@ const GoogleMapPicker = () => {
         }
     };
 
+    const handleReverseGeocoding = async (latitude, longitude) => {
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${CONFIG.GOOGLE_MAPS_API_KEY}`;
+
+        try {
+            const response = await axios.get(geocodeUrl);
+            const data = response.data;
+
+            if (data.status === "OK" && data.results.length > 0) {
+                const addressComponents = data.results[0].address_components;
+
+                const route = addressComponents.find((component) => component.types.includes("route"))?.long_name || "";
+                const streetNumber = addressComponents.find((component) => component.types.includes("street_number"))?.long_name || "";
+                const sublocality = addressComponents.find((component) => component.types.includes("locality"))?.long_name || addressComponents.find((component) => component.types.includes("sublocality"))?.long_name || "";
+                const neighborhood = addressComponents.find((component) => component.types.includes("neighborhood"))?.long_name || "";
+                const postalCode = addressComponents.find((component) => component.types.includes("postal_code"))?.long_name || "";
+
+                const street = `${route}${streetNumber ? ` ${streetNumber}` : ''}`;
+                const city = `${sublocality}${neighborhood ? sublocality ? ` - ${neighborhood}` : `${neighborhood}` : ''}`;
+                const zip = postalCode;
+
+                setValue('address.street', street);
+                setValue('address.city', city);
+                setValue('address.zip', zip);
+                setPostMsg(t("srv_address_updated"));
+            } else {
+                setPostMsg(t("srv_invalid_coordinates"));
+            }
+        } catch (error) {
+            console.log(error)
+            setPostMsg(t("srv_error_fetching_address"));
+        }
+    };
+
+    const handleMapClick = async (event) => {
+        const latitude = Number(event.latLng.lat());
+        const longitude = Number(event.latLng.lng());
+
+        setSelectedPosition({ lat: latitude, lng: longitude });
+        setValue('location.latitude', latitude);
+        setValue('location.longitude', longitude);
+
+        await handleReverseGeocoding(latitude, longitude);
+    };
+
+    const handleMarkerDragEnd = async (event) => {
+        const latitude = Number(event.latLng.lat());
+        const longitude = Number(event.latLng.lng());
+
+        setSelectedPosition({ lat: latitude, lng: longitude });
+        setValue('location.latitude', latitude);
+        setValue('location.longitude', longitude);
+
+        await handleReverseGeocoding(latitude, longitude);
+    };
+
+
     useEffect(() => {
-        if (street && city && zip && searchedLocation !== `${street}, ${city}, ${zip}`) {
+        if (!selectedPosition && street && city && zip && searchedLocation !== `${street}, ${city}, ${zip}`) {
             fetchCoordinates();
         }
-    }, [city, fetchCoordinates, searchedLocation, street, zip]);
+    }, [city, fetchCoordinates, searchedLocation, selectedPosition, street, zip]);
 
     const isButtonDisabled = searchedLocation === `${street}, ${city}, ${zip}`;
 
