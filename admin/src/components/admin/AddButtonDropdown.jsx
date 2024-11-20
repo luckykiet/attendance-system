@@ -10,7 +10,7 @@ import useTranslation from '@/hooks/useTranslation'
 import { useSetIsModalOpen as useSetIsRegisterModalOpen, useSetRegisterId } from '@/stores/register'
 import { useAuthStore } from '@/stores/auth'
 import { checkPrivileges } from '@/utils'
-import { AddBusiness } from '@mui/icons-material'
+import { AddBusiness, GroupAdd } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
@@ -74,8 +74,6 @@ export default function AddButtonDropdown() {
               {t('misc_create_company')}
             </ListItemText>
           </MenuItem>}
-        </MenuList>
-        <MenuList>
           {checkPrivileges('addEmployee', user?.role) && <MenuItem
             onClick={() => {
               navigate('/employee')
@@ -83,10 +81,23 @@ export default function AddButtonDropdown() {
             }}
           >
             <ListItemIcon>
-              <PersonAddIcon />
+              <GroupAdd />
             </ListItemIcon>
             <ListItemText>
               {t('misc_create_employee')}
+            </ListItemText>
+          </MenuItem>}
+          {checkPrivileges('createUser', user?.role) && <MenuItem
+            onClick={() => {
+              navigate('/user')
+              handleClose()
+            }}
+          >
+            <ListItemIcon>
+              <PersonAddIcon />
+            </ListItemIcon>
+            <ListItemText>
+              {t('misc_create_user')}
             </ListItemText>
           </MenuItem>}
         </MenuList>
