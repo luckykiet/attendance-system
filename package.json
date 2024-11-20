@@ -14,12 +14,14 @@
     "install-all": "cd admin && yarn install && cd ../server && yarn install && cd ../mobile && yarn install",
     "postinstall": "yarn install-all",
     "start": "concurrently \"cd server && yarn start\" \"cd admin && yarn start\"",
-    "starthttps": "concurrently \"cd server && yarn starthttps\" \"cd admin && yarn starthttps\"",
+    "starthttps": "concurrently \"cd server && yarn starthttps\"",
     "mergetranslations": "node ./mergeTranslations.mjs",
     "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
     "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install",
-    "build": "cd admin && yarn build"
+    "build": "cd admin && yarn build",
+    "deploy": "cd admin && yarn deploy",
+    "deploy-win": "cd admin && yarn deploy-win"
   },
   "packageManager": "yarn@4.5.1",
   "license": "MIT",

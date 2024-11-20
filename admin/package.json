@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build --config production.vite.config.js",
+    "deploy": "mkdir -p ../server/public && rm -rf ../server/public && mv build ../server/public",
+    "deploy-win": "deploy.bat",
     "dev": "vite",
     "devhttps": "vite",
     "lint": "eslint .",
