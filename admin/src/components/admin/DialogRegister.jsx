@@ -9,6 +9,11 @@ import {
   TextField,
   Switch,
   FormControlLabel,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Stack,
+  Typography,
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -28,6 +33,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OpeningTimeInputs from '../WorkingHoursInputs';
 import LocationPicker from '../LocationPicker';
 import { useSetConfirmBox } from '@/stores/confirm';
+import { ExpandMore } from '@mui/icons-material';
+import CopyButton from './CopyButton';
 
 dayjs.extend(customParseFormat);
 
@@ -61,6 +68,7 @@ const registerSchema = z.object({
     sat: workingHourSchema,
     sun: workingHourSchema,
   }),
+  maxLocalDevices: z.number().int().min(0, { message: 'srv_invalid_device_count' }),
   isAvailable: z.boolean(),
 });
 
@@ -179,7 +187,12 @@ export default function DialogRegister() {
   return (
     <Dialog fullWidth maxWidth="md" open={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <FormProvider {...mainForm}>
-        <DialogTitle>{register ? register.name : t('misc_create_company')}</DialogTitle>
+        <DialogTitle>
+          <Stack direction={'row'} spacing={1} alignItems={'center'}>
+            <Typography variant="h6">{register ? `${register.name} - ${register._id}` : t('misc_create_company')}</Typography>
+            {register && <CopyButton value={register._id || ''} />}
+          </Stack>
+        </DialogTitle>
         <DialogContent>
           <Grid2 container spacing={2} sx={{ marginY: 2 }}>
             <Grid2 size={{ xs: 12 }}>
@@ -303,9 +316,39 @@ export default function DialogRegister() {
                 )}
               />
             </Grid2>
+            <Grid2 size={{ xs: 12 }}>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  aria-controls={`panel-content-${register ? register._id : 'new'}`}
+                  id={`panel-header-${register ? register._id : 'new'}`}
+                >
+                  {t('misc_working_hours')}
+                </AccordionSummary>
+                <AccordionDetails>
+                  <OpeningTimeInputs />
+                </AccordionDetails>
+              </Accordion>
+            </Grid2>
 
-            <OpeningTimeInputs />
-
+            <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="maxLocalDevices"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    fullWidth
+                    label={`${t('misc_max_local_devices')}`}
+                    variant="outlined"
+                    type="number"
+                    error={fieldState.invalid}
+                    helperText={fieldState.invalid && t(fieldState.error.message)}
+                  />
+                )}
+              />
+            </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <Controller
                 name="isAvailable"

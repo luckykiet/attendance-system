@@ -1,4 +1,4 @@
-const { beforeAll, afterAll, describe, test, expect, jest: { fn } } = require('@jest/globals');
+const { beforeAll, afterAll, describe, test, expect } = require('@jest/globals');
 const request = require('supertest');
 const app = require('../../app');
 const Employee = require('../../models/Employee');
@@ -12,17 +12,23 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const dayjs = require('dayjs');
 const db = require('../db');
-const utils = require('../../utils');
 const { ObjectId } = mongoose.Types;
+const geolib = require('geolib');
 
 const routePrefix = '/api/attendance';
 let employee, register, retail, user;
 let employees = [];
 const deviceId = 'device123';
 
+// eslint-disable-next-line no-undef
+jest.mock('geolib', () => ({
+    // eslint-disable-next-line no-undef
+    getDistance: jest.fn(),
+}));
+
 beforeAll(async () => {
     await db.connect();
-    utils.calculateDistance = fn().mockReturnValue(50);
+    geolib.getDistance.mockReturnValue(50);
 
     retail = await new Retail({
         name: 'Test Retail',
@@ -108,7 +114,7 @@ beforeAll(async () => {
         }
     }).save();
 
-    utils.calculateDistance.mockReturnValue(50);
+    geolib.getDistance.mockReturnValue(50);
 });
 
 afterAll(async () => {
@@ -141,7 +147,7 @@ describe('Attendance Tests', () => {
         });
 
         test('should throw error if outside allowed radius', async () => {
-            utils.calculateDistance.mockReturnValueOnce(200); // Outside allowed radius
+            geolib.getDistance.mockReturnValueOnce(200); // Outside allowed radius
 
             const payload = {
                 registerId: register._id.toString(),

@@ -2775,6 +2775,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"geolib@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "geolib@npm:3.3.4"
+  checksum: 10/a40ca6a84afc0a511509b34839839923ea9251d837cd6b2e56ebc968911ba8a10209ea604878f52606efe41204eb20d1246b2e545ff1c1027f0913c5e4a97907
+  languageName: node
+  linkType: hard
+
 "get-caller-file@npm:^2.0.1, get-caller-file@npm:^2.0.5":
   version: 2.0.5
   resolution: "get-caller-file@npm:2.0.5"
@@ -5311,6 +5318,7 @@ __metadata:
     express: "npm:^4.21.1"
     express-session: "npm:^1.18.1"
     express-validator: "npm:^7.2.0"
+    geolib: "npm:^3.3.4"
     globals: "npm:^15.12.0"
     googleapis: "npm:^144.0.0"
     html-minifier-terser: "npm:^7.2.0"

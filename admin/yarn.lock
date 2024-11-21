@@ -3354,6 +3354,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zxing/browser@npm:0.0.7":
+  version: 0.0.7
+  resolution: "@zxing/browser@npm:0.0.7"
+  dependencies:
+    "@zxing/text-encoding": "npm:^0.9.0"
+  peerDependencies:
+    "@zxing/library": ^0.18.3
+  dependenciesMeta:
+    "@zxing/text-encoding":
+      optional: true
+  checksum: 10/853b391802c154ded7cf921af4346c67a1030d87551741a5aab0d13f38d9396a7fbbe8263fac4e00a722523f2e7e8edaf2cac15b1476e8106053bc33d2a58830
+  languageName: node
+  linkType: hard
+
+"@zxing/library@npm:^0.18.3":
+  version: 0.18.6
+  resolution: "@zxing/library@npm:0.18.6"
+  dependencies:
+    "@zxing/text-encoding": "npm:~0.9.0"
+    ts-custom-error: "npm:^3.0.0"
+  dependenciesMeta:
+    "@zxing/text-encoding":
+      optional: true
+  checksum: 10/e8eb88812227e610920cfd0c1bc64e2444d93e57e7b5243b332135a4b7d8c16e6b7cbe2452e5278b478b78e882d541cfdf5dc483877a755806a512cbf83349fa
+  languageName: node
+  linkType: hard
+
+"@zxing/text-encoding@npm:^0.9.0, @zxing/text-encoding@npm:~0.9.0":
+  version: 0.9.0
+  resolution: "@zxing/text-encoding@npm:0.9.0"
+  checksum: 10/268e4ef64b8eaa32b990240bdfd1f7b3e2b501a6ed866a565f7c9747f04ac884fbe0537fe12bb05d9241b98fb111270c0fd0023ef0a02d23a6619b4589e98f6b
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -3428,6 +3462,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.53.2"
     react-i18next: "npm:^15.1.1"
+    react-qr-reader: "npm:^3.0.0-beta-1"
     react-router-dom: "npm:^6.28.0"
     react-virtualized: "npm:^9.22.5"
     sass: "npm:^1.81.0"
@@ -6700,6 +6735,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-qr-reader@npm:^3.0.0-beta-1":
+  version: 3.0.0-beta-1
+  resolution: "react-qr-reader@npm:3.0.0-beta-1"
+  dependencies:
+    "@zxing/browser": "npm:0.0.7"
+    "@zxing/library": "npm:^0.18.3"
+    rollup: "npm:^2.67.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  checksum: 10/ed16730e1187ce57e764e0f4c5010d237128abe941bd174fce27785939cc835cc08b09e8e4ce7f9ecaf67fa0e87bfaf6fc7e76993c8ec2e640b3454e6a11953e
+  languageName: node
+  linkType: hard
+
 "react-router-dom@npm:^6.28.0":
   version: 6.28.0
   resolution: "react-router-dom@npm:6.28.0"
@@ -6936,7 +6985,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.77.2":
+"rollup@npm:^2.67.2, rollup@npm:^2.77.2":
   version: 2.79.2
   resolution: "rollup@npm:2.79.2"
   dependencies:
@@ -7513,6 +7562,13 @@ __metadata:
   version: 0.0.1
   resolution: "to-utf8@npm:0.0.1"
   checksum: 10/781e12fb923027333f63098070b95a07e236223be389fd2a27f7cfacb8fca102d9f2df52e918ce4ee1a3b0b7007705a8944f4c37b1d1bed89c7517a760ed2eac
+  languageName: node
+  linkType: hard
+
+"ts-custom-error@npm:^3.0.0":
+  version: 3.3.1
+  resolution: "ts-custom-error@npm:3.3.1"
+  checksum: 10/92e3a2c426bf6049579aeb889b6f9787e0cfb6bb715a1457e2571708be7fe739662ca9eb2a8c61b72a2d32189645f4fbcf1a370087e030d922e9e2a7b7c1c994
   languageName: node
   linkType: hard
 

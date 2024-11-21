@@ -43,21 +43,6 @@ const utils = {
             return { success: false, msg: error.response?.data || `srv_ares_failed` }
         }
     },
-    // Helper function to calculate distance (Haversine formula)
-    calculateDistance: ({ originLat, originLon, newLat, newLon }) => {
-        const R = 6371e3; // Earth radius in meters
-        const φ1 = originLat * (Math.PI / 180);
-        const φ2 = newLat * (Math.PI / 180);
-        const Δφ = (newLat - originLat) * (Math.PI / 180);
-        const Δλ = (newLon - originLon) * (Math.PI / 180);
-
-        const a =
-            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    },
     regex: {
         username: /^[a-z0-9]{4,}$/,
         password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,

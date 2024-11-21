@@ -7,6 +7,7 @@ const utils = require('../../utils');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { DAYS_OF_WEEK } = require('../../constants');
+const geolib = require('geolib');
 
 dayjs.extend(customParseFormat);
 
@@ -60,7 +61,7 @@ const getTodayWorkplaces = async (req, res, next) => {
 
             const regLongitude = registerObj.location.longitude;
             const regLatitude = registerObj.location.latitude;
-            registerObj.distanceInMeters = hasLocation ? utils.calculateDistance({ originLat: latitude, originLon: longitude, newLat: regLatitude, newLon: regLongitude }) : null;
+            registerObj.distanceInMeters = hasLocation ? geolib.getDistance({ latitude, longitude }, { latitude: regLatitude, longitude: regLongitude }) : null;
             return registerObj;
         });
         if (hasLocation) {

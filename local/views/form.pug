@@ -1,0 +1,54 @@
+doctype html
+html
+    head
+        title= title
+        link(rel="stylesheet" href="/css/styles.css")
+        script(src="/js/jquery-3.7.1.min.js")
+    body
+        div.container
+            h1 Register and Start Beacon
+            form(action="/register" method="POST" class="form" id="registerForm")
+                div.form-group
+                    label(for="deviceId") Device ID:
+                    input(type="text" id="deviceId" disabled class="input highlight" value=deviceId)
+                div.form-group
+                    label(for="serverUrl") Main Server URL:
+                    input(type="text" name="serverUrl" id="serverUrl" required class="input" value=serverUrl placeholder="Enter server URL")
+                div.form-group
+                    label(for="registerId") Register ID:
+                    input(type="text" name="registerId" id="registerId" required class="input" value=registerId placeholder="Enter register ID")
+                div.form-group
+                    label(for="latitudeText") Latitude:
+                    input(type="text" id="latitudeText" disabled class="input readonly")
+                div.form-group
+                    label(for="longitudeText") Longitude:
+                    input(type="text" id="longitudeText" disabled class="input readonly")
+                // Hidden inputs for location
+                input(type="hidden" name="latitude" id="latitude")
+                input(type="hidden" name="longitude" id="longitude")
+                button(type="submit" class="btn btn-primary") Register
+            if message
+                p.message= message
+            script.
+                $(document).ready(() => {
+                    if (navigator.geolocation && (!$('#latitude').val() || !$('#longitude').val())) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const latitude = position.coords.latitude;
+                                const longitude = position.coords.longitude;
+
+                                // Update hidden inputs
+                                $('#latitude').val(latitude);
+                                $('#longitude').val(longitude);
+
+                                // Update text fields
+                                $('#latitudeText').val(latitude);
+                                $('#longitudeText').val(longitude);
+                            },
+                            (error) => {
+                                console.error('Error getting location:', error.message);
+                                alert('Unable to get your location. Please enable location services.');
+                            }
+                        );
+                    }
+                });
