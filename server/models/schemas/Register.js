@@ -33,7 +33,7 @@ const RegisterSchema = new Schema(
             sat: { type: WorkingHourSchema, required: true },
             sun: { type: WorkingHourSchema, required: true },
         },
-
+        maxLocalDevices: { type: Number, required: true, default: 0 },
         isAvailable: { type: Boolean, required: true, default: true },
     },
     {

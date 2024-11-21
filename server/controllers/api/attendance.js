@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { DAYS_OF_WEEK } = require('../../constants');
+const geolib = require('geolib');
 
 dayjs.extend(customParseFormat);
 
@@ -167,8 +168,8 @@ const makeAttendance = async (req, res, next) => {
         if (!workingAt) {
             throw new HttpError('srv_employee_not_employed', 400);
         }
-
-        const distanceInMeters = utils.calculateDistance({ originLat: latitude, originLon: longitude, newLat: register.location.coordinates[1], newLon: register.location.coordinates[0] });
+        
+        const distanceInMeters = geolib.getDistance({ latitude, longitude }, { latitude: register.location.coordinates[1], longitude: register.location.coordinates[0] });
 
         if (distanceInMeters > register.location.allowedRadius) {
             throw new HttpError('srv_outside_allowed_radius', 400);

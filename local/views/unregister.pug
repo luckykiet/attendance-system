@@ -1,0 +1,24 @@
+doctype html
+html
+    head
+        title= title
+        link(rel="stylesheet" href="/css/styles.css")
+    body
+        div.container
+            h1 Device Registered
+            p Device ID: 
+                span= deviceId
+            p Registered to server: 
+                span= config.serverUrl
+            p RegisterId: 
+                span= config.registerId
+            p UUID: 
+                span= config.uuid
+            p Latitude: 
+                span= config.location.latitude 
+            p Longitude: 
+                span= config.location.longitude
+            form(action="/unregister" method="POST")
+                button(type="submit" class="btn") Unregister Device
+            if message
+                p.message= message

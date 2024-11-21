@@ -32,6 +32,7 @@ export const getDefaultRegister = () => ({
     sat: getDefaultWorkingHour(),
     sun: getDefaultWorkingHour(),
   },
+  maxLocalDevices: 0,
   isAvailable: true,
 });
 

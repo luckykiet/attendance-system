@@ -139,6 +139,15 @@ const GoogleMapPicker = () => {
         }
     }, [city, fetchCoordinates, searchedLocation, selectedPosition, street, zip]);
 
+    const latitude = watch('location.latitude');
+    const longitude = watch('location.longitude');
+    
+    useEffect(() => {
+        if (latitude && longitude && (latitude !== selectedPosition.lat || longitude !== selectedPosition.lng)) {
+            setSelectedPosition({ lat: latitude, lng: longitude });
+        }
+    }, [latitude, longitude, selectedPosition.lat, selectedPosition.lng]);
+
     const isButtonDisabled = searchedLocation === `${street}, ${city}, ${zip}`;
 
     return (
