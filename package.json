@@ -24,7 +24,7 @@
     "deploy-win": "cd admin && yarn deploy-win",
     "zip-build": "cd admin && yarn zip-build"
   },
-  "packageManager": "yarn@4.5.1",
+  "packageManager": "yarn@4.5.2",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.1.0",

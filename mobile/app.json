@@ -29,7 +29,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR Codes for registration or for making attendance.",
         "NSLocal": "This app uses the camera to scan QR Codes for registration or for making attendance.",
-        "NSLocalNetworkUsageDescription": "This app needs access to local network to communicate with the authenticated local attendance server."
+        "NSLocalNetworkUsageDescription": "This app needs access to local network to communicate with the authenticated local attendance server.",
+        "NSBluetoothAlwaysUsageDescription": "We need Bluetooth to scan for nearby devices.",
+        "NSBluetoothPeripheralUsageDescription": "We need Bluetooth to connect to nearby devices."
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -52,7 +54,11 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "versionCode": 100,
       "softwareKeyboardLayoutMode": "pan"
@@ -89,6 +95,17 @@
         {
           "configureAndroidBackup": true,
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": true,
+          "modes": [
+            "peripheral",
+            "central"
+          ],
+          "bluetoothAlwaysPermission": "Allow $(PRODUCT_NAME) to connect to bluetooth devices"
         }
       ]
     ],

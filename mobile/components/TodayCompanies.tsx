@@ -19,9 +19,11 @@ import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
 import { useAttendanceApi } from '@/api/useAttendanceApi';
 import { AttendanceMutation } from '@/types/attendance';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import { calculateHoursFromMinutes, calculateKilometersFromMeters } from '@/utils';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import BLEScanModal from '@/components/BLEScanModal';
+import { Device } from 'react-native-ble-plx';
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
@@ -39,12 +41,6 @@ interface Company {
   checkOutTime: string | null;
   domain: string;
 }
-
-interface CompanyWithStatus extends Company {
-  openingHours: string;
-  status: string;
-}
-
 const getTodayWorkingHours = (workingHours: WorkingHours): { status: string; message: string } => {
   const todayIndex = dayjs().day();
   const todayKey = DAYS_OF_WEEK[todayIndex];
@@ -111,11 +107,11 @@ const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, workingH
 const TodayCompanies = () => {
   const { t } = useTranslation();
   const nonCap = useTranslation({ capitalize: false });
-  const { location, appId, urls, isGettingLocation } = useAppStore();
+  const { location, appId, urls, isGettingLocation, setLocalDevices } = useAppStore();
   const { getTodayWorkplaces } = useCompaniesApi();
   const { logAttendance } = useAttendanceApi();
   const colorScheme = useColorScheme();
-
+  const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
   const scrollViewRef = useRef<FlatList>(null);
   const [showScrollArrow, setShowScrollArrow] = useState(false);
 
@@ -123,8 +119,13 @@ const TodayCompanies = () => {
     {
       mutationFn: (data: AttendanceMutation) => logAttendance(data),
       onSuccess: (data) => {
-        Alert.alert(t('misc_attendance_success'), t(data))
-        queryResults.refetch();
+        if (data.localDevices) {
+          setLocalDevices(data.localDevices);
+        } else {
+          Alert.alert(t('misc_attendance_success'), t(data.msg))
+          setPendingAttendance(null);
+          queryResults.refetch();
+        }
       },
       onError: (error) => Alert.alert(t('misc_attendance_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_make_attendance')),
     }
@@ -222,12 +223,22 @@ const TodayCompanies = () => {
               Alert.alert(t('misc_error'), t('srv_location_required_to_make_attendance'));
               return;
             }
-            makeAttendanceMutation.mutate({ registerId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude });
+            const attendance: AttendanceMutation = { registerId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude };
+            setPendingAttendance(attendance);
+            makeAttendanceMutation.mutate(attendance);
           },
         },
       ],
       { cancelable: true }
     );
+  };
+
+  const handleScanResult = (result: boolean, foundDevices: string[]) => {
+    if (result && pendingAttendance) {
+      makeAttendanceMutation.mutate({ ...pendingAttendance, localDeviceId: foundDevices[0] });
+    } else {
+      Alert.alert(t('srv_scan_failed'), t('srv_no_devices_found'));
+    }
   };
 
   const handleScroll = (event: { nativeEvent: { contentSize: { height: number; width: number }; layoutMeasurement: { height: number; width: number }; contentOffset: { x: number; y: number } } }) => {
@@ -249,6 +260,7 @@ const TodayCompanies = () => {
 
   return (
     <ThemedView style={styles.nearbyContainer}>
+      <BLEScanModal onResult={handleScanResult} />
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_my_today_workplaces')}:</ThemedText>
         <TouchableOpacity onPress={() => queryResults.refetch()} style={styles.refreshButton}>

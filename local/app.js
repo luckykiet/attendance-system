@@ -7,6 +7,7 @@ const path = require("path");
 const open = require("open");
 const validUrl = require("valid-url");
 const crypto = require("crypto");
+const cron = require("node-cron");
 
 const app = express();
 const PORT = 3872;
@@ -21,7 +22,7 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
 
-const startBeacon = (uuid) => {
+const startBeacon = (uuid, customText = 'beacon') => {
     if (!uuid) {
         console.log("No UUID provided. Beacon will not start.");
         return;
@@ -32,19 +33,18 @@ const startBeacon = (uuid) => {
         return;
     }
 
-    console.log(`Attempting to start beacon with UUID: ${uuid}`);
+    console.log(`Attempting to start beacon with UUID: ${uuid} and custom text: "${customText}"`);
 
-    bleno.startAdvertising("BLE Beacon", [uuid], (err) => {
+    bleno.startAdvertising(customText, [uuid], (err) => {
         if (err) {
             console.error("Failed to start advertising:", err);
         } else {
             console.log(`Broadcasting UUID: ${uuid}`);
         }
     });
-}
+};
 
-
-bleno.on("stateChange", (state) => {
+bleno.on("stateChange", async (state) => {
     bluetoothState = state;
     if (state === "poweredOn") {
         console.log("Bluetooth is powered on.");
@@ -53,6 +53,10 @@ bleno.on("stateChange", (state) => {
         console.log("Bluetooth is not powered on. Stopping advertising...");
         bleno.stopAdvertising();
     }
+});
+
+bleno.on("advertisingStop", () => {
+    console.log("Advertising stopped.");
 });
 
 async function getOrGenerateDeviceId() {
@@ -68,6 +72,7 @@ async function getOrGenerateDeviceId() {
 }
 
 async function checkAndStartBeacon() {
+    const deviceId = await getOrGenerateDeviceId();
     if (bluetoothState !== "poweredOn") {
         console.log("Bluetooth is off. Waiting for it to be turned on.");
         return;
@@ -77,7 +82,7 @@ async function checkAndStartBeacon() {
         const config = await fs.readJson(configFile);
         if (config.serverUrl && config.uuid && config.location) {
             console.log("Valid configuration found. Starting beacon...");
-            startBeacon(config.uuid);
+            startBeacon(config.uuid, deviceId);
         } else {
             console.log("Incomplete configuration. Beacon will not start.");
         }
@@ -86,33 +91,74 @@ async function checkAndStartBeacon() {
     }
 }
 
+const renewUUID = async () => {
+    if (!(await fs.pathExists(configFile))) {
+        console.log("Configuration file not found. Cannot renew UUID.");
+        return;
+    }
+
+    const config = await fs.readJson(configFile);
+
+    try {
+        const deviceId = await getOrGenerateDeviceId();
+        const response = await axios.post(`${config.serverUrl}/api/local-device/renew`, {
+            deviceId,
+            registerId: config.registerId,
+            uuid: config.uuid,
+        });
+
+        if (response.data.success) {
+            const newUUID = response.data.msg;
+            config.uuid = newUUID;
+            await fs.writeJson(configFile, config, { spaces: 2 });
+
+            console.log("UUID renewed successfully. Restarting beacon...");
+            // Ensure the current advertising is stopped before starting a new one
+            bleno.stopAdvertising(() => {
+                startBeacon(newUUID);
+            });
+        } else {
+            console.error("Failed to renew UUID:", response.data.msg);
+        }
+    } catch (error) {
+        console.error("Error during UUID renewal:", error.message);
+    }
+};
+
+
+// TODO: Change the schedule to run once a day
+// cron.schedule("0 * * * *", async () => {
+//     console.log("Running hourly UUID renewal task...");
+//     await renewUUID();
+// });
+
 app.get("/", async (req, res) => {
     const deviceId = await getOrGenerateDeviceId();
     const configExists = await fs.pathExists(configFile);
 
-    if (configExists) {
-        const config = await fs.readJson(configFile);
-        if (config.serverUrl && config.uuid && config.location) {
-            return res.render("unregister", {
-                title: "Device Registered",
-                message: bluetoothState !== "poweredOn" ? "Bluetooth is off. Beacon not running." : "",
-                config,
-                deviceId,
-            });
-        }
+    const config = configExists ? await fs.readJson(configFile) : {};
+
+    if (config.serverUrl && config.uuid && config.location) {
+        return res.render("unregister", {
+            title: "Device Registered",
+            message: bluetoothState !== "poweredOn" ? "Bluetooth is off. Beacon not running." : "",
+            config,
+            deviceId,
+        });
     }
 
     res.render("form", {
         title: "Register and Start Beacon",
         deviceId,
         message: "",
-        serverUrl: "",
-        registerId: "",
+        serverUrl: config.serverUrl || "",
+        registerId: config.registerId || "",
+        allowedRadius: config.location?.allowedRadius || "",
     });
 });
 
 app.post("/register", async (req, res) => {
-    let { registerId, serverUrl, latitude, longitude } = req.body;
+    let { registerId, serverUrl, latitude, longitude, allowedRadius } = req.body;
     const deviceId = await getOrGenerateDeviceId();
     const errors = [];
 
@@ -131,13 +177,20 @@ app.post("/register", async (req, res) => {
         registerId = registerId.trim();
     }
 
-    if (!latitude || !longitude) {
-        errors.push("Latitude and longitude are required.");
-    } else {
+    if (latitude && longitude) {
         latitude = parseFloat(latitude);
         longitude = parseFloat(longitude);
         if (isNaN(latitude) || isNaN(longitude)) {
             errors.push("Invalid latitude or longitude values.");
+        }
+    } else {
+        latitude = longitude = '';
+    }
+
+    if (allowedRadius) {
+        allowedRadius = parseFloat(allowedRadius);
+        if (isNaN(allowedRadius) || allowedRadius < 0) {
+            errors.push("Invalid allowed radius value.");
         }
     }
 
@@ -148,6 +201,7 @@ app.post("/register", async (req, res) => {
             deviceId,
             serverUrl,
             registerId,
+            allowedRadius,
         });
     }
 
@@ -155,15 +209,15 @@ app.post("/register", async (req, res) => {
         const response = await axios.post(`${serverUrl}/api/local-device/register`, {
             deviceId,
             registerId,
-            location: { latitude, longitude },
+            location: { latitude, longitude, allowedRadius },
         });
 
         if (response.data.success) {
-            const newUUID = response.data.msg.uuid;
-            const config = { serverUrl, uuid: newUUID, registerId, location: { latitude, longitude } };
+            const { uuid, location } = response.data.msg;
+            const config = { serverUrl, uuid, registerId, location };
             await fs.writeJson(configFile, config, { spaces: 2 });
 
-            startBeacon(newUUID);
+            startBeacon(uuid);
 
             return res.redirect("/");
         }
@@ -201,14 +255,30 @@ app.post("/unregister", async (req, res) => {
 
         throw new Error(response.data.msg || "Failed to unregister device.");
     } catch (error) {
-        console.error("Error during unregistration:", error.message);
-        res.render("unregister", {
-            title: "Device Registered",
-            message: "Failed to unregister device. Please try again.",
-            config,
-        });
+        const message = error.response && error.response.data ? error.response.data.msg : error.message;
+        console.error("Error during registration:", message);
+        await fs.remove(configFile);
+        bleno.stopAdvertising();
+        return res.redirect("/");
     }
 });
+
+(async () => {
+    try {
+        if (await fs.pathExists(configFile)) {
+            const config = await fs.readJson(configFile);
+            if (config.serverUrl && config.uuid && config.location) {
+                checkAndStartBeacon();
+            } else {
+                open(`http://localhost:${PORT}`);
+            }
+        } else {
+            open(`http://localhost:${PORT}`);
+        }
+    } catch (error) {
+        console.error("Error during startup:", error.message);
+    }
+})();
 
 (async () => {
     try {

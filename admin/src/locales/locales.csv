@@ -188,6 +188,7 @@ misc_form_addition	addition for form	chi tiết cho mẫu đơn	dodatek k formul
 misc_form_contact	form contact	thông tin liên hệ của đơn	kontakty formuláře
 misc_form_deleted	Form deleted	Đơn đã xoá	Formulář smazán
 misc_form_not_linked	form not linked	đơn không kết nối	formulář není odkazován
+misc_form_reference_added	Form reference added	đã tạo tham chiếu đơn	Reference formuláře přidána
 misc_forms	Forms	Đơn	Formuláře
 misc_forms_exist	forms exist	đơn tồn tại	formuláře existují
 misc_front_side	front side	phía trước	přední strana
@@ -231,12 +232,14 @@ misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
 misc_loaded	loaded	đã tải	načteno
 misc_loading_data	loading data	đang tải dữ liệu	data se načítá
+misc_local_devices	local devices	thiết bị cục bộ 	Lokální zařízení
 misc_location_not_found	location not found	không tìm thấy vị trí	poloha nenalezena
 misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
 misc_login	Login	Đăng nhập	Přihlášení
 misc_longitude	longitude	kinh độ 	zeměpisná délka
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
+misc_max_local_devices	max local devices	thiết bị cục bộ tối đa 	Maximální lokální zařízení
 misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
 misc_merchant_exists	merchant exists	nhà bán buôn đã tồn tại	obchodník již existuje
@@ -303,6 +306,7 @@ misc_no_columns	no columns	không có cột	nejsou žádné sloupce
 misc_no_company	no company	không có công ty	není žádná společnost
 misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
+misc_no_local_device	no local devices	không có thiết bị cục bộ	není žádné lokální zařízení
 misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
 misc_no_terminal	no terminals	không có máy	žádný terminál
@@ -379,6 +383,7 @@ misc_registration_token	registrion token	mã đăng ký	registrační token
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
 misc_renew_password	Renew password	Khôi phục mật khẩu	Obnova hesla
 misc_required	Required	Cần thiết	Požadováno
+misc_rescan	rescan	quét lại	znovu naskenovat
 misc_resend_mail	resend email	gửi lại email	znovu poslat email
 misc_responsible_person	responsible person	người chịu trách nhiệm	zodpovědná osoba
 misc_restaurant	restaurant	nhà hàng	restaurace
@@ -399,6 +404,7 @@ misc_save_draft	save draft	lưu nháp	uložit koncept
 misc_save_merchant	save new merchant	lưu nhà bán buôn mới	uložit nového obchodníka
 misc_save_signature	save signature	lưu chữ ký	uložit podpis
 misc_save_transactions	save transactions	lưu giao dịch	uložit transakce
+misc_scanning_local_devices	scanning for local devices	đang quét thiết bị cục bộ	skenování lokálních zařízení
 misc_searched	searched	tìm	vyhledávaný
 misc_select_all	select all	chọn tất cả	vybrat vše
 misc_selected	selected	đã chọn	vybráno
@@ -575,6 +581,7 @@ srv_close_time_before_open_time	close time is before open time	thời gian kết
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
 srv_created	created	đã được tạo	vytvořeno
 srv_device_already_registered	device already registered	thiết bị đã được đăng ký	zařízení je již registrováno
+srv_device_not_found	device not found	không tìm thấy thiết bị	zařízení nenalezeno
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
 srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
@@ -710,6 +717,7 @@ srv_register_not_found	workplace not found	không tìm thấy nơi làm việc	p
 srv_registration_not_found	registration not found or expired	yêu cầu đăng ký không tìm thấy hoặc đã hết hạn	registrace nenalezena nebo vypršela
 srv_retail_not_found	retail not found	không tìm thấy doanh nghiệp	podnik nenalezen
 srv_return_to	Return to	Hãy quay lại	Vraťte se na
+srv_scan_error	scan error	lỗi quét	chyba skenování
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu

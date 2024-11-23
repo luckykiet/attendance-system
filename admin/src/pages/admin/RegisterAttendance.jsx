@@ -171,6 +171,7 @@ const RegisterAttendance = () => {
                                                             <TableHead>
                                                                 <TableRow>
                                                                     <TableCell>{t('misc_name')}</TableCell>
+                                                                    <TableCell>{t('misc_working_hour')}</TableCell>
                                                                     <TableCell>{t('misc_check_in')}</TableCell>
                                                                     <TableCell>{t('misc_check_out')}</TableCell>
                                                                 </TableRow>
@@ -183,6 +184,7 @@ const RegisterAttendance = () => {
                                                                     return (
                                                                         <TableRow key={employee._id}>
                                                                             <TableCell><Link component={RouterLink} target='_blank' to={`/employee/${employee._id}`} variant='h6'>{employee ? employee.name : attendance?.employeeId}</Link></TableCell>
+                                                                            <TableCell><Typography variant='h6'>{attendance?.workingHour && attendance?.workingHour.isAvailable ? `${attendance.workingHour.start} - ${attendance.workingHour.end}` : '-'}</Typography></TableCell>
                                                                             <TableCell><Typography variant='h6' color={isCheckInLate || !attendance?.checkInTime ? 'error' : 'success'}>{attendance?.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_late')}`}</Typography></TableCell>
                                                                             <TableCell><Typography variant='h6' color={isCheckOutEarly || !attendance?.checkOutTime ? 'error' : 'success'}>{attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('HH:mm:ss') : '-'}{isCheckOutEarly && ` - ${t('misc_early')}`}</Typography></TableCell>
                                                                         </TableRow>

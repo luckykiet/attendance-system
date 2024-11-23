@@ -18,4 +18,6 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/attendances', require('./attendances'));
     app.use(apiPrefix + '/user', require('./user'));
     app.use(apiPrefix + '/users', require('./users'));
+    app.use(apiPrefix + '/local-device', require('./local-device'));
+    app.use(apiPrefix + '/local-devices', require('./local-devices'));
 };

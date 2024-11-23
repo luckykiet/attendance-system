@@ -247,3 +247,10 @@ export const checkPrivileges = (privilegesKey, role) => {
 }
 
 export const timeStartEndValidation = (start, end) => dayjs(end, TIME_FORMAT).isAfter(dayjs(start, TIME_FORMAT));
+
+export const calculateKilometersFromMeters = (pureMeters) => {
+  const absMeters = Math.abs(pureMeters);
+  const kilometers = Math.floor(absMeters / 1000);
+  const meters = absMeters % 1000;
+  return { kilometers, meters };
+};

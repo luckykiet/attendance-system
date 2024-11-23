@@ -1,3 +1,4 @@
+import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 import { useAppStore } from '@/stores/useAppStore';
@@ -19,6 +20,7 @@ const HomeScreen: React.FC = () => {
     <MainScreenLayout>
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.title}>{t(appName)}</ThemedText>
+
         {urls.length === 0 && (
           <Link href="/(tabs)/settings" asChild>
             <TouchableOpacity style={styles.setupButton}>
@@ -26,6 +28,7 @@ const HomeScreen: React.FC = () => {
             </TouchableOpacity>
           </Link>
         )}
+
         {urls.length > 0 && <TodayCompanies />}
         <LocationRequest />
       </ThemedView>

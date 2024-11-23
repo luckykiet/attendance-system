@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const registerLocalDevice = async (req, res, next) => {
     try {
         const { deviceId, registerId, location } = req.body;
-        if (!deviceId || !registerId || !location || !location.latitude || !location.longitude) {
+        if (!deviceId || !registerId) {
             throw new HttpError('srv_invalid_request', 400);
         }
 
@@ -31,11 +31,27 @@ const registerLocalDevice = async (req, res, next) => {
         // if (distanceInMeters > register.location.allowedRadius) {
         //     throw new HttpError('srv_outside_allowed_radius', 400);
         // }
+        if (location?.allowedRadius && parseFloat(location.allowedRadius) < 0) {
+            throw new HttpError('srv_invalid_allowed_radius', 400);
+        }
+
+        if (location?.latitude && isNaN(parseFloat(location.latitude))) {
+            throw new HttpError('srv_invalid_latitude', 400);
+        }
+
+        if (location?.longitude && isNaN(parseFloat(location.longitude))) {
+            throw new HttpError('srv_invalid_longitude', 400);
+        }
+
         const uuid = crypto.randomUUID();
         const newLocalDevice = await new LocalDevice({
             deviceId,
             registerId,
-            location,
+            location: {
+                latitude: location?.latitude ? parseFloat(location.latitude) : register.location.coordinates[1],
+                longitude: location?.longitude ? parseFloat(location.longitude) : register.location.coordinates[0],
+                allowedRadius: location?.allowedRadius ? parseFloat(location.allowedRadius) : register.location.allowedRadius
+            },
             uuid
         }).save();
 
@@ -56,7 +72,7 @@ const unregisterLocalDevice = async (req, res, next) => {
         }
 
         const localDevice = await LocalDevice.findOne({ deviceId, registerId, uuid }).exec();
-        
+
         if (!localDevice) {
             throw new HttpError('srv_device_not_found', 404);
         }
@@ -72,4 +88,30 @@ const unregisterLocalDevice = async (req, res, next) => {
     }
 }
 
-module.exports = { registerLocalDevice, unregisterLocalDevice };
+const renewUUID = async (req, res, next) => {
+    try {
+        const { deviceId, registerId } = req.body;
+        if (!deviceId) {
+            throw new HttpError('srv_invalid_request', 400);
+        }
+
+        const localDevice = await LocalDevice.findOne({ deviceId, registerId }).exec();
+
+        if (!localDevice) {
+            throw new HttpError('srv_device_not_found', 404);
+        }
+
+        const newUUID = crypto.randomUUID();
+        await LocalDevice.findOneAndUpdate({ _id: localDevice._id }, { $set: { uuid: newUUID } }).exec();
+
+        return res.status(200).json({
+            success: true,
+            msg: newUUID
+        });
+    } catch (error) {
+        console.log(error)
+        return next(utils.parseExpressErrors(error, 'srv_failed_unregister_local_device', 500));
+    }
+}
+
+module.exports = { registerLocalDevice, unregisterLocalDevice, renewUUID };

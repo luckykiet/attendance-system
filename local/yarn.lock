@@ -1596,6 +1596,7 @@ __metadata:
     body-parser: "npm:^1.20.3"
     express: "npm:^4.21.1"
     fs-extra: "npm:^11.2.0"
+    node-cron: "npm:^3.0.3"
     pug: "npm:^3.0.3"
     valid-url: "npm:^1.0.9"
   languageName: unknown
@@ -1934,6 +1935,15 @@ __metadata:
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10/bcffacc34d4c442bf48508f5c5aa393f8df73e58761e6c26c4e52c5ae174d6d51f9bd44d4de374194eca934314e5ca4e9f32639f8744766f4238d2307463a6ec
+  languageName: node
+  linkType: hard
+
+"node-cron@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "node-cron@npm:3.0.3"
+  dependencies:
+    uuid: "npm:8.3.2"
+  checksum: 10/f088043da4f61c3640155f7b11e909e6cfb23d9970111a8dcd7b39a1f3d47c897e207bb9657b15441207df21676885b083c777630efa87801de961b15a3d0ad1
   languageName: node
   linkType: hard
 
@@ -2874,6 +2884,15 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10/5d6949693d58cb2e636a84f3ee1c6e7b2f9c16cb1d42d0ecb386d8c025c69e327205aa1c69e2868cc06a01e5e20681fbba55a4e0ed0cce913d60334024eae798
+  languageName: node
+  linkType: hard
+
+"uuid@npm:8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10/9a5f7aa1d6f56dd1e8d5f2478f855f25c645e64e26e347a98e98d95781d5ed20062d6cca2eecb58ba7c84bc3910be95c0451ef4161906abaab44f9cb68ffbdd1
   languageName: node
   linkType: hard
 
