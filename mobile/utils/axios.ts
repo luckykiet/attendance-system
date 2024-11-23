@@ -37,6 +37,10 @@ const createAxiosService = ({ serverUrl = '', route = '/api', timeout }: { serve
         return Promise.reject(msg || 'srv_duplicate');
       } else if (status === 500) {
         return Promise.reject(msg || 'srv_server_error');
+      } else if (status === 302) {
+        const redirectedUrl = error.response.headers.location;
+        console.log("Redirected URL:", redirectedUrl);
+        return redirectedUrl;
       }
 
       return Promise.reject(msg || 'Unknown error');

@@ -230,7 +230,7 @@ export default function EmployeePage() {
                                         name="registrationToken"
                                         control={control}
                                         render={({ field }) => {
-                                            const qrValue = CONFIG.MOBILE_INTENT && field.value ? `${CONFIG.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${PROXY_URL ? PROXY_URL : `${PROTOCOL}${HOSTNAME}`}`)}` : '';
+                                            const qrValue = CONFIG.MOBILE_INTENT && field.value ? `${CONFIG.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${import.meta.env.DEV && PROXY_URL ? PROXY_URL : `${PROTOCOL}${HOSTNAME}`}`)}` : '';
                                             return qrValue ? (
                                                 <Stack sx={{ display: 'flex', justifyContent: 'center' }} spacing={2}>
                                                     <Typography variant="subtitle1">{t('misc_registration_token')}</Typography>
