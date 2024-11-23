@@ -11,11 +11,10 @@ import { WorkingHour } from '@/types/working-hour';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import useTranslation from '@/hooks/useTranslation';
-import { Colors } from '@/constants/Colors';
 import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
 import _ from 'lodash';
-import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
+import { DAYS_OF_WEEK, daysOfWeeksTranslations } from '@/constants/Days';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 dayjs.extend(customParseFormat);

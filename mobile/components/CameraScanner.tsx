@@ -5,7 +5,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
 import { RegistrationIntentData } from '@/types/intents';
 import { delay, isValidUrl, parseAttendanceUrl } from '@/utils';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -24,6 +24,7 @@ export default function CameraScanner() {
     const [lastScannedItem, setLastScannedItem] = useState<string | null>(null);
     const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
     const navigation = useNavigation();
+    const queryClient = useQueryClient();
 
     useFocusEffect(
         useCallback(() => {
@@ -48,7 +49,6 @@ export default function CameraScanner() {
             Alert.alert(t('misc_error'), typeof error === 'string' ? t(error) : t(error.message || 'misc_error'));
         },
         onSuccess: (data) => {
-            console.log(data)
             const { path, params } = parseAttendanceUrl(data);
             setIntentData({ path, domain: params.domain || '', tokenId: params.tokenId || '' });
         }
@@ -57,8 +57,12 @@ export default function CameraScanner() {
     const registrationFormQuery = useQuery<unknown, Error | string>({
         queryKey: ['registrationForm', intentData],
         queryFn: () => getRegistration(intentData?.domain || '', intentData?.tokenId || ''),
-        enabled: !_.isEmpty(intentData) && !_.isEmpty(intentData.domain) && !_.isEmpty(intentData.tokenId),
+        enabled: !!intentData?.domain && !!intentData?.tokenId && !_.isEmpty(intentData),
+        refetchOnWindowFocus: false,
+        retry: false,
+        staleTime: Infinity,
     });
+    
 
     const { data: registrationForm } = registrationFormQuery;
 
@@ -87,6 +91,7 @@ export default function CameraScanner() {
     const handleClearScannedItem = () => {
         setLastScannedItem(null);
         setIntentData(null);
+        queryClient.removeQueries({ queryKey: ['registrationForm'] });
     }
 
     useEffect(() => {

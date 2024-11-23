@@ -123,7 +123,7 @@ export default function DialogRegister() {
     },
     onSuccess: () => {
       setAlertMessage({ msg: 'srv_updated', severity: 'success' });
-      queryClient.invalidateQueries(['register']);
+      queryClient.invalidateQueries({ queryKey: ['register', registerId] });
     }
   })
 
