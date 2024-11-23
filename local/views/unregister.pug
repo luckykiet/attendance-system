@@ -18,6 +18,8 @@ html
                 span= config.location.latitude 
             p Longitude: 
                 span= config.location.longitude
+            p Allowed radius: 
+                span= config.location.allowedRadius
             form(action="/unregister" method="POST")
                 button(type="submit" class="btn") Unregister Device
             if message

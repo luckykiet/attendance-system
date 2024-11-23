@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const WorkingHourSchema = require('./WorkingHour');
 
 const checkSchema = new Schema(
     {
@@ -20,7 +21,8 @@ const AttendanceSchema = new Schema(
         checkInTime: { type: Date, required: true },
         checkInLocation: { type: checkSchema, required: true },
         checkOutTime: { type: Date },
-        checkOutLocation: { type: checkSchema }
+        checkOutLocation: { type: checkSchema },
+        workingHour: { type: WorkingHourSchema, required: true },
     },
     {
         timestamps: true,

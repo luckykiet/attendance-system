@@ -5,6 +5,7 @@ const DailyAttendance = require('../../models/DailyAttendance');
 const utils = require('../../utils');
 const dayjs = require('dayjs');
 const { DAYS_OF_WEEK } = require('../../constants');
+const LocalDevice = require('../../models/LocalDevice');
 
 const getRegisterById = async (id, retailId) => {
     if (!id) {
@@ -50,8 +51,20 @@ const updateRegister = async (req, res, next) => {
     try {
         const { latitude, longitude, allowedRadius } = req.body.location;
 
+        const foundRegister = await getRegisterById(req.body._id, req.user.retailId);
+
+        if (!foundRegister) {
+            throw new HttpError('srv_register_not_found', 404);
+        }
+
+        if (req.body.maxLocalDevices && req.body.maxLocalDevices !== foundRegister.maxLocalDevices) {
+            const localDevices = await LocalDevice.find({ registerId: req.body._id });
+            if (localDevices.length > req.body.maxLocalDevices) {
+                throw new HttpError('srv_max_local_devices_exceeded', 400);
+            }
+        }
         const updatedRegister = await Register.findOneAndUpdate(
-            { _id: req.body._id, retailId: req.user.retailId },
+            { _id: foundRegister._id },
             {
                 $set: {
                     ...req.body,
@@ -92,6 +105,7 @@ const deleteRegister = async (req, res, next) => {
             throw new HttpError('srv_register_not_found', 404);
         }
         await WorkingAt.deleteMany({ registerId: req.params.id });
+        await LocalDevice.deleteMany({ registerId: req.params.id });
         return res.status(200).json({ success: true, msg: 'srv_register_deleted' });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_register_deletion_failed', 400));

@@ -13,8 +13,10 @@ type AppState = {
     location: Location | null;
     isGettingLocation: boolean;
     registration: RegistrationForm | null;
+    localDevices: string[];
     setAppId: (appId: string) => void;
     setLocation: (location: Location) => void;
+    setLocalDevices: (localDevices: string[]) => void;
     loadAppId: () => Promise<void>;
     loadUrls: () => Promise<void>;
     addUrl: (url: string) => Promise<void>;
@@ -30,6 +32,7 @@ const initStates = {
     location: null as Location | null,
     isGettingLocation: false,
     registration: null as RegistrationForm | null,
+    localDevices: [],
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -42,6 +45,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     setIsGettingLocation: (isGettingLocation) => set({ isGettingLocation }),
 
     setRegistration: (registration) => set({ registration }),
+
+    setLocalDevices: (localDevices) => set({ localDevices }),
 
     loadAppId: async () => {
         try {

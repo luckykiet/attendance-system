@@ -18,37 +18,69 @@ html
                     label(for="registerId") Register ID:
                     input(type="text" name="registerId" id="registerId" required class="input" value=registerId placeholder="Enter register ID")
                 div.form-group
-                    label(for="latitudeText") Latitude:
-                    input(type="text" id="latitudeText" disabled class="input readonly")
+                    label(for="allowedRadius") Allowed Radius (if empty, will use register location):
+                    input(type="number" name="allowedRadius" id="allowedRadius" class="input" value=allowedRadius placeholder="Enter allowed radius in meters")    
                 div.form-group
-                    label(for="longitudeText") Longitude:
-                    input(type="text" id="longitudeText" disabled class="input readonly")
-                // Hidden inputs for location
-                input(type="hidden" name="latitude" id="latitude")
-                input(type="hidden" name="longitude" id="longitude")
+                    label(for="latitude") Latitude (if empty, will use register location):
+                    input(type="text" name="latitude" id="latitude" class="input")
+                div.form-group
+                    label(for="longitude") Longitude (if empty, will use register location):
+                    input(type="text" name="longitude" id="longitude" class="input")
+                div.form-group
+                    button(type="button" id="getLocationButton" class="btn btn-secondary") Get Current Location
+                div#locationStatus.text-info Location status: <span id="statusMessage">Idle</span>
                 button(type="submit" class="btn btn-primary") Register
             if message
                 p.message= message
             script.
                 $(document).ready(() => {
-                    if (navigator.geolocation && (!$('#latitude').val() || !$('#longitude').val())) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                const latitude = position.coords.latitude;
-                                const longitude = position.coords.longitude;
+                    const updateStatusMessage = (message, className) => {
+                        const statusElement = $('#statusMessage');
+                        statusElement.text(message);
+                        statusElement.attr('class', className);
+                    };
 
-                                // Update hidden inputs
-                                $('#latitude').val(latitude);
-                                $('#longitude').val(longitude);
+                    const updateLocationFields = (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
 
-                                // Update text fields
-                                $('#latitudeText').val(latitude);
-                                $('#longitudeText').val(longitude);
-                            },
-                            (error) => {
-                                console.error('Error getting location:', error.message);
-                                alert('Unable to get your location. Please enable location services.');
-                            }
-                        );
+                        $('#latitude').val(latitude);
+                        $('#longitude').val(longitude);
+
+                        updateStatusMessage('Location fetched successfully.', 'text-success');
+                    };
+
+                    const handleLocationError = (error) => {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                updateStatusMessage('Permission denied. Please enable location access.', 'text-danger');
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                updateStatusMessage('Location information is unavailable.', 'text-warning');
+                                break;
+                            case error.TIMEOUT:
+                                updateStatusMessage('Location request timed out.', 'text-warning');
+                                break;
+                            default:
+                                updateStatusMessage('An unknown error occurred.', 'text-danger');
+                        }
+                    };
+
+                    $('#getLocationButton').click(() => {
+                        updateStatusMessage('Fetching location...', 'text-info');
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(updateLocationFields, handleLocationError);
+                        } else {
+                            updateStatusMessage('Geolocation is not supported by your browser.', 'text-danger');
+                        }
+                    });
+
+                    if (!$('#latitude').val() || !$('#longitude').val()) {
+                        if (navigator.geolocation) {
+                            updateStatusMessage('Fetching location...', 'text-info');
+                            navigator.geolocation.getCurrentPosition(updateLocationFields, handleLocationError);
+                        } else {
+                            updateStatusMessage('Geolocation is not supported by your browser.', 'text-danger');
+                        }
                     }
                 });

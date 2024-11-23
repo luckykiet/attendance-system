@@ -5,6 +5,7 @@ const Register = require('../../models/Register');
 const Retail = require('../../models/Retail');
 const WorkingAt = require('../../models/WorkingAt');
 const Attendance = require('../../models/Attendance');
+const LocalDevice = require('../../models/LocalDevice');
 const DailyAttendance = require('../../models/DailyAttendance');
 const HttpError = require("../../constants/http-error");
 const jwt = require('jsonwebtoken');
@@ -133,7 +134,7 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
 
 const makeAttendance = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, token } = req.body;
+        const { latitude, longitude, registerId, token, localDeviceId } = req.body;
 
         if (!longitude || !latitude || !registerId || !token) {
             throw new HttpError('srv_invalid_request', 400);
@@ -156,7 +157,7 @@ const makeAttendance = async (req, res, next) => {
         if (!employee) {
             throw new HttpError('srv_employee_not_found', 400);
         }
-        
+
         try {
             jwt.verify(token, employee.publicKey);
         } catch {
@@ -168,7 +169,7 @@ const makeAttendance = async (req, res, next) => {
         if (!workingAt) {
             throw new HttpError('srv_employee_not_employed', 400);
         }
-        
+
         const distanceInMeters = geolib.getDistance({ latitude, longitude }, { latitude: register.location.coordinates[1], longitude: register.location.coordinates[0] });
 
         if (distanceInMeters > register.location.allowedRadius) {
@@ -193,6 +194,18 @@ const makeAttendance = async (req, res, next) => {
         // check if the employee is trying to check in or out outside the working hours
         if (now.isAfter(dayjs(dailyAttendance.workingHour.end, 'HH:mm', true))) {
             throw new HttpError('srv_outside_working_hours', 400);
+        }
+
+        const localDevices = await LocalDevice.find({ registerId }).exec();
+
+        if (localDevices.length) {
+            // should have a local device id, return the list of local devices
+            if (!localDeviceId) {
+                return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: localDevices.map(d => d.uuid) });
+            }
+            if (!localDevices.find(d => d.uuid === localDeviceId)) {
+                throw new HttpError('srv_invalid_local_device', 400);
+            }
         }
 
         const attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
@@ -229,6 +242,7 @@ const makeAttendance = async (req, res, next) => {
             employeeId: employee._id,
             checkInTime,
             checkInLocation,
+            workingHour: workingAt.workingHours[DAYS_OF_WEEK[now.day()]],
         }).save();
 
         try {

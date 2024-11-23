@@ -48,5 +48,5 @@ export const calculateKilometersFromMeters = (pureMeters: number) => {
     const absMeters = Math.abs(pureMeters);
     const kilometers = Math.floor(absMeters / 1000);
     const meters = absMeters % 1000;
-    return { kilometers, meters: absMeters % 1000 };
+    return { kilometers, meters };
 };

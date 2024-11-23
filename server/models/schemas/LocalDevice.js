@@ -8,6 +8,7 @@ const LocalDeviceSchema = new Schema({
     location: {
         latitude: { type: Number, required: true, },
         longitude: { type: Number, required: true, },
+        allowedRadius: { type: Number, required: true, default: 100 }, // in meters
     },
 }, { timestamps: true });
 

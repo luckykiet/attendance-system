@@ -14,6 +14,10 @@ import {
   AccordionDetails,
   Stack,
   Typography,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -21,7 +25,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { useIsModalOpen, useRegisterId, useReset, useSetIsModalOpen } from '@/stores/register';
-import { getDefaultRegister, TIME_FORMAT, timeStartEndValidation } from '@/utils';
+import { calculateKilometersFromMeters, getDefaultRegister, TIME_FORMAT, timeStartEndValidation } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createRegister, deleteRegister, fetchRegister, updateRegister } from '@/api/register';
 import FeedbackMessage from '../FeedbackMessage';
@@ -35,6 +39,8 @@ import LocationPicker from '../LocationPicker';
 import { useSetConfirmBox } from '@/stores/confirm';
 import { ExpandMore } from '@mui/icons-material';
 import CopyButton from './CopyButton';
+import { getLocalDevicesByRegisterId } from '@/api/local-devices';
+import { deleteLocalDevice } from '@/api/local-device';
 
 dayjs.extend(customParseFormat);
 
@@ -133,6 +139,17 @@ export default function DialogRegister() {
     }
   })
 
+  const deleteLocalDeviceMutation = useMutation({
+    mutationFn: (id) => deleteLocalDevice(id),
+    onError: (error) => {
+      setPostMsg(new Error(error))
+    },
+    onSuccess: (data) => {
+      setAlertMessage({ msg: data, severity: 'success' });
+      queryClient.invalidateQueries(['register']);
+    }
+  })
+
   const onSubmit = async (data) => {
     try {
       setPostMsg('');
@@ -161,6 +178,14 @@ export default function DialogRegister() {
 
   const { data: register, isLoading, isFetching } = registerQuery;
 
+  const localDevicesQuery = useQuery({
+    queryKey: ['local-devices', registerId],
+    queryFn: () => getLocalDevicesByRegisterId(registerId),
+    enabled: !!registerId,
+  })
+
+  const { data: localDevices } = localDevicesQuery;
+
   const handleClose = () => {
     reset(getDefaultRegister());
     resetRegister();
@@ -171,6 +196,16 @@ export default function DialogRegister() {
       mainText: `${t('misc_delete')} ${register.name}?`,
       onConfirm: () => {
         deleteRegisterMutation.mutate();
+      },
+    })
+  }
+
+  const handleDeleteLocalDevice = (deviceId) => {
+    if (!deviceId) return;
+    setConfirmBox({
+      mainText: `${t('misc_delete')} ${deviceId}?`,
+      onConfirm: () => {
+        deleteLocalDeviceMutation.mutate(deviceId);
       },
     })
   }
@@ -348,6 +383,42 @@ export default function DialogRegister() {
                   />
                 )}
               />
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
+              {localDevices && localDevices.length > 0 ?
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls={`panel-content-local-devices-${register ? register._id : 'new'}`}
+                    id={`panel-header-local-devices-${register ? register._id : 'new'}`}
+                  >
+                    {t('misc_local_devices')}
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Grid2 container spacing={2}>
+                      {localDevices.map((device, index) => {
+                        const distance = device.distance ? calculateKilometersFromMeters(device.distance) : '';
+                        return <Grid2 key={index} size={{ xs: 12, sm: 6 }}>
+                          <Card>
+                            <CardHeader title={device.deviceId} />
+                            <CardContent>
+                              <Stack spacing={1}>
+                                <Typography variant='body1'>UUID: {device.uuid}</Typography>
+                                <Typography variant='body1'>{t('misc_latitude')}: {device.location.latitude}</Typography>
+                                <Typography variant='body1'>{t('misc_longitude')}: {device.location.longitude}</Typography>
+                                <Typography variant='body1'>{t('misc_allowed_radius')}: {device.location.allowedRadius} m</Typography>
+                                <Typography variant='body1'>{t('misc_distance')}: {distance.kilometers > 0 ? `${distance.kilometers} km` : ''} {`${distance?.meters} m`}</Typography>
+                              </Stack>
+                            </CardContent>
+                            <CardActions><LoadingButton variant='contained' color='error' onClick={() => handleDeleteLocalDevice(device.deviceId)}>{t('misc_delete')}</LoadingButton></CardActions>
+                          </Card>
+                        </Grid2>
+                      })}
+                    </Grid2>
+                  </AccordionDetails>
+                </Accordion>
+                :
+                <Typography variant='h6'>{t('misc_no_local_device')}</Typography>}
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <Controller

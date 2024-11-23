@@ -109,6 +109,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ url }) => {
                     renderItem={({ item }) => (
                         <View style={styles.attendanceItem}>
                             <ThemedText style={styles.attendanceText}>{`${t('misc_date')}: ${dayjs(item.date).format('DD-MM-YYYY')}`}</ThemedText>
+                            <ThemedText style={styles.attendanceText}>{`${t('misc_working_hour')}: ${item.workingHour.start} - ${item.workingHour.end}`}</ThemedText>
                             <ThemedText style={styles.attendanceText}>{`${t('misc_check_in')}: ${item.checkInTime ? dayjs(item.checkInTime).format('HH:mm:ss') : '-'}`}</ThemedText>
                             <ThemedText style={styles.attendanceText}>{`${t('misc_check_out')}: ${item.checkOutTime ? dayjs(item.checkOutTime).format('HH:mm:ss') : '-'}`}</ThemedText>
                             {item.register && (
