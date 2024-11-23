@@ -1,7 +1,5 @@
 const express = require('express');
 const utils = require('../utils');
-const HttpError = require('../constants/http-error');
-const Registration = require('../models/Registration');
 const { CONFIG } = require('../configs');
 
 const router = express.Router();
@@ -9,12 +7,6 @@ const router = express.Router();
 router.get('/redirect', async (req, res, next) => {
     try {
         const { tokenId } = req.query;
-        const registration = await Registration.findOne({ tokenId });
-
-        if (!registration) {
-            throw new HttpError('srv_registration_not_found', 404);
-        }
-
         const host = CONFIG.host;
         const appLink = `${CONFIG.mobile_intent}registration?tokenId=${tokenId}&domain=${host}`;
         res.redirect(appLink);

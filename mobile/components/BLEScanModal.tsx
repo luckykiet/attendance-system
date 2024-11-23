@@ -48,7 +48,9 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
         if (onClose) {
             onClose();
         }
-        onResult(false, [])
+        if(foundDevices.length > 0) {
+            onResult(false, [])
+        }
         setLocalDevices([]);
         callbackInvoked.current = false;
     };

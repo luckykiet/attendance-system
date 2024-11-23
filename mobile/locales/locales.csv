@@ -640,6 +640,7 @@ srv_invalid_headers	Invalid headers	Đầu đề không hợp lệ	Neplatné zá
 srv_invalid_id	Invalid ID	ID không hợp lệ	Neplatné ID
 srv_invalid_image_url	Invalid image URL	URL hình ảnh không hợp lệ	Nesprávný URL pro obrázek
 srv_invalid_key	Invalid key	Khóa không hợp lệ	Neplatný klíč
+srv_invalid_local_device	invalid local device	Thiết bị cục bộ không hợp lệ	neplatné lokální zařízení
 srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník
 srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
@@ -718,6 +719,7 @@ srv_registration_not_found	registration not found or expired	yêu cầu đăng k
 srv_retail_not_found	retail not found	không tìm thấy doanh nghiệp	podnik nenalezen
 srv_return_to	Return to	Hãy quay lại	Vraťte se na
 srv_scan_error	scan error	lỗi quét	chyba skenování
+srv_scan_failed	scan failed	Lỗi quét	Chyba skenování
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
