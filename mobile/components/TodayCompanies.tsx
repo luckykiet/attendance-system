@@ -19,11 +19,10 @@ import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
 import { useAttendanceApi } from '@/api/useAttendanceApi';
 import { AttendanceMutation } from '@/types/attendance';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { calculateHoursFromMinutes, calculateKilometersFromMeters } from '@/utils';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import BLEScanModal from '@/components/BLEScanModal';
-import { Device } from 'react-native-ble-plx';
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
