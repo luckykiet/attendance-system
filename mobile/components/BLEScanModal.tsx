@@ -40,6 +40,7 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
     const callbackInvoked = useRef(false);
 
     const handleStartScan = () => {
+        callbackInvoked.current = false;
         scan(localDevices);
     };
 

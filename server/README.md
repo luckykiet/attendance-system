@@ -1,4 +1,9 @@
 # server
 
-vscode port forwarding 3000
-make public
+VSCODE tunneling: https://code.visualstudio.com/docs/editor/port-forwarding
+
+Run tests:
+
+```
+yarn test
+```
