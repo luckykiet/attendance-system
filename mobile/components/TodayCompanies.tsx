@@ -236,7 +236,7 @@ const TodayCompanies = () => {
     if (result && pendingAttendance) {
       makeAttendanceMutation.mutate({ ...pendingAttendance, localDeviceId: foundDevices[0] });
     } else {
-      Alert.alert(t('srv_scan_failed'), t('srv_no_devices_found'));
+      Alert.alert(t('srv_scan_failed'), t('srv_device_not_found'));
     }
   };
 

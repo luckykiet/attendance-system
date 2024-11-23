@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useIntentApi } from '@/api/useIntentApi';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
 import { RegistrationIntentData } from '@/types/intents';
 import { delay, isValidUrl, parseAttendanceUrl } from '@/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -17,7 +16,6 @@ export default function CameraScanner() {
     const { t } = useTranslation();
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
-    const { getIntentFromUrl } = useIntentApi();
     const { getRegistration } = useRegistrationApi();
     const { setRegistration } = useAppStore();
     const [intentData, setIntentData] = useState<RegistrationIntentData | null>(null);
@@ -33,7 +31,6 @@ export default function CameraScanner() {
         }, [])
     );
 
-
     const openAppSettings = () => {
         Linking.openSettings().catch(() => {
             Alert.alert(
@@ -43,17 +40,6 @@ export default function CameraScanner() {
         });
     };
 
-    const getIntentMutation = useMutation({
-        mutationFn: (url: string) => getIntentFromUrl(url),
-        onError: (error) => {
-            Alert.alert(t('misc_error'), typeof error === 'string' ? t(error) : t(error.message || 'misc_error'));
-        },
-        onSuccess: (data) => {
-            const { path, params } = parseAttendanceUrl(data);
-            setIntentData({ path, domain: params.domain || '', tokenId: params.tokenId || '' });
-        }
-    });
-
     const registrationFormQuery = useQuery<unknown, Error | string>({
         queryKey: ['registrationForm', intentData],
         queryFn: () => getRegistration(intentData?.domain || '', intentData?.tokenId || ''),
@@ -62,7 +48,6 @@ export default function CameraScanner() {
         retry: false,
         staleTime: Infinity,
     });
-    
 
     const { data: registrationForm } = registrationFormQuery;
 
@@ -71,7 +56,7 @@ export default function CameraScanner() {
     }
 
     const handleBarCodeScanned = async ({ data }: { data: string }) => {
-        if (data === lastScannedItem || getIntentMutation.isPending) return;
+        if (data === lastScannedItem) return;
         setLastScannedItem(data);
         await delay(1000);
 
@@ -83,8 +68,8 @@ export default function CameraScanner() {
                 domain: parsedData.params.domain,
                 tokenId: parsedData.params.tokenId,
             });
-        } else if (isValidUrl(data)) {
-            getIntentMutation.mutateAsync(data);
+        }else if(isValidUrl(data)){
+            Linking.openURL(data);
         }
     };
 
@@ -143,7 +128,7 @@ export default function CameraScanner() {
                 barcodeScannerSettings={{
                     barcodeTypes: ["qr"],
                 }}>
-                {(getIntentMutation.isPending || registrationFormQuery.isLoading || registrationFormQuery.isFetching) ? (
+                {(registrationFormQuery.isLoading || registrationFormQuery.isFetching) ? (
                     <View style={styles.loadingOverlay}>
                         <ActivityIndicator size="large" color="#fff" />
                         <Text style={styles.loadingText}>{t('misc_loading_data')}</Text>

@@ -3,10 +3,12 @@ import { Tabs } from 'expo-router';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import useIntentListener from '@/hooks/useIntentListener';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  useIntentListener();
+  
   return (
     <Tabs
       screenOptions={{
@@ -25,7 +27,7 @@ export default function TabLayout() {
           ),
         }}
       />
-       <Tabs.Screen
+      <Tabs.Screen
         name="attendance"
         options={{
           tabBarShowLabel: false,
