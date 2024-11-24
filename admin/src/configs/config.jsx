@@ -1,5 +1,5 @@
 const APP_NAME = 'ATTENDANCE SYSTEM Admin';
-const MOBILE_INTENT = 'gowork://';
+const MOBILE_INTENT = 'gokasaworkforce://';
 const IS_USING_RECAPTCHA = true;
 
 export const HOSTNAME = window.location.hostname;

@@ -9,7 +9,7 @@ const admin_subdomain = 'admin';
 const admin_port = '5173'
 const admin_domain = `${admin_subdomain}.${domain}${development ? `:${admin_port}` : ''}`;
 const proxy_domain = development ? '' : '';
-const mobile_intent = 'gowork://';
+const mobile_intent = 'gokasaworkforce://';
 
 const CONFIG = {
     protocol: protocol,

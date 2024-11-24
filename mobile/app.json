@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Attendance System",
-    "slug": "mobile",
+    "name": "GOKASA Workforce",
+    "slug": "gokasa-workforce",
     "version": "1.0.0",
     "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gowork",
+    "scheme": "gokasaworkforce",
     "platforms": [
       "ios",
       "android"
@@ -25,7 +25,7 @@
         }
       },
       "supportsTablet": true,
-      "bundleIdentifier": "cz.ethereal.gowork",
+      "bundleIdentifier": "cz.ethereal.gokasaworkforce",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR Codes for registration or for making attendance.",
         "NSLocal": "This app uses the camera to scan QR Codes for registration or for making attendance.",
@@ -48,7 +48,7 @@
           "backgroundColor": "#000000"
         }
       },
-      "package": "cz.ethereal.gowork",
+      "package": "cz.ethereal.gokasaworkforce",
       "permissions": [
         "CAMERA",
         "android.permission.CAMERA",
@@ -58,7 +58,12 @@
         "android.permission.BLUETOOTH_SCAN",
         "android.permission.BLUETOOTH_CONNECT",
         "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.BLUETOOTH"
       ],
       "versionCode": 100,
       "softwareKeyboardLayoutMode": "pan"
@@ -117,14 +122,12 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ca7497c0-5655-4a75-9e7e-8413291d0eec"
+        "projectId": "063d59e3-6466-42c9-bb8f-49b94f2dacb6"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/ca7497c0-5655-4a75-9e7e-8413291d0eec"
-    }
+    "owner": "luckykiet"
   }
 }
