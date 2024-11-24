@@ -170,9 +170,32 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_employee_not_employed', 400);
         }
 
-        const distanceInMeters = geolib.getDistance({ latitude, longitude }, { latitude: register.location.coordinates[1], longitude: register.location.coordinates[0] });
+        const localDevices = await LocalDevice.find({ registerId }).exec();
 
-        if (distanceInMeters > register.location.allowedRadius) {
+        if (localDevices.length) {
+            // should have a local device id, return the list of local devices
+            if (!localDeviceId) {
+                return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: localDevices.map(d => d.uuid) });
+            }
+            if (!localDevices.find(d => d.uuid === localDeviceId)) {
+                throw new HttpError('srv_invalid_local_device', 400);
+            }
+        }
+        const localDevice = localDeviceId ? localDevices.find(d => d.uuid === localDeviceId) : null;
+
+        const locationToUse = localDevice && localDevice.location ? {
+            latitude: localDevice.location.latitude,
+            longitude: localDevice.location.longitude,
+        } : {
+            latitude: register.location.coordinates[1],
+            longitude: register.location.coordinates[0],
+        };
+
+        const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
+        
+        const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
+
+        if (distanceInMeters > allowedRadius) {
             throw new HttpError('srv_outside_allowed_radius', 400);
         }
 
@@ -194,18 +217,6 @@ const makeAttendance = async (req, res, next) => {
         // check if the employee is trying to check in or out outside the working hours
         if (now.isAfter(dayjs(dailyAttendance.workingHour.end, 'HH:mm', true))) {
             throw new HttpError('srv_outside_working_hours', 400);
-        }
-
-        const localDevices = await LocalDevice.find({ registerId }).exec();
-
-        if (localDevices.length) {
-            // should have a local device id, return the list of local devices
-            if (!localDeviceId) {
-                return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: localDevices.map(d => d.uuid) });
-            }
-            if (!localDevices.find(d => d.uuid === localDeviceId)) {
-                throw new HttpError('srv_invalid_local_device', 400);
-            }
         }
 
         const attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
