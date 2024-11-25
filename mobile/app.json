@@ -2,7 +2,7 @@
   "expo": {
     "name": "GOKASA Workforce",
     "slug": "gokasa-workforce",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -24,7 +24,6 @@
           "backgroundColor": "#000000"
         }
       },
-      "supportsTablet": true,
       "bundleIdentifier": "cz.ethereal.gokasaworkforce",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR Codes for registration or for making attendance.",
@@ -65,7 +64,7 @@
         "android.permission.FOREGROUND_SERVICE_LOCATION",
         "android.permission.BLUETOOTH"
       ],
-      "versionCode": 100,
+      "versionCode": 101,
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
