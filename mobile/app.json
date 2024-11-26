@@ -2,7 +2,7 @@
   "expo": {
     "name": "GOKASA Workforce",
     "slug": "gokasa-workforce",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -65,7 +65,7 @@
         "android.permission.FOREGROUND_SERVICE_LOCATION",
         "android.permission.BLUETOOTH"
       ],
-      "versionCode": 101,
+      "versionCode": 102,
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
