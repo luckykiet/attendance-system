@@ -49,6 +49,7 @@ misc_attendance	attendance	điểm danh	docházka
 misc_attendance_failed	attendance failed	điểm danh thất bại	docházka neúspěšná
 misc_attendance_success	attendance success	điểm danh thành công	docházka úspěšná
 misc_attendances	attendances	điểm danh	docházky
+misc_authenticate	authenticate	xác thực bảo mật	autentizace
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_available	is available	có sẵn 	dostupný
 misc_average	average	trung bình	průměr
@@ -160,6 +161,7 @@ misc_email	E-mail	E-mail	E-mail
 misc_emails	E-mails	E-mail	E-maily
 misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
+misc_enable	enable	bật	povolit
 misc_error	chyba	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
@@ -486,6 +488,7 @@ misc_unable_to_open_settings	unable to open settings	không thể mở cài đ�
 misc_unavailable	unavailable	không có sẵn 	nedostupný
 misc_unconfirmed	unconfirmed	chưa xác nhận	nepotvrzeno
 misc_undefined	undefined	chưa xác định	nedefinováno
+misc_unlock	unlock	mở khoá	odemknout
 misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
 misc_untitled	untitled	chưa điền	nezadáno
@@ -565,6 +568,8 @@ srv_already_sent	Already sent	Đã gửi
 srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
 srv_assigned_form_not_found	Assigned form not found	Không tìm thấy biểu mẫu được chỉ định	Přidělený formulář nenalezen
 srv_attendance_not_found	attendance not found	Không tìm thấy dữ liệu điểm danh	Docházka nenalezena
+srv_authentication_failed	authentication failed	xác thực không thành công	autentizace selhala
+srv_authentication_required    authentication required	cChứng thực cần thiết	požadována autentizace	
 srv_bank_not_found	Bank not found	Không tìm thấy ngân hàng	Banku nelze nalézt
 srv_bank_updated	bank updated	đã cập nhập ngân hàng	banka aktualizována
 srv_bill_confirmed	bill confirmed	hoá đơn đã được xác nhận	faktura potvrzena
@@ -684,6 +689,8 @@ srv_must_choose_store	you must choose a store	bạn phải chọn một cửa h�
 srv_must_take_photo_of_documents	you must take photo of ID documents	quý khách phải chụp ảnh thẻ căn cước	musíte vyfotit doklady
 srv_new_form_draft_deleted	New form draft deleted	Bản nháp biểu mẫu mới đã bị xóa	Koncept nového formuláře smazán
 srv_new_form_draft_not_found	New form draft not found	Không tìm thấy bản nháp biểu mẫu mới	Koncept nového formuláře nenalezen
+srv_no_biometric_hardware	biometric hardware not available	không có phần cứng hỗ trợ bảo mật trắc học	biometrický hardware není k dispozici
+srv_no_biometric_supported	no biometric authentication methods supported	không có phương thức bảo mật trắc học được hỗ trợ 	nejsou podporovány žádné biometrické autentizační metody
 srv_no_content	No content	Không có nội dung	Žádný obsah
 srv_no_data	No data	Không có dữ liệu	Žádná data
 srv_no_faq	no FAQs	không có FAQs	nejsou žádné FAQs
@@ -740,6 +747,7 @@ srv_transactions_checked	transactions checked	đã kiểm tra giao dịch	transa
 srv_transactions_empty	transactions are empty	giao dịch trống	transakce jsou prázdné
 srv_transactions_imported	transactions imported	đã nhập giao dịch	transakce nahrány
 srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
+srv_unknown_error unknown error	lỗi không xác định	neznámá chyba	
 srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
 srv_updated	updated	đã được cập nhập	aktualizováno
 srv_url_exists	URL exists	URL đã tồn tại	

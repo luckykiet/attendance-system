@@ -13,6 +13,7 @@
     ],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "supportsTablet": true,
     "ios": {
       "splash": {
         "image": "./assets/images/splash.png",

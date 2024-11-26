@@ -1,16 +1,34 @@
-// ThemeSwitcher.tsx
-
+import React, { useEffect, useState } from 'react';
 import { View, Text, Switch, StyleSheet, Appearance, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export const ThemeSwitcher: React.FC = () => {
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const colorScheme = useColorScheme();
-    const isDarkMode = colorScheme === 'dark';
+    useEffect(() => {
+        const loadTheme = async () => {
+            const savedTheme = await AsyncStorage.getItem('theme');
+            if (savedTheme) {
+                Appearance.setColorScheme(savedTheme === 'dark' ? 'dark' : 'light');
+                setIsDarkMode(savedTheme === 'dark');
+            } else {
+                setIsDarkMode(colorScheme === 'dark');
+            }
+        };
 
-    const toggleTheme = () => {
+        loadTheme();
+    }, []);
+
+    const toggleTheme = async () => {
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        setIsDarkMode(!isDarkMode);
+
         if (Platform.OS !== 'web') {
-            Appearance.setColorScheme(colorScheme === 'light' ? 'dark' : 'light');
+            Appearance.setColorScheme(newTheme);
         }
+
+        await AsyncStorage.setItem('theme', newTheme);
     };
 
     return (

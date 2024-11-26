@@ -6,6 +6,7 @@ import {
     Modal,
     TouchableOpacity,
     useColorScheme,
+    Alert,
 } from 'react-native';
 import ThemedText from '@/components/theme/ThemedText';
 import useTranslation from '@/hooks/useTranslation';
@@ -48,8 +49,9 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
         if (onClose) {
             onClose();
         }
-        if(foundDevices.length <= 0) {
+        if(foundDevices.length <= 0 && !callbackInvoked.current) {
             onResult(false, [])
+            Alert.alert(t('srv_scan_failed'), t('srv_device_not_found'));
         }
         setLocalDevices([]);
         callbackInvoked.current = false;

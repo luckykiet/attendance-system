@@ -2,13 +2,15 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 import '@/i18n';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import SpaceMono from '@/assets/fonts/SpaceMono-Regular.ttf';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAppStore } from '@/stores/useAppStore';
+import { Appearance } from 'react-native';
+import AppLock from '@/layouts/AppLock';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,15 +27,27 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [loaded] = useFonts({
     SpaceMono,
   });
   const { appId, loadAppId, loadUrls } = useAppStore();
 
   useEffect(() => {
-    loadAppId()
-    loadUrls()
+    const loadInitialSettings = async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem('theme');
+        Appearance.setColorScheme(storedTheme === 'dark' ? 'dark' : 'light');
+        setTheme(storedTheme === 'dark' ? 'dark' : 'light');
+      } catch (e) {
+        console.error('Failed to load theme from storage', e);
+      }
+
+      loadAppId();
+      loadUrls();
+    };
+
+    loadInitialSettings();
   }, []);
 
   useEffect(() => {
@@ -47,12 +61,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={queryClient}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(hidden)/registration" options={{ headerShown: false }} />
-        </Stack>
+        <AppLock>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(hidden)/registration" options={{ headerShown: false }} />
+          </Stack>
+        </AppLock>
       </QueryClientProvider>
     </ThemeProvider>
   );
