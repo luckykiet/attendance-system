@@ -4,7 +4,7 @@ import { useMutation, useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useAppStore } from '@/stores/useAppStore';
 import { useCompaniesApi } from '@/api/useCompaniesApi';
 import ThemedText from '@/components/theme/ThemedText';
@@ -167,9 +167,31 @@ const TodayCompanies = () => {
   const handleAttendance = async (company: Company) => {
     const { _id: registerId, domain, checkInTime, checkOutTime, employeeWorkingHours } = company;
 
+    // Proceed with attendance
     if (checkInTime && checkOutTime) {
       Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
       return;
+    }
+
+    const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
+    if (biometricEnabled === 'true') {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+      if (!hasHardware || !isEnrolled) {
+        Alert.alert(t('misc_error'), t('srv_biometric_permissions_disabled'));
+        return;
+      }
+
+      const biometricResult = await LocalAuthentication.authenticateAsync({
+        promptMessage: t('misc_authenticate_to_continue'),
+        cancelLabel: t('misc_cancel'),
+      });
+
+      if (!biometricResult.success) {
+        Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
+        return;
+      }
     }
 
     const todayIndex = dayjs().day();
