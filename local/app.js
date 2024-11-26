@@ -8,9 +8,10 @@ const open = require("open");
 const validUrl = require("valid-url");
 const crypto = require("crypto");
 const cron = require("node-cron");
+const detect = require("detect-port");
 
 const app = express();
-const PORT = 3872;
+const DEFAULT_PORT = 3872;
 
 const configFile = path.join(__dirname, "config.json");
 const deviceFile = path.join(__dirname, "device.json");
@@ -112,11 +113,10 @@ const renewUUID = async () => {
             config.uuid = newUUID;
             await fs.writeJson(configFile, config, { spaces: 2 });
 
-            console.log("UUID renewed successfully. Restarting beacon...");
-            // Ensure the current advertising is stopped before starting a new one
-            bleno.stopAdvertising(() => {
-                startBeacon(newUUID);
-            });
+            console.log("UUID renewed successfully. Restarting the application...");
+
+            // Exit the process to allow the restart mechanism to take over
+            process.exit(0);
         } else {
             console.error("Failed to renew UUID:", response.data.msg);
         }
@@ -125,12 +125,10 @@ const renewUUID = async () => {
     }
 };
 
-
-// TODO: Change the schedule to run once a day
-// cron.schedule("0 * * * *", async () => {
-//     console.log("Running hourly UUID renewal task...");
-//     await renewUUID();
-// });
+cron.schedule("15 * * * *", async () => {
+    console.log("Running UUID renewal task after 15 minutes...");
+    await renewUUID();
+});
 
 app.get("/", async (req, res) => {
     const deviceId = await getOrGenerateDeviceId();
@@ -265,33 +263,27 @@ app.post("/unregister", async (req, res) => {
 
 (async () => {
     try {
-        if (await fs.pathExists(configFile)) {
-            const config = await fs.readJson(configFile);
-            if (config.serverUrl && config.uuid && config.location) {
-                checkAndStartBeacon();
-            } else {
-                open(`http://localhost:${PORT}`);
-            }
-        } else {
-            open(`http://localhost:${PORT}`);
+        const port = await detect(DEFAULT_PORT);
+        if (port !== DEFAULT_PORT) {
+            console.log(`Port ${DEFAULT_PORT} is in use. Using port ${port} instead.`);
         }
-    } catch (error) {
-        console.error("Error during startup:", error.message);
-    }
-})();
 
-(async () => {
-    try {
         if (await fs.pathExists(configFile)) {
             const config = await fs.readJson(configFile);
             if (config.serverUrl && config.uuid && config.location) {
                 checkAndStartBeacon();
             } else {
-                open(`http://localhost:${PORT}`);
+                console.log("Incomplete configuration. Opening the registration page...");
+                open(`http://localhost:${port}`);
             }
         } else {
-            open(`http://localhost:${PORT}`);
+            console.log("No configuration found. Opening the registration page...");
+            open(`http://localhost:${port}`);
         }
+
+        app.listen(port, () => {
+            console.log(`Server running at http://localhost:${port}`);
+        });
     } catch (error) {
         console.error("Error during startup:", error.message);
     }
@@ -299,8 +291,4 @@ app.post("/unregister", async (req, res) => {
 
 app.use('*', (req, res) => {
     res.redirect('/');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
 });

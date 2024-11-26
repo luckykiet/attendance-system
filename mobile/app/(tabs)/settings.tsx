@@ -9,6 +9,7 @@ import ThemedText from '@/components/theme/ThemedText';
 import ThemedView from '@/components/theme/ThemedView';
 import useTranslation from '@/hooks/useTranslation';
 import { AppId } from '@/components/AppId';
+import { BiometricSwitcher } from '@/components/BiometricSwitcher';
 
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ const SettingsScreen: React.FC = () => {
         <URLSelection />
         <AppId />
         <LanguageSwitcher />
+        <BiometricSwitcher />
         <ThemeSwitcher />
       </ThemedView>
     </MainScreenLayout>

@@ -1,14 +1,26 @@
 {
   "name": "local",
   "packageManager": "yarn@4.5.1",
+  "version": "1.0.0",
+  "description": "Local server for attendance system",
+  "scripts": {
+    "start": "yarn run kill && pm2 start app.js --name beacon-server",
+    "dev": "nodemon app.js",
+    "kill": "pm2 delete beacon-server || true"
+  },
   "dependencies": {
     "@stoprocent/bleno": "^0.8.1",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
+    "detect-port": "^1.6.1",
     "express": "^4.21.1",
     "fs-extra": "^11.2.0",
     "node-cron": "^3.0.3",
+    "pm2": "^5.4.3",
     "pug": "^3.0.3",
     "valid-url": "^1.0.9"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
