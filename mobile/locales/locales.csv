@@ -50,6 +50,7 @@ misc_attendance_failed	attendance failed	điểm danh thất bại	docházka ne�
 misc_attendance_success	attendance success	điểm danh thành công	docházka úspěšná
 misc_attendances	attendances	điểm danh	docházky
 misc_authenticate	authenticate	xác thực bảo mật	autentizace
+misc_authenticate_to_continue	Authenticate to continue	Xác thực để tiếp tục	Pokračujte v autentizaci
 misc_auto_logout_in	auto logout in	tự động đăng xuất trong	automatické odhlášení za
 misc_available	is available	có sẵn 	dostupný
 misc_average	average	trung bình	průměr
@@ -723,6 +724,7 @@ srv_pick_software	pick a software	hãy chọn phần mềm	vyberte software
 srv_plan_deleted	Plan deleted	Kế hoạch đã bị xóa	Plán smazán
 srv_plan_not_found	Plan not found	Không tìm thấy kế hoạch	Plán nenalezen
 srv_please_sign_document	Please sign the document	Hãy ký đơn	Podepište dokument
+srv_please_try_again	Please try again	Hãy thử lại	Zkuste to znovu
 srv_provider_not_selected	provider is not selected	nhà phát hành không được chọn	provider is not selected
 srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference existuje
 srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
