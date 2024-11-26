@@ -1,5 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const capitalizeFirstLetterOfString = (str: string) => {
     if (!str || str.length === 0) return ''
@@ -92,5 +93,20 @@ export const getBiometricPreference = async (): Promise<boolean> => {
     } catch (error) {
         console.error('Error retrieving biometric preference:', error);
         return false;
+    }
+};
+
+export const checkReinstallation = async () => {
+    const isFreshInstall = await AsyncStorage.getItem('isFreshInstall');
+    const keys = ['biometricEnabled', 'deviceKey'];
+    if (!isFreshInstall) {
+        await Promise.all(keys.map(async (key) => {
+            try {
+                await SecureStore.deleteItemAsync(key);
+            } catch (e) {
+                console.error(`Failed to delete SecureStore key: ${key}`, e);
+            }
+        }));
+        await AsyncStorage.setItem('isFreshInstall', 'true');
     }
 };

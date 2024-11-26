@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, Alert, Platform } from 'react-native';
+import { View, Text, Switch, StyleSheet, Alert, Platform, Linking } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -21,10 +21,36 @@ export const BiometricSwitcher: React.FC = () => {
         loadBiometricPreference();
     }, []);
 
+    const openAppSettings = () => {
+        Linking.openSettings().catch(() => {
+            Alert.alert(
+                t('misc_error'),
+                t('misc_unable_to_open_settings')
+            );
+        });
+    };
+
     const toggleBiometric = async () => {
         if (!isBiometricEnabled) {
+            // Enabling biometric
             const hasHardware = await LocalAuthentication.hasHardwareAsync();
             const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
+            const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+            if (!isEnrolled) {
+                Alert.alert(
+                    t('srv_permission_required'),
+                    t('srv_biometric_disabled'),
+                    [
+                        {
+                            text: t('misc_enable_in_settings'),
+                            onPress: openAppSettings,
+                        },
+                        { text: t('misc_cancel'), style: 'cancel' },
+                    ]
+                );
+                return;
+            }
 
             if (!hasHardware || supportedTypes.length === 0) {
                 Alert.alert(t('misc_error'), t('srv_no_biometric_supported'));
@@ -32,7 +58,7 @@ export const BiometricSwitcher: React.FC = () => {
             }
 
             const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: `${'misc_enable'} ${biometricType}`,
+                promptMessage: `${t('misc_enable')} ${biometricType}`,
                 cancelLabel: t('misc_cancel'),
             });
 
@@ -43,8 +69,18 @@ export const BiometricSwitcher: React.FC = () => {
                 Alert.alert(t('srv_authentication_failed'), t(result.error || 'srv_unknown_error'));
             }
         } else {
-            await SecureStore.setItemAsync('biometricEnabled', 'false');
-            setIsBiometricEnabled(false);
+            // Disabling biometric
+            const result = await LocalAuthentication.authenticateAsync({
+                promptMessage: `${t('misc_disable')} ${biometricType}`,
+                cancelLabel: t('misc_cancel'),
+            });
+
+            if (result.success) {
+                await SecureStore.setItemAsync('biometricEnabled', 'false');
+                setIsBiometricEnabled(false);
+            } else {
+                Alert.alert(t('srv_authentication_failed'), t(result.error || 'srv_unknown_error'));
+            }
         }
     };
 

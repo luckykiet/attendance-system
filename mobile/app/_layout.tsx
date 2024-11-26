@@ -26,6 +26,8 @@ const queryClient = new QueryClient({
   },
 });
 
+import { checkReinstallation } from '@/utils';
+
 export default function RootLayout() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [loaded] = useFonts({
@@ -47,7 +49,12 @@ export default function RootLayout() {
       loadUrls();
     };
 
-    loadInitialSettings();
+    const initializeApp = async () => {
+      await checkReinstallation();
+      await loadInitialSettings();
+    };
+
+    initializeApp();
   }, []);
 
   useEffect(() => {

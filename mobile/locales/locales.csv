@@ -146,6 +146,7 @@ misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
 misc_device_id	device ID	ID thiết bị	ID zařízení
 misc_devices	Devices	Máy	Zařízení
+misc_disable	disable	tắt	zakázat
 misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
 misc_documents	documents	tài liệu	dokumenty
@@ -162,6 +163,7 @@ misc_emails	E-mails	E-mail	E-maily
 misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
 misc_enable	enable	bật	povolit
+misc_enable_in_settings	enable in settings	bật trong cài đặt	povolit v nastavení
 misc_error	chyba	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
@@ -577,6 +579,8 @@ srv_bill_deleted	Bill deleted	Hóa đơn đã bị xóa	Faktura smazána
 srv_bill_not_found	Bill not found	Không tìm thấy hóa đơn	Faktura nenalezena
 srv_bill_sent	Bill sent	Đã gửi hóa đơn	Faktura odeslána
 srv_bill_updated	Bill updated	Hóa đơn đã cập nhật	Faktura aktualizována
+srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
+srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
 srv_checked_in_successfully	checked in successfully	đã check in thành công	příchod úspěšný
@@ -713,6 +717,8 @@ srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không
 srv_password_reset_send_to_email	Password reset sent to email	Đặt lại mật khẩu gửi vào email	Obnovení hesla odesláno na email
 srv_passwords_changed	passwords changed	mật khẩu đã đổi	heslo změněno
 srv_passwords_not_match	Passwords do not match	Mật khẩu không khớp	Hesla se neshodují
+srv_permission_denied	Permission denied	Từ chối quyền truy cập	Odmítnuto oprávnění
+srv_permission_required	Permission required	Quyền truy cập cần thiết	Požadováno oprávnění
 srv_pick_software	pick a software	hãy chọn phần mềm	vyberte software
 srv_plan_deleted	Plan deleted	Kế hoạch đã bị xóa	Plán smazán
 srv_plan_not_found	Plan not found	Không tìm thấy kế hoạch	Plán nenalezen
@@ -766,3 +772,4 @@ srv_word	Error	Lỗi	Chyba
 srv_workplace_closed_today	workplace closed today	chỗ làm việc đóng cửa hôm nay	pracoviště má zavřeno dnes
 srv_wrong_email_format	wrong email format	sai e-mail format	nesprávný email formát
 srv_you_not_working_today	you are not working today	bạn không làm việc hôm nay	dnes nepracujete
+user_cancel	cancelled by user	huỷ bởi người dùng	zrušeno uživatelem
