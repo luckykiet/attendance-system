@@ -1,10 +1,11 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet, Alert, Linking } from 'react-native';
 import { authenticate, getBiometricPreference } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import ThemedText from '@/components/theme/ThemedText';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 interface AppLockProps {
     children: ReactNode;
@@ -18,6 +19,15 @@ const AppLock: React.FC<AppLockProps> = ({ children }) => {
     const [isChecking, setIsChecking] = useState(true);
     const [authFailed, setAuthFailed] = useState(false);
 
+    const openAppSettings = () => {
+        Linking.openSettings().catch(() => {
+            Alert.alert(
+                t('misc_error'),
+                t('misc_unable_to_open_settings')
+            );
+        });
+    };
+
     const checkAuthentication = async () => {
         setIsChecking(true);
         setAuthFailed(false);
@@ -25,11 +35,30 @@ const AppLock: React.FC<AppLockProps> = ({ children }) => {
         try {
             const biometricEnabled = await getBiometricPreference();
             if (biometricEnabled) {
-                const authResult = await authenticate(t);
-                setIsAuthenticated(authResult.success);
+                const hasHardware = await LocalAuthentication.hasHardwareAsync();
+                const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
+                const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-                if (!authResult.success) {
-                    setAuthFailed(true);
+                if (!hasHardware || supportedTypes.length === 0 || !isEnrolled) {
+                    Alert.alert(
+                        t('srv_permission_required'),
+                        t('srv_biometric_disabled'),
+                        [
+                            {
+                                text: t('misc_enable_in_settings'),
+                                onPress: openAppSettings,
+                            },
+                            { text: t('misc_cancel'), style: 'cancel' },
+                        ]
+                    );
+                    setIsAuthenticated(false);
+                } else {
+                    const authResult = await authenticate(t);
+                    setIsAuthenticated(authResult.success);
+
+                    if (!authResult.success) {
+                        setAuthFailed(true);
+                    }
                 }
             } else {
                 setIsAuthenticated(true);
@@ -81,7 +110,13 @@ const AppLock: React.FC<AppLockProps> = ({ children }) => {
                         </TouchableOpacity>
                     </>
                 ) : (
-                    <ThemedText>{t('srv_authentication_required')}</ThemedText>
+                    <>
+                        <ThemedText>{t('srv_biometric_required')}</ThemedText>
+                        <ThemedText>{t('misc_enable_in_settings')}</ThemedText>
+                        <TouchableOpacity style={styles.permissionButton} onPress={openAppSettings}>
+                            <ThemedText style={styles.permissionButtonText}>{t('misc_grant_permission')}</ThemedText>
+                        </TouchableOpacity>
+                    </>
                 )}
             </View>
         );
@@ -119,6 +154,18 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 10,
+    },
+    permissionButton: {
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#e63946',
+        borderRadius: 5,
+    },
+    permissionButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
 
