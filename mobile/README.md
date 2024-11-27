@@ -26,7 +26,6 @@ https://flowbite.com/icons/
     - run `eas update --branch main`
     - test the update by re-opening the app twice
 - To create a new build (major changes)
-    - increment field `$.expo.version`, `$.expo.android.versionCode`, and reset field `$.expo.extra.update` to `100` in `app.json`
     - run `eas build --platform all`
 - To deploy
     - method 1
