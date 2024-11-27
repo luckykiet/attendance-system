@@ -20,7 +20,8 @@
             "channel": "main"
         },
         "production": {
-            "channel": "main"
+            "channel": "main",
+            "autoIncrement": true
         }
     },
     "submit": {
