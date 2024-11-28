@@ -113,6 +113,7 @@ export default function CameraScanner() {
         return (
             <View style={styles.container}>
                 <ThemedText style={styles.message}>{t('misc_need_camera_permission_to_scan')}</ThemedText>
+                <ThemedText style={styles.message}>{t('misc_allow_camera_permission_to_do_registration')}</ThemedText>
                 <TouchableOpacity style={styles.permissionButton} onPress={openAppSettings}>
                     <ThemedText style={styles.permissionButtonText}>{t('misc_grant_permission')}</ThemedText>
                 </TouchableOpacity>
