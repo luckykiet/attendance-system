@@ -12,9 +12,10 @@ import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
-import { DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
+import { checkPrivileges, DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth';
 
 dayjs.extend(customParseFormat);
 
@@ -41,6 +42,7 @@ const getTodayWorkingHours = (workingHours) => {
 export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const setRegisterId = useSetRegisterId();
   const setRegisterIsModalOpen = useSetIsModalOpen();
   const setRetail = useSetRetail();
@@ -94,13 +96,14 @@ export default function HomePage() {
             </Typography>
           )}
         </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        {checkPrivileges('addRegister', user?.role) && <Grid2 size={{ xs: 12 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button variant="contained" onClick={handleCreateNewRegister}>
               {t('misc_new_company')}
             </Button>
           </Box>
-        </Grid2>
+        </Grid2>}
+
         <Grid2 size={{ xs: 12 }}>
           <DialogRegister />
           {isRegistersFetching || isRegistersLoading || isRetailFetching || isRetailLoading ?
@@ -142,12 +145,13 @@ export default function HomePage() {
                               {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}: ${t(message)}`}
                             </Typography>
                           </CardContent>
-                          <IconButton
+                          {checkPrivileges('editRegister', user?.role) && <IconButton
                             onClick={() => handleEditRegister(register._id)}
                             sx={{ position: 'absolute', top: 8, right: 8 }}
                           >
                             <EditIcon />
-                          </IconButton>
+                          </IconButton>}
+
                           <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
                             <Button onClick={() => navigate(`/attendance/${register._id}`)} variant='contained'>
                               {t('misc_attendances')}

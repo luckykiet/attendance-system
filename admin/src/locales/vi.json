@@ -630,6 +630,7 @@
   "srv_form_reference_deleted": "Tham chiếu đơn đã bị xóa",
   "srv_form_updated": "Đơn đã được cập nhập",
   "srv_forms_exist": "Các biểu mẫu đã tồn tại",
+  "srv_insufficient_privileges": "quyền hạn không đủ",
   "srv_invalid_action_request": "Yêu cầu hành động không hợp lệ",
   "srv_invalid_address": "Địa chỉ không hợp lệ",
   "srv_invalid_answer": "Câu trả lời không hợp lệ",
