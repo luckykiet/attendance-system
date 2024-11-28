@@ -2,6 +2,11 @@ const Retail = require('./models/Retail')
 const Register = require('./models/Register')
 const User = require('./models/User')
 const Employee = require('./models/Employee')
+const Registration = require('./models/Registration')
+const WorkingAt = require('./models/WorkingAt')
+const LocalDevice = require('./models/LocalDevice')
+const DailyAttendance = require('./models/DailyAttendance')
+const Attendance = require('./models/Attendance')
 const bcrypt = require('bcryptjs')
 
 const demoAccount = {
@@ -40,6 +45,18 @@ const demoAccount = {
         maxLocalDevices: 0,
         isAvailable: true,
     },
+    registers: [
+        {
+            name: 'Demo with local device',
+            maxLocalDevices: 1,
+        },
+        {
+            name: 'Demo always success',
+        },
+        {
+            name: 'Demo always fail',
+        },
+    ],
     user: {
         email: 'abc@xyz.com',
         username: 'demo',
@@ -67,6 +84,15 @@ const demoAccount = {
             registrationToken: 'demogoogle',
         },
     },
+    localDevice: {
+        deviceId: '00000000-0000-0000-0000-000000000000',
+        uuid: '00000000-0000-0000-0000-000000000000',
+        location: {
+            latitude: 50.123456,
+            longitude: 14.123456,
+            allowedRadius: 1000,
+        },
+    }
 }
 
 const generateDemoData = async () => {
@@ -74,14 +100,28 @@ const generateDemoData = async () => {
         const retail = await Retail.findOneAndUpdate({ tin: demoAccount.retail.tin }, demoAccount.retail, { upsert: true, new: true })
         const password = await bcrypt.hash(demoAccount.user.password, 12)
         await User.findOneAndUpdate({ email: demoAccount.user.email }, { ...demoAccount.user, password, retailId: retail._id }, { upsert: true, new: true })
-        
-        await Register.findOneAndUpdate({ retailId: retail._id, name: 'Demo with local device' }, { ...demoAccount.register, retailId: retail._id, name: 'Demo with local device', maxLocalDevices: 1 }, { upsert: true, new: true })
-        await Register.findOneAndUpdate({ retailId: retail._id, name: 'Demo without local device' }, { ...demoAccount.register, retailId: retail._id, name: 'Demo without local device' }, { upsert: true, new: true })
-        await Employee.findOneAndUpdate({ retailId: retail._id, email: demoAccount.employees.demo.email }, { ...demoAccount.employees.demo, retailId: retail._id, }, { upsert: true, new: true })
-        await Employee.findOneAndUpdate({ retailId: retail._id, email: demoAccount.employees.apple.email }, { ...demoAccount.employees.apple, retailId: retail._id, }, { upsert: true, new: true })
-        await Employee.findOneAndUpdate({ retailId: retail._id, email: demoAccount.employees.google.email }, { ...demoAccount.employees.google, retailId: retail._id, }, { upsert: true, new: true })
+
+        const registers = await Promise.all(demoAccount.registers.map(async register => {
+            const newRegister = await Register.findOneAndUpdate({ retailId: retail._id, name: register.name }, { ...demoAccount.register, retailId: retail._id, ...register }, { upsert: true, new: true })
+            if (register.maxLocalDevices) {
+                await LocalDevice.findOneAndUpdate({ deviceId: demoAccount.localDevice.deviceId }, { ...demoAccount.localDevice, registerId: newRegister._id }, { upsert: true, new: true })
+            }
+            await DailyAttendance.deleteMany({ registerId: newRegister._id })
+            return newRegister;
+        }))
+
+        const promises = Object.keys(demoAccount.employees).map(async key => {
+            const employee = await Employee.findOneAndUpdate({ retailId: retail._id, email: demoAccount.employees[key].email }, { ...demoAccount.employees[key], retailId: retail._id, }, { upsert: true, new: true })
+            await Promise.all(registers.map(async register => {
+                return await WorkingAt.findOneAndUpdate({ registerId: register._id, employeeId: employee._id }, { registerId: register._id, employeeId: employee._id, workingHours: register.workingHours, isAvailable: true }, { upsert: true, new: true })
+            }))
+            await Registration.findOneAndUpdate({ retailId: retail._id, employeeId: employee._id }, { tokenId: demoAccount.employees[key].registrationToken, retailId: retail._id, employeeId: employee._id, isDemo: true }, { upsert: true, new: true })
+            await Attendance.deleteMany({ employeeId: employee._id })
+        })
+        await Promise.all(promises);
+
     } catch (error) {
-        console.error('Retail create error:', error)
+        console.error('Demo creation error:', error)
     }
 }
 

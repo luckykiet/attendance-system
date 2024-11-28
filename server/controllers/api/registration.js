@@ -63,7 +63,7 @@ const submitRegistration = async (req, res, next) => {
                 name: form.name,
                 email: form.email,
                 phone: form.phone,
-                registrationToken: registration.isDemo ? '' : registration.tokenId,
+                registrationToken: registration.isDemo ? registration.tokenId : '',
             }
         });
 
