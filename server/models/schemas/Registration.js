@@ -6,11 +6,7 @@ const RegistrationSchema = new Schema({
     employeeId: { type: Schema.ObjectId, required: true, },
     retailId: { type: Schema.ObjectId, required: true, },
     isDemo: { type: Boolean, default: false, },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        expires: '15m',
-    },
+    expiresAt: {type: Date, default: Date.now, expires: '15m'},
 }, { timestamps: true });
 
 RegistrationSchema.index({ employeeId: 1, retailId: 1, }, { unique: true });
