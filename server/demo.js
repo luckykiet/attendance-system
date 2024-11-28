@@ -115,7 +115,7 @@ const generateDemoData = async () => {
             await Promise.all(registers.map(async register => {
                 return await WorkingAt.findOneAndUpdate({ registerId: register._id, employeeId: employee._id }, { registerId: register._id, employeeId: employee._id, workingHours: register.workingHours, isAvailable: true }, { upsert: true, new: true })
             }))
-            await Registration.findOneAndUpdate({ retailId: retail._id, employeeId: employee._id }, { tokenId: demoAccount.employees[key].registrationToken, retailId: retail._id, employeeId: employee._id, isDemo: true, expiresAt: null }, { upsert: true, new: true })
+            await Registration.findOneAndUpdate({ retailId: retail._id, employeeId: employee._id }, { tokenId: demoAccount.employees[key].registrationToken, retailId: retail._id, employeeId: employee._id, isDemo: true }, { upsert: true, new: true })
             await Attendance.deleteMany({ employeeId: employee._id })
         })
         await Promise.all(promises);

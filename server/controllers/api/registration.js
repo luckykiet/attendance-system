@@ -3,6 +3,7 @@ const HttpError = require("../../constants/http-error");
 const Employee = require('../../models/Employee');
 const Retail = require('../../models/Retail');
 const utils = require('../../utils');
+const dayjs = require('dayjs');
 
 const getRegistration = async (req, res, next) => {
     try {
@@ -11,6 +12,11 @@ const getRegistration = async (req, res, next) => {
 
         if (!registration) {
             throw new HttpError('srv_registration_not_found', 404);
+        }
+
+        if (!registration.isDemo && dayjs().isAfter(dayjs(registration.createdAt).add(15, 'minute'))) {
+            await Registration.deleteOne({ _id: registration._id });
+            throw new HttpError('srv_registration_not_found', 400);
         }
 
         const registeredDevice = await Employee.findOne({ retailId: registration.retailId, deviceId: req.deviceId });
@@ -42,6 +48,11 @@ const submitRegistration = async (req, res, next) => {
 
         if (!registration) {
             throw new HttpError('srv_registration_not_found', 404);
+        }
+
+        if (!registration.isDemo && dayjs().isAfter(dayjs(registration.createdAt).add(15, 'minute'))) {
+            await Registration.deleteOne({ _id: registration._id });
+            throw new HttpError('srv_registration_not_found', 400);
         }
 
         const registeredDevice = await Employee.findOne({ retailId: registration.retailId, deviceId: req.deviceId });
