@@ -140,7 +140,7 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_invalid_request', 400);
         }
 
-        const register = await Register.findOne({ _id: registerId }).exec();
+        let register = await Register.findOne({ _id: registerId }).exec();
 
         if (!register) {
             throw new HttpError('srv_register_not_found', 400);
@@ -170,6 +170,78 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_employee_not_employed', 400);
         }
 
+        // demo registers
+
+        if (retail.tin === '12345678') {
+            await Register.updateMany({ retailId: retail._id }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
+            register = await Register.findOne({ _id: registerId }).exec();
+            if (register.name === 'Demo always success') {
+                const dailyAttendance = await getDailyAttendance({ registerId });
+
+                if (typeof dailyAttendance === 'string') {
+                    throw new HttpError(dailyAttendance, 400);
+                }
+
+                const now = dayjs();
+
+                let attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
+
+                // reset attendance for demo purposes
+                if (attendance && attendance.checkOutTime) {
+                    await Attendance.deleteOne({ _id: attendance._id }).exec();
+                    attendance = null
+                }
+
+                const distanceInMeters = geolib.getDistance({ latitude, longitude }, {
+                    latitude: register.location.coordinates[1],
+                    longitude: register.location.coordinates[0],
+                });
+                if (attendance) {
+                    // checking out
+                    const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
+                    attendance.checkOutTime = now.toDate();
+                    attendance.checkOutLocation = checkOutLocation;
+                    await attendance.save();
+
+                    try {
+                        const update = await updateDailyAttendance({ type: 'checkOut', date: now.toDate(), attendanceId: attendance._id, dailyAttendanceId: dailyAttendance._id });
+                        if (typeof update === 'string') {
+                            throw update;
+                        }
+                    } catch (error) {
+                        console.log(error)
+
+                    }
+                    return res.status(200).json({ success: true, msg: 'srv_checked_out_successfully' });
+                }
+
+                // checking in
+                const checkInLocation = { latitude, longitude, distance: distanceInMeters };
+                const checkInTime = now.toDate();
+                const newAttendance = await new Attendance({
+                    registerId,
+                    dailyAttendanceId: dailyAttendance._id,
+                    employeeId: employee._id,
+                    checkInTime,
+                    checkInLocation,
+                    workingHour: workingAt.workingHours[DAYS_OF_WEEK[now.day()]],
+                }).save();
+
+                try {
+                    const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
+                    if (typeof update === 'string') {
+                        throw update;
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+
+                return res.status(200).json({ success: true, msg: 'srv_checked_in_successfully' });
+            } else if (register.name === 'Demo always fail') {
+                throw new HttpError('srv_outside_allowed_radius', 400);
+            }
+        }
+
         const localDevices = await LocalDevice.find({ registerId }).exec();
 
         if (localDevices.length) {
@@ -192,7 +264,7 @@ const makeAttendance = async (req, res, next) => {
         };
 
         const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
-        
+
         const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
 
         if (distanceInMeters > allowedRadius) {

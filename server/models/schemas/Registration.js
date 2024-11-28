@@ -13,4 +13,6 @@ const RegistrationSchema = new Schema({
     },
 }, { timestamps: true });
 
+RegistrationSchema.index({ employeeId: 1, retailId: 1, }, { unique: true });
+
 module.exports = RegistrationSchema;
