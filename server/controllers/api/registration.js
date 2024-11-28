@@ -63,11 +63,11 @@ const submitRegistration = async (req, res, next) => {
                 name: form.name,
                 email: form.email,
                 phone: form.phone,
-                registrationToken: '',
+                registrationToken: registration.isDemo ? '' : registration.tokenId,
             }
         });
 
-        await Registration.deleteOne({ _id: registration._id });
+        await Registration.deleteOne({ _id: registration._id, isDemo: false });
 
         return res.status(200).json({ success: true, msg: 'srv_device_registered' });
     } catch (error) {

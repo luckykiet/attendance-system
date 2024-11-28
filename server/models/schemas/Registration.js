@@ -5,10 +5,11 @@ const RegistrationSchema = new Schema({
     tokenId: { type: String, required: true, unique: true, },
     employeeId: { type: Schema.ObjectId, required: true, },
     retailId: { type: Schema.ObjectId, required: true, },
+    isDemo: { type: Boolean, default: false, },
     createdAt: {
         type: Date,
         default: Date.now,
-        // expires: '15m', // temporary remove time expiration for app review
+        expires: '15m',
     },
 }, { timestamps: true });
 

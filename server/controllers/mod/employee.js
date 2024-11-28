@@ -9,7 +9,7 @@ const { sendMailEmployeeDeviceRegistration } = require('../../mail_sender');
 
 const saveEmployeeRegistration = async ({ employeeId, retailId, tokenId = '' }) => {
     if (tokenId) {
-        const foundToken = await Registration.findOne({ tokenId, employeeId, retailId });
+        const foundToken = await Registration.findOne({ tokenId, employeeId, retailId, isDemo: false });
         if (foundToken) {
             return foundToken.tokenId;
         }

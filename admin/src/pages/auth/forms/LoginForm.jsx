@@ -38,7 +38,7 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema),
         defaultValues: {
             username: import.meta.env.MODE === 'development' ? 'demo' : '',
-            password: import.meta.env.MODE === 'development' ? 'G123456g' : ''
+            password: import.meta.env.MODE === 'development' ? 'demodemo' : ''
         },
         mode: 'all'
     });
