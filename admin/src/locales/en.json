@@ -33,6 +33,7 @@
   "misc_address": "Address",
   "misc_align_camera_to_qr_code": "align camera to QR code",
   "misc_all": "all",
+  "misc_allow_camera_permission_to_do_registration": "allow camera access to scan registration QR Code",
   "misc_allowed_radius": "allowed radius",
   "misc_amount": "Amount",
   "misc_amount_records": "Records amount",

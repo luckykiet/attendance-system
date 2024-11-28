@@ -70,7 +70,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location to ensure accurate attendance.",
           "isIosBackgroundLocationEnabled": false,
           "isAndroidBackgroundLocationEnabled": false
         }
@@ -78,13 +78,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan QR Codes for registration."
         }
       ],
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to protect your attendance data."
         }
       ],
       [
@@ -102,7 +102,7 @@
             "peripheral",
             "central"
           ],
-          "bluetoothAlwaysPermission": "Allow $(PRODUCT_NAME) to connect to bluetooth devices"
+          "bluetoothAlwaysPermission": "Allow $(PRODUCT_NAME) to connect to local Bluetooth attendance devices."
         }
       ]
     ],

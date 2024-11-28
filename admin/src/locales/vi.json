@@ -33,6 +33,7 @@
   "misc_address": "Địa chỉ",
   "misc_align_camera_to_qr_code": "di chuyển camera đến mã QR",
   "misc_all": "tất cả",
+  "misc_allow_camera_permission_to_do_registration": "hãy cho phép truy cập camera để scan mã QR đăng ký",
   "misc_allowed_radius": "bán kính cho phép",
   "misc_amount": "Số lượng",
   "misc_amount_records": "Số lượng đơn",
