@@ -74,9 +74,9 @@ const SignupForm = () => {
     const mainUseForm = useForm({
         resolver: zodResolver(signupSchema),
         defaultValues: {
-            username: import.meta.env.MODE === 'development' ? 'demo' : '',
-            password: import.meta.env.MODE === 'development' ? 'G123456g' : '',
-            confirmPassword: import.meta.env.MODE === 'development' ? 'G123456g' : '',
+            username: '',
+            password: '',
+            confirmPassword: '',
             email: '',
             tin: '',
             name: '',

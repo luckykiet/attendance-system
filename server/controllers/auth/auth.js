@@ -209,7 +209,7 @@ const updatePassword = async (req, res, next) => {
         if (!user) {
             return next(new HttpError('srv_user_not_exists', 404))
         }
-        const hashedPassword = await bcrypt.hash(body.newPassword, 10)
+        const hashedPassword = await bcrypt.hash(body.newPassword, 12)
         user.password = hashedPassword
         user.tokens = []
         await user.save()
