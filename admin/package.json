@@ -75,7 +75,6 @@
     "vite-plugin-eslint": "^1.8.1",
     "zip": "^1.2.0"
   },
-  "packageManager": "yarn@4.5.1",
   "app": {
     "name": "Gokarte Admin",
     "provider": "Tuan Kiet Nguyen",

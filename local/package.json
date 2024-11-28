@@ -1,6 +1,5 @@
 {
   "name": "local",
-  "packageManager": "yarn@4.5.1",
   "version": "1.0.0",
   "description": "Local server for attendance system",
   "scripts": {
