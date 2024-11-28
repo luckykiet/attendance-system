@@ -33,6 +33,7 @@
   "misc_address": "Adresa",
   "misc_align_camera_to_qr_code": "zaměřte kameru na QR kód",
   "misc_all": "všechny",
+  "misc_allow_camera_permission_to_do_registration": "povolte přístup ke kameře pro skenování registračního QR kódu",
   "misc_allowed_radius": "povolený poloměr",
   "misc_amount": "Počet",
   "misc_amount_records": "Počet záznamů",

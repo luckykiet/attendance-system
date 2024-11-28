@@ -68,7 +68,7 @@ export default function CameraScanner() {
                 domain: parsedData.params.domain,
                 tokenId: parsedData.params.tokenId,
             });
-        }else if(isValidUrl(data)){
+        } else if (isValidUrl(data)) {
             Linking.openURL(data);
         }
     };
@@ -152,6 +152,7 @@ export default function CameraScanner() {
                     </TouchableOpacity>
                 </View>
             )}
+            <ThemedText style={styles.message}>{t('misc_allow_camera_permission_to_do_registration')}</ThemedText>
         </View>
     );
 }

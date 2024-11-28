@@ -34,6 +34,7 @@ misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	em
 misc_address	Address	Địa chỉ	Adresa
 misc_align_camera_to_qr_code	align camera to QR code	di chuyển camera đến mã QR	zaměřte kameru na QR kód
 misc_all	all	tất cả	všechny
+misc_allow_camera_permission_to_do_registration	allow camera access to scan registration QR Code	hãy cho phép truy cập camera để scan mã QR đăng ký	povolte přístup ke kameře pro skenování registračního QR kódu
 misc_allowed_radius	allowed radius	bán kính cho phép	povolený poloměr
 misc_amount	Amount	Số lượng	Počet
 misc_amount_records	Records amount	Số lượng đơn	Počet záznamů
