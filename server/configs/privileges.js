@@ -1,4 +1,4 @@
-export const PRIVILEGES = {
+const PRIVILEGES = {
     addEmployee: ['Admin', 'Manager'],
     addRegister: ['Admin'],
     assignEmployees: ['Admin'],
@@ -12,3 +12,5 @@ export const PRIVILEGES = {
     getEmployees: ['Admin', 'Manager'],
     getUsers: ['Admin'],
 }
+
+module.exports = { PRIVILEGES };

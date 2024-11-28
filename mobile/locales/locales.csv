@@ -631,6 +631,7 @@ srv_form_reference_added	Form reference added	Tham chiếu đơn được thêm	
 srv_form_reference_deleted	Form reference deleted	Tham chiếu đơn đã bị xóa	Reference formuláře smazána
 srv_form_updated	Form updated	Đơn đã được cập nhập	Formulář aktualizován
 srv_forms_exist	Forms exist	Các biểu mẫu đã tồn tại	Formuláře existují
+srv_insufficient_privileges	insufficient privileges	quyền hạn không đủ	nedostatečná oprávnění
 srv_invalid_action_request	Invalid action request	Yêu cầu hành động không hợp lệ	Neplatná žádost o akci
 srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
