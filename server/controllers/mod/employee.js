@@ -6,13 +6,17 @@ const Registration = require('../../models/Registration');
 const Employee = require('../../models/Employee');
 const utils = require('../../utils');
 const { sendMailEmployeeDeviceRegistration } = require('../../mail_sender');
+const dayjs = require('dayjs');
 
 const saveEmployeeRegistration = async ({ employeeId, retailId, tokenId = '' }) => {
     if (tokenId) {
         const foundToken = await Registration.findOne({ tokenId, employeeId, retailId });
-        if (foundToken) {
-            return foundToken.tokenId;
+        if (!foundToken.isDemo && dayjs().isAfter(dayjs(foundToken.createdAt).add(15, 'minute'))) {
+            await Registration.deleteOne({ _id: foundToken._id });
+        } else {
+            return tokenId;
         }
+
     }
     const newTokenId = crypto.randomBytes(16).toString('hex');
     const newRegistration = new Registration({ tokenId: newTokenId, employeeId, retailId });
