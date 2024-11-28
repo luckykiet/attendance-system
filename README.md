@@ -10,7 +10,7 @@ System to monitor attendances using mobile phone.
 
 ## Requirements
 
-- NodeJS v20.4.0 or higher
+- NodeJS v20.9.0 or higher
 - Mongodb
 - OpenSSL (for Windows follow [this link](https://www.sslmentor.cz/napoveda/openssl-pro-windows-a-mac))
 
@@ -40,7 +40,7 @@ C:\Program Files\to\OpenSSL-Win64\bin
 
 ### Installation
 
-1. Download [NodeJS v20.4.0](https://nodejs.org/en/blog/release/v20.4.0)
+1. Download [NodeJS v20.9.0](https://nodejs.org/en/blog/release/v20.9.0)
 2. Download or clone this repository:
 ```
 git clone https://github.com/luckykiet/attendance-system.git

@@ -9,7 +9,7 @@ https://flowbite.com/icons/
 
 - Prepare
     - Expo SDK 52
-    - Node.js 20.4.0 or higher
+    - Node.js 20.9.0 or higher
         - `npm install --global yarn eas-cli`
 - Install
     - `git clone [this repo]`
