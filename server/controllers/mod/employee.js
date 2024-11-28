@@ -31,7 +31,7 @@ const employeeRegistration = async (req, res, next) => {
 
         const existingToken = employee.registrationToken;
 
-        const tokenId = await saveEmployeeRegistration({ retailId: req.user.retailId, employeeId, token: existingToken });
+        const tokenId = await saveEmployeeRegistration({ retailId: req.user.retailId, employeeId, tokenId: existingToken });
 
         const updateQuery = { deviceId: '' };
 
