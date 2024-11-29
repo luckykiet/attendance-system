@@ -7,13 +7,13 @@ import {
     TouchableOpacity,
     useColorScheme,
     Alert,
+    Linking,
 } from 'react-native';
 import ThemedText from '@/components/theme/ThemedText';
 import useTranslation from '@/hooks/useTranslation';
 import useBLEScanner from '@/hooks/useBLEScanner';
 import { useAppStore } from '@/stores/useAppStore';
 import ThemedActivityIndicator from './theme/ThemedActivityIndicator';
-import ThemedView from './theme/ThemedView';
 
 interface BLEScanModalProps {
     onClose?: () => void;
@@ -35,12 +35,15 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
         isError,
         errors,
         foundDevices,
+        isPermissionGranted = true,
         rescan,
+        reset,
     } = useBLEScanner();
 
     const callbackInvoked = useRef(false);
 
     const handleStartScan = () => {
+        reset();
         callbackInvoked.current = false;
         scan(localDevices);
     };
@@ -49,12 +52,22 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
         if (onClose) {
             onClose();
         }
-        if(foundDevices.length <= 0 && !callbackInvoked.current) {
-            onResult(false, [])
+        if (foundDevices.length <= 0 && !callbackInvoked.current) {
+            onResult(false, []);
             Alert.alert(t('srv_scan_failed'), t('srv_device_not_found'));
         }
         setLocalDevices([]);
+        reset();
         callbackInvoked.current = false;
+    };
+
+    const openAppSettings = () => {
+        Linking.openSettings().catch(() => {
+            Alert.alert(
+                t('misc_error'),
+                t('misc_unable_to_open_settings')
+            );
+        });
     };
 
     useEffect(() => {
@@ -65,14 +78,13 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
 
     useEffect(() => {
         if (isSuccess && foundDevices.length > 0 && !callbackInvoked.current) {
-            callbackInvoked.current = true; 
+            callbackInvoked.current = true;
             setTimeout(() => {
                 onResult(true, foundDevices);
                 setLocalDevices([]);
             }, 500);
         }
     }, [isSuccess, foundDevices, onResult, setLocalDevices]);
-
 
     return (
         <Modal
@@ -86,58 +98,67 @@ const BLEScanModal: React.FC<BLEScanModalProps> = ({
                     <ThemedText type="title" style={[styles.modalTitle, isDarkMode && styles.modalTitleDark]}>
                         {t('misc_scanning_local_devices')}
                     </ThemedText>
-                    {isScanning ? (
-                        <ThemedActivityIndicator size={'large'} />
-                    ) : (
-                        <>
-
-                            {isError && (
-                                <ThemedText style={[styles.error, isDarkMode && styles.errorDark]}>
-                                    {t(errors || 'srv_scan_error')}
-                                </ThemedText>
-                            )}
-                            {isSuccess && (
-                                <ThemedText style={[styles.success, isDarkMode && styles.successDark]}>
-                                    {t('srv_device_not_found')}
-                                </ThemedText>
-                            )}
-
-                            <FlatList
-                                data={foundDevices}
-                                keyExtractor={(item) => item}
-                                renderItem={({ item }) => (
-                                    <View style={[styles.device, isDarkMode && styles.deviceDark]}>
-                                        <ThemedText>
-                                            {item || t('misc_unknown_device')}
-                                        </ThemedText>
-                                        <ThemedText>{item}</ThemedText>
-                                    </View>
-                                )}
-                                ListEmptyComponent={
-                                    <ThemedText style={[styles.empty, isDarkMode && styles.emptyDark]}>
-                                        {t('srv_device_not_found')}
+                    {isPermissionGranted ? (
+                        isScanning ? (
+                            <ThemedActivityIndicator size={'large'} />
+                        ) : (
+                            <>
+                                {isError && (
+                                    <ThemedText style={[styles.error, isDarkMode && styles.errorDark]}>
+                                        {t(errors || 'srv_scan_error')}
                                     </ThemedText>
-                                }
-                            />
-
+                                )}
+                                <FlatList
+                                    data={foundDevices}
+                                    keyExtractor={(item) => item}
+                                    renderItem={({ item }) => (
+                                        <View style={[styles.device, isDarkMode && styles.deviceDark]}>
+                                            <ThemedText>
+                                                {item || t('misc_unknown_device')}
+                                            </ThemedText>
+                                        </View>
+                                    )}
+                                    ListEmptyComponent={
+                                        <ThemedText style={[styles.empty, isDarkMode && styles.emptyDark]}>
+                                            {t('srv_device_not_found')}
+                                        </ThemedText>
+                                    }
+                                />
+                                <TouchableOpacity
+                                    style={[styles.button, isDarkMode && styles.buttonDark]}
+                                    onPress={rescan}
+                                    disabled={isScanning}
+                                >
+                                    <ThemedText style={[styles.buttonText, isDarkMode && styles.buttonTextDark]}>
+                                        {t('misc_rescan')}
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            </>
+                        )
+                    ) : (
+                        <View style={styles.permissionContainer}>
+                            <ThemedText style={[styles.error, isDarkMode && styles.errorDark]}>
+                                {t('misc_bluetooth_permission_required')}
+                            </ThemedText>
                             <TouchableOpacity
                                 style={[styles.button, isDarkMode && styles.buttonDark]}
-                                onPress={rescan}
-                                disabled={isScanning}
+                                onPress={openAppSettings}
                             >
                                 <ThemedText style={[styles.buttonText, isDarkMode && styles.buttonTextDark]}>
-                                    {t('misc_rescan')}
+                                    {t('misc_grant_bluetooth_permission')}
                                 </ThemedText>
                             </TouchableOpacity>
-                        </>
+                        </View>
                     )}
-
                     <TouchableOpacity
                         style={[styles.button, styles.closeButton, isDarkMode && styles.closeButtonDark]}
                         onPress={handleClose}
                         disabled={isScanning}
                     >
-                        <ThemedText style={[styles.buttonText, isDarkMode && styles.buttonTextDark]}>
+                        <ThemedText style={[
+                            styles.buttonText,
+                            isScanning ? styles.buttonTextDisabled : isDarkMode && styles.buttonTextDark,
+                        ]}>
                             {t('misc_close')}
                         </ThemedText>
                     </TouchableOpacity>
@@ -190,14 +211,6 @@ const styles = StyleSheet.create({
     errorDark: {
         color: '#ff6b6b',
     },
-    success: {
-        color: 'green',
-        textAlign: 'center',
-        marginVertical: 10,
-    },
-    successDark: {
-        color: '#4caf50',
-    },
     empty: {
         textAlign: 'center',
         marginVertical: 20,
@@ -231,6 +244,17 @@ const styles = StyleSheet.create({
     buttonTextDark: {
         color: '#eee',
     },
+    permissionContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    buttonDisabled: {
+        backgroundColor: '#ddd',
+    },
+    buttonTextDisabled: {
+        color: '#aaa',
+    },
+
 });
 
 export default BLEScanModal;

@@ -153,7 +153,7 @@ export default function CameraScanner() {
                     </TouchableOpacity>
                 </View>
             )}
-            <ThemedText style={styles.message}>{t('misc_allow_camera_permission_to_do_registration')}</ThemedText>
+            <ThemedText style={styles.message}>{t('misc_camera_to_do_registration')}</ThemedText>
         </View>
     );
 }
