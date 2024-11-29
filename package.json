@@ -28,5 +28,6 @@
   "devDependencies": {
     "concurrently": "^9.1.0",
     "npm-check-updates": "^17.1.11"
-  }
+  },
+  "packageManager": "yarn@4.5.3"
 }
