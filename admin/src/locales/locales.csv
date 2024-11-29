@@ -74,11 +74,13 @@ misc_billing_information	billing information	thông tin thanh toán	fakturační
 misc_billing_time	money transfer time	thời gian chuyển khoản	doba převodu peněz
 misc_bills	bills	hoá đơn	faktury
 misc_birth_number	birth number	số sinh	rodné číslo
+misc_bluetooth_permission_required	Bluetooth permission required to scan for local attendance devices    cần quyền sử dụng Bluetooth để quét thiết bị điểm danh	musíte povolit použití Bluetooth pro skenování lokální zařízení docházky	
 misc_bubble_tea	bubble tea	trà sữa	mléčný čaj
 misc_by_partners	by partners	theo đối tác	podle partnera
 misc_by_provider	by provider	theo nhà phát hành	podle zprostředkovatele
 misc_by_status	by status	theo trạng thái	podle statusu
 misc_cafe	café	quán nước	kavárna
+misc_camera_to_do_registration	use camera to scan registration QR Code	dùng camera để scan mã QR đăng ký	používejte kameru pro skenování registračního QR kódu
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
@@ -206,15 +208,16 @@ misc_generate_token	generate token	tạo token	generovat token
 misc_generate_token_and_send	generate token and send	tạo token và gửi	generovat token a odeslat
 misc_get_current_location	get current location	lấy vị trí hiện tại	získat aktuální polohu
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
-misc_grant_location_permission	yes	cấp quyền truy cập vị trí	udělit povolení k použití polohy
+misc_grant_bluetooth_permission	grant Bluetooth permission	cho phép quyền Bluetooth	udělit povolení k použití Bluetooth
+misc_grant_location_permission	grant location permission	cấp quyền truy cập vị trí	udělit povolení k použití polohy
 misc_grant_permission	grant permission	cho phép quyền	udělit povolení
 misc_has_active_terminal	Has active terminal	Có máy đang hoạt động	Má aktivní terminál
 misc_has_registered_device	has registered device	đã đăng ký thiết bị 	má registrované zařízení
 misc_hidden	hidden	ẩn	skryto
 misc_home_page	home page	trang chính	domovská stránka
-misc_hour	hour	giờ 	hodina
-misc_hour_short	h.	giờ 	hod.
-misc_hours	hours	giờ 	hodiny
+misc_hour	hour	giờ	hodina
+misc_hour_short	h.	giờ	hod.
+misc_hours	hours	giờ	hodiny
 misc_id_document	identity document	thẻ căn cước	osobní doklad
 misc_import	import	import	import
 misc_import_leads	import leads	tải lên leads	nahrát leady
@@ -583,6 +586,7 @@ srv_bill_sent	Bill sent	Đã gửi hóa đơn	Faktura odeslána
 srv_bill_updated	Bill updated	Hóa đơn đã cập nhật	Faktura aktualizována
 srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
 srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
+srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
 srv_checked_in_successfully	checked in successfully	đã check in thành công	příchod úspěšný

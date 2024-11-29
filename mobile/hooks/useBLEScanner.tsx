@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
+import useTranslation from './useTranslation';
 
 type ScanState = 'idle' | 'scanning' | 'success' | 'error';
 
@@ -14,15 +15,18 @@ interface UseBLEScannerReturn {
     isError: boolean;
     errors: string | null;
     foundDevices: string[];
+    isPermissionGranted: boolean;
 }
 
 const useBLEScanner = (): UseBLEScannerReturn => {
+    const { t } = useTranslation()
     const manager = useMemo(() => new BleManager(), []);
     const [foundDevices, setFoundDevices] = useState<string[]>([]);
     const [isScanning, setIsScanning] = useState<boolean>(false);
     const [scanState, setScanState] = useState<ScanState>('idle');
     const [errors, setErrors] = useState<string | null>(null);
     const [uuids, setUuids] = useState<string[] | null>(null);
+    const [isPermissionGranted, setIsPermissionGranted] = useState<boolean>(true);
 
     useEffect(() => {
         return () => {
@@ -44,7 +48,8 @@ const useBLEScanner = (): UseBLEScannerReturn => {
                 granted[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] !== 'granted' ||
                 granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] !== 'granted'
             ) {
-                setErrors('Bluetooth permissions not granted.');
+                setIsPermissionGranted(false);
+                setErrors(t('srv_bluetooth_permission_not_granted'));
                 return false;
             }
         }
@@ -55,6 +60,7 @@ const useBLEScanner = (): UseBLEScannerReturn => {
         const permissionsGranted = await requestPermissions();
         if (!permissionsGranted) {
             setScanState('error');
+            setIsPermissionGranted(false);
             return;
         }
 
@@ -67,8 +73,8 @@ const useBLEScanner = (): UseBLEScannerReturn => {
         console.log('Scanning for devices...');
         manager.startDeviceScan(null, null, (error, device) => {
             if (error) {
-                console.error('Error during scanning:', error.message);
-                setErrors(error.message);
+                setErrors(error.message === 'Device is not authorized to use BluetoothLE' ? t('srv_bluetooth_permission_not_granted') : t(error.message || 'srv_scan_error'));
+                setIsPermissionGranted(error.message === 'Device is not authorized to use BluetoothLE' ? false : true);
                 setScanState('error');
                 setIsScanning(false);
                 return;
@@ -90,9 +96,6 @@ const useBLEScanner = (): UseBLEScannerReturn => {
                 manager.stopDeviceScan();
                 setIsScanning(false);
                 setScanState(foundDevices.length > 0 ? 'success' : 'idle');
-                if (foundDevices.length === 0) {
-                    setErrors('No devices found.');
-                }
             }
         }, 10000);
     };
@@ -120,6 +123,7 @@ const useBLEScanner = (): UseBLEScannerReturn => {
         isError: scanState === 'error',
         errors,
         foundDevices,
+        isPermissionGranted,
     };
 };
 
