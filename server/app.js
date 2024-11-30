@@ -86,11 +86,13 @@ require('./routes/mod')(app, '/mod')
 // Run demo data generation
 generateDemoData()
 
-// Schedule cron job to rerun `generateDemoData` after 1 hour
-cron.schedule('0 * * * *', () => {
-  console.log('Running hourly demo data generation...');
-  generateDemoData();
-});
+if (process.env.NODE_ENV !== 'test') {
+  // Schedule cron job to rerun `generateDemoData` after 1 hour
+  cron.schedule('0 * * * *', () => {
+    console.log('Running hourly demo data generation...');
+    generateDemoData();
+  });
+}
 
 // Error handler
 app.use(errorLogger)

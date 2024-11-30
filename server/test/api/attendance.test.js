@@ -14,6 +14,9 @@ const dayjs = require('dayjs');
 const db = require('../db');
 const { ObjectId } = mongoose.Types;
 const geolib = require('geolib');
+const { DAYS_OF_WEEK } = require('../../constants');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 
 const routePrefix = '/api/attendance';
 let employee, register, retail, user;
@@ -32,7 +35,7 @@ beforeAll(async () => {
 
     retail = await new Retail({
         name: 'Test Retail',
-        tin: '12345678',
+        tin: '99999999',
         address: {
             street: 'Test Street',
             city: 'Test City',
@@ -60,13 +63,13 @@ beforeAll(async () => {
             zip: '12345',
         },
         workingHours: {
-            mon: { start: '08:00', end: '17:00', isAvailable: true },
-            tue: { start: '08:00', end: '17:00', isAvailable: true },
-            wed: { start: '08:00', end: '17:00', isAvailable: true },
-            thu: { start: '08:00', end: '17:00', isAvailable: true },
-            fri: { start: '08:00', end: '17:00', isAvailable: true },
-            sat: { start: '10:00', end: '15:00', isAvailable: true },
-            sun: { start: '00:00', end: '00:00', isAvailable: false },
+            mon: { start: '00:00', end: '23:59', isAvailable: true },
+            tue: { start: '00:00', end: '23:59', isAvailable: true },
+            wed: { start: '00:00', end: '23:59', isAvailable: true },
+            thu: { start: '00:00', end: '23:59', isAvailable: true },
+            fri: { start: '00:00', end: '23:59', isAvailable: true },
+            sat: { start: '00:00', end: '23:59', isAvailable: true },
+            sun: { start: '00:00', end: '23:59', isAvailable: true },
         },
     }).save();
 
@@ -103,13 +106,13 @@ beforeAll(async () => {
         registerId: register._id,
         userId: user._id,
         workingHours: {
-            mon: { start: '08:00', end: '17:00', isAvailable: true },
-            tue: { start: '08:00', end: '17:00', isAvailable: true },
-            wed: { start: '08:00', end: '17:00', isAvailable: true },
-            thu: { start: '08:00', end: '17:00', isAvailable: true },
-            fri: { start: '08:00', end: '17:00', isAvailable: true },
-            sat: { start: '10:00', end: '15:00', isAvailable: true },
-            sun: { start: '00:00', end: '00:00', isAvailable: false },
+            mon: { start: '00:01', end: '23:58', isAvailable: true },
+            tue: { start: '00:01', end: '23:58', isAvailable: true },
+            wed: { start: '00:01', end: '23:58', isAvailable: true },
+            thu: { start: '00:01', end: '23:58', isAvailable: true },
+            fri: { start: '00:01', end: '23:58', isAvailable: true },
+            sat: { start: '00:01', end: '23:58', isAvailable: true },
+            sun: { start: '00:01', end: '23:58', isAvailable: true },
             isAvailable: true,
         }
     }).save();
@@ -151,6 +154,41 @@ describe('Attendance Tests', () => {
 
             const payload = {
                 registerId: register._id.toString(),
+                latitude: 50.0,
+                longitude: 50.0,
+                timestamp: dayjs().unix()
+            };
+
+            const token = jwt.sign(payload, employee.publicKey, { algorithm: 'HS512' });
+
+            const response = await request(app)
+                .post(`${routePrefix}`)
+                .set('App-Id', deviceId)
+                .send({
+                    ...payload,
+                    token,
+                });
+
+            expect(response.status).toBe(400);
+            expect(response.body.msg).toBe('srv_outside_allowed_radius');
+        });
+
+        test('should throw error if outside working hours', async () => {
+            const todayIndex = dayjs().day();
+            const todayKey = DAYS_OF_WEEK[todayIndex];
+            const workingHour = register.workingHours[todayKey]
+            const key = `workingHours.${todayKey}`;
+            await Register.findOneAndUpdate({ _id: register._id }, {
+                $set: {
+                    [key]: {
+                        start: dayjs().subtract(1, 'minute').format('HH:mm'),
+                        end: dayjs().subtract(1, 'minute').format('HH:mm'),
+                        isAvailable: true,
+                    }
+                }
+            });
+            const payload = {
+                registerId: register._id.toString(),
                 latitude: 1.0,
                 longitude: 1.0,
                 timestamp: dayjs().unix()
@@ -167,7 +205,14 @@ describe('Attendance Tests', () => {
                 });
 
             expect(response.status).toBe(400);
-            expect(response.body.msg).toBe('srv_outside_allowed_radius');
+            expect(response.body.msg).toBe('srv_outside_working_hours');
+            // return working hour to original
+            await Register.findOneAndUpdate({ _id: register._id }, {
+                $set: {
+                    [key]: workingHour
+                }
+            });
+
         });
 
         test('should throw error if invalid token', async () => {
@@ -199,6 +244,7 @@ describe('Attendance Tests', () => {
                 await new Attendance({
                     registerId: register._id,
                     employeeId: employee._id,
+                    workingHour: { start: '00:01', end: '23:58', isAvailable: true },
                     dailyAttendanceId: new ObjectId(),
                     checkInTime: dayjs().subtract(i, 'day').toDate(),
                     checkInLocation: {

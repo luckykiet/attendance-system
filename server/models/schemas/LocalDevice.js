@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const LocalDeviceSchema = new Schema({
-    deviceId: { type: String, required: true, unique: true, },
+    deviceId: { type: String, required: true },
     registerId: { type: Schema.ObjectId, required: true, },
     uuid: { type: String, required: true, },
     location: {
@@ -12,6 +12,7 @@ const LocalDeviceSchema = new Schema({
     },
 }, { timestamps: true });
 
-LocalDeviceSchema.index({ deviceId: 1, registerId: 1, uuid: 1 });
+LocalDeviceSchema.index({ deviceId: 1, registerId: 1 }, { unique: true });
+LocalDeviceSchema.index({ uuid: 1 });
 
 module.exports = LocalDeviceSchema;
