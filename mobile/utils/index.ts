@@ -69,7 +69,7 @@ export const authenticate = async (t: (text: string) => string) => {
         const result = await LocalAuthentication.authenticateAsync({
             promptMessage: t('misc_authenticate'),
             cancelLabel: t('misc_cancel'),
-            fallbackLabel: t('misc_fallback'),
+            fallbackLabel: t('misc_retry'),
         });
 
         return result;
