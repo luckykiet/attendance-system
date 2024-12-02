@@ -3,7 +3,12 @@
 - v1.0.0
 - Tuan Kiet Nguyen, 2024
 - ngntuankiet@gmail.com
+## Deployment
 
+- [Admin Interface](https://attendance.batatas.cz)
+- [Google Play](https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce&pcampaignid=web_share)
+- [Apple App Store](https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce&pcampaignid=web_share)
+  
 ## Descriptions
 
 System to monitor attendances using mobile phone.
