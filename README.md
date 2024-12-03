@@ -7,7 +7,7 @@
 
 - [Admin Interface](https://attendance.batatas.cz)
 - [Google Play](https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce&pcampaignid=web_share)
-- [Apple App Store](https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce&pcampaignid=web_share)
+- [Apple App Store](https://apps.apple.com/cz/app/gokasa-workforce/id6738621542)
   
 ## Descriptions
 
