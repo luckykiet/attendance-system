@@ -22,7 +22,9 @@
     "build": "cd admin && yarn build",
     "deploy": "cd admin && yarn deploy",
     "deploy-win": "cd admin && yarn deploy-win",
-    "zip-build": "cd admin && yarn zip-build"
+    "zip-build": "cd admin && yarn zip-build",
+    "clean-devcert": "cd server && node ./scripts/clean-devcert.js",
+    "install-devcert": "cd server && node ./scripts/install-devcert.js"
   },
   "license": "MIT",
   "devDependencies": {
