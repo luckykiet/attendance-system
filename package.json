@@ -17,7 +17,7 @@
     "starthttps": "concurrently \"cd server && yarn starthttps\"",
     "mergetranslations": "node ./mergeTranslations.mjs",
     "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
-    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && yarn install-all",
+    "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install",
     "build": "cd admin && yarn build",
     "deploy": "cd admin && yarn deploy",
@@ -28,8 +28,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^9.1.0",
-    "npm-check-updates": "^17.1.11"
+    "concurrently": "^9.1.2",
+    "npm-check-updates": "^17.1.14"
   },
   "packageManager": "yarn@4.6.0"
 }
