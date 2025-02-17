@@ -2,21 +2,25 @@ import { Fragment, useEffect } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import BottomBar from '@/components/BottomBar'
-import { CONFIG } from '@/configs'
+import { defaultAppName } from '@/configs'
 import Container from '@mui/material/Container'
 import LeftDrawer from '@/components/LeftDrawer'
 import { Paper } from '@mui/material'
 import TopBarCustomer from '@/components/TopBarCustomer'
 import Typography from '@mui/material/Typography'
 import useTranslation from '@/hooks/useTranslation'
+import { useConfigStore } from '@/stores/config'
 
 export default function ErrorPage() {
   const error = useRouteError()
   const { t } = useTranslation()
+  const config = useConfigStore()
   console.error(error)
+  const title = `${t('srv_word')} | ${config.appName || defaultAppName}`
+  
   useEffect(() => {
-    document.title = `${t('srv_word')} | ${CONFIG.APP_NAME}`
-  }, [t])
+    document.title = title
+  }, [title])
 
   return (
     <Fragment>

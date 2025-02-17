@@ -1,5 +1,4 @@
 import AppBar from '@mui/material/AppBar'
-import { CONFIG } from '@/configs'
 import IconButton from '@mui/material/IconButton'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { Link } from '@mui/material'
@@ -8,10 +7,11 @@ import { Link as RouterLink } from 'react-router-dom'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { useSetDrawerOpen } from '@/stores/root'
+import { useConfigStore } from '@/stores/config'
 
 export default function TopBarCustomer() {
   const setDrawerOpen = useSetDrawerOpen()
-
+  const config = useConfigStore();
   return (
     <AppBar elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -34,7 +34,7 @@ export default function TopBarCustomer() {
             underline="none"
             sx={{ flexGrow: 1 }}
           >
-            {CONFIG.APP_NAME}
+            {config.appName}
           </Link>
         </Stack>
         <LanguageSwitcher />

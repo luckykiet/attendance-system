@@ -1,4 +1,3 @@
-import { CONFIG } from '@/configs'
 import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
@@ -17,10 +16,12 @@ import Stack from '@mui/material/Stack'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { useNavigate } from 'react-router-dom'
 import useTranslation from '@/hooks/useTranslation'
+import { useConfigStore } from '@/stores/config'
 
 const DrawerItems = () => {
   const navigate = useNavigate()
   const setDrawerOpen = useSetDrawerOpen()
+
   const { t } = useTranslation()
 
   return (
@@ -57,7 +58,7 @@ const DrawerItems = () => {
 
 export default function LeftDrawer() {
   const [drawerOpen, setDrawerOpen] = [useDrawerOpen(), useSetDrawerOpen()]
-
+  const config = useConfigStore()
   return (
     <SwipeableDrawer
       anchor="left"
@@ -68,7 +69,7 @@ export default function LeftDrawer() {
       <Stack sx={{ width: 250, height: '100%' }} justifyContent="space-between">
         <List disablePadding>
           <ListItem sx={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
-            <ListItemText primary={`${CONFIG.APP_NAME}™`} />
+            <ListItemText primary={`${config.appName}™`} />
             <IconButton onClick={() => setDrawerOpen(false)}>
               <ChevronLeftIcon />
             </IconButton>
@@ -79,7 +80,7 @@ export default function LeftDrawer() {
           <ListItem>
             <ListItemText
               sx={{ textAlign: 'center' }}
-              secondary={CONFIG.APP_NAME}
+              secondary={config.appName}
             />
           </ListItem>
         </List>

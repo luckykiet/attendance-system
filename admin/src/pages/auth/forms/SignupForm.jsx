@@ -9,11 +9,11 @@ import { useNavigate } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CONFIG } from '@/configs';
 import useTranslation from '@/hooks/useTranslation';
 import { fetchAresWithTin } from '@/api/ares';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { getDefaultAddress, REGEX } from '@/utils';
+import { useConfigStore } from '@/stores/config';
 
 const signupSchema = z.object({
     username: z
@@ -63,8 +63,9 @@ const signupSchema = z.object({
 
 const SignupForm = () => {
     const { t } = useTranslation();
+    const config = useConfigStore();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+    const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
 
     const { login: loginStore } = useAuthStoreActions();
 
@@ -125,9 +126,6 @@ const SignupForm = () => {
         try {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha('signup');
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
             signUpMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
         } catch (error) {
             setPostMsg(error.message || 'Unknown error');

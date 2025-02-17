@@ -67,8 +67,8 @@ As default for development system will use _vcap.me_ domain
 [Admin](admin/src/configs/config.jsx)
 ```
 JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-RECAPTCHA_SITE_KEY - generated from Google Recaptcha v3
-GOOGLE_MAPS_API_KEY - generated from Google Maps API
+grecaptchaSiteKey - generated from Google Recaptcha v3
+googleMapsApiKey - generated from Google Maps API
 MOBILE_INTENT - scheme of mobile app
 PROXY_URL - only works in development; set if you use tunneling
 ```
@@ -105,8 +105,8 @@ As default for development system will use _vcap.me_ domain
 [Admin](admin/src/configs/config.jsx)
 ```
 JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-RECAPTCHA_SITE_KEY - generated from Google Recaptcha v3
-GOOGLE_MAPS_API_KEY - generated from Google Maps API
+grecaptchaSiteKey - generated from Google Recaptcha v3
+googleMapsApiKey - generated from Google Maps API
 MOBILE_INTENT - scheme of mobile app
 PROXY_URL - only works in development; set if you use tunneling
 ```
@@ -146,8 +146,8 @@ yarn devmobile
 [Admin](admin/src/configs/config.jsx)
 ```
 JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-RECAPTCHA_SITE_KEY - generated from Google Recaptcha v3
-GOOGLE_MAPS_API_KEY - generated from Google Maps API
+grecaptchaSiteKey - generated from Google Recaptcha v3
+googleMapsApiKey - generated from Google Maps API
 MOBILE_INTENT - scheme of mobile app
 ```
 [Server](server/configs/config.js)

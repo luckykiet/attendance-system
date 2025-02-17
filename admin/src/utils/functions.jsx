@@ -254,3 +254,11 @@ export const calculateKilometersFromMeters = (pureMeters) => {
   const meters = absMeters % 1000;
   return { kilometers, meters };
 };
+
+export const createZustandSetters = (set, state) => {
+  return Object.keys(state).reduce((acc, key) => {
+    acc[`set${key.charAt(0).toUpperCase() + key.slice(1)}`] = (value) =>
+      set((s) => ({ ...s, [key]: value }))
+    return acc
+  }, {})
+}

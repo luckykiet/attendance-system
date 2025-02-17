@@ -1,5 +1,4 @@
 import { Button, MenuItem, Select, Stack, styled } from '@mui/material'
-import { CONFIG } from '@/configs'
 import {
   checkPrivileges,
   formatPhoneNumber,
@@ -48,6 +47,8 @@ import { fetchEmployees } from '@/api/employees'
 import { useAuthStore } from '@/stores/auth'
 import { useNavigate } from 'react-router-dom'
 import { PersonAdd } from '@mui/icons-material'
+import { defaultAppName } from '@/configs'
+import { useConfigStore } from '@/stores/config'
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(even)': {
@@ -399,6 +400,7 @@ ReactTable.propTypes = {
 
 export default function EmployeesPage() {
   const { user } = useAuthStore()
+  const config = useConfigStore()
   const limit = useLimit()
   const search = useSearch()
   const setSearch = useSetSearch()
@@ -432,9 +434,11 @@ export default function EmployeesPage() {
     setSearch(value)
   }
 
+  const title = `${t('misc_employees')} | ${config.appName || defaultAppName}`
+
   useEffect(() => {
-    document.title = `${t('misc_employees')} | ${CONFIG.APP_NAME}`
-  }, [t])
+    document.title = title
+  }, [title])
 
   return (
     <Stack spacing={3}>

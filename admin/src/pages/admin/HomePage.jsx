@@ -1,5 +1,4 @@
 import { Button, Container, Grid2, Stack, Typography, Card, CardContent, IconButton, CardActions } from '@mui/material';
-import { CONFIG } from '@/configs';
 import { useQuery } from '@tanstack/react-query';
 import { fetchRetail } from '@/api/retail';
 import useTranslation from '@/hooks/useTranslation';
@@ -16,6 +15,7 @@ import { checkPrivileges, DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
+import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
 
@@ -41,6 +41,7 @@ const getTodayWorkingHours = (workingHours) => {
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const config = useConfigStore();
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const setRegisterId = useSetRegisterId();
@@ -92,7 +93,7 @@ export default function HomePage() {
             </Stack>
           ) : (
             <Typography align="center" variant="h3" gutterBottom>
-              {CONFIG.APP_NAME}
+              {config.appName}
             </Typography>
           )}
         </Grid2>

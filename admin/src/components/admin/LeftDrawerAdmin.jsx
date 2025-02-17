@@ -9,7 +9,6 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { CONFIG } from '@/configs'
 import { checkPrivileges } from '@/utils'
 import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 import PropTypes from 'prop-types';
@@ -34,6 +33,7 @@ import { useAuthStore } from '@/stores/auth';
 import { logout } from '@/api/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import BadgeIcon from '@mui/icons-material/Badge';
+import { useConfigStore } from '@/stores/config';
 
 const CustomListItem = ({ href, text, icon, reset }) => {
   const navigate = useNavigate()
@@ -68,6 +68,7 @@ CustomListItem.propTypes = {
 
 export default function LeftDrawerAdmin({ withBackButton = false }) {
   const { user } = useAuthStore()
+  const config = useConfigStore()
   const [drawerOpen, setDrawerOpen] = [useDrawerOpen(), useSetDrawerOpen()]
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -129,7 +130,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             sx={{
               textAlign: 'center',
             }}
-            secondary={CONFIG.APP_NAME}
+            secondary={config.appName}
           />
         </ListItem>
       </List>
@@ -259,7 +260,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
       >
         <List disablePadding>
           <ListItem sx={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
-            <ListItemText primary={`${CONFIG.APP_NAME}`} />
+            <ListItemText primary={`${config.appName}`} />
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>

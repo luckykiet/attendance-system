@@ -11,10 +11,7 @@ const domains = [defaultDomains];
 const generateDevCert = async () => {
     const keyPath = path.resolve('./certs/tls.key');
     const certPath = path.resolve('./certs/tls.cert');
-
-    if (CONFIG.admin_subdomain) {
-        domains.push(`${CONFIG.admin_subdomain}.${defaultDomains}`);
-    }
+    
     if (CONFIG.subdomain) {
         domains.push(`${CONFIG.subdomain}.${defaultDomains}`);
     }

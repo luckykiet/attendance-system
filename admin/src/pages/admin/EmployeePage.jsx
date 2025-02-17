@@ -12,7 +12,7 @@ import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee, createEm
 import { checkPrivileges, getDefaultEmployee, REGEX } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { CONFIG, HOSTNAME, PROTOCOL, PROXY_URL } from '@/configs';
+import { hostname, protocol } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
@@ -21,6 +21,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useSetConfirmBox } from '@/stores/confirm';
 import { QRCodeCanvas } from 'qrcode.react';
 import TransferListEmployees from '@/components/admin/TransferListEmployees';
+import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
 
@@ -35,11 +36,12 @@ const employeeSchema = z.object({
 
 export default function EmployeePage() {
     const { employeeId } = useParams();
+    const config = useConfigStore();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuthStore();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+    const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
     const [postMsg, setPostMsg] = useState('');
     const setAlertMessage = useSetAlertMessage();
     const setConfirmBox = useSetConfirmBox();
@@ -116,14 +118,10 @@ export default function EmployeePage() {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
-
             if (employeeId) {
-                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha: recaptchaToken || '' });
+                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha: recaptchaToken });
             } else {
-                createEmployeeMutation.mutate({ ...data, recaptcha: recaptchaToken || '' });
+                createEmployeeMutation.mutate({ ...data, recaptcha: recaptchaToken });
             }
         }
         catch (error) {
@@ -230,7 +228,7 @@ export default function EmployeePage() {
                                         name="registrationToken"
                                         control={control}
                                         render={({ field }) => {
-                                            const qrValue = CONFIG.MOBILE_INTENT && field.value ? `${CONFIG.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${import.meta.env.DEV && PROXY_URL ? PROXY_URL : `${PROTOCOL}${HOSTNAME}`}`)}` : '';
+                                            const qrValue = config.MOBILE_INTENT && field.value ? `${config.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${config.proxyUrl ? config.proxyUrl : `${protocol}${hostname}`}`)}` : '';
                                             return qrValue ? (
                                                 <Stack sx={{ display: 'flex', justifyContent: 'center' }} spacing={2}>
                                                     <Typography variant="subtitle1">{t('misc_registration_token')}</Typography>

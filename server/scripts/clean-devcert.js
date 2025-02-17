@@ -23,9 +23,6 @@ checkPrivileges();
 const defaultDomains = CONFIG.domain || 'vcap.me';
 const domains = [defaultDomains];
 
-if (CONFIG.admin_subdomain) {
-    domains.push(`${CONFIG.admin_subdomain}.${defaultDomains}`);
-}
 if (CONFIG.subdomain) {
     domains.push(`${CONFIG.subdomain}.${defaultDomains}`);
 }

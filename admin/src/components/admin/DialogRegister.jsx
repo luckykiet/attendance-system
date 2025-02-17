@@ -31,7 +31,6 @@ import { createRegister, deleteRegister, fetchRegister, updateRegister } from '@
 import FeedbackMessage from '../FeedbackMessage';
 import { useRetail, useSetAlertMessage } from '@/stores/root';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { CONFIG } from '@/configs';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import OpeningTimeInputs from '../WorkingHoursInputs';
@@ -41,6 +40,7 @@ import { ExpandMore } from '@mui/icons-material';
 import CopyButton from './CopyButton';
 import { getLocalDevicesByRegisterId } from '@/api/local-devices';
 import { deleteLocalDevice } from '@/api/local-device';
+import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
 
@@ -80,7 +80,7 @@ const registerSchema = z.object({
 
 export default function DialogRegister() {
   const { t } = useTranslation();
-
+  const config = useConfigStore();
   const registerId = useRegisterId();
   const retail = useRetail();
   const resetRegister = useReset();
@@ -88,7 +88,7 @@ export default function DialogRegister() {
   const [postMsg, setPostMsg] = useState('');
   const setAlertMessage = useSetAlertMessage();
   const queryClient = useQueryClient();
-  const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+  const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
   const setConfirmBox = useSetConfirmBox();
 
   const mainForm = useForm({
@@ -155,14 +155,10 @@ export default function DialogRegister() {
       setPostMsg('');
       const recaptchaToken = await executeRecaptcha(`${registerId ? 'update' : 'create'}register`);
 
-      if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-        throw new Error(t('srv_invalid_recaptcha'));
-      }
-
       if (registerId) {
-        updateRegisterMutation.mutate({ ...data, _id: registerId, recaptcha: recaptchaToken || '' })
+        updateRegisterMutation.mutate({ ...data, _id: registerId, recaptcha: recaptchaToken })
       } else {
-        createNewRegisterMutation.mutate({ ...data, recaptcha: recaptchaToken || '' })
+        createNewRegisterMutation.mutate({ ...data, recaptcha: recaptchaToken })
       }
     }
     catch (error) {

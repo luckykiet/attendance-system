@@ -27,8 +27,8 @@ import { LoadingButton } from '@mui/lab'
 import { useSetAlertMessage } from '@/stores/root'
 import { updateWorkingAts } from '@/api/working-ats'
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3'
-import { CONFIG } from '@/configs'
 import _ from 'lodash'
+import { useConfigStore } from '@/stores/config'
 
 const MAX_ROWS_PER_PAGE = 6
 const not = (a, b, property = '_id') => {
@@ -223,13 +223,14 @@ const preprocessRegisters = ({ workingAts = [], registers = [] }) => {
 }
 
 export default function TransferListEmployees({ employeeId }) {
+  const config = useConfigStore()
   const [checked, setChecked] = useState([])
   const { t } = useTranslation()
   const { user } = useAuthStore()
   const [postMsg, setPostMsg] = useState('')
   const setAlertMessage = useSetAlertMessage()
   const queryClient = useQueryClient()
-  const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA)
+  const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey)
 
   const mainForm = useForm({
     defaultValues: {
@@ -308,15 +309,12 @@ export default function TransferListEmployees({ employeeId }) {
       setPostMsg('')
       const recaptchaToken = await executeRecaptcha('updateworkingats');
 
-      if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-        throw new Error(t('srv_invalid_recaptcha'));
-      }
       const newLeft = data.left.filter((register) => register.isDirty).map((register) => ({ registerId: register._id, isAvailable: true }))
       const newRight = data.right.filter((register) => register.isDirty).map((register) => ({ registerId: register._id, isAvailable: false }))
       saveWorkingAtsMutation.mutate({
         employeeId,
         workingAts: [...newLeft, ...newRight],
-        recaptcha: recaptchaToken || ''
+        recaptcha: recaptchaToken
       })
     }
     catch (error) {

@@ -10,11 +10,11 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CONFIG } from '@/configs';
 import useTranslation from '@/hooks/useTranslation';
 import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
+import { useConfigStore } from '@/stores/config';
 
 const loginSchema = z.object({
     username: z
@@ -26,13 +26,13 @@ const loginSchema = z.object({
 
 const LoginForm = () => {
     const { t } = useTranslation();
+    const config = useConfigStore();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+    const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
 
     const { login: loginStore } = useAuthStoreActions();
     const [postMsg, setPostMsg] = useState('');
     const navigate = useNavigate();
-
 
     const mainUseForm = useForm({
         resolver: zodResolver(loginSchema),
@@ -71,10 +71,8 @@ const LoginForm = () => {
         try {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha('login');
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
-            loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
+            config.grecaptchaSiteKey
+            loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken});
         } catch (error) {
             console.error('Login failed:', error);
             setPostMsg(error instanceof Error ? error.message : 'Unknown error');

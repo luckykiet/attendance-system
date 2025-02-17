@@ -26,7 +26,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSetAlertMessage } from '@/stores/root';
 import { createOrUpdateWorkingAt } from '@/api/working-at';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { CONFIG } from '@/configs';
 import FeedbackMessage from '../FeedbackMessage';
 import WorkingHoursInputs from '../WorkingHoursInputs';
 import { LoadingButton } from '@mui/lab';
@@ -37,6 +36,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { fetchAttendanceByEmployeeAndDate } from '@/api/attendances';
 import LoadingCircle from '../LoadingCircle';
 import { updateAttendance } from '@/api/attendance';
+import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
 
@@ -89,11 +89,12 @@ const attendanceSchema = z.object({
 
 export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const { t } = useTranslation()
+    const config = useConfigStore();
     const today = dayjs();
     const [postMsg, setPostMsg] = useState('');
     const [postAttendanceMsg, setPostAttendanceMsg] = useState('');
     const setAlertMessage = useSetAlertMessage();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+    const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
     const [date, setDate] = useState(today);
 
     const dateForm = useForm({
@@ -147,11 +148,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${register ? 'update' : 'create'}register`);
 
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
-
-            saveWorkingAtMutation.mutate({ ...data, registerId: register._id, employeeId, recaptcha: recaptchaToken || '' });
+            saveWorkingAtMutation.mutate({ ...data, registerId: register._id, employeeId, recaptcha: recaptchaToken });
         }
         catch (error) {
             setPostMsg(error instanceof Error ? error : new Error(error));
@@ -162,12 +159,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
         try {
             setPostAttendanceMsg('');
             const recaptchaToken = await executeRecaptcha(`updateRegister`);
-
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
-
-            saveAttendanceMutation.mutate({ ...data, recaptcha: recaptchaToken || '' });
+            saveAttendanceMutation.mutate({ ...data, recaptcha: recaptchaToken });
         }
         catch (error) {
             setPostAttendanceMsg(error instanceof Error ? error : new Error(error));

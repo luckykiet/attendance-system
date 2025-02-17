@@ -18,10 +18,11 @@ import LoadingCircle from '@/components/LoadingCircle'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import { resetPassword, checkChangePasswordToken } from '@/api/auth'
 import useTranslation from '@/hooks/useTranslation'
-import { CONFIG } from '@/configs'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import FeedbackMessage from '@/components/FeedbackMessage'
+import { useConfigStore } from '@/stores/config'
+import { defaultAppName } from '@/configs'
 
 const passwordSchema = z
   .string()
@@ -38,6 +39,7 @@ const renewPasswordSchema = z.object({
 
 export default function RenewPasswordPage() {
   const { token } = useParams()
+  const config = useConfigStore()
   const [postMsg, setPostMsg] = useState({})
   const [passwordChanged, setPasswordChanged] = useState(false)
   const { t } = useTranslation()
@@ -63,9 +65,11 @@ export default function RenewPasswordPage() {
     retry: false,
   })
 
+  const title = `${t('misc_renew_password')} | ${config.appName || defaultAppName}`
+
   useEffect(() => {
-    document.title = `${t('misc_renew_password')} | ${CONFIG.APP_NAME}`
-  }, [t])
+    document.title = title
+  }, [title])
 
   const resetPasswordMutation = useMutation({
     mutationFn: ({ password, confirmPassword, token }) =>

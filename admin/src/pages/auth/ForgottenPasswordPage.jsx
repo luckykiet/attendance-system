@@ -9,7 +9,6 @@ import {
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
-import { CONFIG } from '@/configs';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import { LoadingButton } from '@mui/lab';
@@ -19,6 +18,8 @@ import { forgotPassword } from '@/api/auth';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FeedbackMessage from '@/components/FeedbackMessage';
+import { useConfigStore } from '@/stores/config';
+import { defaultAppName } from '@/configs';
 
 const forgotPasswordSchema = z.object({
   email: z
@@ -26,14 +27,16 @@ const forgotPasswordSchema = z.object({
     .email('srv_wrong_email_format'),
 });
 
-
 export default function ForgottenPasswordPage() {
   const [postMsg, setPostMsg] = useState('');
+  const config = useConfigStore();
   const { t } = useTranslation();
 
+  const title = `${t('misc_forgotten_password')} | ${config.appName || defaultAppName}`;
+
   useEffect(() => {
-    document.title = `${t('misc_forgotten_password')} | ${CONFIG.APP_NAME}`;
-  }, [t]);
+    document.title = title;
+  }, [title]);
 
   const mainUseForm = useForm({
     resolver: zodResolver(forgotPasswordSchema),

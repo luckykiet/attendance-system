@@ -3,10 +3,10 @@ import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api';
 import { useFormContext } from 'react-hook-form';
 import { Button, Stack, Typography } from '@mui/material';
 import axios from 'axios';
-import { CONFIG } from '@/configs';
 import useTranslation from '@/hooks/useTranslation';
 import FeedbackMessage from './FeedbackMessage';
 import LoadingCircle from './LoadingCircle';
+import { useConfigStore } from '@/stores/config';
 
 const mapContainerStyle = {
     width: '100%',
@@ -24,7 +24,7 @@ const GoogleMapPicker = () => {
     const [selectedPosition, setSelectedPosition] = useState(defaultCenter);
     const [postMsg, setPostMsg] = useState('');
     const [searchedLocation, setSearchedLocation] = useState('');
-
+    const config = useConfigStore();
 
     const street = watch('address.street');
     const city = watch('address.city');
@@ -39,7 +39,7 @@ const GoogleMapPicker = () => {
 
         const address = `${street}, ${city}, ${zip}`;
         setSearchedLocation(address);
-        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${CONFIG.GOOGLE_MAPS_API_KEY}`;
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${config.googleMapsApiKey}`;
 
         try {
             const response = await axios.get(geocodeUrl);
@@ -56,7 +56,7 @@ const GoogleMapPicker = () => {
         } catch {
             setPostMsg(t("srv_error_fetching_coordinates"));
         }
-    }, [city, setValue, street, zip, t]);
+    }, [street, city, zip, config.googleMapsApiKey, t, setValue]);
 
     const handleGetCurrentLocation = () => {
         setPostMsg('');
@@ -78,7 +78,7 @@ const GoogleMapPicker = () => {
     };
 
     const handleReverseGeocoding = async (latitude, longitude) => {
-        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${CONFIG.GOOGLE_MAPS_API_KEY}`;
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${config.googleMapsApiKey}`;
 
         try {
             const response = await axios.get(geocodeUrl);
@@ -178,8 +178,9 @@ const GoogleMapPicker = () => {
 }
 
 const LocationPicker = () => {
+    const config = useConfigStore();
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: CONFIG.GOOGLE_MAPS_API_KEY,
+        googleMapsApiKey: config.googleMapsApiKey,
     });
 
     if (loadError) return <Typography variant='body1' color='error'>{`Error loading Maps: ${loadError}`}</Typography>;

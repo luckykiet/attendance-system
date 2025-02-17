@@ -1,12 +1,15 @@
-const { CONFIG } = require('../configs')
 const axios = require('axios')
 const HttpError = require('../constants/http-error')
+const utils = require('../utils/utils')
 
 const checkReCaptcha = async (req, res, next) => {
     try {
-        if (!CONFIG.isUsingRecaptcha) {
+        const domain = req.hostname.split('.').slice(-2).join('.');
+
+        if (!utils.getGrecaptchaSecret(domain) || process.env.NODE_ENV === 'test') {
             return next()
         }
+        
         const recaptcha = req.headers['recaptcha']
         const action = req.headers['action']
 
@@ -20,7 +23,7 @@ const checkReCaptcha = async (req, res, next) => {
 
         try {
             const recaptchaResponse = await axios.post(
-                `https://www.google.com/recaptcha/api/siteverify?secret=${CONFIG.grecaptchaSecret}&response=${recaptcha}`
+                `https://www.google.com/recaptcha/api/siteverify?secret=${utils.getGrecaptchaSecret(domain)}&response=${recaptcha}`
             )
             if (
                 !recaptchaResponse.data.success ||

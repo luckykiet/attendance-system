@@ -56,5 +56,14 @@ const utils = {
     parseExpressErrors: (error, defaultMsg = 'srv_error', defaultStatusCode = 500) => {
         return error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : defaultMsg, defaultStatusCode)
     },
+    getGrecaptchaSiteKey: (domain) => {
+        return CONFIG.grecaptchaSiteKeys[domain] || '';
+    },
+    getGrecaptchaSecret: (domain) => {
+        return CONFIG.grecaptchaSecrets[domain] || '';
+    },
+    getGoogleMapsApiKey: (domain) => {
+        return CONFIG.googleMapsApiKeys[domain] || '';
+    },
 }
 module.exports = utils

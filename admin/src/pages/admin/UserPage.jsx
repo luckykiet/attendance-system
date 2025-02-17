@@ -12,7 +12,7 @@ import { fetchUser, createUser, updateUser, deleteUser } from '@/api/user';
 import { checkPrivileges, getDefaultUser, REGEX } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { CONFIG, ROLES, useRoles } from '@/configs';
+import { ROLES, useRoles } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
@@ -20,7 +20,7 @@ import { useSetAlertMessage } from '@/stores/root';
 import { useAuthStore } from '@/stores/auth';
 import { useSetConfirmBox } from '@/stores/confirm';
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-
+import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
 
@@ -77,11 +77,12 @@ const userSchema = z.object({
 
 export default function UserPage() {
     const { userId } = useParams();
+    const config = useConfigStore();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user: loggedInUser } = useAuthStore();
     const queryClient = useQueryClient();
-    const executeRecaptcha = useRecaptchaV3(CONFIG.RECAPTCHA_SITE_KEY, CONFIG.IS_USING_RECAPTCHA);
+    const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
     const [postMsg, setPostMsg] = useState('');
     const setAlertMessage = useSetAlertMessage();
     const setConfirmBox = useSetConfirmBox();
@@ -154,14 +155,10 @@ export default function UserPage() {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha(`${userId ? 'update' : 'create'}user`);
 
-            if (CONFIG.IS_USING_RECAPTCHA && !recaptchaToken) {
-                throw new Error(t('srv_invalid_recaptcha'));
-            }
-
             if (userId) {
-                updateUserMutation.mutate({ ...data, _id: userId, recaptcha: recaptchaToken || '' });
+                updateUserMutation.mutate({ ...data, _id: userId, recaptcha: recaptchaToken });
             } else {
-                createUserMutation.mutate({ ...data, recaptcha: recaptchaToken || '' });
+                createUserMutation.mutate({ ...data, recaptcha: recaptchaToken });
             }
         }
         catch (error) {

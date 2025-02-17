@@ -1,5 +1,5 @@
 import { Button, MenuItem, Select, Stack, styled } from '@mui/material'
-import { CONFIG, useRolesObject } from '@/configs'
+import { defaultAppName, useRolesObject } from '@/configs'
 import {
   checkPrivileges,
   formatPhoneNumber,
@@ -48,6 +48,7 @@ import { fetchUsers } from '@/api/users'
 import { useAuthStore } from '@/stores/auth'
 import { useNavigate } from 'react-router-dom'
 import { PersonAdd } from '@mui/icons-material'
+import { useConfigStore } from '@/stores/config'
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(even)': {
@@ -407,6 +408,7 @@ ReactTable.propTypes = {
 
 export default function UsersPage() {
   const { user } = useAuthStore()
+  const config = useConfigStore()
   const limit = useLimit()
   const search = useSearch()
   const setSearch = useSetSearch()
@@ -440,9 +442,11 @@ export default function UsersPage() {
     setSearch(value)
   }
 
+  const title = `${t('misc_users')} | ${config.appName || defaultAppName}`
+  
   useEffect(() => {
-    document.title = `${t('misc_users')} | ${CONFIG.APP_NAME}`
-  }, [t])
+    document.title = title
+  }, [title])
 
   return (
     <Stack spacing={3}>
