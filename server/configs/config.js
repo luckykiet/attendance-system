@@ -1,30 +1,31 @@
-const development = process.env.NODE_ENV === 'development';
-const isUsingRecaptcha = process.env.NODE_ENV !== 'test'
+require('dotenv').config();
+
 const protocol = 'https://';
-const subdomain = 'attendance';
-const www = 'www.';
 const realm = 'me';
 const domain = `vcap.${realm}`;
-const admin_subdomain = 'admin';
-const admin_port = '5173'
-const admin_domain = `${admin_subdomain}.${domain}${development ? `:${admin_port}` : ''}`;
-const proxy_domain = development ? '' : '';
-const mobile_intent = 'gokasaworkforce://';
+const subdomain = 'attendance';
+const proxyUrl = '';
 
 const CONFIG = {
-    protocol: protocol,
-    domain: domain,
-    admin_port: admin_port,
-    admin_subdomain: admin_subdomain,
-    admin_domain: admin_domain,
-    subdomain: subdomain,
-    realm: realm,
-    host: proxy_domain ? proxy_domain : `${protocol}${subdomain}.${domain}`,
-    www: protocol + www + domain,
-    mobile_intent: mobile_intent,
-    mongodb_host: 'mongodb://127.0.0.1:27017/attendance',
-    companyName: domain.toUpperCase(),
+    isDev: process.env.NODE_ENV === 'development',
+
+    // Information of the application
     appName: 'ATTENDANCE SYSTEM',
+    mobileIntent: 'gokasaworkforce://',
+    companyName: domain.toUpperCase(),
+    
+    // Information of the server
+    protocol,
+    domain,
+    subdomain,
+    realm,
+    www: `${protocol}www.${subdomain}${domain}`,
+    proxyUrl,
+
+    // MongoDB configuration
+    mongodb_host: 'mongodb://127.0.0.1:27017/attendance',
+
+    // Server configuration
     jwtSecret: '',
     mail_transport: {
         service: 'gmail',
@@ -35,11 +36,23 @@ const CONFIG = {
             user: '',
             clientId: '',
             clientSecret: '',
-            refreshToken: ''
-        }
+            refreshToken: '',
+        },
     },
-    grecaptchaSecret: '',
-    isUsingRecaptcha: isUsingRecaptcha,
+    
+    // Google reCAPTCHA configuration
+    // Add more domains if needed
+    grecaptchaSecrets: {
+        [domain] : '',
+    },
+    grecaptchaSiteKeys: {
+        [domain] : '',
+    },
+
+    // Google Maps API configuration
+    googleMapsApiKeys: {
+        [domain] : '',
+    },
 };
 
 module.exports = { CONFIG };
