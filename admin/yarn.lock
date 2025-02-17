@@ -2476,9 +2476,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.26.0":
-  version: 7.26.0
-  resolution: "@mui/x-date-pickers@npm:7.26.0"
+"@mui/x-date-pickers@npm:^7.27.0":
+  version: 7.27.0
+  resolution: "@mui/x-date-pickers@npm:7.27.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
@@ -2520,7 +2520,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/4c93af12a100fb34336084a81ffe5229b05c8af58f0f313e060077fe88ed51b14b92f71adb396b90333e35ffd2788e15587a711bbda539188d3846b93866d3a1
+  checksum: 10c0/fd8f242f8a9eac4ec37452df89ee7b74afc107b06c6349e17fee7ce912424939848ae27a45f07182d3b27e6cfa0364cf5fc7f23048bc6efded10fcddee6a6c4b
   languageName: node
   linkType: hard
 
@@ -3354,12 +3354,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.0.3":
-  version: 19.0.3
-  resolution: "@types/react-dom@npm:19.0.3"
+"@types/react-dom@npm:^19.0.4":
+  version: 19.0.4
+  resolution: "@types/react-dom@npm:19.0.4"
   peerDependencies:
     "@types/react": ^19.0.0
-  checksum: 10c0/3867427b333cbe8cbba496d7cc20ec9676d32c25ae44f4d1263a4129d42e57cf4adf0039ad263432f1215b88075c27d326e7eb4ed646128235d01a76e661d48f
+  checksum: 10c0/4e71853919b94df9e746a4bd73f8180e9ae13016333ce9c543dcba9f4f4c8fe6e28b038ca6ee61c24e291af8e03ca3bc5ded17c46dee938fcb32d71186fda7a3
   languageName: node
   linkType: hard
 
@@ -3391,12 +3391,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.0.9":
-  version: 19.0.9
-  resolution: "@types/react@npm:19.0.9"
+"@types/react@npm:^19.0.10":
+  version: 19.0.10
+  resolution: "@types/react@npm:19.0.10"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10c0/a0324890a7d9f3bae018b8735c8978cebea35bc00e7e5cdfcead110683a3b95aab550606abb2fe3189215d60dfcf7059335d206a5f20f41868c56daef60f62c1
+  checksum: 10c0/41884cca21850c8b2d6578b172ca0ca4fff6021251a68532b19f2031ac23dc5a9222470208065f8d9985d367376047df2f49ece8d927f7d04cdc94922b1eb34b
   languageName: node
   linkType: hard
 
@@ -3656,13 +3656,13 @@ __metadata:
     "@mui/styled-engine-sc": "npm:^6.4.3"
     "@mui/styles": "npm:^6.4.4"
     "@mui/system": "npm:^6.4.3"
-    "@mui/x-date-pickers": "npm:^7.26.0"
+    "@mui/x-date-pickers": "npm:^7.27.0"
     "@react-google-maps/api": "npm:^2.20.6"
     "@tanstack/react-query": "npm:^5.66.3"
     "@tanstack/react-query-devtools": "npm:^5.66.3"
     "@tanstack/react-table": "npm:^8.21.2"
-    "@types/react": "npm:^19.0.9"
-    "@types/react-dom": "npm:^19.0.3"
+    "@types/react": "npm:^19.0.10"
+    "@types/react-dom": "npm:^19.0.4"
     "@vitejs/plugin-basic-ssl": "npm:^1.2.0"
     "@vitejs/plugin-react-swc": "npm:^3.8.0"
     "@wojtekmaj/react-hooks": "npm:^1.22.0"
