@@ -43,15 +43,15 @@ const CONFIG = {
     // Google reCAPTCHA configuration
     // Add more domains if needed
     grecaptchaSecrets: {
-        [domain] : '',
+        [domain] : '6LdD2n8qAAAAAPZ8GFYJYv4hR5AUl2YOaZVKWoP-',
     },
     grecaptchaSiteKeys: {
-        [domain] : '',
+        [domain] : '6LdD2n8qAAAAAF2BlErmn1B4iwyy0IFGWgel7Iq2',
     },
 
     // Google Maps API configuration
     googleMapsApiKeys: {
-        [domain] : '',
+        [domain] : 'AIzaSyDZKfnYpMS7RlMLvNtHvVaZ-wCyFc98ThQ',
     },
 };
 

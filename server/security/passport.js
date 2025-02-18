@@ -2,6 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const { loggers } = require('../utils');
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
@@ -12,14 +13,16 @@ passport.use(
       const foundUser = await User.findOne({ username }).exec();
 
       if (!foundUser) {
+        loggers.auth.info(`User not found`, { username });
         return done(null, false, { message: 'srv_invalid_credentials' });
       }
 
       if (!foundUser.isAvailable) {
+        loggers.auth.info(`User blocked`, { username });
         return done(null, false, { message: 'srv_user_not_available' });
       }
 
-      const isMatch = await bcrypt.compare(decodedPassword, foundUser.password);
+      const isMatch = bcrypt.compare(decodedPassword, foundUser.password);
 
       if (!isMatch) {
         return done(null, false, { message: 'srv_invalid_credentials' });
@@ -34,7 +37,7 @@ passport.use(
         retailId: foundUser.retailId,
       });
     } catch (error) {
-      console.error(error);
+      loggers.auth.error(`Error during login: ${error.message}`);
       return done(null, false, { message: 'srv_failed_to_authorize' });
     }
   })

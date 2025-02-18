@@ -1,8 +1,10 @@
+require('./loggers')
 const axios = require("axios")
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
 const HttpError = require("../constants/http-error")
+const winston = require('winston')
 
 const utils = {
     fetchAresWithTin: async (tin) => {
@@ -64,6 +66,10 @@ const utils = {
     },
     getGoogleMapsApiKey: (domain) => {
         return CONFIG.googleMapsApiKeys[domain] || '';
+    },
+    loggers: {
+        auth: winston.loggers.get('auth'),
+        signup: winston.loggers.get('signup'),
     },
 }
 module.exports = utils

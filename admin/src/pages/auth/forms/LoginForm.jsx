@@ -71,7 +71,6 @@ const LoginForm = () => {
         try {
             setPostMsg('');
             const recaptchaToken = await executeRecaptcha('login');
-            config.grecaptchaSiteKey
             loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken});
         } catch (error) {
             console.error('Login failed:', error);
