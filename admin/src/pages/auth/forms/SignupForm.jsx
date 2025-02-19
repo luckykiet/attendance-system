@@ -19,8 +19,8 @@ const signupSchema = z.object({
     username: z
         .string()
         .trim()
-        .min(4, { message: 'srv_username_min_length' })
-        .max(255, { message: 'srv_username_max_length' })
+        .min(6, { message: 'srv_username_length' })
+        .max(255, { message: 'srv_username_length' })
         .regex(REGEX.username, { message: 'srv_username_no_whitespace' }),
     email: z
         .string()
@@ -33,7 +33,7 @@ const signupSchema = z.object({
         .max(255, { message: 'srv_name_max_length' }),
     vin: z
         .string()
-        .max(255, { message: 'srv_vin_max_length' })
+        .max(20, { message: 'srv_vin_max_length' })
         .optional(),
     address: z.object({
         street: z
@@ -51,11 +51,11 @@ const signupSchema = z.object({
     }),
     password: z
         .string()
-        .min(8, { message: 'srv_password_min_length' })
-        .max(255, { message: 'srv_password_max_length' }),
+        .min(8, { message: 'srv_password_length' })
+        .max(255, { message: 'srv_password_length' }),
     confirmPassword: z
         .string()
-        .max(255, { message: 'srv_confirm_password_max_length' })
+        .max(255, { message: 'srv_password_length' })
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'srv_passwords_not_match',
     path: ['confirmPassword']
@@ -221,6 +221,7 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_password')}
                                     fullWidth
+                                    autoComplete="true"
                                     type={showPassword ? 'text' : 'password'}
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
@@ -253,6 +254,7 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_confirm_password')}
                                     fullWidth
+                                    autoComplete="true"
                                     type="password"
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}

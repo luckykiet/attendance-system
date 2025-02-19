@@ -45,7 +45,7 @@ router.post(
             .trim()
             .notEmpty({ ignore_whitespace: true }).withMessage('srv_username_required')
             .bail()
-            .isLength({ min: 4, max: 255 }).withMessage('srv_invalid_username_length')
+            .isLength({ min: 6, max: 255 }).withMessage('srv_username_length')
             .bail()
             .matches(utils.regex.username).withMessage('srv_invalid_username')
             .bail(),
@@ -63,7 +63,7 @@ router.post(
         body('name')
             .trim()
             .notEmpty().withMessage('srv_name_required').bail()
-            .isLength({ max: 255 }).withMessage('srv_invalid_name_length').bail(),
+            .isLength({ max: 255 }).withMessage('srv_name_length').bail(),
 
         body('vin')
             .optional()
@@ -73,22 +73,22 @@ router.post(
         body('address.street')
             .optional()
             .trim()
-            .isLength({ max: 255 }).withMessage('srv_invalid_street_length').bail(),
+            .isLength({ max: 255 }).withMessage('srv_street_length').bail(),
 
         body('address.city')
             .optional()
             .trim()
-            .isLength({ max: 255 }).withMessage('srv_invalid_city_length').bail(),
+            .isLength({ max: 255 }).withMessage('srv_city_length').bail(),
 
         body('address.zip')
             .optional()
             .trim()
-            .isLength({ max: 20 }).withMessage('srv_invalid_zip_length').bail(),
+            .isLength({ max: 20 }).withMessage('srv_invalid_zip').bail(),
 
         body('password')
             .notEmpty({ ignore_whitespace: true }).withMessage('srv_password_required')
             .isString()
-            .isLength({ min: 8, max: 255 }).withMessage('srv_invalid_password_length').bail(),
+            .isLength({ min: 8, max: 255 }).withMessage('srv_password_length').bail(),
 
         body('confirmPassword')
             .notEmpty().withMessage('srv_confirm_password_required').bail()

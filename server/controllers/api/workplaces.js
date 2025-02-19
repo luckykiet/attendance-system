@@ -72,7 +72,7 @@ const getTodayWorkplaces = async (req, res, next) => {
 
         return res.status(200).json({ success: true, msg: leanNearbyRegisters });
     } catch (error) {
-        return next(utils.parseExpressErrors(error, 'srv_failed_to_get_companies', 500));
+        return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));
     }
 };
 
@@ -97,7 +97,7 @@ const getMyWorkingPlaces = async (req, res, next) => {
 
         return res.status(200).json({ success: true, msg: { registers, workingAts } });
     } catch (error) {
-        return next(utils.parseExpressErrors(error, 'srv_failed_to_get_companies', 500));
+        return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));
     }
 };
 

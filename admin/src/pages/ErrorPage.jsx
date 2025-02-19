@@ -65,7 +65,7 @@ function RootBoundary() {
     if (error.status === 503) {
       return (
         <Fragment>
-          {t('srv_word')} {error.status} - {t('srv_failed_api')}!
+          {t('srv_word')} {error.status} - {t('srv_failed_api_request')}!
         </Fragment>
       )
     }

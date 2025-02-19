@@ -100,7 +100,7 @@ export default function HomePage() {
         {checkPrivileges('addRegister', user?.role) && <Grid2 size={{ xs: 12 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button variant="contained" onClick={handleCreateNewRegister}>
-              {t('misc_new_company')}
+              {t('misc_add_workplace')}
             </Button>
           </Box>
         </Grid2>}
@@ -112,7 +112,7 @@ export default function HomePage() {
             registers && registers.length ? (
               <Stack spacing={2}>
                 <Typography align="center" variant="h5" gutterBottom>
-                  {t('misc_companies')}: {registers.length}
+                  {t('misc_workplaces')}: {registers.length}
                 </Typography>
                 <Grid2 container spacing={2}>
                   {registers.map((register) => {
@@ -166,7 +166,7 @@ export default function HomePage() {
               </Stack>
             ) : (
               <Typography align="center" variant="h5" gutterBottom>
-                {t('misc_no_company')}
+                {t('misc_no_workplace')}
               </Typography>
             )}
         </Grid2>

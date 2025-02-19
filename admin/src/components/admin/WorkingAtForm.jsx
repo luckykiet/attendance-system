@@ -67,12 +67,12 @@ const attendanceSchema = z.object({
     checkInTime: z
         .any()
         .refine((time) => time === null || (dayjs.isDayjs(time) && time.isValid()), {
-            message: 'srv_invalid_time',
+            message: 'srv_invalid_time_format',
         }),
     checkOutTime: z
         .any()
         .refine((time) => time === null || (dayjs.isDayjs(time) && time.isValid()), {
-            message: 'srv_invalid_time',
+            message: 'srv_invalid_time_format',
         }),
 }).refine(
     ({ checkInTime, checkOutTime }) => {

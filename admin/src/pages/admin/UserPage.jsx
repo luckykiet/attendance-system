@@ -31,8 +31,8 @@ const userSchema = z.object({
     username: z
         .string({ required_error: 'misc_required' })
         .trim()
-        .min(4, { message: 'srv_username_min_length' })
-        .max(255, { message: 'srv_username_max_length' })
+        .min(6, { message: 'srv_username_length' })
+        .max(20, { message: 'srv_username_length' })
         .regex(REGEX.username, { message: 'srv_username_no_whitespace' }),
     phone: z
         .string()
@@ -40,13 +40,13 @@ const userSchema = z.object({
         .refine((val) => !val || REGEX.phone.test(val), { message: 'srv_invalid_phone' }),
     password: z
         .string()
-        .min(8, { message: 'srv_password_min_length' })
-        .max(255, { message: 'srv_password_max_length' })
+        .min(8, { message: 'srv_password_length' })
+        .max(255, { message: 'srv_password_length' })
         .optional()
         .or(z.literal('')),
     confirmPassword: z
         .string()
-        .max(255, { message: 'srv_confirm_password_max_length' })
+        .max(255, { message: 'srv_password_length' })
         .optional()
         .or(z.literal('')),
     role: z.enum(ROLES, { message: 'srv_invalid_role' }),
@@ -70,7 +70,7 @@ const userSchema = z.object({
     if (data.password && data.confirmPassword && data.password !== data.confirmPassword) {
         ctx.addIssue({
             path: ['confirmPassword'],
-            message: 'srv_passwords_do_not_match',
+            message: 'srv_passwords_not_match',
         });
     }
 });

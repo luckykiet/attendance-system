@@ -63,7 +63,7 @@ const AppLock: React.FC<AppLockProps> = ({ children }) => {
             } else {
                 setIsAuthenticated(true);
             }
-        } catch (error) {
+        } catch {
             setAuthFailed(true);
             setIsAuthenticated(false);
         } finally {

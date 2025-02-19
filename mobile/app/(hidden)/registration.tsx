@@ -115,7 +115,7 @@ const RegistrationScreen: React.FC = () => {
                         <ThemedText style={styles.title}>{t('misc_registration')}</ThemedText>
                         {registration.retail && (
                             <ThemedView style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_company')}:</ThemedText>
+                                <ThemedText style={styles.label}>{t('misc_workplace')}:</ThemedText>
                                 <ThemedText>{registration.retail.name}</ThemedText>
                                 <ThemedText>{registration.retail.address?.street}</ThemedText>
                                 <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>

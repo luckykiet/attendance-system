@@ -220,7 +220,7 @@ export default function DialogRegister() {
       <FormProvider {...mainForm}>
         <DialogTitle>
           <Stack direction={'row'} spacing={1} alignItems={'center'}>
-            <Typography variant="h6">{register ? `${register.name} - ${register._id}` : t('misc_create_company')}</Typography>
+            <Typography variant="h6">{register ? `${register.name} - ${register._id}` : t('misc_add_workplace')}</Typography>
             {register && <CopyButton value={register._id || ''} />}
           </Stack>
         </DialogTitle>

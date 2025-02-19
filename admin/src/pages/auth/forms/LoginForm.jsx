@@ -97,7 +97,7 @@ const LoginForm = () => {
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
                                     required
-                                    autoComplete="off"
+                                    autoComplete
                                     slotProps={{
                                         input: {
                                             startAdornment: (
@@ -127,7 +127,7 @@ const LoginForm = () => {
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
                                     type={showPassword ? 'text' : 'password'}
                                     required
-                                    autoComplete="off"
+                                    autoComplete="true"
                                     slotProps={{
                                         input: {
                                             startAdornment: (

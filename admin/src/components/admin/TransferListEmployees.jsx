@@ -383,7 +383,7 @@ export default function TransferListEmployees({ employeeId }) {
                   <LoadingCircle />
                 ) : (
                   <CustomList
-                    title={t('misc_companies')}
+                    title={t('misc_workplaces')}
                     items={right}
                     checked={checked}
                     handleToggle={handleToggle}

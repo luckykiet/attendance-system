@@ -71,7 +71,7 @@ export default function AddButtonDropdown() {
               <AddBusiness />
             </ListItemIcon>
             <ListItemText>
-              {t('misc_create_company')}
+              {t('misc_add_workplace')}
             </ListItemText>
           </MenuItem>}
           {checkPrivileges('addEmployee', user?.role) && <MenuItem
