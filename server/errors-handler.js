@@ -1,6 +1,16 @@
-const fs = require('fs')
+const fs = require('fs');
+const HttpError = require('./constants/http-error');
+const { loggers } = require('./utils');
 
 const errorLogger = (err, req, res, next) => {
+  console.log(err)
+  if (err instanceof HttpError) {
+    loggers[err.logger].error(err.logMessage || err.message, {
+      route: req.originalUrl,
+      method: req.method,
+      code: err.code,
+    });
+  }
   console.error(
     '\x1b[31m',
     err.code ? `${err.code} ${err.message}` : err instanceof Error ? err.message : err,

@@ -55,8 +55,10 @@ const utils = {
             ? jwt.sign(item, CONFIG.jwtSecret, { expiresIn: time })
             : jwt.sign(item, CONFIG.jwtSecret)
     },
-    parseExpressErrors: (error, defaultMsg = 'srv_error', defaultStatusCode = 500) => {
-        return error instanceof HttpError ? error : new HttpError(error instanceof Error ? error.message : defaultMsg, defaultStatusCode)
+    parseExpressErrors: (error, defaultMsg = 'srv_error', defaultStatusCode = 500, defaultLoggerMessage = '', defaultLogger = 'http') => {
+        const message = error instanceof Error ? error.message : defaultMsg
+        const loggerMessage = defaultLoggerMessage || message
+        return error instanceof HttpError ? error : new HttpError(message, defaultStatusCode, loggerMessage, defaultLogger)
     },
     getGrecaptchaSiteKey: (domain) => {
         return CONFIG.grecaptchaSiteKeys[domain] || '';
@@ -70,6 +72,8 @@ const utils = {
     loggers: {
         auth: winston.loggers.get('auth'),
         signup: winston.loggers.get('signup'),
+        passwordreset: winston.loggers.get('passwordreset'),
+        http: winston.loggers.get('http'),
     },
 }
 module.exports = utils

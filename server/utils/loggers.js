@@ -1,7 +1,9 @@
 const winston = require('winston');
 const { combine, timestamp, json, errors } = winston.format;
 const _ = require('lodash');
-
+const path = require('path');
+const logFolder = process.env.NODE_ENV !== 'test' ? 'logs' : 'test-logs';
+const logPath = path.join(__dirname, '..', logFolder);
 const createLoggerConfig = ({
     level = 'info',
     name,
@@ -24,11 +26,14 @@ const createLoggerConfig = ({
         ),
         transports: [
             new winston.transports.Console(),
-            new winston.transports.File({ filename: `${__dirname}/../logs/${newFilename}` }),
+            new winston.transports.File({ filename: path.join(logPath, newFilename) }),
         ],
         defaultMeta: { service: newService },
     });
 };
 
+// Also need to update in utils.js
+createLoggerConfig({ name: 'http' });
 createLoggerConfig({ name: 'auth' });
 createLoggerConfig({ name: 'signup' });
+createLoggerConfig({ name: 'passwordreset' });

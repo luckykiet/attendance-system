@@ -3,6 +3,17 @@ const Schema = mongoose.Schema;
 const AddressSchema = require('./Address');
 const WorkingHourSchema = require('./WorkingHour');
 
+// start and end will have higher priority than duration
+const BreakSchema = new Schema(
+    {
+        start: { type: Date, default: null },
+        end: { type: Date, default: null },
+        name: { type: String, required: true },
+        duration: { type: Number, default: 0 } // In minutes
+    },
+    { _id: false }
+);
+
 const RegisterSchema = new Schema(
     {
         retailId: { type: Schema.Types.ObjectId, required: true },
@@ -33,6 +44,17 @@ const RegisterSchema = new Schema(
             sat: { type: WorkingHourSchema, required: true },
             sun: { type: WorkingHourSchema, required: true },
         },
+
+        breaks: {
+            mon: { type: [BreakSchema], required: true, default: [] },
+            tue: { type: [BreakSchema], required: true, default: [] },
+            wed: { type: [BreakSchema], required: true, default: [] },
+            thu: { type: [BreakSchema], required: true, default: [] },
+            fri: { type: [BreakSchema], required: true, default: [] },
+            sat: { type: [BreakSchema], required: true, default: [] },
+            sun: { type: [BreakSchema], required: true, default: [] },
+        },
+
         maxLocalDevices: { type: Number, required: true, default: 0 },
         isAvailable: { type: Boolean, required: true, default: true },
     },

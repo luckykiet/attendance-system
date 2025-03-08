@@ -162,7 +162,7 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_tin')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                        {tinLoading && <FormHelperText>{t('loading_tin')}</FormHelperText>}
+                        {tinLoading && <FormHelperText>{t('misc_loading_data')}</FormHelperText>}
                         {tinError && <FormHelperText error>{t('srv_invalid_tin')}</FormHelperText>}
                         {tinFetched && !tinData && <FormHelperText>{t('srv_merchant_not_found')}</FormHelperText>}
                     </Grid2>
@@ -221,7 +221,7 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_password')}
                                     fullWidth
-                                    autoComplete="true"
+                                    autoComplete={"true"}
                                     type={showPassword ? 'text' : 'password'}
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
@@ -254,7 +254,7 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_confirm_password')}
                                     fullWidth
-                                    autoComplete="true"
+                                    autoComplete={"true"}
                                     type="password"
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}

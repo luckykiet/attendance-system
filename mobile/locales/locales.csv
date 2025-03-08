@@ -788,6 +788,7 @@ srv_register_failed	Register failed	Đăng ký không thành công	Registrace se
 srv_register_not_found	workplace not found	không tìm thấy nơi làm việc	pracoviště nenalezeno
 srv_registers_not_found	Workplaces not found	Không tìm thấy nơi làm việc	Pracoviště nenalezeno
 srv_registration_not_found	registration not found or expired	yêu cầu đăng ký không tìm thấy hoặc đã hết hạn	registrace nenalezena nebo vypršela
+srv_retail_exists	Retail exists	Nhà bán lẻ đã tồn tại	Obchodník existuje
 srv_retail_not_found	retail not found	không tìm thấy doanh nghiệp	podnik nenalezen
 srv_retail_update_failed	Retail update failed	Cập nhập doanh nghiệp thất bại	aktualizace obchodu selhala
 srv_return_to	Return to	Hãy quay lại	Vraťte se na

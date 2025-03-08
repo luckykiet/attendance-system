@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const db = require('../db');
 const { ObjectId } = mongoose.Types;
+const config = require('../../configs');
 
 const routePrefix = '/auth';
 const request = supertest(app);
@@ -21,6 +22,8 @@ afterEach(async () => {
 afterAll(async () => {
     await db.closeDatabase();
 });
+
+const createBase64 = (text) => Buffer.from(text).toString('base64');
 
 const logoutUser = async (cookie) => {
     await request.post(`${routePrefix}/signout`).set('Cookie', cookie);
@@ -40,7 +43,7 @@ describe(`POST ${routePrefix}/login`, () => {
         });
         await user.save();
 
-        const encodedPassword = Buffer.from('password123').toString('base64');
+        const encodedPassword = createBase64('password123');
         const response = await request.post(`${routePrefix}/login`).send({
             username: 'loginuser',
             password: encodedPassword,
@@ -64,7 +67,7 @@ describe(`POST ${routePrefix}/login`, () => {
         expect(response.status).toBe(401);
     });
     test('should return 401 for invalid login credentials', async () => {
-        const encodedPassword = Buffer.from('password123').toString('base64');
+        const encodedPassword = createBase64('password123');
         const response = await request.post(`${routePrefix}/login`).send({
             username: 'wronguser',
             password: encodedPassword,
@@ -88,7 +91,7 @@ describe(`POST ${routePrefix}/isAuthenticated`, () => {
         });
         await user.save();
 
-        const encodedPassword = Buffer.from('password123').toString('base64');
+        const encodedPassword = createBase64('password123');
         const loginResponse = await request.post(`${routePrefix}/login`).send({
             username: 'checkuser',
             password: encodedPassword,
@@ -127,9 +130,9 @@ describe(`POST ${routePrefix}/signout`, () => {
         });
         await user.save();
 
-        const encodedPassword = Buffer.from('password123').toString('base64');
+        const encodedPassword = createBase64('password123');
         const loginResponse = await request.post(`${routePrefix}/login`).send({
-            email: 'signout@example.com',
+            username: 'signoutuser',
             password: encodedPassword,
         });
 
@@ -198,7 +201,7 @@ describe(`POST ${routePrefix}/signup`, () => {
         });
 
         expect(response.status).toBe(409);
-        expect(response.body.msg).toBe('srv_user_exists');
+        expect(response.body.msg).toBe('srv_username_exists');
     });
 
     test('should not allow duplicate email', async () => {
@@ -221,7 +224,7 @@ describe(`POST ${routePrefix}/signup`, () => {
         });
 
         expect(response.status).toBe(409);
-        expect(response.body.msg).toBe('srv_email_registered_exists');
+        expect(response.body.msg).toBe('srv_email_exists');
     });
 
     test('should automatically fill address from ARES if address is missing', async () => {
@@ -293,6 +296,11 @@ describe(`POST ${routePrefix}/signup`, () => {
 
 describe(`POST ${routePrefix}/forgot-password`, () => {
     test('should send reset password email successfully', async () => {
+        expect(config.CONFIG.mail_transport.auth.user).toBeDefined();
+        expect(config.CONFIG.mail_transport.auth.clientId).toBeDefined();
+        expect(config.CONFIG.mail_transport.auth.clientSecret).toBeDefined();
+        expect(config.CONFIG.mail_transport.auth.refreshToken).toBeDefined();
+
         const user = new User({ username: 'forgotuser', email: 'forgot@example.com', password: 'password123', retailId: new ObjectId() });
         await user.save();
 
@@ -347,7 +355,7 @@ describe(`PUT ${routePrefix}/reset-password`, () => {
                 confirmNewPassword: 'newPassword123',
             });
 
-        expect(response.status).toBe(401);
+        expect(response.status).toBe(400);
         expect(response.body.msg).toBe('srv_token_expired');
     });
 

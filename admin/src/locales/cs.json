@@ -787,6 +787,7 @@
   "srv_register_not_found": "pracoviště nenalezeno",
   "srv_registers_not_found": "Pracoviště nenalezeno",
   "srv_registration_not_found": "registrace nenalezena nebo vypršela",
+  "srv_retail_exists": "Obchodník existuje",
   "srv_retail_not_found": "podnik nenalezen",
   "srv_retail_update_failed": "aktualizace obchodu selhala",
   "srv_return_to": "Vraťte se na",

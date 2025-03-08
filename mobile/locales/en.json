@@ -787,6 +787,7 @@
   "srv_register_not_found": "workplace not found",
   "srv_registers_not_found": "Workplaces not found",
   "srv_registration_not_found": "registration not found or expired",
+  "srv_retail_exists": "Retail exists",
   "srv_retail_not_found": "retail not found",
   "srv_retail_update_failed": "Retail update failed",
   "srv_return_to": "Return to",

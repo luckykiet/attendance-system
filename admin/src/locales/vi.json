@@ -787,6 +787,7 @@
   "srv_register_not_found": "không tìm thấy nơi làm việc",
   "srv_registers_not_found": "Không tìm thấy nơi làm việc",
   "srv_registration_not_found": "yêu cầu đăng ký không tìm thấy hoặc đã hết hạn",
+  "srv_retail_exists": "Nhà bán lẻ đã tồn tại",
   "srv_retail_not_found": "không tìm thấy doanh nghiệp",
   "srv_retail_update_failed": "Cập nhập doanh nghiệp thất bại",
   "srv_return_to": "Hãy quay lại",
