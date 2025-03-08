@@ -26,7 +26,7 @@ const CONFIG = {
     mongodb_host: 'mongodb://127.0.0.1:27017/attendance',
 
     // Server configuration
-    jwtSecret: '',
+    jwtSecret: process.env.NODE_ENV === 'test' ? 'test' : '',
     mail_transport: {
         service: 'gmail',
         port: 465,
