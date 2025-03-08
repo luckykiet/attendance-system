@@ -42,7 +42,7 @@ router.post(
     checkReCaptcha,
     validate([
         body('username')
-            .trim()
+            .trim().toLowerCase()
             .notEmpty({ ignore_whitespace: true }).withMessage('srv_username_required')
             .bail()
             .isLength({ min: 6, max: 255 }).withMessage('srv_username_length')
@@ -51,7 +51,7 @@ router.post(
             .bail(),
 
         body('email')
-            .trim()
+            .trim().toLowerCase()
             .notEmpty().withMessage('srv_email_required').bail()
             .isEmail().withMessage('srv_invalid_email').bail(),
 
@@ -98,7 +98,9 @@ router.post(
     signup
 );
 
-router.post('/forgot-password', sendRequestRenewPassword)
+router.post('/forgot-password', validate([
+    body('email').toLowerCase().trim().isEmail().withMessage('srv_invalid_email')
+]), sendRequestRenewPassword)
 
 router.put('/reset-password', passwordResetTokenVerifyMiddleware, updatePassword)
 
