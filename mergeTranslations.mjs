@@ -39,7 +39,8 @@ const readCsvFile = async (path) => {
 
 const csvFiles = [
     join(__dirname, 'admin', 'src', 'locales', 'locales.csv'),
-    join(__dirname, 'mobile', 'locales', 'locales.csv')
+    join(__dirname, 'mobile', 'locales', 'locales.csv'),
+    join(__dirname, 'server', 'locales', 'locales.csv'),
 ];
 
 const writeUniqueTranslationsToFiles = async () => {

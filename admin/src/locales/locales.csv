@@ -604,6 +604,9 @@ srv_checked_out_successfully	checked out successfully	đã check out thành côn
 srv_city_length	City must have at most 255 characters	Thành phố phải có tối đa 255 ký tự	Město může mít maximálně 255 znaků
 srv_city_max_length	City must have at most 255 characters	Thành phố phải có tối đa 255 ký tự	Město může mít maximálně 255 znaků
 srv_close_time_before_open_time	close time is before open time	thời gian kết thúc trước thời gian bắt đầu	čas ukončení je před časem otevření
+srv_config_deleted	Config deleted	Cài đặt đã bị xóa	Konfigurace smazána
+srv_config_not_found	Config not found	Cài đặt không tìm thấy	Konfigurace nenalezena
+srv_config_updated	Config updated	Cài đặt đã được cập nhập	Konfigurace aktualizována
 srv_confirm_password_required	Confirm password is required	Xác nhận mật khẩu là bắt buộc	Potvrzení hesla je povinné
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
 srv_created	created	đã được tạo	vytvořeno
@@ -817,6 +820,7 @@ srv_transaction_created	Transaction created	Giao dịch đã được tạo	Tran
 srv_transactions_checked	transactions checked	đã kiểm tra giao dịch	transakce zkontrolovány
 srv_transactions_empty	transactions are empty	giao dịch trống	transakce jsou prázdné
 srv_transactions_imported	transactions imported	đã nhập giao dịch	transakce nahrány
+srv_translations_not_found	Translations not found	Dịch không tìm thấy	Překlady nenalezeny
 srv_unauthorized	unauthorized	không được cấp phép	neoprávněno
 srv_unexpected_error	Unexpected error	Lỗi không mong muốn	Nepředvídatelná chyba
 srv_unknown_error	unknown error	lỗi không xác định	neznámá chyba

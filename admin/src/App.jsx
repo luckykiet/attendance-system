@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
 import { CacheProvider } from '@emotion/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { I18nextProvider } from 'react-i18next';
@@ -16,6 +16,7 @@ import { useConfigStoreActions } from '@/stores/config';
 import { getConfig } from '@/api/config';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { getLocale } from './api/locale';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,11 +59,21 @@ App.propTypes = {
 };
 
 const ConfigFetcher = () => {
+  const lang = i18n.language;
   const setConfig = useConfigStoreActions();
 
-  const { data: config, isLoading } = useQuery({
+  const { data: config, isLoading: isConfigLoading } = useQuery({
     queryKey: ['config'],
     queryFn: getConfig,
+  });
+
+  const { mutate: fetchLocale, isLoading: isLocaleLoading } = useMutation({
+    mutationFn: (lang) => getLocale(lang),
+    onSuccess: (localeData, lang) => {
+      if (localeData) {
+        i18n.addResourceBundle(lang, 'translation', localeData, true, true);
+      }
+    },
   });
 
   useEffect(() => {
@@ -71,9 +82,26 @@ const ConfigFetcher = () => {
     }
   }, [config, setConfig]);
 
-  if (isLoading) {
+  useEffect(() => {
+    fetchLocale(lang);
+  }, [fetchLocale, lang]);
+
+
+  useEffect(() => {
+    const handleLanguageChange = (newLang) => {
+      fetchLocale(newLang);
+    }
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [fetchLocale]);
+
+  if (isConfigLoading || isLocaleLoading) {
     return <LoadingCircle />;
   }
 
   return null;
-}
+};

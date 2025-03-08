@@ -4,7 +4,26 @@ const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
 const HttpError = require("../constants/http-error")
 const winston = require('winston')
+const path = require('path')
+const fs = require('fs')
 const { createLoggerConfig } = require('./loggers')
+
+const getTranslation = async (lang) => {
+    try {
+        const filePath = path.join(__dirname, '..', 'locales', `${lang}.json`);
+
+        if (!fs.existsSync(filePath)) {
+            console.warn(`Translation file for ${lang} not found, falling back to en.json`);
+            return getTranslation('en');
+        }
+
+        const fileContent = await fs.promises.readFile(filePath, 'utf8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        console.error(`Error loading translations for ${lang}:`, error);
+        return null;
+    }
+}
 
 const utils = {
     fetchAresWithTin: async (tin) => {
@@ -89,5 +108,6 @@ const utils = {
         }
         return this._loggers;
     },
+    getTranslations: getTranslation,
 }
 module.exports = utils

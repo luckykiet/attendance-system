@@ -16,7 +16,7 @@
     "start": "concurrently \"cd server && yarn start\" \"cd admin && yarn start\"",
     "starthttps": "concurrently \"cd server && yarn starthttps\"",
     "mergetranslations": "node ./mergeTranslations.mjs",
-    "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs",
+    "translate": "cd admin/src/locales && node parseFromCSV.mjs && cd ../../../mobile/locales && node parseFromCSV.mjs && cd ../../server/locales && node parseFromCSV.mjs",
     "upgrade-all": "ncu -u && cd server && ncu -u && cd ../admin && ncu -u && cd ../mobile && ncu -u && cd .. && yarn install-all",
     "upgrade-dep": "ncu -u && yarn install",
     "build": "cd admin && yarn build",

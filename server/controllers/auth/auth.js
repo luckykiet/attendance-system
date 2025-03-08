@@ -176,7 +176,9 @@ const passwordResetTokenVerifyMiddleware = async (req, res, next) => {
         if (!token) {
             throw new HttpError('srv_token_not_provided', 400, 'Token not provided', 'passwordreset');
         }
+
         loggers.passwordreset.info('Verifying password reset token', { token });
+
         try {
             const decoded = jwt.verify(token, CONFIG.jwtSecret);
             req.email = decoded.email;
@@ -190,11 +192,11 @@ const passwordResetTokenVerifyMiddleware = async (req, res, next) => {
         } catch {
             throw new HttpError('srv_token_expired', 400, 'Token expired', 'passwordreset');
         }
+
         loggers.passwordreset.info('Token verified');
         next();
-    } catch (err) {
-        loggers.passwordreset.error(`Token verification failed: ${err.message}`);
-        return next(err instanceof HttpError ? err : new HttpError('srv_error', 500, 'Password reset failed', 'passwordreset'));
+    } catch (error) {
+        return next(utils.parseExpressErrors(error, 'srv_token_expired', 500));
     }
 };
 
@@ -202,12 +204,16 @@ const sendRequestRenewPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
         loggers.auth.info(`Password reset request`, { email });
+
         const user = await User.findOne({ email });
+        
         if (!user) {
             loggers.auth.info(`User not found`);
             return res.status(200).json({ success: true, msg: 'srv_password_reset_send_to_email' });
         }
+
         const token = utils.signItemToken({ email }, '15m');
+
         await User.findByIdAndUpdate(user._id, { $push: { tokens: token } }, { new: true });
 
         mailSender.sendMailResetPassword(
@@ -223,8 +229,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
             msg: 'srv_password_reset_send_to_email',
         });
     } catch (error) {
-        loggers.auth.error(`Password reset request failed: ${error.message}`);
-        next(new HttpError('srv_password_reset_failed', 500, 'Password reset failed', 'passwordreset'));
+        return next(utils.parseExpressErrors(error, 'srv_password_reset_failed', 500));
     }
 };
 
@@ -232,7 +237,9 @@ const updatePassword = async (req, res, next) => {
     try {
         const email = req.email;
         const body = req.body;
-        loggers.auth.info(`Password update attempt`, { email, ...body });
+        
+        loggers.auth.info(`Password update attempt`, { email });
+
         if (!body || !body.newPassword || !body.confirmNewPassword) {
             throw new HttpError('srv_invalid_request', 400, 'Invalid request', 'passwordreset');
         }
@@ -257,9 +264,8 @@ const updatePassword = async (req, res, next) => {
             success: true,
             msg: 'srv_passwords_changed',
         });
-    } catch (err) {
-        loggers.auth.error(`Password update failed: ${err.message}`);
-        return next(err instanceof HttpError ? err : new HttpError('srv_error', 500, 'Password reset failed', 'passwordreset'));
+    } catch (error) {
+        return next(utils.parseExpressErrors(error, 'srv_password_reset_failed', 500));
     }
 };
 
