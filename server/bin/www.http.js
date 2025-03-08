@@ -7,7 +7,7 @@
 const app = require('../app');
 const debug = require('debug')('attendance-system:server');
 const http = require('http');
-
+const { CONFIG } = require('../configs');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -73,7 +73,7 @@ const onListening = () => {
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '4000');
+const port = normalizePort(process.env.PORT || CONFIG.port || '4000' );
 app.set('port', port);
 
 /**

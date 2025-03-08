@@ -54,7 +54,7 @@ export default function ForgottenPasswordPage() {
       setPostMsg(new Error(error));
     },
     onSuccess: () => {
-      setPostMsg(`${t('msg_request_sent')}! ${t('msg_to_check_email')}.`);
+      setPostMsg(`${t('msg_request_sent')}! ${t('msg_to_check_email')}. ${t('msg_if_account_exists')}.`);
     },
   });
 

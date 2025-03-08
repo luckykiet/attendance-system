@@ -1,6 +1,7 @@
-const utils = require("../../utils");
 const { CONFIG } = require("../../configs");
-const getConfig = async (req, res, next) => {
+const utils = require("../../utils");
+
+const getAdminAppConfig = async (req, res, next) => {
     try {
         const domain = req.hostname.split('.').slice(-2).join('.');
         return res.status(200).json({
@@ -8,13 +9,13 @@ const getConfig = async (req, res, next) => {
             msg: {
                 appName: CONFIG.appName,
                 companyName: CONFIG.companyName,
-                
+
                 // Server configuration
                 proxyUrl: CONFIG.proxyUrl,
 
                 // Intent
                 mobileIntent: CONFIG.mobileIntent,
-                  
+
                 // Google reCAPTCHA configuration
                 grecaptchaSiteKey: utils.getGrecaptchaSiteKey(domain),
 
@@ -28,5 +29,5 @@ const getConfig = async (req, res, next) => {
 };
 
 module.exports = {
-    getConfig,
+    getAdminAppConfig,
 }

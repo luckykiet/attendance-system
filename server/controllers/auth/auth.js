@@ -5,8 +5,10 @@ const utils = require('../../utils');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { CONFIG } = require('../../configs');
+
 const mailSender = require('../../mail_sender');
+const { CONFIG } = require('../../configs');
+const { default: urlJoin } = require('url-join');
 const { loggers } = utils
 
 const signup = async (req, res, next) => {
@@ -211,7 +213,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
         mailSender.sendMailResetPassword(
             email,
             user.username,
-            `${CONFIG.protocol}${CONFIG.subdomain}/reset-password/${token}`
+            urlJoin(CONFIG.url, 'reset-password', token),
         );
 
         loggers.auth.info(`Password reset email sent`, { token });

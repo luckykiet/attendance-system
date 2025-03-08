@@ -1,15 +1,16 @@
 const axios = require('axios')
 const HttpError = require('../constants/http-error')
-const utils = require('../utils/utils')
+const utils = require('../utils')
+const { CONFIG } = require('../configs')
 
 const checkReCaptcha = async (req, res, next) => {
     try {
         const domain = req.hostname.split('.').slice(-2).join('.');
 
-        if (!utils.getGrecaptchaSecret(domain) || process.env.NODE_ENV === 'test') {
+        if (!utils.getGrecaptchaSecret(domain) || CONFIG.isTest) {
             return next()
         }
-        
+
         const recaptcha = req.headers['recaptcha']
         const action = req.headers['action']
 

@@ -32,8 +32,6 @@ const createLoggerConfig = ({
     });
 };
 
-// Also need to update in utils.js
-createLoggerConfig({ name: 'http' });
-createLoggerConfig({ name: 'auth' });
-createLoggerConfig({ name: 'signup' });
-createLoggerConfig({ name: 'passwordreset' });
+module.exports = {
+    createLoggerConfig
+};

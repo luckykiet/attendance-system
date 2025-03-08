@@ -11,16 +11,16 @@ const cron = require('node-cron') // Import node-cron
 const { errorLogger, errorResponder } = require('./errors-handler')
 const bodyParser = require('body-parser')
 const Database = require('./db')
-const { CONFIG } = require('./configs')
 const { generateDemoData } = require('./demo')
+const { CONFIG } = require('./configs')
 
-if (process.env.NODE_ENV !== 'test') {
+if (!CONFIG.isTest) {
   Database.getInstance()
 }
 
 let store
 
-if (process.env.NODE_ENV !== 'test') {
+if (!CONFIG.isTest) {
   store = new MongoDBStore({
     uri: CONFIG.mongodb_host,
     collection: 'sessions',

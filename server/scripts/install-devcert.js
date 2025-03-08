@@ -1,8 +1,8 @@
 const devcert = require('devcert');
-const { CONFIG } = require('../configs');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { CONFIG } = require('../configs');
 const execSync = require('child_process').execSync;
 
 const defaultDomains = CONFIG.domain || 'vcap.me';

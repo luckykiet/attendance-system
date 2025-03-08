@@ -41,6 +41,10 @@ const LoginRoutes = {
       path: '/',
       children: [
         {
+          path: 'reset-password',
+          element: <AuthResetPassword />,
+        },
+        {
           path: 'reset-password/:token',
           element: <AuthResetPassword />,
         },

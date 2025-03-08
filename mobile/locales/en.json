@@ -541,6 +541,7 @@
   "msg_from": "From",
   "msg_have_forgotten_password": "Don't remember password",
   "msg_ico_registered": "IČO is registered",
+  "msg_if_account_exists": "You will receive an email if the account exists",
   "msg_is_deactive": "Deactive",
   "msg_make_sure_image_not_blur_and_centered": "make sure the photo is centered and not blurry",
   "msg_must_add_email": "you must add email",

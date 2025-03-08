@@ -1,29 +1,35 @@
-require('./loggers')
 const axios = require("axios")
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
 const HttpError = require("../constants/http-error")
 const winston = require('winston')
+const { createLoggerConfig } = require('./loggers')
 
 const utils = {
     fetchAresWithTin: async (tin) => {
+        const aresLoggers = winston.loggers.get('ares')
         try {
-            console.log(`Fetching ARES: ${tin}`)
+            aresLoggers.info(`Fetching ARES`, { tin })
             const response = await axios.get(
                 `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${tin}`,
                 { timeout: 5000 }
             )
             const data = response.data
+
             if (!data) {
-                return { success: false, msg: `srv_ares_failed` }
+                throw new Error(`srv_ares_failed`)
             }
+
             if (!_.isEmpty(data.kod)) {
                 return { success: false, msg: data.subKod ? data.subKod : data.kod }
             }
+
             const cpFull = !_.isEmpty(data.sidlo?.cisloOrientacni)
                 ? `${data.sidlo?.cisloDomovni}/${data.sidlo.cisloOrientacni}`
                 : data.sidlo.cisloDomovni
+
+            aresLoggers.info(`ARES data fetched`, { data })
 
             return {
                 success: true,
@@ -42,7 +48,8 @@ const utils = {
                 },
             }
         } catch (error) {
-            return { success: false, msg: error.response?.data || `srv_ares_failed` }
+            aresLoggers.error(`Error fetching ARES data: ${error.message}`)
+            return { success: false, msg: error instanceof Error ? error.message : error.response?.data || `srv_ares_failed` }
         }
     },
     regex: {
@@ -69,11 +76,18 @@ const utils = {
     getGoogleMapsApiKey: (domain) => {
         return CONFIG.googleMapsApiKeys[domain] || '';
     },
-    loggers: {
-        auth: winston.loggers.get('auth'),
-        signup: winston.loggers.get('signup'),
-        passwordreset: winston.loggers.get('passwordreset'),
-        http: winston.loggers.get('http'),
+    _loggers: null,
+    get loggers() {
+        if (!this._loggers) {
+            const files = ['http', 'auth', 'signup', 'passwordreset', 'ares'];
+            this._loggers = {};
+
+            files.forEach(file => {
+                createLoggerConfig({ name: file });
+                this._loggers[file] = winston.loggers.get(file);
+            });
+        }
+        return this._loggers;
     },
 }
 module.exports = utils

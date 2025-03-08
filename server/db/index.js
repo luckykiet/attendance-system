@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { CONFIG } = require("../configs");
-
 class Database {
   static _database
 

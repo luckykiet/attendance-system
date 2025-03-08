@@ -541,6 +541,7 @@
   "msg_from": "Từ",
   "msg_have_forgotten_password": "Bạn đã quên mật khẩu",
   "msg_ico_registered": "IČO đã được đăng ký",
+  "msg_if_account_exists": "Nếu tài khoản tồn tại, bạn sẽ nhận được email",
   "msg_is_deactive": "Không kích hoạt",
   "msg_make_sure_image_not_blur_and_centered": "hãy chắc chắn là ảnh nằm ngay giữa và không mờ",
   "msg_must_add_email": "bạn phải nhập email",

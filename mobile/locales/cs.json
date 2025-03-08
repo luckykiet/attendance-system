@@ -541,6 +541,7 @@
   "msg_from": "Od",
   "msg_have_forgotten_password": "Zapoměl(a) jste heslo",
   "msg_ico_registered": "IČO je již registrováno",
+  "msg_if_account_exists": "Pokud účet existuje, obdržíte e-mail",
   "msg_is_deactive": "Neaktivní",
   "msg_make_sure_image_not_blur_and_centered": "ujistěte se, že fotka je vycentrovaná a není rozmazaná ",
   "msg_must_add_email": "musíte zadat email",

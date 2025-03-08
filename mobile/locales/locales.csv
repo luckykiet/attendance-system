@@ -542,6 +542,7 @@ msg_finished	Finished	Đã hoàn thành	Dokončeno
 msg_from	From	Từ	Od
 msg_have_forgotten_password	Don't remember password	Bạn đã quên mật khẩu	Zapoměl(a) jste heslo
 msg_ico_registered	IČO is registered	IČO đã được đăng ký	IČO je již registrováno
+msg_if_account_exists	You will receive an email if the account exists	Nếu tài khoản tồn tại, bạn sẽ nhận được email	Pokud účet existuje, obdržíte e-mail
 msg_is_deactive	Deactive	Không kích hoạt	Neaktivní
 msg_make_sure_image_not_blur_and_centered	make sure the photo is centered and not blurry	hãy chắc chắn là ảnh nằm ngay giữa và không mờ	ujistěte se, že fotka je vycentrovaná a není rozmazaná 
 msg_must_add_email	you must add email	bạn phải nhập email	musíte zadat email

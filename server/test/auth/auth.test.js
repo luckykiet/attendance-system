@@ -5,8 +5,8 @@ const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const db = require('../db');
+const { CONFIG } = require('../../configs');
 const { ObjectId } = mongoose.Types;
-const config = require('../../configs');
 
 const routePrefix = '/auth';
 const request = supertest(app);
@@ -296,10 +296,10 @@ describe(`POST ${routePrefix}/signup`, () => {
 
 describe(`POST ${routePrefix}/forgot-password`, () => {
     test('should send reset password email successfully', async () => {
-        expect(config.CONFIG.mail_transport.auth.user).toBeDefined();
-        expect(config.CONFIG.mail_transport.auth.clientId).toBeDefined();
-        expect(config.CONFIG.mail_transport.auth.clientSecret).toBeDefined();
-        expect(config.CONFIG.mail_transport.auth.refreshToken).toBeDefined();
+        expect(CONFIG.mail_transport.auth.user).toBeDefined();
+        expect(CONFIG.mail_transport.auth.clientId).toBeDefined();
+        expect(CONFIG.mail_transport.auth.clientSecret).toBeDefined();
+        expect(CONFIG.mail_transport.auth.refreshToken).toBeDefined();
 
         const user = new User({ username: 'forgotuser', email: 'forgot@example.com', password: 'password123', retailId: new ObjectId() });
         await user.save();

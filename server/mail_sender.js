@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer')
 const DELAY_TIME = 5000
 const { minify } = require('html-minifier-terser')
-const { CONFIG } = require('./configs')
 const { google } = require('googleapis')
+const { CONFIG } = require('./configs')
+
 const OAuth2 = google.auth.OAuth2
 
 const template = (title, body) => {
@@ -181,7 +182,6 @@ const createTransporter = async () => {
     console.log(err)
   }
 }
-
 
 const sendMailResetPassword = async (to, username, link) => {
   const title = `Password reset for user: ${username}`

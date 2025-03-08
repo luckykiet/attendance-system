@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { Controller, useForm, FormProvider } from 'react-hook-form'
 import { Fragment, useEffect, useState } from 'react'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
@@ -30,16 +30,18 @@ const passwordSchema = z
   .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, 'srv_password_requirements')
 
 const renewPasswordSchema = z.object({
-    password: passwordSchema,
-    confirmPassword: passwordSchema,
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: 'srv_passwords_not_match',
-    path: ['confirmPassword'],
-  })
+  password: passwordSchema,
+  confirmPassword: passwordSchema,
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'srv_passwords_not_match',
+  path: ['confirmPassword'],
+})
 
 export default function RenewPasswordPage() {
-  const { token } = useParams()
+  const { token: urlToken } = useParams()
+  const navigate = useNavigate()
   const config = useConfigStore()
+  const [token, setToken] = useState(urlToken)
   const [postMsg, setPostMsg] = useState({})
   const [passwordChanged, setPasswordChanged] = useState(false)
   const { t } = useTranslation()
@@ -65,12 +67,6 @@ export default function RenewPasswordPage() {
     retry: false,
   })
 
-  const title = `${t('misc_renew_password')} | ${config.appName || defaultAppName}`
-
-  useEffect(() => {
-    document.title = title
-  }, [title])
-
   const resetPasswordMutation = useMutation({
     mutationFn: ({ password, confirmPassword, token }) =>
       resetPassword({ password, confirmPassword, token }),
@@ -94,6 +90,19 @@ export default function RenewPasswordPage() {
       resetPasswordMutation.mutateAsync({ ...data, token })
     }
   }
+
+  const title = `${t('misc_renew_password')} | ${config.appName || defaultAppName}`
+
+  useEffect(() => {
+    document.title = title
+  }, [title])
+
+  useEffect(() => {
+    if (urlToken) {
+      setToken(urlToken)
+      navigate('/reset-password', { replace: true })
+    }
+  }, [urlToken, navigate])
 
   return (
     <Container maxWidth="lg" sx={{ mb: 4, pt: 6 }}>

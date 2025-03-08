@@ -1,8 +1,9 @@
 const fs = require('fs');
 const devcert = require('devcert');
-const { CONFIG } = require('../configs');
 const os = require('os');
-function checkPrivileges() {
+const { CONFIG } = require('../configs');
+
+const checkPrivileges = () => {
     if (os.platform() === 'win32') {
         try {
             fs.accessSync('C:\\Windows\\System32', fs.constants.W_OK);
