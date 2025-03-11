@@ -3,18 +3,21 @@ const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
 const HttpError = require("../constants/http-error")
+const { TIME_FORMAT } = require('../constants')
 const winston = require('winston')
 const path = require('path')
 const fs = require('fs')
 const { createLoggerConfig } = require('./loggers')
+const dayjs = require("dayjs")
+dayjs.extend(require('dayjs/plugin/customParseFormat'))
 
-const getTranslation = async (lang) => {
+const getTranslations = async (lang) => {
     try {
         const filePath = path.join(__dirname, '..', 'locales', `${lang}.json`);
 
         if (!fs.existsSync(filePath)) {
             console.warn(`Translation file for ${lang} not found, falling back to en.json`);
-            return getTranslation('en');
+            return getTranslations('en');
         }
 
         const fileContent = await fs.promises.readFile(filePath, 'utf8');
@@ -108,6 +111,12 @@ const utils = {
         }
         return this._loggers;
     },
-    getTranslations: getTranslation,
+    getTranslations,
+    isOverNight: (start, end, timeFormat = TIME_FORMAT) => {
+        const startTime = dayjs(start, timeFormat);
+        const endTime = dayjs(end, timeFormat);
+
+        return endTime.isBefore(startTime);
+    }
 }
 module.exports = utils

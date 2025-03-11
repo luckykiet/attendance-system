@@ -31,6 +31,7 @@ misc_add_url	add URL	thêm URL	přidat URL
 misc_add_workplace	add workplace	thêm nơi làm việc mới	přidat nové pracoviště
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
+misc_address_instruction_1	You will need to get the coordinates of the workplace in 2 ways	Bạn cần lấy toạ độ của nơi làm việc theo 2 cách	Musíte získat souřadnice pracoviště 2 způsoby
 misc_aggregation 	Aggregation	Tổng hợp	Agregace
 misc_align_camera_to_qr_code	align camera to QR code	di chuyển camera đến mã QR	zaměřte kameru na QR kód
 misc_all	all	tất cả	všechny
@@ -75,6 +76,8 @@ misc_billing_time	money transfer time	thời gian chuyển khoản	doba převodu
 misc_bills	bills	hoá đơn	faktury
 misc_birth_number	birth number	số sinh	rodné číslo
 misc_bluetooth_permission_required	Bluetooth permission required to scan for local attendance devices	cần quyền sử dụng Bluetooth để quét thiết bị điểm danh	musíte povolit použití Bluetooth pro skenování lokální zařízení docházky
+misc_break	break time	thời gian nghỉ	přestávka
+misc_breakfast	Breakfast	Bữa sáng	Snídaně
 misc_bubble_tea	bubble tea	trà sữa	mléčný čaj
 misc_by_partners	by partners	theo đối tác	podle partnera
 misc_by_provider	by provider	theo nhà phát hành	podle zprostředkovatele
@@ -150,6 +153,7 @@ misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
 misc_device_id	device ID	ID thiết bị	ID zařízení
 misc_devices	Devices	Máy	Zařízení
+misc_dinner	Dinner	Bữa tối	Večeře
 misc_disable	disable	tắt	zakázat
 misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
@@ -158,6 +162,7 @@ misc_download	download	tải về	stáhnout
 misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
 misc_draft_saved	draft saved	đã lưu nháp	koncept uložen
 misc_duplicate	duplicate	trùng lặp	duplikát
+misc_duration	Duration	Thời lượng	Doba trvání
 misc_early	early	sớm	dříve
 misc_edit	Edit	Chỉnh sửa	Editace
 misc_edit_form	Edit form	Sửa đơn	Úprava formuláře
@@ -188,6 +193,7 @@ misc_faqs	frequently asked questions	các câu hỏi thường gặp	často klad
 misc_fetch_ares	Fetch from ARES	Tải từ ARES	Načíst z ARES
 misc_fetch_coordinates	fetch coordinates	lấy toạ độ	získat souřadnice
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
+misc_filling_in_the_address_fields	by filling in the address fields	bằng cách điền vào các trường địa chỉ	vyplněním polí adresy
 misc_filter	Filter	Lọc	Filtr
 misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
@@ -201,6 +207,7 @@ misc_forms	Forms	Đơn	Formuláře
 misc_forms_exist	forms exist	đơn tồn tại	formuláře existují
 misc_front_side	front side	phía trước	přední strana
 misc_full_name	Surname and first name	Họ và tên	Jméno a příjmení
+misc_general	General	Chung	Obecné
 misc_generate_documents	generate documents	tạo tài liệu	generovat dokumenty
 misc_generate_keys	Generate keys	Tạo khoá	Generování klíčů
 misc_generate_pdf	Generate PDF	Tạo PDF	Generovat PDF
@@ -225,6 +232,7 @@ misc_imported	imported	đã import	importováno
 misc_imported_list	imported list	danh sách nhập	importovaný seznam
 misc_installation_fee	installation fees	phí lắp đặt	poplatky za instalace
 misc_installed	installed	đã lắp	instalováno
+misc_instructions	Instructions	Hướng dẫn	Instrukce
 misc_is_available	is available	có sẵn 	dostupný
 misc_issued	issued	cấp bởi	vystavil
 misc_issued_bills	issued bills	hoá đơn đã cấp	vystavené faktury
@@ -246,8 +254,10 @@ misc_location_not_found	location not found	không tìm thấy vị trí	poloha n
 misc_location_permission_required	location permission required	cần quyền sử dụng vị trí	požadováno povolení k použití polohy
 misc_login	Login	Đăng nhập	Přihlášení
 misc_longitude	longitude	kinh độ 	zeměpisná délka
+misc_lunch	Lunch	Bữa trưa	Oběd
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
+misc_maturity_period	Maturity period	Thời hạn đáo hạn	Doba splatnosti
 misc_max_local_devices	max local devices	thiết bị cục bộ tối đa 	Maximální lokální zařízení
 misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
@@ -332,6 +342,7 @@ misc_opening_soon	opening soon	sắp mở cửa	brzy otevřeno
 misc_operations	Operations	Tác vụ	Operace
 misc_others	others	khác	jiné
 misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
+misc_over_night	Overnight	Qua đêm	Přes noc
 misc_partner	partner	đối tác	partner
 misc_partner_of	partner of	đối tác của	partnerem od
 misc_partners	partners	đối tác	partneři
@@ -388,6 +399,7 @@ misc_recommended	recommended	khuyến khích	doporučeno
 misc_reference	reference	kết nối	odkaz
 misc_references	references	kết nối	odkazy
 misc_refresh_location	refresh location	làm mới vị trí	obnovit polohu
+misc_register_instruction_1	In this section you can create or edit a workplace.	Trong phần này, bạn có thể tạo hoặc chỉnh sửa nơi làm việc.	V této sekci můžete vytvořit nebo upravit pracoviště.
 misc_registration	Registration	Đăng ký	Registrace
 misc_registration_token	Registration token	mã đăng ký	registrační token
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
@@ -511,6 +523,7 @@ misc_upload_photos	upload photos	tải lên ảnh	nahrát fotky
 misc_upload_signed_documents	Uploading signed documents	Tải lên tài liệu đã ký	Nahrávání podepsaných dokumentů
 misc_upload_unsigned_form	Upload unsigned form	Tải lên mẫu đơn chưa ký	Nahrát nepodepsaný dokument
 misc_url_already_added	This URL has already been added	URL này đã được thêm vào	Tento URL již byl přidán
+misc_use_map_picker	by using the map picker	bằng cách chọn trên bản đồ	běžným výběrem z mapy
 misc_user	User	Nhân viên	Uživatel
 misc_user_has_zero_provision	user has zero provision	người dùng có hoa hồng bằng 0	uživatel má nulovou provizi
 misc_user_support	user support	hỗ trợ khách hàng	uživatelská podpora
@@ -524,6 +537,9 @@ misc_working_employees	working employees	nhân viện làm việc	pracující za
 misc_working_hour	working hour	thời gian làm việc	pracovní doba
 misc_working_hours	working hours	thời gian làm việc	pracovní doba
 misc_workplace	workplace	nơi làm việc	pracoviště
+misc_workplace_breaks	Workplace breaks	Thời gian nghỉ của nơi làm việc	Přestávky pracoviště
+misc_workplace_custom_breaks	Custom breaks	Thời gian nghỉ tùy chỉnh	Vlastní přestávky
+misc_workplace_working_hours	Working hours	Giờ làm việc	Pracovní doba
 misc_workplaces	workplaces	nơi làm việc	pracoviště
 misc_year	year	năm	rok
 misc_yes	yes	có	ano
@@ -532,6 +548,7 @@ misc_you_will_not_see_workplace_until_add_again	you will not see the workplaces 
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno
+msg_break_info	set breaks for an individual day, it will be used for employees and will not count towards working hours	thiết lập giờ nghỉ giải lao cho nhân viên vào từng ngày, giờ nghỉ giải lao sẽ không tính vào giờ làm việc	nastavit přestávky pro jednotlivé dny, budou použity pro zaměstnance a nebudou započítány do pracovní doby.
 msg_cancelled	Cancelled	Đã huỷ	Zrušeno
 msg_check_merchant_explanation	You import a list of TINs with provider and then select the providers you expect to be checked. The system will compare the entries with INSTALLED status and display the merchants that were expected to be in selected providers but are not listed. 	Bạn nhập danh sách IČ với các nhà cung cấp rồi chọn nhà cung cấp mà bạn muốn được kiểm tra. Hệ thống sẽ so sánh các mục nhập với tình trạng ĐÃ LẮP ĐẶT và hiển thị những người bán dự kiến ​​sẽ có mặt trong các nhà cung cấp được chọn nhưng không được liệt kê.	Naimportujete seznam IČ s poskytovatelem a poté vyberete poskytovatele, u kterých očekáváte kontrolu. Systém porovná záznamy se statusy INSTALOVÁNO a zobrazí obchodníky, kteří měli být u vybraných poskytovatelů, ale nejsou v seznamu uvedeni.
 msg_confirmed	Confirmed	Đã xác nhận	Potvrzeno
@@ -545,6 +562,7 @@ msg_ico_registered	IČO is registered	IČO đã được đăng ký	IČO je již
 msg_if_account_exists	You will receive an email if the account exists	Nếu tài khoản tồn tại, bạn sẽ nhận được email	Pokud účet existuje, obdržíte e-mail
 msg_is_deactive	Deactive	Không kích hoạt	Neaktivní
 msg_make_sure_image_not_blur_and_centered	make sure the photo is centered and not blurry	hãy chắc chắn là ảnh nằm ngay giữa và không mờ	ujistěte se, že fotka je vycentrovaná a není rozmazaná 
+msg_maturity_period_info	specifies the time range when the employee can use the break time	xác định khoảng thời gian khi nhân viên có thể sử dụng thời gian nghỉ trưa	určuje časový rozsah, kdy zaměstnanec může využít přestávku
 msg_must_add_email	you must add email	bạn phải nhập email	musíte zadat email
 msg_must_add_unsigned_form	You must upload unsigned form	Bạn chưa tải lên mẫu đơn chưa ký	Musíte nahrát nepodepsaný formulář
 msg_not_decided	Undecided	Chưa quyết định	Nerozhodnuto
@@ -573,7 +591,6 @@ msg_vin_required_for_taxpayer	VIN is required for taxpayer	Số thuế VIN là b
 msg_welcome	Welcome to	Chào mừng bạn đến	Vítáme Vás v
 msg_you_can_not_revert	Once changed, you can not revert	Một khi đã đổi, bạn không thể chuyển lại	Jakmile přepnete, nemůžete znovu přepnout
 srv_address_required	Address is required	Địa chỉ là bắt buộc	Pole adresa je povinné
-srv_address_required    Address is required	Địa chỉ là bắt buộc	Pole adresa je povinné	
 srv_address_updated	Address updated	Địa chỉ đã được cập nhật	Adresa aktualizována
 srv_already_checked_out	already checked out	bạn đã check out	odchod byl již zaznamenán
 srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
@@ -595,6 +612,7 @@ srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo m
 srv_biometric_permissions_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
 srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
 srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
+srv_break_out_of_working_hours	break out of working hours	ngoài giờ làm việc	přestávka mimo pracovní dobu
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
 srv_canceled_by_user	cancelled by user	huỷ bởi người dùng	zrušeno uživatelem
@@ -677,6 +695,7 @@ srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
 srv_invalid_bank_account	Invalid bank account	Tài khoản ngân hàng không hợp lệ	Neplatný bankovní účet
 srv_invalid_bank_id	invalid bank ID	ID ngân hàng không hợp lệ	neplatný ID banky
 srv_invalid_bill	Invalid bill	Hóa đơn không hợp lệ	Neplatná faktura
+srv_invalid_break_range	break must be between working hours	giờ nghỉ phải trong giờ làm việc	přestávka musí být mezi pracovní dobou
 srv_invalid_business_name	invalid business name	tên công ty không hợp lệ	neplatné jméno společnosti
 srv_invalid_business_type	invalid business type	thể loại kinh doanh không hợp lệ	neplatný typ obchodní činnosti
 srv_invalid_city	Invalid city	Thành phố không hợp lệ	Neplatné město
@@ -685,6 +704,7 @@ srv_invalid_country	Invalid country	Quốc gia không hợp lệ	Neplatná země
 srv_invalid_credentials	Invalid credentials	Sai thông tin đăng nhập	Nesprávné přihlašovací údaje
 srv_invalid_date	invalid date	ngày không hợp lệ	nesprávné datum
 srv_invalid_device_count	Invalid device count	Số lượng thiết bị không hợp lệ	Neplatný počet zařízení
+srv_invalid_duration	invalid duration	thời lượng không hợp lệ	neplatná doba trvání
 srv_invalid_email	Invalid email	Email không hợp lệ	Neplatný email
 srv_invalid_expiration	Invalid expiration	Ngày hết hạn không hợp lệ	Neplatná expirace
 srv_invalid_exposure	Invalid exposure	Ngày hiệu lực không hợp lệ	Neplatný datum vystavení
@@ -698,6 +718,7 @@ srv_invalid_longitude	Invalid longitude	Kinh độ	Neplatná zeměpisná délka
 srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník
 srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
+srv_invalid_overnight	Invalid overnight	Quá đêm không hợp lệ	Neplatná přenocování
 srv_invalid_owner	Invalid owner	Chủ sở hữu không hợp lệ	Neplatný vlastník
 srv_invalid_phone	Invalid telephone	Số điện thoại không hợp lệ	Neplatný telefon
 srv_invalid_plans	Invalid plans	Kế hoạch không hợp lệ	Neplatné plány
@@ -724,6 +745,7 @@ srv_invalid_zip	Invalid ZIP code	Mã bưu điện không hợp lệ	Neplatný PS
 srv_is_confirmed	Is confirmed	Đã xác nhận	Je potvrzeno
 srv_items_empty	items are empty	mục trống	položky jsou prázdné
 srv_leads_imported	Leads imported	Khách hàng tiềm năng đã được nhập	Zákazníci importováni
+srv_location_not_found	Location not found	Không tìm thấy vị trí	lokace nenalezena
 srv_location_required_to_make_attendance	location is required to make attendance	vị trí là bắt buộc để điểm danh	lokace je povinná pro zaznamenání docházky
 srv_log_in_failed	Log in failed	Đăng nhập không thành công	Přihlášení se nezdařilo
 srv_login_expired	login expired	đăng nhập hết hạn	přihlášení expirováno

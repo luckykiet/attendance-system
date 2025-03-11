@@ -1,20 +1,17 @@
 import {
   AppBar,
   Box,
-  Button,
   Stack,
   SwipeableDrawer,
   Toolbar,
   Tooltip,
-  useMediaQuery,
-  useTheme,
+  // useMediaQuery,
+  // useTheme,
 } from '@mui/material'
-import { checkPrivileges } from '@/utils'
+import { checkPrivileges, clearAllQueries } from '@/utils'
 import { useDrawerOpen, useSetDrawerOpen } from '@/stores/root'
 import PropTypes from 'prop-types';
 import AddButtonDropdown from '@/components/admin/AddButtonDropdown'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -26,7 +23,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { Home, Logout, People, Person } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useLocation } from 'react-router-dom'
+// import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import useTranslation from '@/hooks/useTranslation'
 import { useAuthStore } from '@/stores/auth';
@@ -34,6 +31,7 @@ import { logout } from '@/api/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { useConfigStore } from '@/stores/config';
+// import BackButton from '@/components/BackButton';
 
 const CustomListItem = ({ href, text, icon, reset }) => {
   const navigate = useNavigate()
@@ -66,15 +64,18 @@ CustomListItem.propTypes = {
   reset: PropTypes.func,
 };
 
-export default function LeftDrawerAdmin({ withBackButton = false }) {
+export default function LeftDrawerAdmin(
+  // { withBackButton = false }
+
+) {
   const { user } = useAuthStore()
   const config = useConfigStore()
   const [drawerOpen, setDrawerOpen] = [useDrawerOpen(), useSetDrawerOpen()]
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const theme = useTheme()
-  const media = useMediaQuery(theme.breakpoints.down('sm'))
+  // const theme = useTheme()
+  // const media = useMediaQuery(theme.breakpoints.down('sm'))
 
   const handleDrawerClose = () => {
     setDrawerOpen(false)
@@ -83,7 +84,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
   const handleLogout = async () => {
     try {
       await logout()
-      queryClient.clear();
+      clearAllQueries(queryClient)
       navigate(`/login`, {
         state: {
           from: '',
@@ -96,7 +97,7 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
     }
   }
 
-  const location = useLocation()
+  // const location = useLocation()
 
   const drawer = (
     <>
@@ -151,30 +152,10 @@ export default function LeftDrawerAdmin({ withBackButton = false }) {
             <MenuIcon />
           </IconButton>
           <AddButtonDropdown />
-          {withBackButton &&
+          {/* {withBackButton &&
             location.key !== 'default' &&
-            (media ? (
-              <IconButton
-                size="large"
-                edge="start"
-                color="warning"
-                sx={{ mr: 2 }}
-                onClick={() => navigate(-1)}
-              >
-                <ArrowBackIcon />
-              </IconButton>
-            ) : (
-              <Button
-                size="small"
-                color="warning"
-                startIcon={<ArrowBackIosIcon />}
-                sx={{ mr: 2 }}
-                onClick={() => navigate(-1)}
-                variant="contained"
-              >
-                {t('misc_back')}
-              </Button>
-            ))}
+            <BackButton sx={{ mr: 2 }} isSmallButton={media} />
+          } */}
         </Box>
         <Stack spacing={1} direction={'row'}>
           <Tooltip title={t('misc_home_page')}>

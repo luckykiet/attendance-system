@@ -15,6 +15,7 @@ import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
 import { useConfigStore } from '@/stores/config';
+import { clearAllQueries } from '@/utils';
 
 const loginSchema = z.object({
     username: z
@@ -52,7 +53,7 @@ const LoginForm = () => {
         },
         onSuccess: (data) => {
             loginStore(data);
-            queryClient.clear();
+            clearAllQueries(queryClient);
             navigate('/');
         }
     });
@@ -97,7 +98,8 @@ const LoginForm = () => {
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
                                     required
-                                    autoComplete
+                                    autoComplete='username'
+                                    autoFocus
                                     slotProps={{
                                         input: {
                                             startAdornment: (
@@ -127,7 +129,7 @@ const LoginForm = () => {
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
                                     type={showPassword ? 'text' : 'password'}
                                     required
-                                    autoComplete={"true"}
+                                    autoComplete='password'
                                     slotProps={{
                                         input: {
                                             startAdornment: (

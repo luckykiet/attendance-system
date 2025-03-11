@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, getDefaultAttendance, getDefaultWorkingAt, TIME_FORMAT, timeStartEndValidation } from '@/utils';
+import { DAYS_OF_WEEK, getDaysOfWeek, getDefaultAttendance, getDefaultWorkingAt, TIME_FORMAT, timeStartEndValidation } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -52,13 +52,10 @@ const workingHourSchema = z.object({
 const workingAtSchema = z.object({
     position: z.string().optional(),
     workingHours: z.object({
-        mon: workingHourSchema,
-        tue: workingHourSchema,
-        wed: workingHourSchema,
-        thu: workingHourSchema,
-        fri: workingHourSchema,
-        sat: workingHourSchema,
-        sun: workingHourSchema,
+        ...getDaysOfWeek(true).reduce((acc, day) => {
+            acc[day] = workingHourSchema;
+            return acc;
+        }, {})
     }),
 });
 

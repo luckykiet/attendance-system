@@ -4,16 +4,21 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import isBetween from 'dayjs/plugin/isBetween'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+
 import { TIME_FORMAT } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
+dayjs.extend(isSameOrAfter)
+dayjs.extend(isSameOrBefore)
 
-export const isExpired = (startTime, timeRangeInMinut) => {
+export const isExpired = (startTime, timeRangeInMinutes) => {
   const now = dayjs()
   const duration = dayjs.duration(now.diff(dayjs(startTime)))
-  const minuts = duration.asMinutes()
-  return minuts > timeRangeInMinut
+  const minutes = duration.asMinutes()
+  return minutes > timeRangeInMinutes
 }
 
 export const renderIcon = (icon) => {
@@ -255,10 +260,35 @@ export const calculateKilometersFromMeters = (pureMeters) => {
   return { kilometers, meters };
 };
 
+export const calculateHoursFromMinutes = (diffInMinutes) => {
+  const absMin = Math.abs(diffInMinutes);
+  const hours = Math.floor(absMin / 60);
+  const minutes = absMin % 60;
+  return { hours, minutes };
+};
+
+export const calculateHoursAndMinutesFromHours = (hours) => {
+  const absHours = Math.abs(hours);
+  const wholeHours = Math.floor(absHours);
+  const minutes = Math.round((absHours - wholeHours) * 60);
+  return { hours: wholeHours, minutes };
+};
+
+export const minutesToHour = (minutes) => minutes / 60;
+export const hourToMinutes = (hours) => hours * 60;
+
 export const createZustandSetters = (set, state) => {
   return Object.keys(state).reduce((acc, key) => {
     acc[`set${key.charAt(0).toUpperCase() + key.slice(1)}`] = (value) =>
       set((s) => ({ ...s, [key]: value }))
     return acc
   }, {})
+}
+
+export const clearAllQueries = (queryClient) => {
+  queryClient.getQueryCache().getAll().forEach((query) => {
+    if (query.queryKey[0] !== 'config') {
+      queryClient.removeQueries(query.queryKey)
+    }
+  })
 }

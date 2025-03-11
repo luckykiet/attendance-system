@@ -97,6 +97,8 @@ export default function ForgottenPasswordPage() {
                       label="Email"
                       type="email"
                       placeholder="abc@def.com"
+                      autoComplete='email'
+                      autoFocus
                       required
                       error={fieldState.invalid}
                       helperText={fieldState.invalid && t(fieldState.error.message)}

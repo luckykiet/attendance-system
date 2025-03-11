@@ -58,9 +58,6 @@ export default function AddButtonDropdown() {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
         sx={{ mt: 0.5, minWidth: 320, maxWidth: '100%', height: 'auto' }}
       >
         <MenuList>

@@ -1,4 +1,10 @@
-import { ROLES } from "@/configs";
+import { ROLES, SPECIFIC_BREAKS } from "@/configs";
+
+export const getDaysOfWeek = (startWithMonday = false) => {
+  return startWithMonday ? ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] : ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+}
+
+export const DAYS_OF_WEEK = getDaysOfWeek();
 
 export const getDefaultAddress = () => ({
   street: '',
@@ -15,8 +21,22 @@ export const getDefaultLocation = () => ({
 export const getDefaultWorkingHour = () => ({
   start: '08:00',
   end: '17:00',
+  isOverNight: false,
   isAvailable: true,
 });
+
+const generateDefaultSpecificBreaks = () => {
+  return SPECIFIC_BREAKS.map((type) => {
+    return {
+      type: type,
+      start: '11:00',
+      end: '13:00',
+      duration: 60,
+      isOverNight: false,
+      isAvailable: false,
+    }
+  })
+};
 
 export const getDefaultRegister = () => ({
   retailId: '',
@@ -24,13 +44,25 @@ export const getDefaultRegister = () => ({
   address: getDefaultAddress(),
   location: getDefaultLocation(),
   workingHours: {
-    mon: getDefaultWorkingHour(),
-    tue: getDefaultWorkingHour(),
-    wed: getDefaultWorkingHour(),
-    thu: getDefaultWorkingHour(),
-    fri: getDefaultWorkingHour(),
-    sat: getDefaultWorkingHour(),
-    sun: getDefaultWorkingHour(),
+    ...getDaysOfWeek(true).reduce((acc, day) => {
+      acc[day] = getDefaultWorkingHour();
+      return acc;
+    }
+      , {})
+  },
+  specificBreaks: {
+    ...getDaysOfWeek(true).reduce((acc, day) => {
+      acc[day] = generateDefaultSpecificBreaks();
+      return acc;
+    }
+      , {})
+  },
+  breaks: {
+    ...getDaysOfWeek(true).reduce((acc, day) => {
+      acc[day] = [];
+      return acc;
+    }
+      , {})
   },
   maxLocalDevices: 0,
   isAvailable: true,
@@ -62,13 +94,11 @@ export const getDefaultWorkingAt = () => ({
   registerId: '',
   position: '',
   workingHours: {
-    mon: getDefaultWorkingHour(),
-    tue: getDefaultWorkingHour(),
-    wed: getDefaultWorkingHour(),
-    thu: getDefaultWorkingHour(),
-    fri: getDefaultWorkingHour(),
-    sat: getDefaultWorkingHour(),
-    sun: getDefaultWorkingHour(),
+    ...getDaysOfWeek(true).reduce((acc, day) => {
+      acc[day] = getDefaultWorkingHour();
+      return acc;
+    }
+      , {})
   },
 });
 
@@ -86,34 +116,32 @@ export const getDefaultAttendance = () => ({
 
 export const BOOLEAN_SELECT_OPTIONS = ['all', 'true', 'false'];
 
-export const DAYS_OF_WEEK = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
 export const daysOfWeeksTranslations = {
-  sun: {
+  [DAYS_OF_WEEK[0]]: {
     shortcut: 'day_sunday_shortcut',
     name: 'day_sunday_name',
   },
-  mon: {
+  [DAYS_OF_WEEK[1]]: {
     shortcut: 'day_monday_shortcut',
     name: 'day_monday_name',
   },
-  tue: {
+  [DAYS_OF_WEEK[2]]: {
     shortcut: 'day_tuesday_shortcut',
     name: 'day_tuesday_name',
   },
-  wed: {
+  [DAYS_OF_WEEK[3]]: {
     shortcut: 'day_wednesday_shortcut',
     name: 'day_wednesday_name',
   },
-  thu: {
+  [DAYS_OF_WEEK[4]]: {
     shortcut: 'day_thursday_shortcut',
     name: 'day_thursday_name',
   },
-  fri: {
+  [DAYS_OF_WEEK[5]]: {
     shortcut: 'day_friday_shortcut',
     name: 'day_friday_name',
   },
-  sat: {
+  [DAYS_OF_WEEK[6]]: {
     shortcut: 'day_saturday_shortcut',
     name: 'day_saturday_name',
   },

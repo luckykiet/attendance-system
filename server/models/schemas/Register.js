@@ -2,23 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AddressSchema = require('./Address');
 const WorkingHourSchema = require('./WorkingHour');
-
-// start and end will have higher priority than duration
-const BreakSchema = new Schema(
-    {
-        start: { type: Date, default: null },
-        end: { type: Date, default: null },
-        name: { type: String, required: true },
-        duration: { type: Number, default: 0 } // In minutes
-    },
-    { _id: false }
-);
+const BreakSchema = require('./Break');
+const SpecificBreakSchema = require('./SpecificBreak');
+const { transformLocation, setUpdatedAt } = require('./utils');
 
 const RegisterSchema = new Schema(
     {
         retailId: { type: Schema.Types.ObjectId, required: true },
         name: { type: String, required: true, trim: true },
-        address: { type: AddressSchema, required: true },
+        address: { type: AddressSchema, required: true }, // Address    
 
         location: {
             type: { type: String, enum: ['Point'], required: true, default: 'Point' },
@@ -45,6 +37,16 @@ const RegisterSchema = new Schema(
             sun: { type: WorkingHourSchema, required: true },
         },
 
+        specificBreaks: {
+            mon: { type: [SpecificBreakSchema], required: true, default: [] },
+            tue: { type: [SpecificBreakSchema], required: true, default: [] },
+            wed: { type: [SpecificBreakSchema], required: true, default: [] },
+            thu: { type: [SpecificBreakSchema], required: true, default: [] },
+            fri: { type: [SpecificBreakSchema], required: true, default: [] },
+            sat: { type: [SpecificBreakSchema], required: true, default: [] },
+            sun: { type: [SpecificBreakSchema], required: true, default: [] },
+        },
+
         breaks: {
             mon: { type: [BreakSchema], required: true, default: [] },
             tue: { type: [BreakSchema], required: true, default: [] },
@@ -66,18 +68,7 @@ const RegisterSchema = new Schema(
     }
 );
 
-// Transform function to reshape `location` field
-function transformLocation(doc, ret) {
-    if (ret.location && ret.location.type === 'Point') {
-        ret.location = {
-            latitude: ret.location.coordinates[1],
-            longitude: ret.location.coordinates[0],
-            allowedRadius: ret.location.allowedRadius,
-        };
-    }
-    return ret;
-}
-
+RegisterSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 RegisterSchema.index({ location: '2dsphere' });
 
 module.exports = RegisterSchema;

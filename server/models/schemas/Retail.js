@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const AddressSchema = require('./Address')
-const dayjs = require('dayjs')
+const { setUpdatedAt } = require('./utils')
 
 const RetailSchema = new Schema(
     {
@@ -18,11 +18,6 @@ const RetailSchema = new Schema(
     }
 )
 
-RetailSchema.pre(
-    ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
-    function (next) {
-        this.updatedAt = dayjs().toDate()
-        next()
-    }
-)
+RetailSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt)
+
 module.exports = RetailSchema

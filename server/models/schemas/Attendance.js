@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const WorkingHourSchema = require('./WorkingHour');
+const { setUpdatedAt } = require('./utils');
 
 const checkSchema = new Schema(
   {
@@ -39,10 +40,12 @@ const AttendanceSchema = new Schema(
   }
 );
 
+AttendanceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 // Unique on the combination of dailyAttendanceId, employeeId, and shiftNumber
 AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, shiftNumber: 1 }, { unique: true });
 AttendanceSchema.index({ registerId: 1 });
 AttendanceSchema.index({ employeeId: 1 });
 AttendanceSchema.index({ checkInTime: 1 });
+
 
 module.exports = AttendanceSchema;

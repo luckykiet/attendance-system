@@ -19,7 +19,7 @@ import useTranslation from '@/hooks/useTranslation';
 dayjs.extend(customParseFormat);
 
 export default function WorkingHoursInputs() {
-    const { watch, control, handleSubmit } = useFormContext();
+    const { watch, control, handleSubmit, setValue } = useFormContext();
     const { t } = useTranslation();
 
     return (
@@ -66,13 +66,14 @@ export default function WorkingHoursInputs() {
                                             {...field}
                                             value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                             onChange={(date) => {
-                                                field.onChange(date.format(TIME_FORMAT));
+                                                const formattedDate = date.format(TIME_FORMAT);
+                                                const endTime = dayjs(watch(`workingHours[${key}].end`), TIME_FORMAT);
+                                                const isOverNight = date.isAfter(endTime);
+
+                                                setValue(`workingHours[${key}].isOverNight`, isOverNight);
+                                                field.onChange(formattedDate);
                                             }}
                                             label={t('msg_from')}
-                                            maxTime={dayjs(
-                                                watch(`workingHours[${key}].end`),
-                                                TIME_FORMAT
-                                            )}
                                             id={`picker-${key}-start`}
                                             format={TIME_FORMAT}
                                             disabled={!watch(`workingHours[${key}].isAvailable`)}
@@ -102,13 +103,14 @@ export default function WorkingHoursInputs() {
                                             {...field}
                                             value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                             onChange={(date) => {
-                                                field.onChange(date.format(TIME_FORMAT));
+                                                const formattedDate = date.format(TIME_FORMAT);
+                                                const startTime = dayjs(watch(`workingHours[${key}].start`), TIME_FORMAT);
+                                                const isOverNight = startTime.isAfter(date);
+
+                                                setValue(`workingHours[${key}].isOverNight`, isOverNight);
+                                                field.onChange(formattedDate);
                                             }}
                                             label={t('msg_to')}
-                                            minTime={dayjs(
-                                                watch(`workingHours[${key}].start`),
-                                                TIME_FORMAT
-                                            )}
                                             id={`picker-${key}-end`}
                                             format={TIME_FORMAT}
                                             disabled={!watch(`workingHours[${key}].isAvailable`)}
@@ -126,6 +128,46 @@ export default function WorkingHoursInputs() {
                                 </FormControl>
                             )}
                         />
+                    </Grid2>
+                    <Grid2 size={{ xs: 12 }}>
+                        <Grid2 container spacing={2}>
+                            <Grid2 size={{ xs: 6 }}>
+                                <Controller
+                                    name={`workingHours[${key}].isOverNight`}
+                                    control={control}
+                                    render={({ field }) =>
+                                        field.value ? (
+                                            <Typography variant="body1" color="warning">
+                                                {t('misc_over_night')}
+                                            </Typography>
+                                        ) : null
+                                    }
+                                />
+                            </Grid2>
+                            <Grid2 size={{ xs: 6 }}>
+                                <Typography variant="body1">
+                                    {t('misc_duration')}:{' '}
+                                    {(() => {
+                                        const startTime = dayjs(watch(`workingHours[${key}].start`), TIME_FORMAT);
+                                        const endTime = dayjs(watch(`workingHours[${key}].end`), TIME_FORMAT);
+                                        let duration;
+
+                                        if (startTime.isValid() && endTime.isValid()) {
+                                            if (startTime.isAfter(endTime)) {
+                                                duration = dayjs.duration(endTime.add(1, 'day').diff(startTime));
+                                            } else {
+                                                duration = dayjs.duration(endTime.diff(startTime));
+                                            }
+
+                                            const hours = Math.floor(duration.asHours());
+                                            const minutes = duration.minutes();
+                                            return `${hours}h ${minutes}m`;
+                                        }
+                                        return '-';
+                                    })()}
+                                </Typography>
+                            </Grid2>
+                        </Grid2>
                     </Grid2>
                 </Grid2>
             </Grid2>

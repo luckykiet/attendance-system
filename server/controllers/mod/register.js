@@ -63,36 +63,41 @@ const updateRegister = async (req, res, next) => {
                 throw new HttpError('srv_max_local_devices_exceeded', 400);
             }
         }
-        const updatedRegister = await Register.findOneAndUpdate(
-            { _id: foundRegister._id },
-            {
-                $set: {
-                    ...req.body,
-                    location: {
-                        type: 'Point',
-                        coordinates: [longitude, latitude],
-                        allowedRadius: allowedRadius || 100,
-                    },
-                },
-            },
-            { new: true, runValidators: true }
-        );
 
+        Object.assign(foundRegister, {
+            ...req.body,
+            location: {
+                type: 'Point',
+                coordinates: [longitude, latitude],
+                allowedRadius: allowedRadius || 100,
+            },
+        });
+
+        const updatedRegister = await foundRegister.save();
 
         if (!updatedRegister) {
             throw new HttpError('srv_register_not_found', 404);
         }
 
-        // update daily attendance working hours
-        const today = dayjs()
-        const todayAttendance = await DailyAttendance.findOne({ date: parseInt(today.format('YYYYMMDD')), registerId: updatedRegister._id, })
-        const todayIndex = today.day()
+        const today = dayjs();
+        const todayAttendance = await DailyAttendance.findOne({
+            date: parseInt(today.format('YYYYMMDD')),
+            registerId: updatedRegister._id,
+        });
+
+        const todayIndex = today.day();
         const todayKey = DAYS_OF_WEEK[todayIndex];
-        const workingHour = updatedRegister.workingHours[todayKey]
-        if (todayAttendance) {
-            await DailyAttendance.findOneAndUpdate({ _id: todayAttendance._id }, { $set: { workingHour } })
+        const workingHour = updatedRegister.workingHours?.[todayKey];
+
+        if (todayAttendance && workingHour) {
+            await DailyAttendance.findOneAndUpdate(
+                { _id: todayAttendance._id },
+                { $set: { workingHour } }
+            );
         }
+
         return res.status(200).json({ success: true, msg: updatedRegister });
+
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_register_update_failed', 400));
     }

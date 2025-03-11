@@ -1,6 +1,6 @@
 import { Button, FormHelperText, Grid2, InputAdornment, TextField, IconButton } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { CheckRounded, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { signup } from '@/api/auth';
@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { fetchAresWithTin } from '@/api/ares';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { getDefaultAddress, REGEX } from '@/utils';
+import { clearAllQueries, getDefaultAddress, REGEX } from '@/utils';
 import { useConfigStore } from '@/stores/config';
 
 const signupSchema = z.object({
@@ -111,7 +111,7 @@ const SignupForm = () => {
         },
         onSuccess: (data) => {
             loginStore(data);
-            queryClient.clear();
+            clearAllQueries(queryClient);
             navigate('/');
         }
     });
@@ -141,7 +141,7 @@ const SignupForm = () => {
                             name="username"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} variant="outlined" label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
+                                <TextField {...field} autoFocus autoComplete='username' variant="outlined" label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -150,7 +150,7 @@ const SignupForm = () => {
                             name="email"
                             control={control}
                             render={({ field, fieldState }) => (
-                                <TextField {...field} variant="outlined" label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
+                                <TextField {...field} autoComplete='email' variant="outlined" label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
                     </Grid2>
@@ -221,10 +221,10 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_password')}
                                     fullWidth
-                                    autoComplete={"true"}
                                     type={showPassword ? 'text' : 'password'}
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}
+                                    autoComplete='new-password'
                                     slotProps={{
                                         input: {
                                             endAdornment: (
@@ -254,7 +254,18 @@ const SignupForm = () => {
                                     variant="outlined"
                                     label={t('misc_confirm_password')}
                                     fullWidth
-                                    autoComplete={"true"}
+                                    autoComplete="new-password"
+                                    slotProps={
+                                        {
+                                            input: {
+                                                endAdornment: field.value && !fieldState.invalid && (
+                                                    <InputAdornment position="end">
+                                                        <CheckRounded color="success" />
+                                                    </InputAdornment>
+                                                ),
+                                            }
+                                        }
+                                    }
                                     type="password"
                                     error={fieldState.invalid}
                                     helperText={fieldState.invalid && t(fieldState.error.message)}

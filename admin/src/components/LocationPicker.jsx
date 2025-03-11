@@ -7,6 +7,7 @@ import useTranslation from '@/hooks/useTranslation';
 import FeedbackMessage from './FeedbackMessage';
 import LoadingCircle from './LoadingCircle';
 import { useConfigStore } from '@/stores/config';
+import { debounce } from 'lodash';
 
 const mapContainerStyle = {
     width: '100%',
@@ -33,14 +34,13 @@ const GoogleMapPicker = () => {
     const fetchCoordinates = useCallback(async () => {
         setPostMsg('');
         if (!street || !city || !zip) {
-            setPostMsg(t("srv_address_required"));
+            setPostMsg(new Error('srv_address_required'));
             return;
         }
 
         const address = `${street}, ${city}, ${zip}`;
         setSearchedLocation(address);
         const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${config.googleMapsApiKey}`;
-
         try {
             const response = await axios.get(geocodeUrl);
             const data = response.data;
@@ -51,12 +51,12 @@ const GoogleMapPicker = () => {
                 setValue('location.latitude', Number(location.lat));
                 setValue('location.longitude', Number(location.lng));
             } else {
-                setPostMsg(t("srv_invalid_address"));
+                setPostMsg(new Error('srv_location_not_found'));
             }
         } catch {
-            setPostMsg(t("srv_error_fetching_coordinates"));
+            setPostMsg(new Error('srv_error_fetching_coordinates'));
         }
-    }, [street, city, zip, config.googleMapsApiKey, t, setValue]);
+    }, [street, city, zip, config.googleMapsApiKey, setValue]);
 
     const handleGetCurrentLocation = () => {
         setPostMsg('');
@@ -100,13 +100,13 @@ const GoogleMapPicker = () => {
                 setValue('address.street', street);
                 setValue('address.city', city);
                 setValue('address.zip', zip);
-                setPostMsg(t("srv_address_updated"));
+                setPostMsg('srv_address_updated');
             } else {
-                setPostMsg(t("srv_invalid_coordinates"));
+                setPostMsg(new Error('srv_invalid_coordinates'));
             }
         } catch (error) {
             console.log(error)
-            setPostMsg(t("srv_error_fetching_address"));
+            setPostMsg(new Error('srv_error_fetching_address'));
         }
     };
 
@@ -132,12 +132,15 @@ const GoogleMapPicker = () => {
         await handleReverseGeocoding(latitude, longitude);
     };
 
+    const debouncedFetchCoordinates = useCallback(() => debounce(fetchCoordinates, 500)(), [fetchCoordinates]);
 
     useEffect(() => {
-        if (!selectedPosition && street && city && zip && searchedLocation !== `${street}, ${city}, ${zip}`) {
-            fetchCoordinates();
+        const currentAddress = `${street}, ${city}, ${zip}`;
+        
+        if (street && city && zip && searchedLocation !== currentAddress) {
+            debouncedFetchCoordinates();
         }
-    }, [city, fetchCoordinates, searchedLocation, selectedPosition, street, zip]);
+    }, [street, city, zip, debouncedFetchCoordinates, searchedLocation]);
 
     const latitude = watch('location.latitude');
     const longitude = watch('location.longitude');

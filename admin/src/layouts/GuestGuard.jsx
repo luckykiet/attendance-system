@@ -5,6 +5,7 @@ import { useAuthStoreActions } from '@/stores/auth';
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
+import { clearAllQueries } from '@/utils';
 
 const GuestGuard = ({ children }) => {
   const { login, logout } = useAuthStoreActions();
@@ -30,7 +31,7 @@ const GuestGuard = ({ children }) => {
       if (isAuthenticated) {
         login(authentication);
       } else {
-        queryClient.clear();
+        clearAllQueries(queryClient)
         logout();
       }
     }

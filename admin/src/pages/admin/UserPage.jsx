@@ -350,6 +350,7 @@ export default function UserPage() {
                                                         variant="outlined"
                                                         label={t('misc_confirm_password')}
                                                         fullWidth
+                                                        autoComplete='off'
                                                         type="password"
                                                         error={fieldState.invalid}
                                                         helperText={fieldState.invalid && t(fieldState.error.message)}

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { setUpdatedAt } = require('./utils');
 const { Schema } = mongoose;
 
 const LocalDeviceSchema = new Schema({
@@ -12,7 +13,11 @@ const LocalDeviceSchema = new Schema({
     },
 }, { timestamps: true });
 
+
+LocalDeviceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
+
 LocalDeviceSchema.index({ deviceId: 1, registerId: 1 }, { unique: true });
 LocalDeviceSchema.index({ uuid: 1 });
+
 
 module.exports = LocalDeviceSchema;

@@ -1,5 +1,6 @@
-const { DAYS_OF_WEEK } = require('./days');
+const { DAYS_OF_WEEK, TIME_FORMAT } = require('./days');
 
 module.exports = {
-    DAYS_OF_WEEK
+    DAYS_OF_WEEK,
+    TIME_FORMAT
 }

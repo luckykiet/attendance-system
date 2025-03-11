@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const WorkingHourSchema = require('./WorkingHour');
+const { setUpdatedAt } = require('./utils');
 const Schema = mongoose.Schema;
 
 const DailyAttendanceSchema = new Schema(
@@ -21,5 +22,7 @@ const DailyAttendanceSchema = new Schema(
 );
 
 DailyAttendanceSchema.index({ date: 1, registerId: 1 }, { unique: true });
+
+DailyAttendanceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 
 module.exports = DailyAttendanceSchema

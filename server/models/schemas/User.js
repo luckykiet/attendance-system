@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const dayjs = require('dayjs')
+
+const { setUpdatedAt } = require('./utils')
 
 const UserSchema = new Schema(
     {
@@ -23,11 +24,5 @@ const UserSchema = new Schema(
     }
 )
 
-UserSchema.pre(
-    ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
-    function (next) {
-        this.updatedAt = dayjs().toDate()
-        next()
-    }
-)
+UserSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt)
 module.exports = UserSchema

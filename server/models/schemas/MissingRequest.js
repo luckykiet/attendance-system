@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { setUpdatedAt } = require('./utils');
 
 const Schema = mongoose.Schema;
 
@@ -22,6 +23,8 @@ const MissingRequestSchema = new Schema(
         timestamps: true,
     }
 );
+
+MissingRequestSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 
 MissingRequestSchema.index({ createdAt: 1 }, { name: 'created_at_idx' });
 MissingRequestSchema.index({ registerId: 1, employeeId: 1 }, { name: 'register_employee_idx' });

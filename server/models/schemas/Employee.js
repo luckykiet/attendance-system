@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const dayjs = require('dayjs');
+const { setUpdatedAt } = require('./utils');
 
 const EmployeeSchema = new Schema(
     {
@@ -22,13 +22,7 @@ const EmployeeSchema = new Schema(
     }
 );
 
-EmployeeSchema.pre(
-    ['save', 'findOneAndUpdate', 'updateOne', 'updateMany'],
-    function (next) {
-        this.updatedAt = dayjs().toDate();
-        next();
-    }
-);
+EmployeeSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt)
 
 EmployeeSchema.index({ email: 1, retailId: 1, }, { unique: true });
 EmployeeSchema.index(
@@ -37,4 +31,6 @@ EmployeeSchema.index(
 );
 
 EmployeeSchema.index({ name: 1, }, { name: 'name_index' });
+
+
 module.exports = EmployeeSchema;

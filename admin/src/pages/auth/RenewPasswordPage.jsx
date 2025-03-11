@@ -150,7 +150,7 @@ export default function RenewPasswordPage() {
                           type="password"
                           placeholder="*************"
                           required
-                          autoComplete={"off"}
+                          autoComplete="new-password"
                           error={fieldState.invalid}
                           helperText={fieldState.invalid && t(fieldState.error.message)}
                           slotProps={{
@@ -183,7 +183,7 @@ export default function RenewPasswordPage() {
                           type="password"
                           placeholder="*************"
                           required
-                          autoComplete={"off"}
+                          autoComplete="new-password"
                           error={fieldState.invalid}
                           helperText={fieldState.invalid && t(fieldState.error.message)}
                           slotProps={{
