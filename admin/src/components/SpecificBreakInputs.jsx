@@ -1,4 +1,4 @@
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import {
     Grid2,
     Typography,
@@ -12,8 +12,9 @@ import {
     FormGroup,
     FormControlLabel,
     Switch,
+    Button,
 } from '@mui/material';
-import { daysOfWeeksTranslations, hourToMinutes, minutesToHour, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, hourToMinutes, minutesToHour, renderIcon, TIME_FORMAT } from '@/utils';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -23,19 +24,54 @@ import dayjs from 'dayjs';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import CustomPopover from './CustomPopover';
-import { useSpecificBreaksObject } from '@/configs';
+import { useSpecificBreaks } from '@/configs';
+import { useState } from 'react';
 
 dayjs.extend(customParseFormat);
 
+const ApplyButton = ({ specificBreak, type }) => {
+    const { t } = useTranslation();
+    const { watch, setValue } = useFormContext();
+    const [isApplied, setIsApplied] = useState(false);
+
+    const applyToAllDays = () => {
+        setIsApplied(false);
+        const specificBreaks = watch('specificBreaks');
+
+        const updated = Object.entries(specificBreaks).reduce((acc, [day, breaks]) => {
+            acc[day] = {
+                ...breaks,
+                [type]: specificBreak,
+            };
+            return acc;
+        }, {});
+
+        setValue('specificBreaks', updated);
+        setIsApplied(true);
+    };
+
+    return (
+        <Stack direction="row" spacing={2} display={'flex'} alignItems={'center'}>
+            <Button variant="contained" color="primary" onClick={applyToAllDays}>
+                {t('misc_apply_for_all_days')}
+            </Button>
+            {isApplied && <Typography variant="body2" color="success">
+                {t('msg_applied_changes')}
+            </Typography>}
+        </Stack>
+    );
+};
+
+
+ApplyButton.propTypes = {
+    specificBreak: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired,
+};
+
 const DayField = ({ day }) => {
     const { t } = useTranslation();
-    const SPECIFIC_BREAKS_OBJ = useSpecificBreaksObject();
     const { watch, control, setValue, handleSubmit } = useFormContext();
-
-    const { fields } = useFieldArray({
-        control,
-        name: `specificBreaks.${day}`,
-    });
+    const SPECIFIC_BREAKS_ARRAY = useSpecificBreaks();
 
     return <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }} key={day}>
         <Grid2 size={{ xs: 12 }}
@@ -61,15 +97,17 @@ const DayField = ({ day }) => {
         </Grid2>
         <Grid2 size={{ xs: 12 }}>
             <Stack spacing={2}>
-                {fields.map((field, index) => {
-                    const specificBreak = SPECIFIC_BREAKS_OBJ[watch(`specificBreaks.${day}[${index}].type`)];
-
-                    return <Box component={Paper} sx={{ paddingX: 2, paddingY: 4 }} key={field.id}>
+                {SPECIFIC_BREAKS_ARRAY.map((brk) => {
+                    const specificBreakKey = `specificBreaks.${day}.${brk.key}`;
+                    return <Box component={Paper} sx={{ paddingX: 2, paddingY: 4 }} key={brk.key}>
                         <Grid2 container spacing={2} >
                             <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Typography variant="h6">{specificBreak ? t(specificBreak.name) : `${t('misc_break')} ${index + 1}`}</Typography>
+                                <Stack direction="row" spacing={1} display={'flex'} alignItems={'center'}>
+                                    <Typography variant="h6">{t(brk.name)}</Typography>
+                                    {renderIcon(brk.icon)}
+                                </Stack>
                                 <Controller
-                                    name={`specificBreaks.${day}[${index}].isAvailable`}
+                                    name={`${specificBreakKey}.isAvailable`}
                                     control={control}
                                     render={({ field: { ref, ...field } }) => (
                                         <FormGroup>
@@ -84,7 +122,7 @@ const DayField = ({ day }) => {
                                                         {...field}
                                                         color="success"
                                                         onBlur={handleSubmit}
-                                                        id={`switch-specific-break-${day}-${index}-isAvailable`}
+                                                        id={`switch-specific-break-${day}-${brk.key}-isAvailable`}
                                                     />
                                                 }
                                             />
@@ -107,24 +145,29 @@ const DayField = ({ day }) => {
                             </Grid2>
                             <Grid2 size={{ xs: 12, sm: 6 }}>
                                 <Controller
-                                    name={`specificBreaks.${day}[${index}].start`}
+                                    name={`${specificBreakKey}.start`}
                                     control={control}
                                     render={({ field, fieldState }) => (
                                         <FormControl fullWidth error={fieldState.invalid}>
                                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
                                                 <TimePicker
-                                                    {...field}
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                                     onChange={(date) => {
+                                                        if (!date || !date.isValid()) {
+                                                            field.onChange(null);
+                                                            return;
+                                                        }
+
                                                         const formattedDate = date.format(TIME_FORMAT);
-                                                        const endTime = dayjs(watch(`specificBreaks.${day}[${index}].end`), TIME_FORMAT);
+                                                        const endTime = dayjs(watch(`${specificBreakKey}.end`), TIME_FORMAT);
                                                         const isOverNight = date.isAfter(endTime);
 
-                                                        setValue(`specificBreaks.${day}[${index}].isOverNight`, isOverNight);
+                                                        setValue(`${specificBreakKey}.isOverNight`, isOverNight);
                                                         field.onChange(formattedDate);
                                                     }}
+                                                    onBlur={field.onBlur}
                                                     label={t('msg_from')}
-                                                    id={`picker-${day}-${index}-specific-break-start`}
+                                                    id={`picker-${day}-${brk.key}-specific-break-start`}
                                                     format={TIME_FORMAT}
                                                     views={['hours', 'minutes']}
                                                     slotProps={{
@@ -145,24 +188,29 @@ const DayField = ({ day }) => {
 
                             <Grid2 size={{ xs: 12, sm: 6 }}>
                                 <Controller
-                                    name={`specificBreaks.${day}[${index}].end`}
+                                    name={`${specificBreakKey}.end`}
                                     control={control}
                                     render={({ field, fieldState }) => (
                                         <FormControl fullWidth error={fieldState.invalid}>
                                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
                                                 <TimePicker
-                                                    {...field}
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                                     onChange={(date) => {
+                                                        if (!date || !date.isValid()) {
+                                                            field.onChange(null);
+                                                            return;
+                                                        }
+
                                                         const formattedDate = date.format(TIME_FORMAT);
-                                                        const startTime = dayjs(watch(`specificBreaks.${day}[${index}].start`), TIME_FORMAT);
+                                                        const startTime = dayjs(watch(`${specificBreakKey}.start`), TIME_FORMAT);
                                                         const isOverNight = startTime.isAfter(date);
 
-                                                        setValue(`specificBreaks.${day}[${index}].isOverNight`, isOverNight);
+                                                        setValue(`${specificBreakKey}.isOverNight`, isOverNight);
                                                         field.onChange(formattedDate);
                                                     }}
+                                                    onBlur={field.onBlur}
                                                     label={t('msg_to')}
-                                                    id={`picker-${day}-${index}-specific-break-end`}
+                                                    id={`picker-${day}-${brk.key}-specific-break-end`}
                                                     format={TIME_FORMAT}
                                                     views={['hours', 'minutes']}
                                                     slotProps={{
@@ -181,10 +229,9 @@ const DayField = ({ day }) => {
                                 />
                             </Grid2>
 
-
                             <Grid2 size={{ xs: 12, sm: 6 }}>
                                 <Controller
-                                    name={`specificBreaks.${day}[${index}].isOverNight`}
+                                    name={`${specificBreakKey}.isOverNight`}
                                     control={control}
                                     render={({ field }) =>
                                         field.value ? (
@@ -196,10 +243,9 @@ const DayField = ({ day }) => {
 
                             <Grid2 size={{ xs: 12 }}>
                                 <Controller
-                                    name={`specificBreaks.${day}[${index}].duration`}
+                                    name={`${specificBreakKey}.duration`}
                                     control={control}
                                     render={({ field, fieldState }) => {
-                                        // Convert the stored minutes to hours for display
                                         const displayValue = minutesToHour(field.value);
 
                                         return (
@@ -240,7 +286,9 @@ const DayField = ({ day }) => {
                                     }}
                                 />
                             </Grid2>
-
+                            <Grid2 size={{ xs: 12 }}>
+                                <ApplyButton specificBreak={watch(`${specificBreakKey}`)} type={brk.key} />
+                            </Grid2>
                         </Grid2>
                     </Box>
                 })}
@@ -255,7 +303,6 @@ DayField.propTypes = {
 
 const SpecificBreakInputs = () => {
     const { watch } = useFormContext();
-
     return (
         !_.isEmpty(watch('specificBreaks')) &&
         Object.keys(watch('specificBreaks')).map((day) => {

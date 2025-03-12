@@ -44,6 +44,7 @@ misc_api_documentation	API Documentation	API Documentation	API Dokumentace
 misc_app_id	App ID	ID ứng dụng	ID aplikace
 misc_app_id_copied	App ID has been copied	đã sao chép ID của ứng dụng	kopírováno ID aplikace
 misc_apply	apply	áp dụng	použít
+misc_apply_for_all_days	apply for all days	áp dụng cho tất cả các ngày	použít pro všechny dny
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
 misc_at_row	at row	ở hàng	u řádku
@@ -548,6 +549,7 @@ misc_you_will_not_see_workplace_until_add_again	you will not see the workplaces 
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno
+msg_applied_changes	Applied changes	Áp dụng thay đổi	Použité změny aplikovány
 msg_break_info	set breaks for an individual day, it will be used for employees and will not count towards working hours	thiết lập giờ nghỉ giải lao cho nhân viên vào từng ngày, giờ nghỉ giải lao sẽ không tính vào giờ làm việc	nastavit přestávky pro jednotlivé dny, budou použity pro zaměstnance a nebudou započítány do pracovní doby.
 msg_cancelled	Cancelled	Đã huỷ	Zrušeno
 msg_check_merchant_explanation	You import a list of TINs with provider and then select the providers you expect to be checked. The system will compare the entries with INSTALLED status and display the merchants that were expected to be in selected providers but are not listed. 	Bạn nhập danh sách IČ với các nhà cung cấp rồi chọn nhà cung cấp mà bạn muốn được kiểm tra. Hệ thống sẽ so sánh các mục nhập với tình trạng ĐÃ LẮP ĐẶT và hiển thị những người bán dự kiến ​​sẽ có mặt trong các nhà cung cấp được chọn nhưng không được liệt kê.	Naimportujete seznam IČ s poskytovatelem a poté vyberete poskytovatele, u kterých očekáváte kontrolu. Systém porovná záznamy se statusy INSTALOVÁNO a zobrazí obchodníky, kteří měli být u vybraných poskytovatelů, ale nejsou v seznamu uvedeni.

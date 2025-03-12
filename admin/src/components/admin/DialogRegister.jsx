@@ -46,8 +46,11 @@ import CustomPopover from '@/components/CustomPopover';
 import BreaksInputs from '@/components/BreaksInputs';
 import { SPECIFIC_BREAKS } from '@/configs';
 import SpecificBreakInputs from '@/components/SpecificBreakInputs';
+import _ from 'lodash';
 
 dayjs.extend(customParseFormat);
+
+const daysOfWeek = getDaysOfWeek(true);
 
 const workingHourSchema = z.object({
   start: z.string({ required_error: 'misc_required' })
@@ -80,7 +83,6 @@ const SpecificBreakSchema = z.object({
     .refine((date) => dayjs(date, TIME_FORMAT, true).isValid(), { message: TIME_FORMAT }),
   end: z.string({ required_error: 'misc_required' })
     .refine((date) => dayjs(date, TIME_FORMAT, true).isValid(), { message: TIME_FORMAT }),
-  type: z.enum(SPECIFIC_BREAKS, { required_error: 'misc_required' }),
   duration: z.number({ required_error: 'misc_required' }).min(15, { message: "srv_invalid_duration" }).max(24 * 60, { message: "srv_invalid_duration" }), // in minutes
   isOverNight: z.boolean(),
   isAvailable: z.boolean(),
@@ -142,52 +144,76 @@ const registerSchema = z.object({
     longitude: z.number().min(-180, { message: 'srv_invalid_longitude' }).max(180),
     allowedRadius: z.number().positive().max(5000),
   }),
-  workingHours: z.object({
-    ...getDaysOfWeek(true).reduce((acc, day) => {
+  workingHours: z.object(
+    daysOfWeek.reduce((acc, day) => {
       acc[day] = workingHourSchema;
       return acc;
     }, {})
-  }),
-  specificBreaks: z.object({
-    ...getDaysOfWeek(true).reduce((acc, day) => {
-      acc[day] = z.array(SpecificBreakSchema);
+  ),
+  specificBreaks: z.object(
+    daysOfWeek.reduce((acc, day) => {
+      acc[day] = z.object(
+        SPECIFIC_BREAKS.reduce((accBrk, brk) => {
+          accBrk[brk] = SpecificBreakSchema;
+          return accBrk;
+        }, {})
+      );
       return acc;
     }, {})
-  }
   ),
-  breaks: z.object({
-    ...getDaysOfWeek(true).reduce((acc, day) => {
+  breaks: z.object(
+    daysOfWeek.reduce((acc, day) => {
       acc[day] = z.array(BreakSchema);
       return acc;
     }, {})
-  }
   ),
   maxLocalDevices: z.number().int().min(0, { message: 'srv_invalid_device_count' }),
   isAvailable: z.boolean(),
-}).superRefine(({ breaks, workingHours }, ctx) => {
-  Object.entries(breaks).forEach(([day, dayBreaks]) => {
+}).superRefine(({ breaks, specificBreaks, workingHours }, ctx) => {
+  const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
+    const workStart = dayjs(workingHours.start, timeFormat);
+    let workEnd = dayjs(workingHours.end, timeFormat);
 
-    const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
-      const workStart = dayjs(workingHours.start, timeFormat);
-      let workEnd = dayjs(workingHours.end, timeFormat);
+    if (workEnd.isBefore(workStart)) {
+      workEnd = workEnd.add(1, 'day');
+    }
 
-      if (workEnd.isBefore(workStart)) {
-        workEnd = workEnd.add(1, 'day');
-      }
+    let breakStart = dayjs(brk.start, timeFormat);
+    let breakEnd = dayjs(brk.end, timeFormat);
 
-      let breakStart = dayjs(brk.start, timeFormat);
-      let breakEnd = dayjs(brk.end, timeFormat);
+    if (breakEnd.isBefore(breakStart)) {
+      breakEnd = breakEnd.add(1, 'day');
+    }
 
-      if (breakEnd.isBefore(breakStart)) {
-        breakEnd = breakEnd.add(1, 'day');
-      }
-
-      return {
-        isStartValid: breakStart.isSameOrAfter(workStart),
-        isEndValid: breakEnd.isSameOrBefore(workEnd),
-      };
+    return {
+      isStartValid: breakStart.isSameOrAfter(workStart),
+      isEndValid: breakEnd.isSameOrBefore(workEnd),
     };
+  };
+  Object.entries(specificBreaks).forEach(([day, specificBreak]) => {
+    const workingHour = workingHours[day];
+    Object.entries(specificBreak).forEach(([type, brk]) => {
+      const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
 
+      if (!isStartValid) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'srv_invalid_break_range',
+          path: ['specificBreaks', day, type, 'start'],
+        });
+      }
+
+      if (!isEndValid) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'srv_invalid_break_range',
+          path: ['specificBreaks', day, type, 'end'],
+        });
+      }
+    });
+  });
+
+  Object.entries(breaks).forEach(([day, dayBreaks]) => {
     const workingHour = workingHours[day];
     Object.entries(dayBreaks).forEach(([index, brk]) => {
       const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
@@ -234,6 +260,7 @@ export default function DialogRegister() {
     handleSubmit,
     reset,
     setValue,
+    formState: { errors },
   } = mainForm;
 
   const createNewRegisterMutation = useMutation({
@@ -636,16 +663,21 @@ export default function DialogRegister() {
             {postMsg && <FeedbackMessage message={postMsg} />}
           </Grid2>
         </DialogContent>
-        <DialogActions>
-          <LoadingButton loading={isLoading || isFetching || createNewRegisterMutation.isPending || updateRegisterMutation.isPending} disabled={deleteRegisterMutation.isPending} variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
-            {register ? t('misc_save') : t('misc_create')}
-          </LoadingButton>
-          {register && <LoadingButton loading={isLoading || isFetching || deleteRegisterMutation.isPending} disabled={createNewRegisterMutation.isPending || updateRegisterMutation.isPending} variant="contained" color="error" onClick={handleDelete}>
-            {t('misc_delete')}
-          </LoadingButton>}
-          <Button variant="outlined" color="error" onClick={handleClose}>
-            {t('misc_cancel')}
-          </Button>
+        <DialogActions sx={{ paddingX: 2 }}>
+          <Stack direction={'row'} spacing={1} width={'100%'} alignItems={'center'} justifyContent={!_.isEmpty(errors) ? 'space-between' : 'flex-end'}>
+          {!_.isEmpty(errors) ? <FeedbackMessage message={new Error(t('misc_check_fields'))} /> : null}
+          <Stack direction={'row'} spacing={1}>
+            <LoadingButton loading={isLoading || isFetching || createNewRegisterMutation.isPending || updateRegisterMutation.isPending} disabled={deleteRegisterMutation.isPending} variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+              {register ? t('misc_save') : t('misc_create')}
+            </LoadingButton>
+            {register && <LoadingButton loading={isLoading || isFetching || deleteRegisterMutation.isPending} disabled={createNewRegisterMutation.isPending || updateRegisterMutation.isPending} variant="contained" color="error" onClick={handleDelete}>
+              {t('misc_delete')}
+            </LoadingButton>}
+            <Button variant="outlined" color="error" onClick={handleClose}>
+              {t('misc_cancel')}
+            </Button>
+          </Stack>
+          </Stack>
         </DialogActions>
       </FormProvider>
     </Dialog>

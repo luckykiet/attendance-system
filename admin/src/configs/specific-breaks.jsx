@@ -4,7 +4,6 @@ import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 
 export const SPECIFIC_BREAKS = ['breakfast', 'lunch', 'dinner']
 export const useSpecificBreaks = () => {
-
   return [
     {
       key: SPECIFIC_BREAKS[0],
@@ -27,7 +26,7 @@ export const useSpecificBreaks = () => {
 export const useSpecificBreaksObject = () => {
   const brk = useSpecificBreaks()
   return brk.reduce((acc, s) => {
-    acc[s.key] = { ...s }
+    acc[s.key] = { ...s, key: s.key }
     return acc
   }, {})
 }

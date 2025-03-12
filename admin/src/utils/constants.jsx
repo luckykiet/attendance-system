@@ -26,44 +26,35 @@ export const getDefaultWorkingHour = () => ({
 });
 
 const generateDefaultSpecificBreaks = () => {
-  return SPECIFIC_BREAKS.map((type) => {
-    return {
-      type: type,
-      start: '11:00',
-      end: '13:00',
-      duration: 60,
-      isOverNight: false,
-      isAvailable: false,
-    }
-  })
-};
+  return {
+    start: '11:00',
+    end: '13:00',
+    duration: 60,
+    isOverNight: false,
+    isAvailable: false,
+  }
+}
 
 export const getDefaultRegister = () => ({
   retailId: '',
   name: '',
   address: getDefaultAddress(),
   location: getDefaultLocation(),
-  workingHours: {
-    ...getDaysOfWeek(true).reduce((acc, day) => {
-      acc[day] = getDefaultWorkingHour();
-      return acc;
-    }
-      , {})
-  },
-  specificBreaks: {
-    ...getDaysOfWeek(true).reduce((acc, day) => {
-      acc[day] = generateDefaultSpecificBreaks();
-      return acc;
-    }
-      , {})
-  },
-  breaks: {
-    ...getDaysOfWeek(true).reduce((acc, day) => {
-      acc[day] = [];
-      return acc;
-    }
-      , {})
-  },
+  workingHours: getDaysOfWeek(true).reduce((acc, day) => {
+    acc[day] = getDefaultWorkingHour();
+    return acc;
+  }, {}),
+  specificBreaks: getDaysOfWeek(true).reduce((acc, day) => {
+    acc[day] = SPECIFIC_BREAKS.reduce((accBrk, brk) => {
+      accBrk[brk] = generateDefaultSpecificBreaks();
+      return accBrk;
+    }, {});
+    return acc;
+  }, {}),
+  breaks: getDaysOfWeek(true).reduce((acc, day) => {
+    acc[day] = [];
+    return acc;
+  }, {}),
   maxLocalDevices: 0,
   isAvailable: true,
 });
@@ -93,13 +84,10 @@ export const getDefaultUser = () => ({
 export const getDefaultWorkingAt = () => ({
   registerId: '',
   position: '',
-  workingHours: {
-    ...getDaysOfWeek(true).reduce((acc, day) => {
-      acc[day] = getDefaultWorkingHour();
-      return acc;
-    }
-      , {})
-  },
+  workingHours: getDaysOfWeek(true).reduce((acc, day) => {
+    acc[day] = getDefaultWorkingHour();
+    return acc;
+  }, {}),
 });
 
 export const getDefaultAttendance = () => ({

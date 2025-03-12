@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const AddressSchema = require('./Address');
 const WorkingHourSchema = require('./WorkingHour');
 const BreakSchema = require('./Break');
+const { SPECIFIC_BREAKS } = require('../../configs');
 const SpecificBreakSchema = require('./SpecificBreak');
 const { transformLocation, setUpdatedAt } = require('./utils');
 
@@ -38,13 +39,55 @@ const RegisterSchema = new Schema(
         },
 
         specificBreaks: {
-            mon: { type: [SpecificBreakSchema], required: true, default: [] },
-            tue: { type: [SpecificBreakSchema], required: true, default: [] },
-            wed: { type: [SpecificBreakSchema], required: true, default: [] },
-            thu: { type: [SpecificBreakSchema], required: true, default: [] },
-            fri: { type: [SpecificBreakSchema], required: true, default: [] },
-            sat: { type: [SpecificBreakSchema], required: true, default: [] },
-            sun: { type: [SpecificBreakSchema], required: true, default: [] },
+            mon: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            tue: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            wed: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            thu: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            fri: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            sat: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
+            sun: {
+                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
+                    acc[brk] = { type: SpecificBreakSchema, required: true };
+                    return acc;
+                }
+                    , {})
+            },
         },
 
         breaks: {
