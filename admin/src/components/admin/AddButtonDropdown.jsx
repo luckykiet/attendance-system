@@ -7,7 +7,6 @@ import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import React from 'react'
 import useTranslation from '@/hooks/useTranslation'
-import { useSetIsModalOpen as useSetIsRegisterModalOpen, useSetRegisterId } from '@/stores/register'
 import { useAuthStore } from '@/stores/auth'
 import { checkPrivileges } from '@/utils'
 import { AddBusiness, GroupAdd } from '@mui/icons-material'
@@ -19,8 +18,7 @@ export default function AddButtonDropdown() {
   const { user } = useAuthStore()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
-  const setIsRegisterModalOpen = useSetIsRegisterModalOpen()
-  const setRegisterId = useSetRegisterId()
+
   const navigate = useNavigate()
 
   const handleClick = (event) => {
@@ -30,9 +28,7 @@ export default function AddButtonDropdown() {
     setAnchorEl(null)
   }
   const handleAddRegister = () => {
-    navigate('/')
-    setRegisterId('')
-    setIsRegisterModalOpen(true)
+    navigate('/register')
     handleClose()
   }
 

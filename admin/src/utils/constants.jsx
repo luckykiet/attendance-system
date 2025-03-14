@@ -25,13 +25,23 @@ export const getDefaultWorkingHour = () => ({
   isAvailable: true,
 });
 
-const generateDefaultSpecificBreaks = () => {
+export const generateDefaultSpecificBreak = () => {
   return {
     start: '11:00',
     end: '13:00',
     duration: 60,
     isOverNight: false,
     isAvailable: false,
+  }
+}
+
+export const generateDefaultBreak = () => {
+  return {
+    name: 'Break',
+    start: '11:00',
+    end: '13:00',
+    duration: 60,
+    isOverNight: false,
   }
 }
 
@@ -46,7 +56,7 @@ export const getDefaultRegister = () => ({
   }, {}),
   specificBreaks: getDaysOfWeek(true).reduce((acc, day) => {
     acc[day] = SPECIFIC_BREAKS.reduce((accBrk, brk) => {
-      accBrk[brk] = generateDefaultSpecificBreaks();
+      accBrk[brk] = generateDefaultSpecificBreak();
       return accBrk;
     }, {});
     return acc;

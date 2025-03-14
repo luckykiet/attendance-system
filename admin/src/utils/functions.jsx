@@ -292,3 +292,24 @@ export const clearAllQueries = (queryClient) => {
     }
   })
 }
+
+export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
+  const workStart = dayjs(workingHours.start, timeFormat);
+  let workEnd = dayjs(workingHours.end, timeFormat);
+
+  if (workEnd.isBefore(workStart)) {
+    workEnd = workEnd.add(1, 'day');
+  }
+
+  let breakStart = dayjs(brk.start, timeFormat);
+  let breakEnd = dayjs(brk.end, timeFormat);
+
+  if (breakEnd.isBefore(breakStart)) {
+    breakEnd = breakEnd.add(1, 'day');
+  }
+
+  return {
+    isStartValid: breakStart.isSameOrAfter(workStart),
+    isEndValid: breakEnd.isSameOrBefore(workEnd),
+  };
+};

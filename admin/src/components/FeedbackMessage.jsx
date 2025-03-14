@@ -8,10 +8,9 @@ const FeedbackMessage = ({ message }) => {
 
     return (
         <Typography
-            variant="body2"
+            variant="body1"
             textAlign="center"
             color={message instanceof Error ? 'error' : 'success.main'}
-            sx={{ mt: 2 }}
         >
             {message instanceof Error
                 ? t(message.message)

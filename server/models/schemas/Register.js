@@ -39,55 +39,34 @@ const RegisterSchema = new Schema(
         },
 
         specificBreaks: {
-            mon: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            tue: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            wed: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            thu: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            fri: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            sat: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
-            sun: {
-                ...SPECIFIC_BREAKS.reduce((acc, brk) => {
-                    acc[brk] = { type: SpecificBreakSchema, required: true };
-                    return acc;
-                }
-                    , {})
-            },
+            mon: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            tue: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            wed: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            thu: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            fri: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            sat: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
+            sun: SPECIFIC_BREAKS.reduce((acc, brk) => {
+                acc[brk] = { type: SpecificBreakSchema, required: true };
+                return acc;
+            }, {}),
         },
 
         breaks: {

@@ -89,6 +89,7 @@ misc_cancel	Cancel	Huỷ	Zrušit
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
+misc_check_fields	Check filled fields	Kiểm tra ô đã điền	Zkontrolujte vyplněné údaje!
 misc_check_in	check-in	check-in	příchod
 misc_check_merchants	check merchants	kiểm tra nhà bán buôn	kontrola obchodníků
 misc_check_out	check-out	check-out	odchod

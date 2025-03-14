@@ -9,6 +9,32 @@ const DailyAttendance = require('./models/DailyAttendance')
 const Attendance = require('./models/Attendance')
 const bcrypt = require('bcryptjs')
 
+const defaultSpecificBreaks = {
+    breakfast: {
+        start: "07:00",
+        end: "09:00",
+        duration: 60,
+        isOverNight: false,
+        isAvailable: true,
+    },
+    lunch: {
+        start: "11:00",
+        end: "13:00",
+        duration: 60,
+        isOverNight: false,
+        isAvailable: true,
+    },
+    dinner: {
+        start: "17:00",
+        end: "19:00",
+        duration: 60,
+        isOverNight: false,
+        isAvailable: true,
+    },
+}
+
+const defaultWorkingHours = { start: '00:00', end: '23:59', isOverNight: false, isAvailable: true };
+
 const demoAccount = {
     retail: {
         tin: '12345678',
@@ -33,14 +59,32 @@ const demoAccount = {
             coordinates: [14.123456, 50.123456],
             allowedRadius: 100,
         },
+        breaks: {
+            mon: [],
+            tue: [],
+            wed: [],
+            thu: [],
+            fri: [],
+            sat: [],
+            sun: [],
+        },
+        specificBreaks: {
+            mon: defaultSpecificBreaks,
+            tue: defaultSpecificBreaks,
+            wed: defaultSpecificBreaks,
+            thu: defaultSpecificBreaks,
+            fri: defaultSpecificBreaks,
+            sat: defaultSpecificBreaks,
+            sun: defaultSpecificBreaks
+        },
         workingHours: {
-            mon: { start: '00:00', end: '23:59', isAvailable: true },
-            tue: { start: '00:00', end: '23:59', isAvailable: true },
-            wed: { start: '00:00', end: '23:59', isAvailable: true },
-            thu: { start: '00:00', end: '23:59', isAvailable: true },
-            fri: { start: '00:00', end: '23:59', isAvailable: true },
-            sat: { start: '00:00', end: '23:59', isAvailable: true },
-            sun: { start: '00:00', end: '23:59', isAvailable: true },
+            mon: defaultWorkingHours,
+            tue: defaultWorkingHours,
+            wed: defaultWorkingHours,
+            thu: defaultWorkingHours,
+            fri: defaultWorkingHours,
+            sat: defaultWorkingHours,
+            sun: defaultWorkingHours,
         },
         maxLocalDevices: 0,
         isAvailable: true,
@@ -93,7 +137,7 @@ const demoAccount = {
             allowedRadius: 1000,
         },
     }
-}
+};
 
 const generateDemoData = async () => {
     try {

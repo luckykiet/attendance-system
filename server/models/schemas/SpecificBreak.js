@@ -9,7 +9,7 @@ const SpecificBreakSchema = new Schema({
     duration: { type: Number, default: 60 }, // In minutes
     isOverNight: { type: Boolean, required: true },
     isAvailable: { type: Boolean, required: true },
-});
+}, { _id: false });
 
 SpecificBreakSchema.pre(['save', 'findOneAndUpdate', 'updateOne'], setIsOverNight);
 

@@ -4,8 +4,6 @@ import { fetchRetail } from '@/api/retail';
 import useTranslation from '@/hooks/useTranslation';
 import { fetchRegisters } from '@/api/registers';
 import { Box } from '@mui/system';
-import DialogRegister from '@/components/admin/DialogRegister';
-import { useSetIsModalOpen, useSetRegisterId } from '@/stores/register';
 import { useEffect } from 'react';
 import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
@@ -44,8 +42,6 @@ export default function HomePage() {
   const config = useConfigStore();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const setRegisterId = useSetRegisterId();
-  const setRegisterIsModalOpen = useSetIsModalOpen();
   const setRetail = useSetRetail();
 
   const retailQuery = useQuery({
@@ -63,13 +59,11 @@ export default function HomePage() {
   const { data: registers, isFetching: isRegistersFetching, isLoading: isRegistersLoading } = registersQuery;
 
   const handleCreateNewRegister = () => {
-    setRegisterId('');
-    setRegisterIsModalOpen(true);
+    navigate('/register');
   };
 
   const handleEditRegister = (id) => {
-    setRegisterId(id);
-    setRegisterIsModalOpen(true);
+    navigate(`/register/${id}`);
   };
 
   useEffect(() => {
@@ -106,7 +100,6 @@ export default function HomePage() {
         </Grid2>}
 
         <Grid2 size={{ xs: 12 }}>
-          <DialogRegister />
           {isRegistersFetching || isRegistersLoading || isRetailFetching || isRetailLoading ?
             <LoadingCircle /> :
             registers && registers.length ? (
