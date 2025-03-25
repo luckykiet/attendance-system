@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 const mailSender = require('../../mail_sender');
 const { CONFIG } = require('../../configs');
-const urlJoin = require('url-join');
+const urlJoin = require('proper-url-join');
 const { loggers } = utils
 
 const signup = async (req, res, next) => {
