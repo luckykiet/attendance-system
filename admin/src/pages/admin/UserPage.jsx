@@ -118,7 +118,7 @@ export default function UserPage() {
     const createUserMutation = useMutation({
         mutationFn: (data) => createUser(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['users']);
@@ -129,7 +129,7 @@ export default function UserPage() {
     const updateUserMutation = useMutation({
         mutationFn: (data) => updateUser(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['user', { userId }]);
@@ -141,7 +141,7 @@ export default function UserPage() {
     const deleteUserMutation = useMutation({
         mutationFn: () => deleteUser(userId),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: data, severity: 'success' });

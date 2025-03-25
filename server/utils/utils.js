@@ -7,9 +7,23 @@ const { TIME_FORMAT } = require('../constants')
 const winston = require('winston')
 const path = require('path')
 const fs = require('fs')
+
 const { createLoggerConfig } = require('./loggers')
 const dayjs = require("dayjs")
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
+dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
+dayjs.extend(require('dayjs/plugin/isSameOrAfter'))
+
+const isValidTime = (time, timeFormat = TIME_FORMAT) => {
+    return dayjs(time, timeFormat, true).isValid();
+}
+
+const isOverNight = (start, end, timeFormat = TIME_FORMAT) => {
+    const startTime = dayjs(start, timeFormat);
+    const endTime = dayjs(end, timeFormat);
+
+    return endTime.isBefore(startTime);
+}
 
 const getTranslations = async (lang) => {
     try {
@@ -112,11 +126,31 @@ const utils = {
         return this._loggers;
     },
     getTranslations,
+    isValidTime(time, timeFormat = TIME_FORMAT) {
+        return isValidTime(time, timeFormat)
+    },
     isOverNight: (start, end, timeFormat = TIME_FORMAT) => {
-        const startTime = dayjs(start, timeFormat);
-        const endTime = dayjs(end, timeFormat);
+        return isOverNight(start, end, timeFormat)
+    },
+    validateBreaksWithinWorkingHours: (brk, workingHours, timeFormat = TIME_FORMAT) => {
+        const workStart = dayjs(workingHours.start, timeFormat);
+        let workEnd = dayjs(workingHours.end, timeFormat);
 
-        return endTime.isBefore(startTime);
-    }
+        if (workEnd.isBefore(workStart)) {
+            workEnd = workEnd.add(1, 'day');
+        }
+
+        let breakStart = dayjs(brk.start, timeFormat);
+        let breakEnd = dayjs(brk.end, timeFormat);
+
+        if (breakEnd.isBefore(breakStart)) {
+            breakEnd = breakEnd.add(1, 'day');
+        }
+
+        return {
+            isStartValid: breakStart.isSameOrAfter(workStart),
+            isEndValid: breakEnd.isSameOrBefore(workEnd),
+        };
+    },
 }
 module.exports = utils

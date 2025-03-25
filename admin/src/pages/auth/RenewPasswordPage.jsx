@@ -71,7 +71,7 @@ export default function RenewPasswordPage() {
     mutationFn: ({ password, confirmPassword, token }) =>
       resetPassword({ password, confirmPassword, token }),
     onError: (error) => {
-      setPostMsg(new Error(error))
+      setPostMsg(new Error(JSON.stringify(error)))
     },
     onSuccess: (result) => {
       setPasswordChanged(true)

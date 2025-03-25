@@ -73,7 +73,7 @@ export default function RegisterPage() {
     const createNewRegisterMutation = useMutation({
         mutationFn: (data) => createRegister(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: 'srv_created', severity: 'success' });
@@ -86,7 +86,7 @@ export default function RegisterPage() {
     const updateRegisterMutation = useMutation({
         mutationFn: (data) => updateRegister(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: () => {
             setAlertMessage({ msg: 'srv_updated', severity: 'success' });
@@ -98,7 +98,7 @@ export default function RegisterPage() {
     const deleteRegisterMutation = useMutation({
         mutationFn: () => deleteRegister(registerId),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: data, severity: 'success' });
@@ -109,7 +109,7 @@ export default function RegisterPage() {
     const deleteLocalDeviceMutation = useMutation({
         mutationFn: (id) => deleteLocalDevice(id),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: data, severity: 'success' });

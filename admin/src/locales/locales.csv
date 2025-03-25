@@ -716,6 +716,7 @@ srv_invalid_id	Invalid ID	ID không hợp lệ	Neplatné ID
 srv_invalid_image_url	Invalid image URL	URL hình ảnh không hợp lệ	Nesprávný URL pro obrázek
 srv_invalid_key	Invalid key	Khóa không hợp lệ	Neplatný klíč
 srv_invalid_latitude	Invalid latitude	Vĩ độ	Neplatná zeměpisná šířka
+srv_invalid_length	invalid length	độ dài không hợp lệ	neplatná délka
 srv_invalid_local_device	invalid local device	Thiết bị cục bộ không hợp lệ	neplatné lokální zařízení
 srv_invalid_longitude	Invalid longitude	Kinh độ	Neplatná zeměpisná délka
 srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník

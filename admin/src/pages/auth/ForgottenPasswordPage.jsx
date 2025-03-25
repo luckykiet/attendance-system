@@ -51,7 +51,7 @@ export default function ForgottenPasswordPage() {
   const sendForgottenPasswordMutation = useMutation({
     mutationFn: (email) => forgotPassword(email),
     onError: (error) => {
-      setPostMsg(new Error(error));
+      setPostMsg(new Error(JSON.stringify(error)));
     },
     onSuccess: () => {
       setPostMsg(`${t('msg_request_sent')}! ${t('msg_to_check_email')}. ${t('msg_if_account_exists')}.`);

@@ -715,6 +715,7 @@
   "srv_invalid_image_url": "URL hình ảnh không hợp lệ",
   "srv_invalid_key": "Khóa không hợp lệ",
   "srv_invalid_latitude": "Vĩ độ",
+  "srv_invalid_length": "độ dài không hợp lệ",
   "srv_invalid_local_device": "Thiết bị cục bộ không hợp lệ",
   "srv_invalid_longitude": "Kinh độ",
   "srv_invalid_merchant": "Nhà bán buôn không hợp lệ",

@@ -265,7 +265,7 @@ export default function TransferListEmployees({ employeeId }) {
   const saveWorkingAtsMutation = useMutation({
     mutationFn: (data) => updateWorkingAts(data),
     onError: (error) => {
-      setPostMsg(new Error(error))
+      setPostMsg(new Error(JSON.stringify(error)))
     },
     onSuccess: () => {
       setAlertMessage({ msg: 'srv_updated', severity: 'success' });

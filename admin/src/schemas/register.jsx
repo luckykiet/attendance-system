@@ -25,9 +25,9 @@ const BaseRegisterSchema = z.object({
         zip: z.string().min(1, { message: 'misc_required' }).max(20),
     }),
     location: z.object({
-        latitude: z.number().min(-90, { message: 'srv_invalid_latitude' }).max(90),
-        longitude: z.number().min(-180, { message: 'srv_invalid_longitude' }).max(180),
-        allowedRadius: z.number().positive().max(5000),
+        latitude: z.number().min(-90, { message: 'srv_invalid_latitude' }).max(90, { message: 'srv_invalid_latitude' }),
+        longitude: z.number().min(-180, { message: 'srv_invalid_longitude' }).max(180, { message: 'srv_invalid_longitude' }),
+        allowedRadius: z.number().positive('srv_invalid_radius').max(5000, { message: 'srv_invalid_radius' }),
     }),
     workingHours: z.object(
         daysOfWeek.reduce((acc, day) => {
@@ -52,7 +52,7 @@ const BaseRegisterSchema = z.object({
             return acc;
         }, {})
     ),
-    maxLocalDevices: z.number().int().min(0, { message: 'srv_invalid_device_count' }),
+    maxLocalDevices: z.number().int('srv_invalid_device_count').min(0, { message: 'srv_invalid_device_count' }),
     isAvailable: z.boolean(),
 })
 

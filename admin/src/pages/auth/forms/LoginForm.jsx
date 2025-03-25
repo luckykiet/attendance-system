@@ -49,7 +49,7 @@ const LoginForm = () => {
     const loginMutation = useMutation({
         mutationFn: (data) => login(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             loginStore(data);

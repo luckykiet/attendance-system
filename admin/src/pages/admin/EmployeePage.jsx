@@ -71,7 +71,7 @@ export default function EmployeePage() {
     const createEmployeeMutation = useMutation({
         mutationFn: (data) => createEmployee(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['employees']);
@@ -82,7 +82,7 @@ export default function EmployeePage() {
     const updateEmployeeMutation = useMutation({
         mutationFn: (data) => updateEmployee(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['employee', { employeeId }]);
@@ -94,7 +94,7 @@ export default function EmployeePage() {
     const deleteEmployeeMutation = useMutation({
         mutationFn: () => deleteEmployee(employeeId),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: data, severity: 'success' });
@@ -106,7 +106,7 @@ export default function EmployeePage() {
     const generateEmployeeTokenMutation = useMutation({
         mutationFn: (isSend = false) => createEmployeeDeviceRegistration(employeeId, isSend),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setValue('registrationToken', data);

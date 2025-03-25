@@ -107,7 +107,7 @@ const SignupForm = () => {
     const signUpMutation = useMutation({
         mutationFn: (data) => signup(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             loginStore(data);

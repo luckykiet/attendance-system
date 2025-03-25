@@ -715,6 +715,7 @@
   "srv_invalid_image_url": "Invalid image URL",
   "srv_invalid_key": "Invalid key",
   "srv_invalid_latitude": "Invalid latitude",
+  "srv_invalid_length": "invalid length",
   "srv_invalid_local_device": "invalid local device",
   "srv_invalid_longitude": "Invalid longitude",
   "srv_invalid_merchant": "Invalid merchant",

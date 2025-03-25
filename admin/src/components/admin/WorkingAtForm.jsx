@@ -120,7 +120,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const saveWorkingAtMutation = useMutation({
         mutationFn: (data) => createOrUpdateWorkingAt(data),
         onError: (error) => {
-            setPostMsg(new Error(error))
+            setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: workingAt ? 'srv_updated' : 'srv_created', severity: 'success' });

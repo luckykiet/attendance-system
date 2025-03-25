@@ -715,6 +715,7 @@
   "srv_invalid_image_url": "Nesprávný URL pro obrázek",
   "srv_invalid_key": "Neplatný klíč",
   "srv_invalid_latitude": "Neplatná zeměpisná šířka",
+  "srv_invalid_length": "neplatná délka",
   "srv_invalid_local_device": "neplatné lokální zařízení",
   "srv_invalid_longitude": "Neplatná zeměpisná délka",
   "srv_invalid_merchant": "Neplatný obchodník",
