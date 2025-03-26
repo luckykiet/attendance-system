@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const { SPECIFIC_BREAKS } = require("../configs")
 const { DAYS_OF_WEEK } = require('../constants');
 const { isValidTime, isOverNight, validateBreaksWithinWorkingHours } = require('../utils');
@@ -162,7 +162,12 @@ const NewRegisterValidation = [
 
 const UpdateRegisterValidation = [body('_id').notEmpty().isMongoId().withMessage('misc_required'), ...NewRegisterValidation]
 
+const GetRegisterValidation = [param('id').notEmpty().isMongoId().withMessage('misc_required')]
+const DeleteRegisterValidation = [param('id').notEmpty().isMongoId().withMessage('misc_required')]
+
 module.exports = {
     NewRegisterValidation,
-    UpdateRegisterValidation
+    UpdateRegisterValidation,
+    GetRegisterValidation,
+    DeleteRegisterValidation
 }

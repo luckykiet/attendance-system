@@ -3,13 +3,11 @@ const supertest = require('supertest');
 const app = require('../../app');
 
 const db = require('../db');
-const { login } = require('../utils');
+const { login, validRegisterPayload, createRegister } = require('../utils');
 const { default: mongoose } = require('mongoose');
-// const Register = require('../../models/Register'); // assuming it exists
 
 const routePrefix = '/mod/register';
 const request = supertest(app);
-
 
 beforeAll(async () => {
     await db.connect();
@@ -23,213 +21,6 @@ afterAll(async () => {
     await db.closeDatabase();
 });
 
-const validRegisterPayload = {
-    name: 'Sample Register',
-    address: {
-        street: '123 Sample St',
-        city: 'Testville',
-        zip: '99999',
-    },
-    location: {
-        latitude: 48.148598,
-        longitude: 17.107748,
-        allowedRadius: 100,
-    },
-    workingHours: {
-        mon: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: true },
-        tue: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: true },
-        wed: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: true },
-        thu: { start: '07:00', end: '02:00', isOverNight: true, isAvailable: true },
-        fri: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: true },
-        sat: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: true },
-        sun: { start: '07:00', end: '20:00', isOverNight: false, isAvailable: false },
-    },
-    specificBreaks: {
-        mon: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        tue: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        wed: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        thu: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        fri: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        sat: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-        sun: {
-            breakfast: {
-                start: '07:00',
-                end: '08:00',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            lunch: {
-                start: '12:00',
-                end: '12:30',
-                duration: 30,
-                isOverNight: false,
-                isAvailable: true,
-            },
-            dinner: {
-                start: '18:00',
-                end: '19:00',
-                duration: 60,
-                isOverNight: false,
-                isAvailable: false,
-            },
-        },
-    },
-    breaks: {
-        mon: [
-            { name: "Break 1", start: '10:00', end: '10:15', duration: 15, isOverNight: false, isAvailable: true },
-        ],
-        tue: [
-            { name: "Break 2", start: '10:00', end: '10:15', duration: 15, isOverNight: false, isAvailable: true },
-            { name: "Break 3", start: '11:00', end: '12:15', duration: 30, isOverNight: false, isAvailable: true },
-        ],
-        wed: [],
-        thu: [
-            { name: "Break 4", start: '10:00', end: '10:15', duration: 15, isOverNight: false, isAvailable: true },
-        ],
-        fri: [
-            { name: "Break 5", start: '10:00', end: '10:15', duration: 15, isOverNight: false, isAvailable: true },
-        ],
-        sat: [
-            { name: "Break 6", start: '10:00', end: '10:15', duration: 15, isOverNight: false, isAvailable: true },
-        ],
-        sun: [],
-    },
-    maxLocalDevices: 5,
-    isAvailable: true,
-};
 
 describe(`unauthorized access`, () => {
     test('should prevent any access', async () => {
@@ -569,24 +360,23 @@ describe(`POST ${routePrefix}`, () => {
 
         expect(response.status).toBe(401);
     });
+
+    test('should return 403 if user lacks privilege (POST)', async () => {
+        const adminCookie = await login(request);
+        const managerCookie = await login(request, 'Manager', adminCookie.retailId);
+
+        const response = await request
+            .post(`${routePrefix}`)
+            .set('Cookie', managerCookie)
+            .send(validRegisterPayload);
+
+        expect(response.status).toBe(403);
+    });
 });
 
 describe(`PUT ${routePrefix}`, () => {
-    const createRegister = async () => {
-        const cookie = await login(request);
-
-        const createResponse = await request
-            .post(`${routePrefix}`)
-            .set('Cookie', cookie)
-            .send(validRegisterPayload);
-
-        const createdId = createResponse.body.msg._id;
-
-        return { cookie, createdId };
-    }
-
     test('should update register successfully', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
         const updatePayload = JSON.parse(JSON.stringify(validRegisterPayload));
         updatePayload._id = createdId;
         updatePayload.name = 'Updated Register Name';
@@ -603,7 +393,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should return 404 for non-existent ID', async () => {
-        const { cookie } = await createRegister();
+        const { cookie } = await createRegister(request);
         const fakeId = new mongoose.Types.ObjectId();
         const response = await request
             .put(`${routePrefix}/${fakeId}`)
@@ -614,7 +404,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should fail with validation error for bad payload', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
         const badPayload = JSON.parse(JSON.stringify(validRegisterPayload));
         badPayload._id = createdId;
         badPayload.workingHours.mon.start = 'badtime';
@@ -631,7 +421,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should return 401 if not authenticated', async () => {
-        const { createdId } = await createRegister();
+        const { createdId } = await createRegister(request);
         const badPayload = JSON.parse(JSON.stringify(validRegisterPayload));
         badPayload._id = createdId;
         const response = await request
@@ -642,7 +432,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should return 400 if ID format is invalid', async () => {
-        const { cookie } = await createRegister();
+        const { cookie } = await createRegister(request);
         const response = await request
             .put(`${routePrefix}`)
             .set('Cookie', cookie)
@@ -652,7 +442,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should fail when required fields are missing', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
         const response = await request
             .put(`${routePrefix}`)
             .set('Cookie', cookie)
@@ -664,7 +454,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should reject invalid workingHours format', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
 
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload1._id = createdId;
@@ -758,7 +548,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should reject invalid specificBreaks configuration', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
         // Case 1: duration too low (< 15)
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload1._id = createdId;
@@ -903,7 +693,7 @@ describe(`PUT ${routePrefix}`, () => {
     });
 
     test('should reject if isOverNight flag does not match actual time range', async () => {
-        const { cookie, createdId } = await createRegister();
+        const { cookie, createdId } = await createRegister(request);
         const payload = JSON.parse(JSON.stringify(validRegisterPayload));
         payload._id = createdId;
         payload.workingHours.mon.start = '22:00';
@@ -941,5 +731,190 @@ describe(`PUT ${routePrefix}`, () => {
         expect(response2.body.msg.errors).toContainEqual({
             'breaks.tue[1].isOverNight': 'srv_invalid_overnight'
         });
+    });
+
+    test('should return 403 if user lacks privilege (PUT)', async () => {
+        const adminCookie = await login(request);
+        const managerCookie = await login(request, 'Manager', adminCookie.retailId);
+
+        const { createdId } = await createRegister(request);
+
+        const response = await request
+            .post(`${routePrefix}`)
+            .set('Cookie', managerCookie)
+            .send({ _id: createdId, ...validRegisterPayload });
+
+        expect(response.status).toBe(403);
+    });
+    
+    test('should prevent user from other retail to update a register', async () => {
+        const { createdId } = await createRegister(request);
+
+        const anotherCookie = await login(request);
+        const response2 = await request
+            .put(`${routePrefix}`)
+            .set('Cookie', anotherCookie)
+            .send({ _id: createdId, ...validRegisterPayload });
+
+        expect(response2.status).toBe(404);
+    });
+});
+
+describe(`GET ${routePrefix}/:id`, () => {
+    test('should get a single register successfully', async () => {
+        const { cookie, createdId } = await createRegister(request);
+
+        const response = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(200);
+        expect(response.body.msg._id).toBe(createdId);
+        expect(response.body.msg.name).toBe(validRegisterPayload.name);
+
+        const managerCookie = await login(request, 'Manager', response.body.msg.retailId);
+        const response2 = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', managerCookie);
+
+        expect(response2.status).toBe(200);
+        expect(response2.body.msg._id).toBe(createdId);
+        expect(response2.body.msg.name).toBe(validRegisterPayload.name);
+    });
+
+    test('should return 404 for non-existent register', async () => {
+        const { cookie } = await createRegister(request);
+        const fakeId = new mongoose.Types.ObjectId();
+
+        const response = await request
+            .get(`${routePrefix}/${fakeId}`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(404);
+    });
+
+    test('should return 400 for invalid register ID', async () => {
+        const { cookie } = await createRegister(request);
+
+        const response = await request
+            .get(`${routePrefix}/invalid-id`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(400);
+    });
+
+    test('should return 401 if not authenticated on GET', async () => {
+        const { createdId } = await createRegister(request);
+
+        const response = await request
+            .get(`${routePrefix}/${createdId}`);
+
+        expect(response.status).toBe(401);
+    });
+
+    test('should prevent user from other retail to get a register', async () => {
+        const { cookie, createdId } = await createRegister(request);
+
+        const response = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(200);
+        expect(response.body.msg._id).toBe(createdId);
+        expect(response.body.msg.name).toBe(validRegisterPayload.name);
+
+        const anotherCookie = await login(request);
+        const response2 = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', anotherCookie);
+
+        expect(response2.status).toBe(404);
+    });
+});
+
+describe(`DELETE ${routePrefix}/:id`, () => {
+    const createRegister = async () => {
+        const cookie = await login(request);
+        const res = await request
+            .post(`${routePrefix}`)
+            .set('Cookie', cookie)
+            .send(validRegisterPayload);
+
+        return { cookie, createdId: res.body.msg._id };
+    };
+
+    test('should delete register successfully', async () => {
+        const { cookie, createdId } = await createRegister(request);
+
+        const deleteRes = await request
+            .delete(`${routePrefix}/${createdId}`)
+            .set('Cookie', cookie);
+
+        expect(deleteRes.status).toBe(200);
+
+        const getAfterDelete = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', cookie);
+
+        expect(getAfterDelete.status).toBe(404);
+    });
+
+    test('should return 404 when deleting non-existent register', async () => {
+        const { cookie } = await createRegister(request);
+        const fakeId = new mongoose.Types.ObjectId();
+
+        const response = await request
+            .delete(`${routePrefix}/${fakeId}`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(404);
+    });
+
+    test('should return 400 when deleting with invalid ID', async () => {
+        const { cookie } = await createRegister(request);
+
+        const response = await request
+            .delete(`${routePrefix}/invalid-id`)
+            .set('Cookie', cookie);
+
+        expect(response.status).toBe(400);
+    });
+
+    test('should return 401 if not authenticated on DELETE', async () => {
+        const { createdId } = await createRegister(request);
+
+        const response = await request
+            .delete(`${routePrefix}/${createdId}`);
+
+        expect(response.status).toBe(401);
+    });
+
+    test('should return 403 if user lacks privilege (DELETE)', async () => {
+        const adminCookie = await login(request);
+        const managerCookie = await login(request, 'Manager', adminCookie.retailId);
+
+        const response = await request
+            .delete(`${routePrefix}/${new mongoose.Types.ObjectId()}`)
+            .set('Cookie', managerCookie)
+            .send(validRegisterPayload);
+
+        expect(response.status).toBe(403);
+    });
+
+    test('should prevent user from other retail to get a register', async () => {
+        const { cookie, createdId } = await createRegister(request);
+
+        const anotherCookie = await login(request);
+        const response2 = await request
+            .delete(`${routePrefix}/${createdId}`)
+            .set('Cookie', anotherCookie);
+
+        expect(response2.status).toBe(404);
+
+        const getAfterDelete = await request
+            .get(`${routePrefix}/${createdId}`)
+            .set('Cookie', cookie);
+
+        expect(getAfterDelete.status).toBe(200);
     });
 });

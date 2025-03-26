@@ -25,8 +25,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "attendance-system@workspace:."
   dependencies:
-    concurrently: "npm:^9.1.0"
-    npm-check-updates: "npm:^17.1.11"
+    concurrently: "npm:^9.1.2"
+    npm-check-updates: "npm:^17.1.16"
   languageName: unknown
   linkType: soft
 
@@ -67,9 +67,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "concurrently@npm:9.1.0"
+"concurrently@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "concurrently@npm:9.1.2"
   dependencies:
     chalk: "npm:^4.1.2"
     lodash: "npm:^4.17.21"
@@ -81,7 +81,7 @@ __metadata:
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: 10c0/f2f42f94dde508bfbaf47b5ac654db9e8a4bf07d3d7b6267dd058ae6f362eec677ae7c8ede398d081e5fd0d1de5811dc9a53e57d3f1f68e72ac6459db9e0896b
+  checksum: 10c0/88e00269366aa885ca2b97fd53b04e7af2b0f31774d991bfc0e88c0de61cdebdf115ddacc9c897fbd1f1b90369014637fa77045a171d072a75693332b36dcc70
   languageName: node
   linkType: hard
 
@@ -127,13 +127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-check-updates@npm:^17.1.11":
-  version: 17.1.11
-  resolution: "npm-check-updates@npm:17.1.11"
+"npm-check-updates@npm:^17.1.16":
+  version: 17.1.16
+  resolution: "npm-check-updates@npm:17.1.16"
   bin:
     ncu: build/cli.js
     npm-check-updates: build/cli.js
-  checksum: 10c0/aad2b568db346d423dd75631d73d3644f67039cae293222df30ff38873b907f1637e85a292ab92101af5402535ec24cabea41250665325c6b5da464abe0337c3
+  checksum: 10c0/443ca7a96a991b7c60fcc90913a685bee5c2365086773c3a0efe584b081459f46760454a4d3459627e42498120cdbd5fcc5857b0f3970c70e2a4e67adf706a77
   languageName: node
   linkType: hard
 

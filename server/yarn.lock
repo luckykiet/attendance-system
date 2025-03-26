@@ -4713,6 +4713,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:3.3.6":
+  version: 3.3.6
+  resolution: "nanoid@npm:3.3.6"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 10c0/606b355960d0fcbe3d27924c4c52ef7d47d3b57208808ece73279420d91469b01ec1dce10fae512b6d4a8c5a5432b352b228336a8b2202a6ea68e67fa348e2ee
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -5590,6 +5599,7 @@ __metadata:
     mongodb-memory-server: "npm:^10.1.4"
     mongoose: "npm:^8.13.0"
     morgan: "npm:^1.10.0"
+    nanoid: "npm:3.3.6"
     node-cron: "npm:^3.0.3"
     nodemailer: "npm:^6.10.0"
     nodemon: "npm:^3.1.9"
