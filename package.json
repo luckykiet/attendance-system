@@ -24,7 +24,9 @@
     "deploy-win": "cd admin && yarn deploy-win",
     "zip-build": "cd admin && yarn zip-build",
     "clean-devcert": "cd server && node ./scripts/clean-devcert.js",
-    "install-devcert": "cd server && node ./scripts/install-devcert.js"
+    "install-devcert": "cd server && node ./scripts/install-devcert.js",
+    "test": "yarn test-server",
+    "test-server": "cd server && yarn test"
   },
   "license": "MIT",
   "devDependencies": {

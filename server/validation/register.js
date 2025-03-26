@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 const { SPECIFIC_BREAKS } = require("../configs")
-const { TIME_FORMAT, DAYS_OF_WEEK } = require('../constants');
+const { DAYS_OF_WEEK } = require('../constants');
 const { isValidTime, isOverNight, validateBreaksWithinWorkingHours } = require('../utils');
 
 const validateSpecificBreaks = () => {
@@ -8,9 +8,8 @@ const validateSpecificBreaks = () => {
         SPECIFIC_BREAKS.flatMap((type) => [
             body(`specificBreaks.${day}.${type}.start`)
                 .notEmpty().withMessage('misc_required')
-                .bail()
                 .custom((value) => {
-                    if (!isValidTime(value)) throw new Error(TIME_FORMAT);
+                    if (!isValidTime(value)) throw new Error('srv_invalid_time');
                     return true;
                 }),
 
@@ -18,7 +17,7 @@ const validateSpecificBreaks = () => {
                 .notEmpty().withMessage('misc_required')
                 .bail()
                 .custom((value) => {
-                    if (!isValidTime(value)) throw new Error(TIME_FORMAT);
+                    if (!isValidTime(value)) throw new Error('srv_invalid_time');
                     return true;
                 }),
 
@@ -40,6 +39,26 @@ const validateSpecificBreaks = () => {
 
             body(`specificBreaks.${day}.${type}.isAvailable`)
                 .isBoolean().withMessage('misc_required'),
+
+            body(`specificBreaks.${day}.${type}`).custom((brk, { req }) => {
+                const workingHour = req.body.workingHours?.[day];
+                const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
+
+                if (!isStartValid) {
+                    throw {
+                        field: `specificBreaks.${day}.${type}.start`,
+                        message: 'srv_invalid_break_range',
+                    };
+                }
+
+                if (!isEndValid) {
+                    throw {
+                        field: `specificBreaks.${day}.${type}.end`,
+                        message: 'srv_invalid_break_range',
+                    };
+                }
+                return true;
+            })
         ])
     )
 }
@@ -47,6 +66,7 @@ const validateBreaks = () => {
     return DAYS_OF_WEEK.flatMap((day) => [
         body(`breaks.${day}`)
             .isArray()
+            .withMessage('misc_required')
             .custom((breaks, { req }) => {
                 const workingHour = req.body.workingHours?.[day];
                 if (!workingHour) return true;
@@ -54,24 +74,50 @@ const validateBreaks = () => {
                 for (let i = 0; i < breaks.length; i++) {
                     const brk = breaks[i];
                     const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
-                    if (!isStartValid || !isEndValid) {
-                        throw new Error('srv_invalid_break_range');
+
+                    if (!isStartValid) {
+                        throw {
+                            field: `breaks.${day}[${i}].start`,
+                            message: 'srv_invalid_break_range',
+                        };
+                    }
+
+                    if (!isEndValid) {
+                        throw {
+                            field: `breaks.${day}[${i}].end`,
+                            message: 'srv_invalid_break_range',
+                        };
+                    }
+
+                    const start = brk.start;
+                    const end = brk.end;
+
+                    if (start && end) {
+                        const isValid = isOverNight(start, end);
+                        if (brk.isOverNight !== isValid) {
+                            throw {
+                                field: `breaks.${day}[${i}].isOverNight`,
+                                message: 'srv_invalid_overnight',
+                            };
+                        }
                     }
                 }
+
                 return true;
             }),
     ]);
-}
+};
+
 const validateWorkingHours = () => {
     return DAYS_OF_WEEK.flatMap(day => [
-        body(`workingHours.${day}.start`).custom((value) => {
+        body(`workingHours.${day}.start`).notEmpty().withMessage('misc_required').custom((value) => {
             const isValid = isValidTime(value);
-            if (!isValid) throw new Error('misc_required');
+            if (!isValid) throw new Error('srv_invalid_time');
             return true;
         }),
-        body(`workingHours.${day}.end`).custom((value) => {
+        body(`workingHours.${day}.end`).notEmpty().withMessage('misc_required').custom((value) => {
             const isValid = isValidTime(value);
-            if (!isValid) throw new Error('misc_required');
+            if (!isValid) throw new Error('srv_invalid_time');
             return true;
         }),
         body(`workingHours.${day}.isOverNight`)
