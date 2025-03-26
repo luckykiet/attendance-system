@@ -206,7 +206,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
         loggers.auth.info(`Password reset request`, { email });
 
         const user = await User.findOne({ email });
-        
+
         if (!user) {
             loggers.auth.info(`User not found`);
             return res.status(200).json({ success: true, msg: 'srv_password_reset_send_to_email' });
@@ -216,11 +216,13 @@ const sendRequestRenewPassword = async (req, res, next) => {
 
         await User.findByIdAndUpdate(user._id, { $push: { tokens: token } }, { new: true });
 
-        mailSender.sendMailResetPassword(
-            email,
-            user.username,
-            urlJoin(CONFIG.url, 'reset-password', token),
-        );
+        if (!CONFIG.isTest) {
+            mailSender.sendMailResetPassword(
+                email,
+                user.username,
+                urlJoin(CONFIG.url, 'reset-password', token),
+            );
+        }
 
         loggers.auth.info(`Password reset email sent`, { token });
 
@@ -237,7 +239,7 @@ const updatePassword = async (req, res, next) => {
     try {
         const email = req.email;
         const body = req.body;
-        
+
         loggers.auth.info(`Password update attempt`, { email });
 
         if (!body || !body.newPassword || !body.confirmNewPassword) {

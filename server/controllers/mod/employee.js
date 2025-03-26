@@ -7,6 +7,7 @@ const Employee = require('../../models/Employee');
 const utils = require('../../utils');
 const { sendMailEmployeeDeviceRegistration } = require('../../mail_sender');
 const dayjs = require('dayjs');
+const { CONFIG } = require('../../configs');
 
 const saveEmployeeRegistration = async ({ employeeId, retailId, tokenId = '' }) => {
     if (tokenId) {
@@ -47,11 +48,13 @@ const employeeRegistration = async (req, res, next) => {
 
         if (req.action === 'sendEmployeeDeviceRegistration') {
             const retail = await Retail.findOne({ _id: req.user.retailId }).select('name tin address').exec();
-            // dont wait for email to be sent
-            try {
-                sendMailEmployeeDeviceRegistration(employee.email, { employee, retail, tokenId });
-            } catch (error) {
-                console.log(error)
+            if (!CONFIG.isTest) {
+                // dont wait for email to be sent
+                try {
+                    sendMailEmployeeDeviceRegistration(employee.email, { employee, retail, tokenId });
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
 
