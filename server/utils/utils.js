@@ -13,9 +13,10 @@ const dayjs = require("dayjs")
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
 dayjs.extend(require('dayjs/plugin/isSameOrAfter'))
+dayjs.extend(require('dayjs/plugin/utc'))
 
 const isValidTime = (time, timeFormat = TIME_FORMAT) => {
-    return dayjs(time, timeFormat, true).isValid();
+    return dayjs.utc(time, timeFormat, true).isValid();
 }
 
 const isOverNight = (start, end, timeFormat = TIME_FORMAT) => {
