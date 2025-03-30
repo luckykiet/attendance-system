@@ -31,6 +31,8 @@ const GoogleMapPicker = () => {
     const city = watch('address.city');
     const zip = watch('address.zip');
 
+    const locationNotFoundTranslation = t('srv_location_not_found')
+
     const fetchCoordinates = useCallback(async () => {
         setPostMsg('');
         if (!street || !city || !zip) {
@@ -51,12 +53,12 @@ const GoogleMapPicker = () => {
                 setValue('location.latitude', Number(location.lat));
                 setValue('location.longitude', Number(location.lng));
             } else {
-                setPostMsg(new Error('srv_location_not_found'));
+                setPostMsg(new Error(`${address} - ${locationNotFoundTranslation}`));
             }
         } catch {
             setPostMsg(new Error('srv_error_fetching_coordinates'));
         }
-    }, [street, city, zip, config.googleMapsApiKey, setValue]);
+    }, [street, city, zip, config.googleMapsApiKey, setValue, locationNotFoundTranslation]);
 
     const handleGetCurrentLocation = () => {
         setPostMsg('');
