@@ -3,7 +3,7 @@ import {
     FormControl,
     FormControlLabel,
     FormGroup,
-    Grid2,
+    Grid,
     Switch,
     Typography,
 } from '@mui/material';
@@ -25,9 +25,9 @@ export default function WorkingHoursInputs() {
     return (
         !_.isEmpty(watch('workingHours')) &&
         Object.keys(watch('workingHours')).map((key) => (
-            <Grid2 size={{ xs: 12 }} key={key}>
-                <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
-                    <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Grid size={{ xs: 12 }} key={key}>
+                <Grid container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
+                    <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="h6">
                             {t(daysOfWeeksTranslations[key].name)}
                         </Typography>
@@ -54,8 +54,8 @@ export default function WorkingHoursInputs() {
                                 </FormGroup>
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 6 }}>
                         <Controller
                             name={`workingHours[${key}].start`}
                             control={control}
@@ -91,8 +91,8 @@ export default function WorkingHoursInputs() {
                                 </FormControl>
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 6 }}>
                         <Controller
                             name={`workingHours[${key}].end`}
                             control={control}
@@ -128,10 +128,10 @@ export default function WorkingHoursInputs() {
                                 </FormControl>
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
-                        <Grid2 container spacing={2}>
-                            <Grid2 size={{ xs: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 6 }}>
                                 <Controller
                                     name={`workingHours[${key}].isOverNight`}
                                     control={control}
@@ -143,8 +143,8 @@ export default function WorkingHoursInputs() {
                                         ) : null
                                     }
                                 />
-                            </Grid2>
-                            <Grid2 size={{ xs: 6 }}>
+                            </Grid>
+                            <Grid size={{ xs: 6 }}>
                                 <Typography variant="body1">
                                     {t('misc_duration')}:{' '}
                                     {(() => {
@@ -166,11 +166,11 @@ export default function WorkingHoursInputs() {
                                         return '-';
                                     })()}
                                 </Typography>
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
-                </Grid2>
-            </Grid2>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
         ))
     );
 }

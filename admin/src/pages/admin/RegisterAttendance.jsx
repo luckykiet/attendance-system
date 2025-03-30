@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Link, Typography, FormHelperText, FormControl, Stack, Grid2, Divider, TableContainer, Table, TableCell, Paper, TableHead, TableRow, TableBody } from '@mui/material';
+import { Container, Link, Typography, FormHelperText, FormControl, Stack, Grid, Divider, TableContainer, Table, TableCell, Paper, TableHead, TableRow, TableBody } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import dayjs from 'dayjs';
 import { Link as RouterLink, useParams } from 'react-router-dom';
@@ -77,14 +77,14 @@ const RegisterAttendance = () => {
                 <Typography variant="h4" gutterBottom>{t('misc_attendance')}</Typography>
                 {isRegisterLoading || isRegisterFetching ? <LoadingCircle /> :
                     register ? <>
-                        <Grid2 container spacing={2}>
-                            <Grid2 size={{ xs: 12, sm: 6 }}>
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Stack spacing={2}>
                                     <Typography variant="h5">{register.name}</Typography>
                                     <Typography variant="h6">{register.address.street}, {register.address.zip} {register.address.city}</Typography>
                                 </Stack>
-                            </Grid2>
-                            <Grid2 size={{ xs: 12, sm: 6 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Controller
                                     name="date"
                                     control={control}
@@ -113,11 +113,11 @@ const RegisterAttendance = () => {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
                                 <Divider />
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
                                 {isLoading || isFetching ? <LoadingCircle /> :
                                     data ? (
                                         <Stack spacing={2}>
@@ -150,21 +150,21 @@ const RegisterAttendance = () => {
                                                 <Typography color='error' variant="h6">{data.attendance.checkOutsEarly?.length || 0}</Typography>
                                             </Stack>
                                             <Divider />
-                                            <Grid2 container spacing={2}>
-                                                <Grid2 size={{ xs: 12 }}>
+                                            <Grid container spacing={2}>
+                                                <Grid size={{ xs: 12 }}>
                                                     <Stack spacing={2}>
                                                         <Typography variant="h6">{t('misc_checked_in_late_by_employee')}: {data.attendance.checkInsLateByEmployee?.length || 0}</Typography>
                                                     </Stack>
-                                                </Grid2>
-                                                <Grid2 size={{ xs: 12 }}>
+                                                </Grid>
+                                                <Grid size={{ xs: 12 }}>
                                                     <Stack spacing={2}>
                                                         <Typography variant="h6">{t('misc_checked_out_early_by_employee')}: {data.attendance.checkOutsEarlyByEmployee?.length || 0}</Typography>
                                                     </Stack>
-                                                </Grid2>
-                                                <Grid2 size={{ xs: 12 }}>
+                                                </Grid>
+                                                <Grid size={{ xs: 12 }}>
                                                     <Divider />
-                                                </Grid2>
-                                                <Grid2 size={{ xs: 12 }}>
+                                                </Grid>
+                                                <Grid size={{ xs: 12 }}>
                                                     <Typography variant="h6" gutterBottom>{t('misc_attendances')}</Typography>
                                                     <TableContainer component={Paper}>
                                                         <Table>
@@ -193,15 +193,15 @@ const RegisterAttendance = () => {
                                                             </TableBody>
                                                         </Table>
                                                     </TableContainer>
-                                                </Grid2>
-                                            </Grid2>
+                                                </Grid>
+                                            </Grid>
                                         </Stack>
                                     ) : <Typography>{t('srv_attendance_not_found')}</Typography>
                                 }
-                            </Grid2>
+                            </Grid>
 
-                            {postMsg && <Grid2 size={{ xs: 12 }}><FeedbackMessage message={postMsg} /></Grid2>}
-                        </Grid2>
+                            {postMsg && <Grid size={{ xs: 12 }}><FeedbackMessage message={postMsg} /></Grid>}
+                        </Grid>
                     </> : <Typography variant="h6" color='error'>{t('srv_register_not_found')}</Typography>
                 }
             </Stack>

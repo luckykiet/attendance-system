@@ -20,8 +20,8 @@ const isValidTime = (time, timeFormat = TIME_FORMAT) => {
 }
 
 const isOverNight = (start, end, timeFormat = TIME_FORMAT) => {
-    const startTime = dayjs(start, timeFormat);
-    const endTime = dayjs(end, timeFormat);
+    const startTime = dayjs.utc(start, timeFormat);
+    const endTime = dayjs.utc(end, timeFormat);
 
     return endTime.isBefore(startTime);
 }

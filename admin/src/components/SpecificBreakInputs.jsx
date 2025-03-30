@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import {
-    Grid2,
+    Grid,
     Typography,
     Box,
     Stack,
@@ -74,8 +74,8 @@ const DayField = ({ day }) => {
     const setSelectedSpecificBreakKey = useSetSelectedSpecificBreakKey();
     const setSelectedSpecificBreak = useSetSelectedSpecificBreak();
 
-    return <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }} key={day}>
-        <Grid2 size={{ xs: 12 }}
+    return <Grid container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }} key={day}>
+        <Grid size={{ xs: 12 }}
             sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -95,8 +95,8 @@ const DayField = ({ day }) => {
                     </Stack>}
                 />
             </Stack>
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
             <Stack spacing={2}>
                 {SPECIFIC_BREAKS_ARRAY.map((brk) => {
                     const specificBreakKey = `specificBreaks.${day}.${brk.key}`;
@@ -105,8 +105,8 @@ const DayField = ({ day }) => {
                     const error = getFieldState(specificBreakKey)?.error || {};
 
                     return <Box component={Paper} sx={{ paddingX: 2, paddingY: 4 }} key={brk.key}>
-                        <Grid2 container spacing={1} >
-                            <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Grid container spacing={1} >
+                            <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Stack direction="row" spacing={1} display={'flex'} alignItems={'center'}>
                                     <Typography variant="h6">{t(brk.name)}</Typography>
                                     {renderIcon(brk.icon)}
@@ -144,8 +144,8 @@ const DayField = ({ day }) => {
                                     </IconButton>
                                 </Stack>
 
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
 
                                 <Stack spacing={1}>
                                     <Stack direction="row" spacing={1}>
@@ -175,16 +175,16 @@ const DayField = ({ day }) => {
                                             )}</Typography>
                                     </Stack>
                                 </Stack>
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
                                 <ApplyButton specificBreak={watch(`${specificBreakKey}`)} type={brk.key} />
-                            </Grid2>
-                        </Grid2>
+                            </Grid>
+                        </Grid>
                     </Box>
                 })}
             </Stack>
-        </Grid2>
-    </Grid2>
+        </Grid>
+    </Grid>
 }
 
 DayField.propTypes = {

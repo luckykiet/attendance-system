@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid2, Stack, FormControlLabel, Switch, Divider } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
@@ -162,8 +162,8 @@ export default function EmployeePage() {
                 {employee || !employeeId ? (
                     <FormProvider {...mainForm}>
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Grid2 container spacing={2}>
-                                <Grid2 size={{ xs: 12 }}>
+                            <Grid container spacing={2}>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="name"
                                         control={control}
@@ -178,8 +178,8 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="email"
                                         control={control}
@@ -194,8 +194,8 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="phone"
                                         control={control}
@@ -210,8 +210,8 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="isAvailable"
                                         control={control}
@@ -222,8 +222,8 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="registrationToken"
                                         control={control}
@@ -246,8 +246,8 @@ export default function EmployeePage() {
                                         }
                                         }
                                     />
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="deviceId"
                                         control={control}
@@ -261,13 +261,13 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid2>
-                            </Grid2>
-                            <Grid2 container spacing={2} sx={{ mt: 3 }}>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={2} sx={{ mt: 3 }}>
+                                <Grid size={{ xs: 12 }}>
                                     {postMsg && <FeedbackMessage message={postMsg} />}
-                                </Grid2>
-                                <Grid2 size={{ xs: 12 }}>
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
                                     <Stack direction="row" spacing={1}>
                                         <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
                                             {employeeId ? t('misc_save') : t('misc_create')}
@@ -287,8 +287,8 @@ export default function EmployeePage() {
                                                 {t('misc_delete')}
                                             </LoadingButton>}
                                     </Stack>
-                                </Grid2>
-                            </Grid2>
+                                </Grid>
+                            </Grid>
                         </form>
                     </FormProvider>
                 ) : (

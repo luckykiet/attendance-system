@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid2, Stack, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, InputAdornment } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, InputAdornment } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
@@ -200,8 +200,8 @@ export default function UserPage() {
                     {user || !userId ? (
                         <FormProvider {...mainForm}>
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                <Grid2 container spacing={2}>
-                                    <Grid2 size={{ xs: 12 }}>
+                                <Grid container spacing={2}>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="name"
                                             control={control}
@@ -216,8 +216,8 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="username"
                                             control={control}
@@ -232,8 +232,8 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="email"
                                             control={control}
@@ -248,8 +248,8 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="phone"
                                             control={control}
@@ -264,8 +264,8 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="role"
                                             control={control}
@@ -306,9 +306,9 @@ export default function UserPage() {
 
                                             )}
                                         />
-                                    </Grid2>
+                                    </Grid>
                                     {!userId && <>
-                                        <Grid2 size={{ xs: 12 }}>
+                                        <Grid size={{ xs: 12 }}>
                                             <Controller
                                                 name="password"
                                                 control={control}
@@ -339,8 +339,8 @@ export default function UserPage() {
                                                     />
                                                 )}
                                             />
-                                        </Grid2>
-                                        <Grid2 size={{ xs: 12 }}>
+                                        </Grid>
+                                        <Grid size={{ xs: 12 }}>
                                             <Controller
                                                 name="confirmPassword"
                                                 control={control}
@@ -357,9 +357,9 @@ export default function UserPage() {
                                                     />
                                                 )}
                                             />
-                                        </Grid2>
+                                        </Grid>
                                     </>}
-                                    <Grid2 size={{ xs: 12 }}>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="notes"
                                             control={control}
@@ -374,8 +374,8 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Controller
                                             name="isAvailable"
                                             control={control}
@@ -386,13 +386,13 @@ export default function UserPage() {
                                                 />
                                             )}
                                         />
-                                    </Grid2>
-                                </Grid2>
-                                <Grid2 container spacing={2} sx={{ mt: 3 }}>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                </Grid>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
+                                    <Grid size={{ xs: 12 }}>
                                         {postMsg && <FeedbackMessage message={postMsg} />}
-                                    </Grid2>
-                                    <Grid2 size={{ xs: 12 }}>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
                                         <Stack direction="row" spacing={1}>
                                             <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createUserMutation.isPending || updateUserMutation.isPending} disabled={deleteUserMutation.isPending || !_.isEmpty(errors)}>
                                                 {userId ? t('misc_save') : t('misc_create')}
@@ -402,8 +402,8 @@ export default function UserPage() {
                                                     {t('misc_delete')}
                                                 </LoadingButton>}
                                         </Stack>
-                                    </Grid2>
-                                </Grid2>
+                                    </Grid>
+                                </Grid>
                             </form>
                         </FormProvider>
                     ) : (

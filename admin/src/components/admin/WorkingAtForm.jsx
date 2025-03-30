@@ -4,7 +4,7 @@ import {
     CardContent,
     Typography,
     TextField,
-    Grid2,
+    Grid,
     Stack,
     Accordion,
     AccordionDetails,
@@ -194,8 +194,8 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                 <Card>
                     <CardContent>
                         <Stack spacing={2}>
-                            <Grid2 container spacing={3}>
-                                <Grid2 size={{ xs: 12 }}>
+                            <Grid container spacing={3}>
+                                <Grid size={{ xs: 12 }}>
                                     <FormProvider {...mainForm}>
                                         <form onSubmit={handleSubmit(onSubmit)}>
                                             <Stack spacing={2}>
@@ -222,18 +222,18 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                             </Stack>
                                         </form>
                                     </FormProvider>
-                                </Grid2>
+                                </Grid>
                                 {register &&
                                     <>
-                                        <Grid2 size={{ xs: 12 }}>
+                                        <Grid size={{ xs: 12 }}>
                                             <Divider />
-                                        </Grid2>
-                                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
                                             <Typography variant='h5'>
                                                 {t('misc_attendance')}
                                             </Typography>
-                                        </Grid2>
-                                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
                                             <FormControl fullWidth>
                                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
                                                     <DatePicker
@@ -247,14 +247,14 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                     />
                                                 </LocalizationProvider>
                                             </FormControl>
-                                        </Grid2>
-                                        <Grid2 size={{ xs: 12 }}>
+                                        </Grid>
+                                        <Grid size={{ xs: 12 }}>
                                             {attendanceQuery.isLoading || attendanceQuery.isFetching ? <LoadingCircle /> :
                                                 attendance ?
                                                     <FormProvider {...dateForm}>
                                                         <form onSubmit={dateForm.handleSubmit(onAttendanceSubmit)}>
-                                                            <Grid2 container spacing={2}>
-                                                                <Grid2 size={{ xs: 12, sm: 6 }}>
+                                                            <Grid container spacing={2}>
+                                                                <Grid size={{ xs: 12, sm: 6 }}>
                                                                     {attendance.checkInTime ?
                                                                         <Stack spacing={1}>
                                                                             <Controller
@@ -297,8 +297,8 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             {attendance.checkInLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkInLocation.distance)}m</Typography>}
                                                                         </Stack>
                                                                         : <Typography>{t('misc_check_in')}: -</Typography>}
-                                                                </Grid2>
-                                                                <Grid2 size={{ xs: 12, sm: 6 }}>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12, sm: 6 }}>
                                                                     {attendance.checkOutTime ?
                                                                         <Stack spacing={1}>
                                                                             <Controller
@@ -345,23 +345,23 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             {attendance.checkOutLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkOutLocation.distance)}m</Typography>}
                                                                         </Stack>
                                                                         : <Typography>{t('misc_check_out')}: -</Typography>}
-                                                                </Grid2>
-                                                                <Grid2 size={{ xs: 12, sm: 6 }}>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12, sm: 6 }}>
                                                                     <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color={"success"} type="submit" loading={saveAttendanceMutation.isPending}>
                                                                         {t('misc_save')}
                                                                     </LoadingButton>
-                                                                </Grid2>
-                                                                <Grid2 size={{ xs: 12 }}>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
                                                                     {postAttendanceMsg && <FeedbackMessage message={postAttendanceMsg} />}
-                                                                </Grid2>
-                                                            </Grid2>
+                                                                </Grid>
+                                                            </Grid>
                                                         </form>
                                                     </FormProvider>
                                                     :
                                                     <Typography variant='h6'>{t('srv_attendance_not_found')}</Typography>}
-                                        </Grid2>
+                                        </Grid>
                                     </>}
-                            </Grid2>
+                            </Grid>
                         </Stack>
                     </CardContent>
                 </Card>

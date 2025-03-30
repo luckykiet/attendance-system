@@ -1,4 +1,4 @@
-import { Button, Container, Grid2, Stack, Typography, Card, CardContent, IconButton, CardActions } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography, Card, CardContent, IconButton, CardActions } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { fetchRetail } from '@/api/retail';
 import useTranslation from '@/hooks/useTranslation';
@@ -74,8 +74,8 @@ export default function HomePage() {
 
   return (
     <Container sx={{ mb: 4, pt: 6 }}>
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
           {retail ? (
             <Stack spacing={2}>
               <Typography align="center" variant="h3" gutterBottom>
@@ -90,16 +90,16 @@ export default function HomePage() {
               {config.appName}
             </Typography>
           )}
-        </Grid2>
-        {checkPrivileges('addRegister', user?.role) && <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        {checkPrivileges('addRegister', user?.role) && <Grid size={{ xs: 12 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button variant="contained" onClick={handleCreateNewRegister}>
               {t('misc_add_workplace')}
             </Button>
           </Box>
-        </Grid2>}
+        </Grid>}
 
-        <Grid2 size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           {isRegistersFetching || isRegistersLoading || isRetailFetching || isRetailLoading ?
             <LoadingCircle /> :
             registers && registers.length ? (
@@ -107,11 +107,11 @@ export default function HomePage() {
                 <Typography align="center" variant="h5" gutterBottom>
                   {t('misc_workplaces')}: {registers.length}
                 </Typography>
-                <Grid2 container spacing={2}>
+                <Grid container spacing={2}>
                   {registers.map((register) => {
                     const { status, message } = getTodayWorkingHours(register.workingHours);
                     return (
-                      <Grid2 size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
+                      <Grid size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                         <Card variant="outlined" sx={{ position: 'relative' }}>
                           <CardContent>
                             <Typography variant="h6" gutterBottom>
@@ -152,18 +152,18 @@ export default function HomePage() {
                             </Button>
                           </CardActions>
                         </Card>
-                      </Grid2>
+                      </Grid>
                     );
                   })}
-                </Grid2>
+                </Grid>
               </Stack>
             ) : (
               <Typography align="center" variant="h5" gutterBottom>
                 {t('misc_no_workplace')}
               </Typography>
             )}
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </Container>
   );
 }

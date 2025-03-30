@@ -1,6 +1,6 @@
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import {
-    Grid2,
+    Grid,
     IconButton,
     Typography,
     Box,
@@ -34,8 +34,8 @@ const DayField = ({ day }) => {
         name: `breaks.${day}`,
     });
 
-    return <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
-        <Grid2 size={{ xs: 12 }}
+    return <Grid container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
+        <Grid size={{ xs: 12 }}
             sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -61,8 +61,8 @@ const DayField = ({ day }) => {
             >
                 <AddCircleIcon />
             </IconButton>
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
             <Stack spacing={2}>
                 {fields.map((field, index) => {
                     const key = `breaks.${day}[${index}]`;
@@ -71,8 +71,8 @@ const DayField = ({ day }) => {
                     const error = getFieldState(key)?.error || {};
 
                     return <Box component={Paper} sx={{ paddingX: 2, paddingY: 4 }} key={field.id}>
-                        <Grid2 container spacing={1} >
-                            <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Grid container spacing={1} >
+                            <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Stack direction="row" spacing={1}>
                                     <Typography variant="h6">{t('misc_name')}{":"}</Typography>
                                     <Typography variant="h6">{brk.name}</Typography>
@@ -89,8 +89,8 @@ const DayField = ({ day }) => {
                                         <DeleteForeverIcon />
                                     </IconButton>
                                 </Stack>
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12 }}>
                                 <Stack spacing={1}>
                                     <Stack direction="row" spacing={1}>
                                         <Typography variant="body1">{t('misc_maturity_period')}</Typography>
@@ -119,13 +119,13 @@ const DayField = ({ day }) => {
                                             )}</Typography>
                                     </Stack>
                                 </Stack>
-                            </Grid2>
-                        </Grid2>
+                            </Grid>
+                        </Grid>
                     </Box>
                 })}
             </Stack>
-        </Grid2>
-    </Grid2>
+        </Grid>
+    </Grid>
 }
 
 DayField.propTypes = {

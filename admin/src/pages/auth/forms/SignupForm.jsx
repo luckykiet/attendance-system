@@ -1,4 +1,4 @@
-import { Button, FormHelperText, Grid2, InputAdornment, TextField, IconButton } from '@mui/material';
+import { Button, FormHelperText, Grid, InputAdornment, TextField, IconButton } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { CheckRounded, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useEffect, useState } from 'react';
@@ -135,8 +135,8 @@ const SignupForm = () => {
     return (
         <FormProvider {...mainUseForm}>
             <form noValidate onSubmit={handleSubmit(onSubmit)}>
-                <Grid2 container spacing={3}>
-                    <Grid2 size={{ xs: 12 }}>
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="username"
                             control={control}
@@ -144,8 +144,8 @@ const SignupForm = () => {
                                 <TextField {...field} autoFocus autoComplete='username' variant="outlined" label={t('misc_username')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="email"
                             control={control}
@@ -153,8 +153,8 @@ const SignupForm = () => {
                                 <TextField {...field} autoComplete='email' variant="outlined" label={t('misc_email')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="tin"
                             control={control}
@@ -165,8 +165,8 @@ const SignupForm = () => {
                         {tinLoading && <FormHelperText>{t('misc_loading_data')}</FormHelperText>}
                         {tinError && <FormHelperText error>{t('srv_invalid_tin')}</FormHelperText>}
                         {tinFetched && !tinData && <FormHelperText>{t('srv_merchant_not_found')}</FormHelperText>}
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="name"
                             control={control}
@@ -174,8 +174,8 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_name')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="vin"
                             control={control}
@@ -183,8 +183,8 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_vin')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="address.street"
                             control={control}
@@ -192,8 +192,8 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_street')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 6 }}>
                         <Controller
                             name="address.city"
                             control={control}
@@ -201,8 +201,8 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_city')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 6 }}>
+                    </Grid>
+                    <Grid size={{ xs: 6 }}>
                         <Controller
                             name="address.zip"
                             control={control}
@@ -210,8 +210,8 @@ const SignupForm = () => {
                                 <TextField {...field} variant="outlined" label={t('misc_postal_code')} fullWidth error={fieldState.invalid} helperText={fieldState.invalid && t(fieldState.error.message)} />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="password"
                             control={control}
@@ -243,8 +243,8 @@ const SignupForm = () => {
                                 />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="confirmPassword"
                             control={control}
@@ -272,13 +272,13 @@ const SignupForm = () => {
                                 />
                             )}
                         />
-                    </Grid2>
+                    </Grid>
                     {postMsg && (
-                        <Grid2 size={{ xs: 12 }}>
+                        <Grid size={{ xs: 12 }}>
                             <FeedbackMessage message={postMsg} />
-                        </Grid2>
+                        </Grid>
                     )}
-                    <Grid2 size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }}>
                         <Button
                             disableElevation
                             disabled={signUpMutation.isPending}
@@ -289,8 +289,8 @@ const SignupForm = () => {
                         >
                             {t('misc_registration')}
                         </Button>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </form>
         </FormProvider>
     );

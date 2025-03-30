@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
     Container,
-    Grid2,
+    Grid,
     TextField,
     Switch,
     FormControlLabel,
@@ -198,8 +198,8 @@ export default function RegisterPage() {
                         <Typography variant="h5">{register ? `${register.name} - ${register._id}` : t('misc_add_workplace')}</Typography>
                         {register && <CopyButton value={register._id || ''} />}
                     </Stack>
-                    <Grid2 container spacing={2} sx={{ marginY: 2 }}>
-                        <Grid2 size={{ xs: 12 }}>
+                    <Grid container spacing={2} sx={{ marginY: 2 }}>
+                        <Grid size={{ xs: 12 }}>
                             <Stack spacing={1} direction={'row'} alignItems={'center'}>
                                 <Typography variant='h6'>{t('misc_general')}</Typography>
                                 <CustomPopover
@@ -215,8 +215,8 @@ export default function RegisterPage() {
                                     }
                                 />
                             </Stack>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Controller
                                 name="name"
                                 control={control}
@@ -231,8 +231,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <Controller
                                 name="address.street"
                                 control={control}
@@ -247,8 +247,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 3 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                             <Controller
                                 name="address.city"
                                 control={control}
@@ -263,8 +263,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 3 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                             <Controller
                                 name="address.zip"
                                 control={control}
@@ -279,12 +279,12 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <LocationPicker />
-                        </Grid2>
+                        </Grid>
 
-                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
                             <Controller
                                 name="location.latitude"
                                 control={control}
@@ -301,8 +301,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 4 }}>
                             <Controller
                                 name="location.longitude"
                                 control={control}
@@ -319,8 +319,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 4 }}>
                             <Controller
                                 name="location.allowedRadius"
                                 control={control}
@@ -337,14 +337,14 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Divider />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Typography variant='h6'>{t('misc_working_hours')}</Typography>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Accordion>
                                 <AccordionSummary
                                     expandIcon={<ExpandMore />}
@@ -360,8 +360,8 @@ export default function RegisterPage() {
                                     <OpeningTimeInputs />
                                 </AccordionDetails>
                             </Accordion>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Accordion>
                                 <AccordionSummary
                                     expandIcon={<ExpandMore />}
@@ -377,8 +377,8 @@ export default function RegisterPage() {
                                     <SpecificBreakInputs />
                                 </AccordionDetails>
                             </Accordion>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Accordion>
                                 <AccordionSummary
                                     expandIcon={<ExpandMore />}
@@ -394,14 +394,14 @@ export default function RegisterPage() {
                                     <BreaksInputs />
                                 </AccordionDetails>
                             </Accordion>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Divider />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Typography variant='h6'>{t('misc_settings')}</Typography>
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <Controller
                                 name="maxLocalDevices"
                                 control={control}
@@ -418,8 +418,8 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             {localDevices && localDevices.length > 0 ?
                                 <Accordion>
                                     <AccordionSummary
@@ -430,10 +430,10 @@ export default function RegisterPage() {
                                         {t('misc_local_devices')}
                                     </AccordionSummary>
                                     <AccordionDetails>
-                                        <Grid2 container spacing={2}>
+                                        <Grid container spacing={2}>
                                             {localDevices.map((device, index) => {
                                                 const distance = device.distance ? calculateKilometersFromMeters(device.distance) : '';
-                                                return <Grid2 key={index} size={{ xs: 12, sm: 6 }}>
+                                                return <Grid key={index} size={{ xs: 12, sm: 6 }}>
                                                     <Card>
                                                         <CardHeader title={device.deviceId} />
                                                         <CardContent>
@@ -447,15 +447,15 @@ export default function RegisterPage() {
                                                         </CardContent>
                                                         <CardActions><LoadingButton variant='contained' color='error' onClick={() => handleDeleteLocalDevice(device.deviceId)}>{t('misc_delete')}</LoadingButton></CardActions>
                                                     </Card>
-                                                </Grid2>
+                                                </Grid>
                                             })}
-                                        </Grid2>
+                                        </Grid>
                                     </AccordionDetails>
                                 </Accordion>
                                 :
                                 <Typography variant='h6'>{t('misc_no_local_device')}</Typography>}
-                        </Grid2>
-                        <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
                             <Controller
                                 name="isAvailable"
                                 control={control}
@@ -466,11 +466,11 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
-                        </Grid2>
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                        </Grid>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         {postMsg && <FeedbackMessage message={postMsg} />}
-                    </Grid2>
+                    </Grid>
                     <Stack direction={'row'} spacing={1} width={'100%'} alignItems={'center'} justifyContent={!_.isEmpty(errors) ? 'space-between' : 'flex-end'}>
                         {!_.isEmpty(errors) ? <FeedbackMessage message={new Error(t('misc_check_fields'))} /> : null}
                         <Stack direction={'row'} spacing={1}>

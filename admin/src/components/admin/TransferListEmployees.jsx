@@ -6,7 +6,7 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
-import Grid2 from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -336,8 +336,8 @@ export default function TransferListEmployees({ employeeId }) {
       <FormProvider {...mainForm}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            <Grid2 container spacing={2} justifyContent="center" alignItems="center">
-              <Grid2 size={{ xs: 12, md: 5 }}>
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+              <Grid size={{ xs: 12, md: 5 }}>
                 {registersQuery.isLoading || workingAtQuery.isLoading ? (
                   <LoadingCircle />
                 ) : (
@@ -349,9 +349,9 @@ export default function TransferListEmployees({ employeeId }) {
                     handleToggleAll={handleToggleAll}
                   />
                 )}
-              </Grid2>
-              <Grid2 size={{ xs: 12, md: 2 }}>
-                <Grid2 container direction="column" alignItems="center">
+              </Grid>
+              <Grid size={{ xs: 12, md: 2 }}>
+                <Grid container direction="column" alignItems="center">
                   <Button
                     sx={{ my: 0.5 }}
                     variant="outlined"
@@ -376,9 +376,9 @@ export default function TransferListEmployees({ employeeId }) {
                   >
                     &lt;
                   </Button>
-                </Grid2>
-              </Grid2>
-              <Grid2 size={{ xs: 12, md: 5 }}>
+                </Grid>
+              </Grid>
+              <Grid size={{ xs: 12, md: 5 }}>
                 {registersQuery.isLoading || workingAtQuery.isLoading ? (
                   <LoadingCircle />
                 ) : (
@@ -392,8 +392,8 @@ export default function TransferListEmployees({ employeeId }) {
                     workingAts={workingAts}
                   />
                 )}
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
             {postMsg && <FeedbackMessage message={postMsg} />}
             <LoadingButton
               sx={{ minWidth: '200px' }}
@@ -410,21 +410,21 @@ export default function TransferListEmployees({ employeeId }) {
       </FormProvider>
       {calculation.leftData.length > 0 && <>
         <Divider />
-        <Grid2 container spacing={2}>
-          <Grid2 size={{ xs: 12 }}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="h6" gutterBottom>
               {t('misc_working_at')}
             </Typography>
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             {calculation.leftData.map((register) => {
               const workingAt = workingAts.find((workingAt) => workingAt.registerId === register._id)
               return (
                 <WorkingAtForm key={register._id} employeeId={employeeId} register={register} workingAt={workingAt} />
               )
             })}
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </>}
     </Stack>
   )

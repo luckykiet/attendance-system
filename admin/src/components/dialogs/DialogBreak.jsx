@@ -1,6 +1,6 @@
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 import {
-    Grid2,
+    Grid,
     Typography,
     TextField,
     Box,
@@ -94,8 +94,8 @@ export const DialogBreak = ({
                 </DialogTitle>
                 <DialogContent>
                     <form id="break-form" onSubmit={handleSubmit(onSubmit)}>
-                        <Grid2 container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
-                            <Grid2 size={{ xs: 12 }}>
+                        <Grid container spacing={2} sx={{ px: 2, pt: 3, pb: 1 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <Controller
                                     name="name"
                                     control={control}
@@ -106,9 +106,9 @@ export const DialogBreak = ({
                                         </FormControl>
                                     )}
                                 />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={{ xs: 12, sm: 6 }}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Controller
                                     name="start"
                                     control={control}
@@ -128,9 +128,9 @@ export const DialogBreak = ({
                                         </FormControl>
                                     )}
                                 />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={{ xs: 12, sm: 6 }}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <Controller
                                     name="end"
                                     control={control}
@@ -150,9 +150,9 @@ export const DialogBreak = ({
                                         </FormControl>
                                     )}
                                 />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={{ xs: 12 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <Controller
                                     name="duration"
                                     control={control}
@@ -190,8 +190,8 @@ export const DialogBreak = ({
                                         );
                                     }}
                                 />
-                            </Grid2>
-                        </Grid2>
+                            </Grid>
+                        </Grid>
                     </form>
                 </DialogContent>
                 <DialogActions>

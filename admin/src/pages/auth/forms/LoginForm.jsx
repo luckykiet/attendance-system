@@ -1,4 +1,4 @@
-import { Link, Grid2, InputAdornment, Stack, Typography, TextField } from '@mui/material';
+import { Link, Grid, InputAdornment, Stack, Typography, TextField } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Password, Person, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useState } from 'react';
@@ -82,8 +82,8 @@ const LoginForm = () => {
     return (
         <FormProvider {...mainUseForm}>
             <form noValidate onSubmit={handleSubmit(onSubmit)}>
-                <Grid2 container spacing={3}>
-                    <Grid2 size={{ xs: 12 }}>
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="username"
                             control={control}
@@ -112,8 +112,8 @@ const LoginForm = () => {
                                 />
                             }}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
                         <Controller
                             name="password"
                             control={control}
@@ -153,8 +153,8 @@ const LoginForm = () => {
                                 />
                             )}
                         />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }} sx={{ mt: -1 }}>
+                    </Grid>
+                    <Grid size={{ xs: 12 }} sx={{ mt: -1 }}>
                         <Stack spacing={1}>
                             <Typography variant="body1" gutterBottom sx={{ py: 2 }}>
                                 {t('msg_do_not_have_account')}
@@ -179,13 +179,13 @@ const LoginForm = () => {
                                 </Link>
                             </Typography>
                         </Stack>
-                    </Grid2>
+                    </Grid>
                     {postMsg && (
-                        <Grid2 size={{ xs: 12 }}>
+                        <Grid size={{ xs: 12 }}>
                             <FeedbackMessage message={postMsg} />
-                        </Grid2>
+                        </Grid>
                     )}
-                    <Grid2 size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12 }}>
                         <LoadingButton
                             disableElevation
                             loading={loginMutation.isPending}
@@ -197,8 +197,8 @@ const LoginForm = () => {
                         >
                             {t('misc_login', { capitalize: true })}
                         </LoadingButton>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </form>
         </FormProvider>
     );

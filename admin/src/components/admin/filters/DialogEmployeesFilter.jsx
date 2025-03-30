@@ -6,7 +6,7 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
-  Grid2,
+  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -84,8 +84,8 @@ export default function DialogEmployeesFilter() {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Grid2 container sx={{ padding: 3 }} spacing={3}>
-          <Grid2 size={{ xs: 12, sm: 6 }}>
+        <Grid container sx={{ padding: 3 }} spacing={3}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
               name="isAvailable"
               control={control}
@@ -134,8 +134,8 @@ export default function DialogEmployeesFilter() {
                 </Stack>
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
               name="hasDeviceId"
               control={control}
@@ -184,8 +184,8 @@ export default function DialogEmployeesFilter() {
                 </Stack>
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button
