@@ -659,6 +659,7 @@ srv_failed_register_local_device	Failed to register local device	Đăng ký thi�
 srv_failed_to_add	failed to add	thêm mới bị lỗi 	chyba přidání
 srv_failed_to_authorize	Failed to authorize	Ủy quyền không thành công	Autorizace se nezdařila
 srv_failed_to_create	failed to create	tạo không thành công	založení selhalo
+srv_failed_to_create_missing_request	failed to create missing request	không thể tạo yêu cầu vắng mặt	chyba vytvoření žádosti o absenci
 srv_failed_to_create_pdf	Failed to create PDF	Tạo PDF không thành công	
 srv_failed_to_delete	failed to delete	xoá không thành công	smazání selhalo
 srv_failed_to_get_daily_attendance	Failed to get daily attendance	Lấy dữ liệu điểm danh hàng ngày thất bại	Získání denní docházky selhalo

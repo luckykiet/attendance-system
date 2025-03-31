@@ -33,5 +33,5 @@
     "concurrently": "^9.1.2",
     "npm-check-updates": "^17.1.16"
   },
-  "packageManager": "yarn@4.7.0"
+  "packageManager": "yarn@4.8.1"
 }

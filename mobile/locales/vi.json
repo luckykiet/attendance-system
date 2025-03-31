@@ -658,6 +658,7 @@
   "srv_failed_to_add": "thêm mới bị lỗi ",
   "srv_failed_to_authorize": "Ủy quyền không thành công",
   "srv_failed_to_create": "tạo không thành công",
+  "srv_failed_to_create_missing_request": "không thể tạo yêu cầu vắng mặt",
   "srv_failed_to_create_pdf": "Tạo PDF không thành công",
   "srv_failed_to_delete": "xoá không thành công",
   "srv_failed_to_get_daily_attendance": "Lấy dữ liệu điểm danh hàng ngày thất bại",

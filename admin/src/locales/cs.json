@@ -658,6 +658,7 @@
   "srv_failed_to_add": "chyba přidání",
   "srv_failed_to_authorize": "Autorizace se nezdařila",
   "srv_failed_to_create": "založení selhalo",
+  "srv_failed_to_create_missing_request": "chyba vytvoření žádosti o absenci",
   "srv_failed_to_create_pdf": "",
   "srv_failed_to_delete": "smazání selhalo",
   "srv_failed_to_get_daily_attendance": "Získání denní docházky selhalo",

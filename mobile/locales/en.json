@@ -658,6 +658,7 @@
   "srv_failed_to_add": "failed to add",
   "srv_failed_to_authorize": "Failed to authorize",
   "srv_failed_to_create": "failed to create",
+  "srv_failed_to_create_missing_request": "failed to create missing request",
   "srv_failed_to_create_pdf": "Failed to create PDF",
   "srv_failed_to_delete": "failed to delete",
   "srv_failed_to_get_daily_attendance": "Failed to get daily attendance",
