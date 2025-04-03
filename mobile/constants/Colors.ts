@@ -17,6 +17,7 @@ export const Colors = {
     buttonBackground: '#6200EE',
     buttonText: '#FFFFFF',
     spinner: '#333',
+    border: '#11181C',
   },
   dark: {
     text: '#ECEDEE',
@@ -28,6 +29,7 @@ export const Colors = {
     buttonBackground: '#BB86FC',
     buttonText: '#000000',
     spinner: '#FFF',
+    border: '#ECEDEE',
   },
   success: '#5cb85c',
   info: '#5bc0de',

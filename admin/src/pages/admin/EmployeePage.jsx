@@ -8,7 +8,7 @@ import useTranslation from '@/hooks/useTranslation';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import LoadingCircle from '@/components/LoadingCircle';
-import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee, createEmployeeDeviceRegistration } from '@/api/employee';
+import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee, createEmployeeDeviceRegistration, cancelPairingDevice } from '@/api/employee';
 import { checkPrivileges, getDefaultEmployee, REGEX } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
@@ -65,6 +65,7 @@ export default function EmployeePage() {
         handleSubmit,
         reset,
         setValue,
+        watch,
         formState: { errors },
     } = mainForm;
 
@@ -100,6 +101,18 @@ export default function EmployeePage() {
             setAlertMessage({ msg: data, severity: 'success' });
             queryClient.invalidateQueries(['employees']);
             navigate('/employees');
+        }
+    })
+
+    const cancelPairingEmployeeMutation = useMutation({
+        mutationFn: () => cancelPairingDevice(employeeId),
+        onError: (error) => {
+            setPostMsg(new Error(JSON.stringify(error)))
+        },
+        onSuccess: (data) => {
+            setAlertMessage({ msg: data, severity: 'success' });
+            queryClient.invalidateQueries(['employee', { employeeId }]);
+            queryClient.invalidateQueries(['employees']);
         }
     })
 
@@ -153,6 +166,8 @@ export default function EmployeePage() {
         );
     }
 
+    const isProvidingUpdate = createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending || cancelPairingEmployeeMutation.isPending || !_.isEmpty(errors)
+
     return (
         <Container maxWidth="lg" sx={{ mb: 4, pt: 6 }}>
             <Stack spacing={3}>
@@ -171,7 +186,7 @@ export default function EmployeePage() {
                                             <TextField
                                                 {...field}
                                                 fullWidth
-                                                label={t('misc_name')}
+                                                label={t('misc_full_name')}
                                                 variant="outlined"
                                                 error={fieldState.invalid}
                                                 helperText={fieldState.error?.message && t(fieldState.error.message)}
@@ -228,10 +243,16 @@ export default function EmployeePage() {
                                         name="registrationToken"
                                         control={control}
                                         render={({ field }) => {
-                                            const qrValue = config.MOBILE_INTENT && field.value ? `${config.MOBILE_INTENT}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${config.proxyUrl ? config.proxyUrl : `${protocol}${hostname}`}`)}` : '';
+                                            const qrValue = config.mobileIntent && field.value ? `${config.mobileIntent}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${config.proxyUrl ? config.proxyUrl : `${protocol}${hostname}`}`)}` : '';
                                             return qrValue ? (
                                                 <Stack sx={{ display: 'flex', justifyContent: 'center' }} spacing={2}>
-                                                    <Typography variant="subtitle1">{t('misc_registration_token')}</Typography>
+                                                    <Stack spacing={1} direction={'row'}>
+                                                        <Typography variant="subtitle1">{t('misc_registration_token')}</Typography>
+                                                        {!watch('deviceId') && <>
+                                                            <Typography variant="subtitle1">-</Typography>
+                                                            <Typography variant="subtitle1" color='error'>{t('misc_unpaired')}</Typography>
+                                                        </>}
+                                                    </Stack>
                                                     <QRCodeCanvas value={qrValue} size={150} />
                                                 </Stack>
                                             ) : (
@@ -273,15 +294,18 @@ export default function EmployeePage() {
                                             {employeeId ? t('misc_save') : t('misc_create')}
                                         </LoadingButton>
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => generateEmployeeTokenMutation.mutate()} loading={generateEmployeeTokenMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => generateEmployeeTokenMutation.mutate()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
                                                 {t('misc_generate_token')}
                                             </LoadingButton>
                                         }
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => generateEmployeeTokenMutation.mutate(true)} loading={generateEmployeeTokenMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => generateEmployeeTokenMutation.mutate(true)} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
                                                 {t('misc_generate_token_and_send')}
                                             </LoadingButton>
                                         }
+                                        {employee && <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => cancelPairingEmployeeMutation.mutate()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
+                                            {t('misc_cancel_device_pairing')}
+                                        </LoadingButton>}
                                         {employee && checkPrivileges('deleteEmployee', user?.role) &&
                                             <LoadingButton sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
                                                 {t('misc_delete')}

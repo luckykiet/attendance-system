@@ -9,15 +9,14 @@ const { sendMailEmployeeDeviceRegistration } = require('../../mail_sender');
 const dayjs = require('dayjs');
 const { CONFIG } = require('../../configs');
 
-const saveEmployeeRegistration = async ({ employeeId, retailId, tokenId = '' }) => {
-    if (tokenId) {
-        const foundToken = await Registration.findOne({ tokenId, employeeId, retailId });
+const saveEmployeeRegistration = async ({ employeeId, retailId }) => {
+    const foundToken = await Registration.findOne({ employeeId, retailId });
+    if (foundToken) {
         if (!foundToken.isDemo && dayjs().isAfter(dayjs(foundToken.createdAt).add(15, 'minute'))) {
             await Registration.deleteOne({ _id: foundToken._id });
         } else {
-            return tokenId;
+            return foundToken.tokenId;
         }
-
     }
     const newTokenId = crypto.randomBytes(16).toString('hex');
     const newRegistration = new Registration({ tokenId: newTokenId, employeeId, retailId });
@@ -149,11 +148,27 @@ const deleteEmployee = async (req, res, next) => {
     }
 };
 
+const cancelDevicePairing = async (req, res, next) => {
+    try {
+        const updatedEmployee = await Employee.findOneAndUpdate({ _id: req.params.id, retailId: req.user.retailId }, { $set: { deviceId: '', registrationToken: '', publicKey: '' } }, { new: true });
+
+        if (!updatedEmployee) {
+            throw new HttpError('srv_employee_not_found', 404);
+        }
+
+        await Registration.deleteOne({ employeeId: req.params.id, retailId: req.user.retailId });
+        return res.status(200).json({ success: true, msg: 'srv_employee_device_pairing_canceled' });
+    } catch (error) {
+        return next(utils.parseExpressErrors(error, 'srv_device_pairing_cancellation_failed', 400));
+    }
+};
+
 module.exports = {
     getEmployee,
     createEmployee,
     updateEmployee,
     deleteEmployee,
+    cancelDevicePairing,
     getEmployeeWorkingAt,
     employeeRegistration
 };

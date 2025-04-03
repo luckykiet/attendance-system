@@ -64,14 +64,6 @@ yarn install-all
 As default for development system will use _vcap.me_ domain
 1. Setup configs files
 
-[Admin](admin/src/configs/config.jsx)
-```
-JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-grecaptchaSiteKey - generated from Google Recaptcha v3
-googleMapsApiKey - generated from Google Maps API
-MOBILE_INTENT - scheme of mobile app
-PROXY_URL - only works in development; set if you use tunneling
-```
 [Server](server/configs/config.js)
 ```
 jwtSecret - a secret that use to sign tokens, MUST be same as server
@@ -92,7 +84,7 @@ mail_transport: {
 },
 ```
 
-2. Run app
+1. Run app
 ```
 yarn devhttps
 ```
@@ -101,15 +93,6 @@ yarn devhttps
 
 As default for development system will use _vcap.me_ domain
 1. Setup configs files
-
-[Admin](admin/src/configs/config.jsx)
-```
-JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-grecaptchaSiteKey - generated from Google Recaptcha v3
-googleMapsApiKey - generated from Google Maps API
-MOBILE_INTENT - scheme of mobile app
-PROXY_URL - only works in development; set if you use tunneling
-```
 [Server](server/configs/config.js)
 ```
 jwtSecret - a secret that use to sign tokens, MUST be same as server
@@ -130,7 +113,7 @@ mail_transport: {
 },
 ```
 
-2. Run app and mobile app
+1. Run app and mobile app
 ```
 On first terminal:
 yarn devhttps
@@ -143,13 +126,6 @@ yarn devmobile
 
 1. Setup configs files
 
-[Admin](admin/src/configs/config.jsx)
-```
-JWT_SECRET - a secret that use to sign tokens, MUST be same as server
-grecaptchaSiteKey - generated from Google Recaptcha v3
-googleMapsApiKey - generated from Google Maps API
-MOBILE_INTENT - scheme of mobile app
-```
 [Server](server/configs/config.js)
 ```
 jwtSecret - a secret that use to sign tokens, MUST be same as server
@@ -169,11 +145,11 @@ mail_transport: {
 },
 ```
 
-2. Deploy folder _server_ onto your server running NodeJS
-3. Build and deploy _Admin_, it will be served by server
+1. Deploy folder _server_ onto your server running NodeJS
+2. Build and deploy _Admin_, it will be served by server
 ```
 yarn build
 yarn deploy
 ```
-4. [Mobile instructions](/mobile/README.md)
-5. [Local instructions](/local/README.md)
+1. [Mobile instructions](/mobile/README.md)
+2. [Local instructions](/local/README.md)

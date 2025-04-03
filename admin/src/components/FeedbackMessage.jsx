@@ -10,6 +10,9 @@ const FeedbackMessage = ({ message }) => {
 
         try {
             const parsed = JSON.parse(input)
+            if (typeof parsed === 'string') {
+                return t(parsed)
+            }
             const parsedArray = Array.isArray(parsed) ? parsed : Array.isArray(parsed.errors) ? parsed.errors : null;
             if (parsedArray) {
                 return parsedArray

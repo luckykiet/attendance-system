@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { RegistrationForm } from '@/types/registration';
+import { RegistrationIntentData } from '@/types/intents';
 
 const UNIQUE_APP_ID_KEY = 'unique_app_id';
 const URLS_KEY = 'urls';
@@ -14,6 +15,8 @@ type AppState = {
     isGettingLocation: boolean;
     registration: RegistrationForm | null;
     localDevices: string[];
+    intent: RegistrationIntentData | null;
+    setIntent: (intent: RegistrationIntentData | null) => void;
     setAppId: (appId: string) => void;
     setLocation: (location: Location) => void;
     setLocalDevices: (localDevices: string[]) => void;
@@ -28,6 +31,7 @@ type AppState = {
 
 const initStates = {
     appId: null,
+    intent: null as RegistrationIntentData | null,
     urls: [],
     location: null as Location | null,
     isGettingLocation: false,
@@ -47,6 +51,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     setRegistration: (registration) => set({ registration }),
 
     setLocalDevices: (localDevices) => set({ localDevices }),
+
+    setIntent: (intent) => set({ intent }),
 
     loadAppId: async () => {
         try {

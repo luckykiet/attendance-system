@@ -2,27 +2,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
-import { RegistrationIntentData } from '@/types/intents';
 import { delay, isValidUrl, parseAttendanceUrl } from '@/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import _ from 'lodash';
 import ThemedText from './theme/ThemedText';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import ThemedView from './theme/ThemedView';
 
 export default function CameraScanner() {
     const { t } = useTranslation();
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const { getRegistration } = useRegistrationApi();
-    const { setRegistration } = useAppStore();
-    const [intentData, setIntentData] = useState<RegistrationIntentData | null>(null);
+    const { setRegistration, intent, setIntent } = useAppStore();
+
     const [lastScannedItem, setLastScannedItem] = useState<string | null>(null);
     const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
     const navigation = useNavigation();
     const queryClient = useQueryClient();
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
 
     useFocusEffect(
         useCallback(() => {
@@ -41,9 +44,9 @@ export default function CameraScanner() {
     };
 
     const registrationFormQuery = useQuery<unknown, Error | string>({
-        queryKey: ['registrationForm', intentData],
-        queryFn: () => getRegistration(intentData?.domain || '', intentData?.tokenId || ''),
-        enabled: !!intentData?.domain && !!intentData?.tokenId && !_.isEmpty(intentData),
+        queryKey: ['registrationForm', intent],
+        queryFn: () => getRegistration(intent?.domain || '', intent?.tokenId || ''),
+        enabled: !!intent?.domain && !!intent?.tokenId && !_.isEmpty(intent),
         refetchOnWindowFocus: false,
         retry: false,
         staleTime: Infinity,
@@ -61,9 +64,8 @@ export default function CameraScanner() {
         await delay(1000);
 
         const parsedData = parseAttendanceUrl(data);
-
         if (parsedData.params.domain && parsedData.params.tokenId) {
-            setIntentData({
+            setIntent({
                 path: parsedData.path,
                 domain: parsedData.params.domain,
                 tokenId: parsedData.params.tokenId,
@@ -75,25 +77,25 @@ export default function CameraScanner() {
 
     const handleClearScannedItem = () => {
         setLastScannedItem(null);
-        setIntentData(null);
+        setIntent(null);
         queryClient.removeQueries({ queryKey: ['registrationForm'] });
     }
 
     useEffect(() => {
-        if (!registrationFormQuery.isStale && !_.isEmpty(intentData) && !_.isEmpty(intentData.domain) && !_.isEmpty(intentData.tokenId)) {
+        if (!registrationFormQuery.isStale && !_.isEmpty(intent) && !_.isEmpty(intent.domain) && !_.isEmpty(intent.tokenId)) {
             registrationFormQuery.refetch();
         }
-    }, [intentData]);
+    }, [intent]);
 
     useEffect(() => {
-        if (intentData && registrationFormQuery.error) {
+        if (intent && registrationFormQuery.error) {
             Alert.alert(t('misc_error'), t(typeof registrationFormQuery.error === 'string' ? registrationFormQuery.error : registrationFormQuery.error.message || 'misc_error'));
         }
-    }, [registrationFormQuery.error, intentData]);
+    }, [registrationFormQuery.error, intent]);
 
     useEffect(() => {
         if (registrationForm) {
-            setRegistration({ ...registrationForm, tokenId: intentData?.tokenId || '', domain: intentData?.domain || '' });
+            setRegistration({ ...registrationForm, tokenId: intent?.tokenId || '', domain: intent?.domain || '' });
             navigation.navigate("(hidden)/registration" as never);
             handleClearScannedItem();
         }
@@ -120,43 +122,73 @@ export default function CameraScanner() {
             </View>
         );
     }
+
     return (
-        <View style={styles.container}>
-            {isCameraActive && <CameraView
-                style={styles.camera}
-                facing={facing}
-                onBarcodeScanned={handleBarCodeScanned}
-                barcodeScannerSettings={{
-                    barcodeTypes: ["qr"],
-                }}>
-                {(registrationFormQuery.isLoading || registrationFormQuery.isFetching) ? (
-                    <View style={styles.loadingOverlay}>
-                        <ActivityIndicator size="large" color="#fff" />
-                        <Text style={styles.loadingText}>{t('misc_loading_data')}</Text>
+        <View style={[
+            styles.container,
+            styles.outer,
+            isDark ? styles.darkBackground : styles.lightBackground
+        ]}>
+            {isCameraActive && (
+                <CameraView
+                    style={[
+                        styles.camera,
+                        styles.inner,
+                        isDark ? styles.darkBackground : styles.lightBackground
+                    ]}
+                    facing={facing}
+                    onBarcodeScanned={handleBarCodeScanned}
+                    barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+                >
+                    {(registrationFormQuery.isLoading || registrationFormQuery.isFetching) ? (
+                        <View style={styles.loadingOverlay}>
+                            <ActivityIndicator size="large" color="#fff" />
+                            <ThemedText style={styles.loadingText}>{t('misc_loading_data')}</ThemedText>
+                        </View>
+                    ) : (
+                        <View style={styles.qrOverlay}>
+                            <View style={[
+                                styles.qrFrame,
+                                isDark ? styles.darkShadow : styles.lightShadow,
+                            ]} />
+                            <ThemedText style={styles.qrMessage}>{t('misc_align_camera_to_qr_code')}</ThemedText>
+                        </View>
+                    )}
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+                            <Ionicons name="camera-reverse" size={30} color="white" />
+                        </TouchableOpacity>
                     </View>
-                ) :
-                    <View style={styles.qrOverlay}>
-                        <View style={styles.qrFrame} />
-                        <Text style={styles.qrMessage}>{t('misc_align_camera_to_qr_code')}</Text>
-                    </View>}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-                        <Ionicons name="camera-reverse" size={30} color="white" />
-                    </TouchableOpacity>
-                </View>
-            </CameraView>}
-            {lastScannedItem && (
-                <View style={styles.scannedItemContainer}>
-                    <Text style={styles.scannedItemData}>{lastScannedItem}</Text>
+                </CameraView>
+            )}
+            {(lastScannedItem || intent) && (
+                <ThemedView style={styles.scannedItemContainer}>
+                    {intent ? (
+                        <View style={{ flex: 1 }}>
+                            <ThemedText style={styles.scannedItemData}>
+                                {t('misc_domain')}: {intent.domain}
+                            </ThemedText>
+                            <ThemedText style={styles.scannedItemData}>
+                                {t('misc_token')}: {intent.tokenId}
+                            </ThemedText>
+                        </View>
+                    ) : (
+                        <ThemedText style={styles.scannedItemData}>{lastScannedItem}</ThemedText>
+                    )}
+
                     <TouchableOpacity onPress={handleClearScannedItem}>
                         <Ionicons name="close-circle" size={24} color="gray" />
                     </TouchableOpacity>
-                </View>
+                </ThemedView>
             )}
             <ThemedText style={styles.message}>{t('misc_camera_to_do_registration')}</ThemedText>
         </View>
     );
 }
+
+const OUTER_RADIUS = 16;
+const PADDING = 8;
+const INNER_RADIUS = OUTER_RADIUS - PADDING;
 
 const styles = StyleSheet.create({
     container: {
@@ -166,6 +198,33 @@ const styles = StyleSheet.create({
     message: {
         textAlign: 'center',
         paddingBottom: 10,
+    },
+    outer: {
+        borderRadius: OUTER_RADIUS,
+        padding: PADDING,
+    },
+    inner: {
+        borderRadius: INNER_RADIUS,
+    },
+    darkBackground: {
+        backgroundColor: '#000',
+    },
+    lightBackground: {
+        backgroundColor: '#94a3b8',
+    },
+    darkBorder: {
+        borderColor: '#94a3b8',
+        borderWidth: 1,
+    },
+    lightBorder: {
+        borderColor: '#000',
+        borderWidth: 1,
+    },
+    darkShadow: {
+        shadowColor: '#222',
+    },
+    lightShadow: {
+        shadowColor: '#999',
     },
     camera: {
         flex: 1,
@@ -181,28 +240,28 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         alignItems: 'center',
     },
-    text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-    },
     qrOverlay: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
     },
     qrFrame: {
-        width: 200,
-        height: 200,
-        borderWidth: 4,
-        borderColor: 'white',
-        borderRadius: 10,
+        width: 240,
+        height: 240,
+        borderWidth: 3,
+        borderRadius: 20,
+        backgroundColor: 'transparent',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.7,
+        shadowRadius: 6,
+        elevation: 8,
+        borderColor: '#fff',
     },
     qrMessage: {
         marginTop: 10,
-        color: 'white',
         fontSize: 18,
         textAlign: 'center',
+        color: '#fff',
     },
     loadingOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -216,6 +275,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     scannedItemContainer: {
+        display: 'flex',
         padding: 14,
         backgroundColor: '#f0f0f0',
         alignItems: 'center',

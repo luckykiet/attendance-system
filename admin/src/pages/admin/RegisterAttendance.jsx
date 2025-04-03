@@ -170,7 +170,7 @@ const RegisterAttendance = () => {
                                                         <Table>
                                                             <TableHead>
                                                                 <TableRow>
-                                                                    <TableCell>{t('misc_name')}</TableCell>
+                                                                    <TableCell>{t('misc_full_name')}</TableCell>
                                                                     <TableCell>{t('misc_working_hour')}</TableCell>
                                                                     <TableCell>{t('misc_check_in')}</TableCell>
                                                                     <TableCell>{t('misc_check_out')}</TableCell>

@@ -209,7 +209,7 @@ export default function UserPage() {
                                                 <TextField
                                                     {...field}
                                                     fullWidth
-                                                    label={t('misc_name')}
+                                                    label={t('misc_full_name')}
                                                     variant="outlined"
                                                     error={fieldState.invalid}
                                                     helperText={fieldState.error?.message && t(fieldState.error.message)}

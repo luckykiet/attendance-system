@@ -70,6 +70,7 @@ export default function RegisterPage() {
         setValue,
         formState: { errors },
     } = mainForm;
+    
     const createNewRegisterMutation = useMutation({
         mutationFn: (data) => createRegister(data),
         onError: (error) => {

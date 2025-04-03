@@ -10,6 +10,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
 import { LocationRequest } from '@/components/LocationRequest';
 import TodayCompanies from '@/components/TodayCompanies';
+import InitialInstruction from '@/components/InitialInstruction';
 
 const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -22,15 +23,18 @@ const HomeScreen: React.FC = () => {
         <ThemedText type="title" style={styles.title}>{t(appName)}</ThemedText>
 
         {urls.length === 0 && (
-          <Link href="/(tabs)/settings" asChild>
-            <TouchableOpacity style={styles.setupButton}>
-              <ThemedText type="link" style={styles.setupButtonText}>{t('misc_setup_urls')}</ThemedText>
-            </TouchableOpacity>
-          </Link>
+          <>
+            <InitialInstruction />
+            <Link href="/(tabs)/settings" asChild>
+              <TouchableOpacity style={styles.setupButton}>
+                <ThemedText type="link" style={styles.setupButtonText}>{t('misc_setup_urls')}</ThemedText>
+              </TouchableOpacity>
+            </Link>
+          </>
         )}
 
         {urls.length > 0 && <TodayCompanies />}
-        <LocationRequest />
+        {urls.length > 0 && <LocationRequest />}
       </ThemedView>
     </MainScreenLayout>
   );

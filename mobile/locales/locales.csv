@@ -21,6 +21,7 @@ misc_active	active	trực tiếp	aktivní
 misc_actual_workplace	actual workplace	nơi việc hiện tại	aktuální pracoviště
 misc_add	Add	Tạo	Přidat
 misc_add_faq	Add faq	Thêm FAQ	Přidat FAQ
+misc_add_manually	add manually	thêm thủ công	ručně přidat
 misc_add_new_bill	Add new bill	Tạo hoá đơn mới	Přidat novou fakturu
 misc_add_new_form	Add new form	Tạo đơn mới	Přidat nový formulář
 misc_add_new_merchant	Add new merchant	Tạo nhà bán buôn mới	Přidat nový obchodník
@@ -86,6 +87,7 @@ misc_by_status	by status	theo trạng thái	podle statusu
 misc_cafe	café	quán nước	kavárna
 misc_camera_to_do_registration	use camera to scan registration QR Code	dùng camera để scan mã QR đăng ký	používejte kameru pro skenování registračního QR kódu
 misc_cancel	Cancel	Huỷ	Zrušit
+misc_cancel_device_pairing	cancel device pairing	hủy ghép nối thiết bị	zrušit párování zařízení
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
@@ -154,12 +156,15 @@ misc_delimiter	delimiter	phân cách	oddělovač
 misc_details	details	chi tiết	podrobnosti
 misc_device	Device	Máy	Zařízení
 misc_device_id	device ID	ID thiết bị	ID zařízení
+misc_device_pairing	device pairing	ghép nối thiết bị	spárování zařízení
+misc_device_registration	Device registration	Đăng ký thiết bị	Registrace zařízení
 misc_devices	Devices	Máy	Zařízení
 misc_dinner	Dinner	Bữa tối	Večeře
 misc_disable	disable	tắt	zakázat
 misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
 misc_documents	documents	tài liệu	dokumenty
+misc_domain	domain	tên miền	doména
 misc_download	download	tải về	stáhnout
 misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
 misc_draft_saved	draft saved	đã lưu nháp	koncept uložen
@@ -175,6 +180,8 @@ misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
 misc_enable	enable	bật	povolit
 misc_enable_in_settings	enable in settings	bật trong cài đặt	povolit v nastavení
+misc_enter_token	Enter token	Nhập mã	Nastavit token
+misc_enter_url	Enter URL	Nhập URL	Nastavit URL
 misc_error	chyba	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
@@ -232,6 +239,11 @@ misc_import	import	import	import
 misc_import_leads	import leads	tải lên leads	nahrát leady
 misc_imported	imported	đã import	importováno
 misc_imported_list	imported list	danh sách nhập	importovaný seznam
+misc_initial_instruction_1	You will need to register this device through your employer using QR Code or manually.	Bạn cần đăng ký thiết bị này thông qua nhà tuyển dụng bằng mã QR hoặc thủ công.	Budete muset zaregistrovat toto zařízení prostřednictvím svého zaměstnavatele pomocí QR kódu nebo ručně.
+misc_initial_instruction_2	Please scan the QR code received from the employer.	Vui lòng quét mã QR nhận được từ nhà tuyển dụng.	Prosím, naskenujte QR kód přijatý od zaměstnavatele.
+misc_initial_instruction_3	If you failed to scan the QR code, you can enter the server url of the provider.	Trong trường hợp không quét được mã QR, bạn có thể nhập URL máy chủ của nhà phát hành.	Pokud se vám nepodaří naskenovat QR kód, můžete zadat adresu serveru poskytovatele.
+misc_initial_instruction_4	You can add many workplaces by following the same process.	Bạn có thể thêm nhiều nơi làm việc bằng cách làm theo quy trình tương tự.	Můžete přidat více pracovišť podle stejného procesu.
+misc_initial_instructions	initial instructions	hướng dẫn ban đầu	úvodní instrukce
 misc_installation_fee	installation fees	phí lắp đặt	poplatky za instalace
 misc_installed	installed	đã lắp	instalováno
 misc_instructions	Instructions	Hướng dẫn	Instrukce
@@ -462,6 +474,7 @@ misc_stores	stores	cửa hàng	provozovny
 misc_stores_list	Stores list	Danh sách cửa hàng	Seznam provozoven
 misc_stores_shortcut	stores	cửa hàng	prov.
 misc_street	Street	Đường	Ulice
+misc_submit	Submit	Gửi	Odeslat
 misc_submitted	submitted	đã nhận	zadáno
 misc_summary	summary	tổng kết	shrnutí
 misc_supervisor	supervisor	cấp trên	vedoucí
@@ -499,6 +512,7 @@ misc_to_recover_password	Recover password	Khôi phục mật khẩu	Obnovte hesl
 misc_to_register	Register	Đăng ký	Registrovat
 misc_to_search	Search	Tìm	Vyhledávat
 misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
+misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
 misc_total_price	total price	tiền tổng	celková částka
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
@@ -512,6 +526,7 @@ misc_unavailable	unavailable	không có sẵn 	nedostupný
 misc_unconfirmed	unconfirmed	chưa xác nhận	nepotvrzeno
 misc_undefined	undefined	chưa xác định	nedefinováno
 misc_unlock	unlock	mở khoá	odemknout
+misc_unpaired	unpaired	chưa ghép nối	nepárováno
 misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
 misc_untitled	untitled	chưa điền	nezadáno
@@ -634,6 +649,7 @@ srv_created	created	đã được tạo	vytvořeno
 srv_daily_attendance_not_found	daily attendance not found	Không tìm thấy dữ liệu điểm danh	Denní docházka nenalezena
 srv_device_already_registered	device already registered	thiết bị đã được đăng ký	zařízení je již registrováno
 srv_device_not_found	device not found	không tìm thấy thiết bị	zařízení nenalezeno
+srv_device_pairing_cancellation_failed	device pairing cancellation failed	đã hủy ghép nối thiết bị thất bại	zrušení párování zařízení selhalo
 srv_device_unregistered	Device unregistered	Thiết bị đã hủy đăng ký	Zařízení odregistrováno
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
@@ -641,6 +657,7 @@ srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
 srv_email_exists	E-mail exists	E-mail tồn tại	E-mail existuje
 srv_email_required	Email is required	Email là bắt buộc	E-mail je povinný
+srv_employee_device_pairing_canceled	employee device pairing canceled	đã hủy ghép nối thiết bị nhân viên	zrušeno párování zařízení zaměstnance
 srv_employee_exists	employee exists	nhân viên đã tồn tại	zaměstnanec již existuje
 srv_employee_not_employed	you are not employed for this workplace	bạn không được chỉ định làm việc tại đây	nejste zaměstnán na tomto pracovišti
 srv_employee_not_found	employee not found	không tìm thấy nhân viên	zaměstnanec nenalezen

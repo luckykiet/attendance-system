@@ -73,3 +73,19 @@ export const deleteEmployee = async (id, recaptcha) => {
     }
     return msg;
 };
+
+export const cancelPairingDevice = async (id, recaptcha) => {
+    const { data: { success, msg } } = await axios.put(`/cancel-pairing/${id}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                recaptcha: recaptcha,
+                action: 'cancelpairing',
+            },
+        }
+    );
+    if (!success) {
+        throw new Error(msg);
+    }
+    return msg;
+};

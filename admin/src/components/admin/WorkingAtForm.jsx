@@ -14,11 +14,10 @@ import {
     FormLabel
 } from '@mui/material';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, getDaysOfWeek, getDefaultAttendance, getDefaultWorkingAt, TIME_FORMAT, timeStartEndValidation } from '@/utils';
+import { DAYS_OF_WEEK, getDefaultAttendance, getDefaultWorkingAt, TIME_FORMAT } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -37,52 +36,10 @@ import { fetchAttendanceByEmployeeAndDate } from '@/api/attendances';
 import LoadingCircle from '../LoadingCircle';
 import { updateAttendance } from '@/api/attendance';
 import { useConfigStore } from '@/stores/config';
+import attendanceSchema from '@/schemas/attendance';
+import WorkingAtSchema from '@/schemas/working-at';
 
 dayjs.extend(customParseFormat);
-
-const workingHourSchema = z.object({
-    start: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-    end: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
-    isAvailable: z.boolean(),
-}).refine(({ start, end }) => timeStartEndValidation(start, end), {
-    message: 'srv_close_time_before_open_time',
-    path: ['close'],
-})
-
-const workingAtSchema = z.object({
-    position: z.string().optional(),
-    workingHours: z.object({
-        ...getDaysOfWeek(true).reduce((acc, day) => {
-            acc[day] = workingHourSchema;
-            return acc;
-        }, {})
-    }),
-});
-
-const attendanceSchema = z.object({
-    _id: z.string().optional(),
-    checkInTime: z
-        .any()
-        .refine((time) => time === null || (dayjs.isDayjs(time) && time.isValid()), {
-            message: 'srv_invalid_time_format',
-        }),
-    checkOutTime: z
-        .any()
-        .refine((time) => time === null || (dayjs.isDayjs(time) && time.isValid()), {
-            message: 'srv_invalid_time_format',
-        }),
-}).refine(
-    ({ checkInTime, checkOutTime }) => {
-        if (dayjs.isDayjs(checkInTime) && dayjs.isDayjs(checkOutTime)) {
-            return checkInTime.isBefore(checkOutTime);
-        }
-        return true;
-    },
-    {
-        message: 'srv_close_time_before_open_time',
-        path: ['checkOutTime'],
-    }
-);
 
 export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const { t } = useTranslation()
@@ -103,7 +60,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const { reset: attendanceReset } = dateForm;
 
     const mainForm = useForm({
-        resolver: zodResolver(workingAtSchema),
+        resolver: zodResolver(WorkingAtSchema),
         defaultValues: getDefaultWorkingAt(),
     });
 

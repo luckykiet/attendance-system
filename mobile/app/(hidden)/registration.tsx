@@ -122,7 +122,7 @@ const RegistrationScreen: React.FC = () => {
                             </ThemedView>
                         )}
                         <ThemedView style={styles.inputContainer}>
-                            <ThemedText style={styles.label}>{t('misc_name')}</ThemedText>
+                            <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
                             <Controller
                                 control={control}
                                 name="name"
