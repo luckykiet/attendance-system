@@ -6,6 +6,7 @@ import {
     Platform,
     ScrollView,
     View,
+    Alert,
 } from 'react-native';
 
 import ThemedView from '@/components/theme/ThemedView';
@@ -16,9 +17,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
 import { useAppStore } from '@/stores/useAppStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useRegistrationApi } from '@/api/useRegistrationApi';
+import { useNavigation } from 'expo-router';
 
 interface DevicePairingModalProps {
     isOpen: boolean;
@@ -34,9 +37,13 @@ type RegistrationFormValues = z.infer<typeof RegistrationSchema>;
 
 const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
     const { t } = useTranslation();
-    const { intent, setIntent } = useAppStore();
+    const { intent, setIntent, setRegistration } = useAppStore();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const navigation = useNavigation();
+
+    const { getRegistration } = useRegistrationApi();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const { control, setValue, handleSubmit, reset } = useForm<RegistrationFormValues>({
         resolver: zodResolver(RegistrationSchema),
@@ -47,10 +54,27 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
         mode: 'all',
     });
 
+    const registrationFormMutation = useMutation({
+        mutationFn: ({ domain, tokenId }: { domain: string, tokenId: string }) =>
+            getRegistration(domain, tokenId),
+        onSuccess: (registrationForm, variables) => {
+            setRegistration({
+                ...registrationForm,
+                domain: variables.domain,
+                tokenId: variables.tokenId,
+            });
+            setIntent(null);
+            setIsOpen(false);
+            navigation.navigate("(hidden)/registration" as never);
+        },
+        onError: (error) => {
+            const errorMessage = typeof error === 'string' ? error === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error : error.message ? error.message === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error.message : 'misc_error';
+            setErrorMessage(errorMessage);
+        },
+    });
+
     const handleManualSubmit = (data: RegistrationFormValues) => {
-        console.log('Form submitted:', data);
-        setIsOpen(false);
-        setIntent(null);
+        registrationFormMutation.mutate(data);
     };
 
     useEffect(() => {
@@ -61,6 +85,13 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
             reset();
         }
     }, [intent]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            Alert.alert(t('misc_error'), t(errorMessage));
+            setErrorMessage(null);
+        }
+    }, [errorMessage]);
 
     return (
         <Modal
@@ -78,14 +109,15 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                         <ThemedView
                             style={[
                                 styles.modalContent,
-                                isDark ? styles.modalDark : styles.modalLight
+                                isDark ? styles.modalDark : styles.modalLight,
                             ]}
                         >
                             <ThemedText style={styles.modalTitle}>
                                 {t('misc_device_registration')}
                             </ThemedText>
 
-                            <View style={styles.inputWrapper}>
+                            <ThemedView style={styles.inputContainer}>
+                                <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
                                 <Controller
                                     control={control}
                                     name="domain"
@@ -98,14 +130,20 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                                 placeholder={`${t('misc_enter_url')}...`}
                                                 autoCapitalize="none"
                                                 autoCorrect={false}
+                                                style={styles.input}
                                             />
-                                            {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message ? t(fieldState.error?.message) : t('misc_required')}</ThemedText>}
+                                            {fieldState.invalid && fieldState.error?.message && (
+                                                <ThemedText style={styles.errorText}>
+                                                    {t(fieldState.error?.message)}
+                                                </ThemedText>
+                                            )}
                                         </>
                                     )}
                                 />
-                            </View>
+                            </ThemedView>
 
-                            <View style={styles.inputWrapper}>
+                            <ThemedView style={styles.inputContainer}>
+                                <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
                                 <Controller
                                     control={control}
                                     name="tokenId"
@@ -118,18 +156,23 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                                 placeholder={`${t('misc_enter_token')}...`}
                                                 autoCapitalize="none"
                                                 autoCorrect={false}
+                                                style={styles.input}
                                             />
-                                            {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message ? t(fieldState.error?.message) : t('misc_required')}</ThemedText>}
+                                            {fieldState.invalid && fieldState.error?.message && (
+                                                <ThemedText style={styles.errorText}>
+                                                    {t(fieldState.error?.message)}
+                                                </ThemedText>
+                                            )}
                                         </>
-
                                     )}
                                 />
-                            </View>
+                            </ThemedView>
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
                                     style={[styles.button, styles.submitButton]}
                                     onPress={handleSubmit(handleManualSubmit)}
+                                    disabled={registrationFormMutation.isPending}
                                 >
                                     <ThemedText style={styles.submitButtonText}>
                                         {t('misc_submit')}
@@ -188,8 +231,19 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         textAlign: 'center',
     },
-    inputWrapper: {
+    inputContainer: {
+        width: '100%',
         marginBottom: 16,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 4,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 8,
+        borderRadius: 4,
     },
     buttonRow: {
         flexDirection: 'row',

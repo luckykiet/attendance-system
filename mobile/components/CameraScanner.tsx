@@ -3,12 +3,11 @@ import { useRegistrationApi } from '@/api/useRegistrationApi';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
 import { delay, isValidUrl, parseAttendanceUrl } from '@/utils';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useNavigation } from 'expo-router';
-import _ from 'lodash';
 import ThemedText from './theme/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import ThemedView from './theme/ThemedView';
@@ -19,11 +18,13 @@ export default function CameraScanner() {
     const [permission, requestPermission] = useCameraPermissions();
     const { getRegistration } = useRegistrationApi();
     const { setRegistration, intent, setIntent } = useAppStore();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const [lastScannedItem, setLastScannedItem] = useState<string | null>(null);
     const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
+    const [scanLocked, setScanLocked] = useState<boolean>(false);
+
     const navigation = useNavigation();
-    const queryClient = useQueryClient();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
@@ -43,63 +44,72 @@ export default function CameraScanner() {
         });
     };
 
-    const registrationFormQuery = useQuery<unknown, Error | string>({
-        queryKey: ['registrationForm', intent],
-        queryFn: () => getRegistration(intent?.domain || '', intent?.tokenId || ''),
-        enabled: !!intent?.domain && !!intent?.tokenId && !_.isEmpty(intent),
-        refetchOnWindowFocus: false,
-        retry: false,
-        staleTime: Infinity,
+    const registrationFormMutation = useMutation({
+        mutationFn: ({ domain, tokenId }: { domain: string, tokenId: string }) =>
+            getRegistration(domain, tokenId),
+        onSuccess: (registrationForm, variables) => {
+            setRegistration({ ...registrationForm, tokenId: variables.tokenId, domain: variables.domain });
+            navigation.navigate("(hidden)/registration" as never);
+            handleClearScannedItem();
+        },
+        onError: (error) => {
+            const errorMessage = typeof error === 'string' ? error === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error : error.message ? error.message === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error.message : 'misc_error';
+            setErrorMessage(errorMessage);
+        }
     });
-
-    const { data: registrationForm } = registrationFormQuery;
 
     const toggleCameraFacing = () => {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
 
     const handleBarCodeScanned = async ({ data }: { data: string }) => {
-        if (data === lastScannedItem) return;
+        if (scanLocked || data === lastScannedItem) return;
+
         setLastScannedItem(data);
-        await delay(1000);
+        setScanLocked(true);
+        setIntent(null);
 
         const parsedData = parseAttendanceUrl(data);
+
         if (parsedData.params.domain && parsedData.params.tokenId) {
-            setIntent({
+            const intentObj = {
                 path: parsedData.path,
                 domain: parsedData.params.domain,
                 tokenId: parsedData.params.tokenId,
-            });
+            };
+
+            setIntent(intentObj);
+            if (registrationFormMutation.isIdle) {
+                registrationFormMutation.mutate({
+                    domain: intentObj.domain,
+                    tokenId: intentObj.tokenId,
+                });
+            }
+
         } else if (isValidUrl(data)) {
             Linking.openURL(data);
         }
+
+        await delay(2000);
+        setScanLocked(false);
     };
 
     const handleClearScannedItem = () => {
         setLastScannedItem(null);
         setIntent(null);
-        queryClient.removeQueries({ queryKey: ['registrationForm'] });
+        setScanLocked(false);
+        registrationFormMutation.reset();
     }
 
     useEffect(() => {
-        if (!registrationFormQuery.isStale && !_.isEmpty(intent) && !_.isEmpty(intent.domain) && !_.isEmpty(intent.tokenId)) {
-            registrationFormQuery.refetch();
+        if (errorMessage) {
+            Alert.alert(
+                t('misc_error'),
+                t(errorMessage)
+            );
+            setErrorMessage(null);
         }
-    }, [intent]);
-
-    useEffect(() => {
-        if (intent && registrationFormQuery.error) {
-            Alert.alert(t('misc_error'), t(typeof registrationFormQuery.error === 'string' ? registrationFormQuery.error : registrationFormQuery.error.message || 'misc_error'));
-        }
-    }, [registrationFormQuery.error, intent]);
-
-    useEffect(() => {
-        if (registrationForm) {
-            setRegistration({ ...registrationForm, tokenId: intent?.tokenId || '', domain: intent?.domain || '' });
-            navigation.navigate("(hidden)/registration" as never);
-            handleClearScannedItem();
-        }
-    }, [registrationForm]);
+    }, [errorMessage]);
 
     useEffect(() => {
         if (!permission) {
@@ -140,7 +150,7 @@ export default function CameraScanner() {
                     onBarcodeScanned={handleBarCodeScanned}
                     barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
                 >
-                    {(registrationFormQuery.isLoading || registrationFormQuery.isFetching) ? (
+                    {registrationFormMutation.isPending ? (
                         <View style={styles.loadingOverlay}>
                             <ActivityIndicator size="large" color="#fff" />
                             <ThemedText style={styles.loadingText}>{t('misc_loading_data')}</ThemedText>
@@ -175,7 +185,6 @@ export default function CameraScanner() {
                     ) : (
                         <ThemedText style={styles.scannedItemData}>{lastScannedItem}</ThemedText>
                     )}
-
                     <TouchableOpacity onPress={handleClearScannedItem}>
                         <Ionicons name="close-circle" size={24} color="gray" />
                     </TouchableOpacity>

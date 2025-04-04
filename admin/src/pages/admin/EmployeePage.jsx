@@ -152,6 +152,28 @@ export default function EmployeePage() {
         })
     }
 
+    const handleCancelPairing = () => {
+        setConfirmBox({
+            mainText: `${t('misc_cancel_device_pairing')} ${employee.name}?`,
+            onConfirm: () => {
+                cancelPairingEmployeeMutation.mutate();
+            },
+        })
+    }
+
+    const handleGenerateToken = (isSend = false) => {
+        if (watch('deviceId')) {
+            setConfirmBox({
+                mainText: `${t('misc_this_will_unpair_current_device')}. ${t('misc_want_to_continue')}?`,
+                onConfirm: () => {
+                    generateEmployeeTokenMutation.mutate(isSend);
+                },
+            })
+        } else {
+            generateEmployeeTokenMutation.mutate(isSend);
+        }
+    }
+
     useEffect(() => {
         if (employee) {
             reset(employee);
@@ -243,7 +265,8 @@ export default function EmployeePage() {
                                         name="registrationToken"
                                         control={control}
                                         render={({ field }) => {
-                                            const qrValue = config.mobileIntent && field.value ? `${config.mobileIntent}registration?tokenId=${field.value}&domain=${encodeURIComponent(`${config.proxyUrl ? config.proxyUrl : `${protocol}${hostname}`}`)}` : '';
+                                            const domain = `${config.proxyUrl ? config.proxyUrl : `${protocol}${hostname}`}`;
+                                            const qrValue = config.mobileIntent && field.value ? `${config.mobileIntent}registration?tokenId=${field.value}&domain=${encodeURIComponent(domain)}` : '';
                                             return qrValue ? (
                                                 <Stack sx={{ display: 'flex', justifyContent: 'center' }} spacing={2}>
                                                     <Stack spacing={1} direction={'row'}>
@@ -253,16 +276,20 @@ export default function EmployeePage() {
                                                             <Typography variant="subtitle1" color='error'>{t('misc_unpaired')}</Typography>
                                                         </>}
                                                     </Stack>
-                                                    <QRCodeCanvas value={qrValue} size={150} />
+                                                    <Grid container spacing={2} >
+                                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                                            <QRCodeCanvas value={qrValue} size={150} />
+                                                        </Grid>
+                                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                                            <Stack spacing={1}>
+                                                                <Typography variant="subtitle1">{t('misc_domain')}: {domain}</Typography>
+                                                                <Typography variant="subtitle1">Token ID: {field.value}</Typography>
+                                                            </Stack>
+                                                        </Grid>
+                                                    </Grid>
                                                 </Stack>
                                             ) : (
-                                                <TextField
-                                                    {...field}
-                                                    fullWidth
-                                                    label={t('misc_registration_token')}
-                                                    variant="outlined"
-                                                    disabled
-                                                />
+                                                watch('deviceId') ? <Typography variant="subtitle1" color='success'>{t('misc_device_paired')}</Typography> : <Typography color='error' variant="subtitle1">{t('misc_unpaired')}</Typography>
                                             )
                                         }
                                         }
@@ -294,16 +321,16 @@ export default function EmployeePage() {
                                             {employeeId ? t('misc_save') : t('misc_create')}
                                         </LoadingButton>
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => generateEmployeeTokenMutation.mutate()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
-                                                {t('misc_generate_token')}
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => handleGenerateToken()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
+                                                {t(watch('registrationToken') || watch('deviceId') ? 'misc_regenerate_token' : 'misc_generate_token')}
                                             </LoadingButton>
                                         }
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => generateEmployeeTokenMutation.mutate(true)} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
-                                                {t('misc_generate_token_and_send')}
+                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => handleGenerateToken(true)} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
+                                                {t(watch('registrationToken') || watch('deviceId') ? 'misc_regenerate_token_and_send' : 'misc_generate_token_and_send')}
                                             </LoadingButton>
                                         }
-                                        {employee && <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => cancelPairingEmployeeMutation.mutate()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
+                                        {employee && <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => handleCancelPairing()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
                                             {t('misc_cancel_device_pairing')}
                                         </LoadingButton>}
                                         {employee && checkPrivileges('deleteEmployee', user?.role) &&

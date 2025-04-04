@@ -116,7 +116,7 @@ const RegistrationScreen: React.FC = () => {
                         {registration.retail && (
                             <ThemedView style={styles.inputContainer}>
                                 <ThemedText style={styles.label}>{t('misc_workplace')}:</ThemedText>
-                                <ThemedText>{registration.retail.name}</ThemedText>
+                                <ThemedText style={styles.workplaceName}>{registration.retail.name}</ThemedText>
                                 <ThemedText>{registration.retail.address?.street}</ThemedText>
                                 <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>
                             </ThemedView>
@@ -219,6 +219,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+    },
+    workplaceName: {
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     inputContainer: {
         width: '100%',
