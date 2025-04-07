@@ -27,6 +27,7 @@ misc_add_new_form	Add new form	Tạo đơn mới	Přidat nový formulář
 misc_add_new_merchant	Add new merchant	Tạo nhà bán buôn mới	Přidat nový obchodník
 misc_add_payment_terminal	Add payment terminal	Tạo máy trả thẻ	Přidat platební terminál
 misc_add_reference	add reference	tạo kết nối	vytvořit odkaz
+misc_add_shift	add shift	thêm ca	přidat směnu
 misc_add_store	Add store	Thêm cửa hàng	Přidat provozovnu
 misc_add_url	add URL	thêm URL	přidat URL
 misc_add_workplace	add workplace	thêm nơi làm việc mới	přidat nové pracoviště
@@ -88,6 +89,7 @@ misc_cafe	café	quán nước	kavárna
 misc_camera_to_do_registration	use camera to scan registration QR Code	dùng camera để scan mã QR đăng ký	používejte kameru pro skenování registračního QR kódu
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_cancel_device_pairing	cancel device pairing	hủy ghép nối thiết bị	zrušit párování zařízení
+misc_cancel_pairing_succeed 	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
@@ -116,6 +118,7 @@ misc_commercial_activity	commercial activity	hoạt động thương mại	obcho
 misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
 misc_confirm	Confirm	Xác nhận	Potvrdit
+misc_confirm_cancel_device_pairing	Confirm cancel device pairing	Xác nhận hủy kết nối thiết bị	Potvrdit zrušení párování zařízení
 misc_confirm_check_in	confirm check in	xác nhận check in	potvrdit příchod
 misc_confirm_check_out	confirm check out	xác nhận check out	potvrdit odchod
 misc_confirm_date	confirmation date	ngày xác nhận	den potvrzení
@@ -158,6 +161,7 @@ misc_device	Device	Máy	Zařízení
 misc_device_id	device ID	ID thiết bị	ID zařízení
 misc_device_paired	device paired	thiết bị đã ghép nối	zařízení spárováno
 misc_device_pairing	device pairing	ghép nối thiết bị	spárování zařízení
+misc_device_pairing_failed	Device pairing failed	Ghép nối thiết bị thất bại	Párování zařízení selhalo
 misc_device_registration	Device registration	Đăng ký thiết bị	Registrace zařízení
 misc_devices	Devices	Máy	Zařízení
 misc_dinner	Dinner	Bữa tối	Večeře
@@ -317,6 +321,7 @@ misc_move_from	move from	chuyển từ 	odkazován od
 misc_move_status_to	move status to	chuyển trạng thái thành	přepnout do statusu
 misc_move_to	move to	chuyển đến	odkazován na
 misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
+misc_my_profile	my profile	thông tin cá nhân	osobní profil
 misc_my_today_workplaces	my today working places	nơi làm việc hôm nay của tôi	moje dnešní pracoviště
 misc_my_working_hours	my working hours	thời gian làm việc của tôi	moje pracovní doba
 misc_name	Name	Tên	Název
@@ -419,6 +424,7 @@ misc_regenerate_token_and_send	regenerate token and send	tạo lại token và g
 misc_register_instruction_1	In this section you can create or edit a workplace.	Trong phần này, bạn có thể tạo hoặc chỉnh sửa nơi làm việc.	V této sekci můžete vytvořit nebo upravit pracoviště.
 misc_registration	Registration	Đăng ký	Registrace
 misc_registration_token	Registration token	mã đăng ký	registrační token
+misc_remove	remove	xoá	odstranit
 misc_remove_item	Remove item	Xoá mục	Odstranit položku
 misc_renew_password	Renew password	Khôi phục mật khẩu	Obnova hesla
 misc_required	Required	Cần thiết	Požadováno
@@ -565,6 +571,7 @@ misc_workplace_working_hours	Working hours	Giờ làm việc	Pracovní doba
 misc_workplaces	workplaces	nơi làm việc	pracoviště
 misc_year	year	năm	rok
 misc_yes	yes	có	ano
+misc_you_have_no_shift_assigned	you have no shift assigned	bạn chưa được phân ca	ještě nemáte přidělený směn
 misc_you_must_register_device	you must register your device	bạn phải đăng ký thiết bị này	musíte registrovat toto zařízení
 misc_you_will_not_see_workplace_until_add_again	you will not see the workplaces until you add URL again	bạn sẽ không nhìn thấy nơi làm việc cho đến khi bạn thêm lại URL	neuvidíte pracoviště, dokud znovu nepřidáte URL
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
@@ -680,6 +687,7 @@ srv_failed_make_attendance	failed to make attendance	điểm danh thất bại	n
 srv_failed_register_local_device	Failed to register local device	Đăng ký thiết bị cục bộ không thành công	Registrace lokálního zařízení selhala
 srv_failed_to_add	failed to add	thêm mới bị lỗi 	chyba přidání
 srv_failed_to_authorize	Failed to authorize	Ủy quyền không thành công	Autorizace se nezdařila
+srv_failed_to_cancel_pairing	Failed to cancel pairing	Không thể hủy ghép nối	nelze zrušit párování
 srv_failed_to_connect_to_server	failed to connect to server	kết nối đến máy chủ thất bại	nelze se připojit k serveru
 srv_failed_to_create	failed to create	tạo không thành công	založení selhalo
 srv_failed_to_create_missing_request	failed to create missing request	không thể tạo yêu cầu vắng mặt	chyba vytvoření žádosti o absenci
@@ -866,6 +874,7 @@ srv_terminal_not_found	Terminal not found	Không tìm thấy thiết bị thanh 
 srv_terminal_updated	Terminal updated	Thiết bị thanh toán đã cập nhật	Terminál aktualizován
 srv_tin_required	TIN is required	IČO là bắt buộc	IČO je povinné
 srv_token_expired	Token expired	Mã thông báo đã hết hạn	Token vypršel
+srv_token_verification_failed	token verification failed	xác thực mã không thành công	ověření tokenu selhalo
 srv_transaction_created	Transaction created	Giao dịch đã được tạo	Transakce vytvořena
 srv_transactions_checked	transactions checked	đã kiểm tra giao dịch	transakce zkontrolovány
 srv_transactions_empty	transactions are empty	giao dịch trống	transakce jsou prázdné

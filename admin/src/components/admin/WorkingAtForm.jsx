@@ -11,13 +11,17 @@ import {
     AccordionSummary,
     Divider,
     FormControl,
-    FormLabel
+    FormLabel,
+    Button,
+    FormControlLabel,
+    FormGroup,
+    Switch,
 } from '@mui/material';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, getDefaultAttendance, getDefaultWorkingAt, TIME_FORMAT } from '@/utils';
+import { DAYS_OF_WEEK, daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, TIME_FORMAT } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -26,7 +30,6 @@ import { useSetAlertMessage } from '@/stores/root';
 import { createOrUpdateWorkingAt } from '@/api/working-at';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import FeedbackMessage from '../FeedbackMessage';
-import WorkingHoursInputs from '../WorkingHoursInputs';
 import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -36,7 +39,7 @@ import { fetchAttendanceByEmployeeAndDate } from '@/api/attendances';
 import LoadingCircle from '../LoadingCircle';
 import { updateAttendance } from '@/api/attendance';
 import { useConfigStore } from '@/stores/config';
-import attendanceSchema from '@/schemas/attendance';
+import AttendanceSchema from '@/schemas/attendance';
 import WorkingAtSchema from '@/schemas/working-at';
 
 dayjs.extend(customParseFormat);
@@ -53,7 +56,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
 
     const dateForm = useForm({
         mode: 'all',
-        resolver: zodResolver(attendanceSchema),
+        resolver: zodResolver(AttendanceSchema),
         defaultValues: getDefaultAttendance(),
     });
 
@@ -64,7 +67,17 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
         defaultValues: getDefaultWorkingAt(),
     });
 
-    const { watch, control, handleSubmit, reset, formState: { dirtyFields, errors } } = mainForm;
+    const { watch, control, handleSubmit, reset, setValue, formState: { dirtyFields, errors } } = mainForm;
+    
+    const shiftFieldArrays = {
+        mon: useFieldArray({ control, name: 'shifts.mon' }),
+        tue: useFieldArray({ control, name: 'shifts.tue' }),
+        wed: useFieldArray({ control, name: 'shifts.wed' }),
+        thu: useFieldArray({ control, name: 'shifts.thu' }),
+        fri: useFieldArray({ control, name: 'shifts.fri' }),
+        sat: useFieldArray({ control, name: 'shifts.sat' }),
+        sun: useFieldArray({ control, name: 'shifts.sun' }),
+    };
 
     const attendanceQuery = useQuery({
         queryKey: ['employee-attendance', { employeeId, date, registerId: register._id }],
@@ -92,7 +105,6 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
         },
         onSuccess: (data) => {
             setAlertMessage({ msg: 'srv_updated', severity: 'success' });
-            console.log(data)
             attendanceReset({ ...data, checkInTime: data.checkInTime ? dayjs(data.checkInTime) : null, checkOutTime: data.checkOutTime ? dayjs(data.checkOutTime) : null });
         }
     })
@@ -171,7 +183,162 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                     )}
                                                 />
                                                 <Typography variant="h5">{t('misc_working_hours')}</Typography>
-                                                <WorkingHoursInputs />
+
+                                                {getDaysOfWeek(true).map((day) => {
+                                                    const { fields, append, remove } = shiftFieldArrays[day];
+
+                                                    return (
+                                                        <Stack key={day} spacing={1}>
+                                                            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                                <Typography variant="h6">{t(daysOfWeeksTranslations[day].name)}</Typography>
+                                                                <Button variant="outlined" onClick={() => append(getDefaultShift())}>
+                                                                    {t('misc_add_shift')}
+                                                                </Button>
+                                                            </Stack>
+                                                            <Stack spacing={4}>
+                                                                {fields.map((field, index) => {
+                                                                    const fieldKey = `shifts.${day}.${index}`;
+                                                                    return <Grid key={field.id} container spacing={2}>
+                                                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                                                            <Controller
+                                                                                name={`${fieldKey}.start`}
+                                                                                control={control}
+                                                                                render={({ field, fieldState }) => (
+                                                                                    <FormControl fullWidth>
+                                                                                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
+                                                                                            <TimePicker
+                                                                                                {...field}
+                                                                                                value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
+                                                                                                onChange={(date) => {
+                                                                                                    const formattedDate = date.format(TIME_FORMAT);
+                                                                                                    const endTime = dayjs(watch(`${fieldKey}.end`), TIME_FORMAT);
+                                                                                                    const isOverNight = date.isAfter(endTime);
+
+                                                                                                    setValue(`${fieldKey}.isOverNight`, isOverNight);
+                                                                                                    field.onChange(formattedDate);
+                                                                                                }}
+                                                                                                label={t('msg_from')}
+                                                                                                id={`picker-${day}-${index}-start`}
+                                                                                                format={TIME_FORMAT}
+                                                                                                disabled={!watch(`${fieldKey}.isAvailable`)}
+                                                                                                views={['hours', 'minutes']}
+                                                                                                slotProps={{
+                                                                                                    textField: {
+                                                                                                        fullWidth: true,
+                                                                                                        variant: 'outlined',
+                                                                                                        error: fieldState.invalid,
+                                                                                                        helperText: fieldState.invalid && t(fieldState.error.message),
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </LocalizationProvider>
+                                                                                    </FormControl>
+                                                                                )}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                                                            <Controller
+                                                                                name={`${fieldKey}.end`}
+                                                                                control={control}
+                                                                                render={({ field, fieldState }) => (
+                                                                                    <FormControl fullWidth>
+                                                                                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="cs">
+                                                                                            <TimePicker
+                                                                                                {...field}
+                                                                                                value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
+                                                                                                onChange={(date) => {
+                                                                                                    const formattedDate = date.format(TIME_FORMAT);
+                                                                                                    const startTime = dayjs(watch(`${fieldKey}.start`), TIME_FORMAT);
+                                                                                                    const isOverNight = startTime.isAfter(date);
+
+                                                                                                    setValue(`${fieldKey}.isOverNight`, isOverNight);
+                                                                                                    field.onChange(formattedDate);
+                                                                                                }}
+                                                                                                label={t('msg_to')}
+                                                                                                id={`picker-${day}-${index}-end`}
+                                                                                                format={TIME_FORMAT}
+                                                                                                disabled={!watch(`${fieldKey}.isAvailable`)}
+                                                                                                views={['hours', 'minutes']}
+                                                                                                slotProps={{
+                                                                                                    textField: {
+                                                                                                        fullWidth: true,
+                                                                                                        variant: 'outlined',
+                                                                                                        error: fieldState.invalid,
+                                                                                                        helperText: fieldState.invalid && t(fieldState.error.message),
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </LocalizationProvider>
+                                                                                    </FormControl>
+                                                                                )}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid size={{ xs: 12 }}>
+                                                                            <Grid container spacing={2}>
+                                                                                <Grid size={{ xs: 6 }}>
+                                                                                    <Controller
+                                                                                        name={`${fieldKey}.isOverNight`}
+                                                                                        control={control}
+                                                                                        render={({ field }) =>
+                                                                                            field.value ? (
+                                                                                                <Typography variant="body1" color="warning">
+                                                                                                    {t('misc_over_night')}
+                                                                                                </Typography>
+                                                                                            ) : null
+                                                                                        }
+                                                                                    />
+                                                                                </Grid>
+                                                                                <Grid size={{ xs: 6 }}>
+                                                                                    <Typography variant="body1">
+                                                                                        {t('misc_duration')}:{' '}
+                                                                                        {getDurationLabel(
+                                                                                            watch(`${fieldKey}.start`),
+                                                                                            watch(`${fieldKey}.end`),
+                                                                                        )}
+                                                                                    </Typography>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        </Grid>
+                                                                        <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'start' }}>
+                                                                            <Controller
+                                                                                name={`${fieldKey}.isAvailable`}
+                                                                                control={control}
+                                                                                render={({ field: { ref, ...field } }) => (
+                                                                                    <FormGroup>
+                                                                                        <FormControlLabel
+                                                                                            inputRef={ref}
+                                                                                            label={t('misc_available')}
+                                                                                            labelPlacement="start"
+                                                                                            control={
+                                                                                                <Switch
+                                                                                                    size="large"
+                                                                                                    checked={field.value}
+                                                                                                    {...field}
+                                                                                                    color="success"
+                                                                                                    onBlur={handleSubmit}
+                                                                                                    id={`switch-${day}-${index}-isAvailable`}
+                                                                                                />
+                                                                                            }
+                                                                                        />
+                                                                                    </FormGroup>
+                                                                                )}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'end' }}>
+                                                                            <Button color="error" onClick={() => remove(index)}>
+                                                                                {t('misc_remove')}
+                                                                            </Button>
+                                                                        </Grid>
+                                                                        <Grid size={{ xs: 12 }}>
+                                                                            <Divider />
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                })}
+                                                            </Stack>
+                                                        </Stack>
+                                                    );
+                                                })}
+
                                                 {postMsg && <FeedbackMessage message={postMsg} />}
                                                 <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color={workingAt ? "primary" : "success"} type="submit" loading={saveWorkingAtMutation.isPending} disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}>
                                                     {workingAt ? t('misc_save') : t('misc_create')}

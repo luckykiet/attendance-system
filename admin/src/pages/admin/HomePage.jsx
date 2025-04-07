@@ -120,7 +120,26 @@ export default function HomePage() {
                             <Typography variant="body2" color="textSecondary">
                               {register.address.street}, {register.address.city}, {register.address.zip}
                             </Typography>
-                            <Typography
+
+                            {register.isAvailable && <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                color: status === 'open' ? 'success.main' : 'error.main',
+                              }}
+                            >
+                              {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}`}
+                            </Typography>}
+                            {register.isAvailable && <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                color: status === 'open' ? 'success.main' : 'error.main',
+                              }}
+                            >
+                              {t(message)}
+                            </Typography>}
+                            {!register.isAvailable && <Typography
                               variant="body2"
                               sx={{
                                 mt: 1,
@@ -128,16 +147,7 @@ export default function HomePage() {
                               }}
                             >
                               {register.isAvailable ? t('misc_active') : t('misc_unavailable')}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                color: status === 'open' ? 'success.main' : 'error.main',
-                              }}
-                            >
-                              {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}: ${t(message)}`}
-                            </Typography>
+                            </Typography>}
                           </CardContent>
                           {checkPrivileges('editRegister', user?.role) && <IconButton
                             onClick={() => handleEditRegister(register._id)}
@@ -146,7 +156,7 @@ export default function HomePage() {
                             <EditIcon />
                           </IconButton>}
 
-                          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+                          <CardActions sx={{ display: 'flex', justifyContent: 'start' }}>
                             <Button onClick={() => navigate(`/attendance/${register._id}`)} variant='contained'>
                               {t('misc_attendances')}
                             </Button>

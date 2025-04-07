@@ -1,3 +1,4 @@
+const Retail = require('../../models/Retail');
 const Register = require('../../models/Register');
 const Employee = require('../../models/Employee');
 const WorkingAt = require('../../models/WorkingAt');
@@ -28,18 +29,25 @@ const getTodayWorkplaces = async (req, res, next) => {
             return res.status(200).json({ success: true, msg: [] });
         }
 
-        const dateToUse = date ? dayjs(date) : dayjs();
-        const dayIndex = dateToUse.day();
-        const dayKey = DAYS_OF_WEEK[dayIndex];
-
-        const workingHourKey = `workingHours.${dayKey}.isAvailable`;
-
         // get only the registerIds where the employee is working today
-        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, [workingHourKey]: true, isAvailable: true }).select('registerId workingHours').exec();
+        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, isAvailable: true }).select('registerId shifts').exec();
 
         if (!workingAts.length) {
             return res.status(200).json({ success: true, msg: [] });
         }
+
+        const dateToUse = date ? dayjs(date) : dayjs();
+        const dayIndex = dateToUse.day();
+        const dayKey = DAYS_OF_WEEK[dayIndex];
+        let todayShifts = [];
+        workingAts.forEach(wa => {
+            const shifts = wa.shifts instanceof Map ? Object.fromEntries(wa.shifts) : wa.shifts;
+            if (Array.isArray(shifts[dayKey])) {
+                todayShifts = shifts[dayKey].filter(s => s.isAvailable);
+            }
+            delete wa.shifts;
+            wa.shifts[dayKey] = todayShifts;
+        });
 
         const dailyAttendances = await DailyAttendance.find({ date: parseInt(dateToUse.format('YYYYMMDD')), registerId: { $in: workingAts.map((wa) => wa.registerId) } }).exec();
         const attendances = await Attendance.find({ dailyAttendanceId: { $in: dailyAttendances.map((da) => da._id) } }).select('registerId checkInTime checkOutTime').exec()
@@ -57,7 +65,7 @@ const getTodayWorkplaces = async (req, res, next) => {
 
             registerObj.checkInTime = attendance?.checkInTime || null;
             registerObj.checkOutTime = attendance?.checkOutTime || null;
-            registerObj.employeeWorkingHours = workingAt.workingHours;
+            registerObj.shifts = workingAt.shifts;
 
             const regLongitude = registerObj.location.longitude;
             const regLatitude = registerObj.location.latitude;
@@ -78,24 +86,63 @@ const getTodayWorkplaces = async (req, res, next) => {
 
 const getMyWorkingPlaces = async (req, res, next) => {
     try {
-        // get the employee(s) by the deviceId
-        const employees = await Employee.find({ deviceId: req.deviceId }).select('retailId').exec();
+        const defaultResponse = { success: true, msg: { workingAts: [], registers: [], employees: [], retails: [] } };
+
+        const employees = await Employee.find({ deviceId: req.deviceId, isAvailable: true })
+            .select('retailId name phone email')
+            .exec();
 
         if (!employees.length) {
-            return res.status(200).json({ success: true, msg: { workingAts: [], registers: [] } });
+            return res.status(200).json(defaultResponse);
         }
 
-        // get only the registerIds where the employee is working
-        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, isAvailable: true }).select('registerId workingHours').exec();
+        const employeeIds = employees.map(e => e._id);
+
+        let workingAts = await WorkingAt.find({ employeeId: { $in: employeeIds }, isAvailable: true })
+            .select('registerId shifts position employeeId')
+            .exec();
 
         if (!workingAts.length) {
-            return res.status(200).json({ success: true, msg: { workingAts: [], registers: [] } });
+            return res.status(200).json(defaultResponse);
         }
 
-        // get all registers near the employee, where the employee is working at and belongs to the same company
-        const registers = await Register.find({ _id: { $in: workingAts.map(w => w.registerId) } }).select('name workingHours address');
+        workingAts.forEach(wa => {
+            const shifts = wa.shifts instanceof Map ? Object.fromEntries(wa.shifts) : wa.shifts;
+            for (const day in shifts) {
+                if (Array.isArray(shifts[day])) {
+                    shifts[day] = shifts[day].filter(s => s.isAvailable);
+                }
+            }
+            wa.shifts = shifts;
+        });
 
-        return res.status(200).json({ success: true, msg: { registers, workingAts } });
+        const registerIds = workingAts.map(w => w.registerId);
+
+        const registers = await Register.find({ _id: { $in: registerIds }, isAvailable: true })
+            .select('retailId name workingHours address')
+            .exec();
+
+        const availableRegisterIds = registers.map(r => r._id.toString());
+
+        workingAts = workingAts.filter(wa => availableRegisterIds.includes(wa.registerId.toString()));
+
+        const usedEmployeeIds = new Set(workingAts.map(wa => wa.employeeId.toString()));
+        const filteredEmployees = employees.filter(emp => usedEmployeeIds.has(emp._id.toString()));
+
+        const retailIds = filteredEmployees.map(emp => emp.retailId);
+        const retails = await Retail.find({ _id: { $in: retailIds } })
+            .select('name address tin vin')
+            .exec();
+
+        return res.status(200).json({
+            success: true,
+            msg: {
+                retails,
+                registers,
+                workingAts,
+                employees: filteredEmployees,
+            },
+        });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));
     }

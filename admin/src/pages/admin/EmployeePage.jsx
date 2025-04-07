@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
@@ -316,7 +316,7 @@ export default function EmployeePage() {
                                     {postMsg && <FeedbackMessage message={postMsg} />}
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>
-                                    <Stack direction="row" spacing={1}>
+                                    <ButtonGroup fullWidth>
                                         <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
                                             {employeeId ? t('misc_save') : t('misc_create')}
                                         </LoadingButton>
@@ -337,7 +337,7 @@ export default function EmployeePage() {
                                             <LoadingButton sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
                                                 {t('misc_delete')}
                                             </LoadingButton>}
-                                    </Stack>
+                                    </ButtonGroup>
                                 </Grid>
                             </Grid>
                         </form>

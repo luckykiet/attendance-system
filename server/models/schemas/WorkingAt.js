@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { setUpdatedAt } = require('./utils');
-
+const Shift = require('./Shift');
+const { DAY_KEYS } = require('../../configs');
 
 const WorkingAtSchema = new Schema(
     {
@@ -9,7 +10,17 @@ const WorkingAtSchema = new Schema(
         registerId: { type: Schema.Types.ObjectId, required: true },
         position: { type: String, trim: true },
         userId: { type: Schema.Types.ObjectId, required: true },
-        isAvailable: { type: Boolean, default: true }
+        isAvailable: { type: Boolean, default: true },
+        shifts: {
+            type: Map,
+            of: [Shift],
+            default: () =>
+                DAY_KEYS.reduce((acc, day) => {
+                    acc[day] = [];
+                    return acc;
+                }, {}),
+        }
+
     },
     {
         timestamps: true,

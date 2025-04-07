@@ -94,10 +94,17 @@ export const getDefaultUser = () => ({
 export const getDefaultWorkingAt = () => ({
   registerId: '',
   position: '',
-  workingHours: getDaysOfWeek(true).reduce((acc, day) => {
-    acc[day] = getDefaultWorkingHour();
+  shifts: getDaysOfWeek(true).reduce((acc, day) => {
+    acc[day] = [];
     return acc;
   }, {}),
+});
+
+export const getDefaultShift = () => ({
+  start: '08:00',
+  end: '17:00',
+  isOverNight: false,
+  isAvailable: true,
 });
 
 export const getDefaultAttendance = () => ({

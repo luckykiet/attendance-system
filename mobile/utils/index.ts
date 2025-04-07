@@ -1,6 +1,10 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DAYS_OF_WEEK } from '@/constants/Days';
+import JWT from 'expo-jwt';
+import { SupportedAlgorithms } from 'expo-jwt/dist/types/algorithms';
+import dayjs from 'dayjs';
 
 export const capitalizeFirstLetterOfString = (str: string) => {
     if (!str || str.length === 0) return ''
@@ -110,3 +114,23 @@ export const checkReinstallation = async () => {
         await AsyncStorage.setItem('isFreshInstall', 'true');
     }
 };
+
+const dayOrderMap = DAYS_OF_WEEK.reduce((acc, day, index) => {
+    acc[day] = index;
+    return acc;
+}, {} as Record<string, number>);
+
+export const sortByDayOfWeek = <T extends { day: string }>(array: T[]): T[] => {
+    return array.slice().sort((a, b) => {
+        const aOrder = dayOrderMap[a.day as keyof typeof dayOrderMap] ?? 0;
+        const bOrder = dayOrderMap[b.day as keyof typeof dayOrderMap] ?? 0;
+        return aOrder - bOrder;
+    });
+};
+
+export const signJwt = (payload: Record<string, unknown>, secret: string) => {
+    if (!payload || !secret) {
+        return null;
+    }
+    return JWT.encode({ ...payload, timestamp: dayjs().unix() }, secret, { algorithm: SupportedAlgorithms.HS512 });
+}

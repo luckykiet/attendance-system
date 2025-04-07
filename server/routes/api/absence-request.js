@@ -1,7 +1,8 @@
 const express = require('express')
-const { createAbsenceRequest } = require('../../controllers/api/absence-request')
+const { createAbsenceRequest } = require('../../controllers/api/absence-request');
+const { ensureTokenVerified } = require('../../middlewares/auth');
 const router = express.Router()
 
-router.post('/', createAbsenceRequest);
+router.post('/', ensureTokenVerified, createAbsenceRequest);
 
 module.exports = router

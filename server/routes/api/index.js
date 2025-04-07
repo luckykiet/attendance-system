@@ -16,4 +16,5 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/attendances', require('./attendances'));
     app.use(apiPrefix + '/absence-request', require('./absence-request'));
     app.use(apiPrefix + '/absence-requests', require('./absence-requests'));
+    app.use(apiPrefix + '/employee', require('./employee'));
 };

@@ -1,4 +1,4 @@
-import { getDaysOfWeek, TIME_FORMAT } from "@/utils";
+import { TIME_FORMAT } from "@/utils";
 import dayjs from "dayjs";
 import { z } from "zod";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -6,7 +6,6 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 const BaseShiftSchema = z.object({
-    day: z.enum(getDaysOfWeek(), { required_error: 'misc_required' }),
     start: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
     end: z.string({ required_error: 'misc_required' }).refine((date) => dayjs(date, TIME_FORMAT).isValid(), { message: TIME_FORMAT }),
     isOverNight: z.boolean(),

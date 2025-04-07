@@ -1,8 +1,12 @@
-export const DAYS_OF_WEEK: Array<keyof typeof daysOfWeeksTranslations> = [
+import { Weekday } from "@/types/day";
+
+export const DAYS_OF_WEEK : Weekday[] = [
     'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
 ];
 
-export const daysOfWeeksTranslations = {
+export type DayKey = typeof DAYS_OF_WEEK[number];
+
+export const daysOfWeeksTranslations : Record<DayKey, { shortcut: string; name: string }> = {
     sun: {
         shortcut: 'day_sunday_shortcut',
         name: 'day_sunday_name',

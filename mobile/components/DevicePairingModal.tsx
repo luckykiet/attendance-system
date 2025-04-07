@@ -116,8 +116,8 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                 {t('misc_device_registration')}
                             </ThemedText>
 
-                            <ThemedView style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
+                            <View style={styles.inputContainer}>
+                                <ThemedText style={styles.label}>{t('misc_domain')}</ThemedText>
                                 <Controller
                                     control={control}
                                     name="domain"
@@ -140,10 +140,10 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                         </>
                                     )}
                                 />
-                            </ThemedView>
+                            </View>
 
-                            <ThemedView style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
+                            <View style={styles.inputContainer}>
+                                <ThemedText style={styles.label}>{t('misc_token')}</ThemedText>
                                 <Controller
                                     control={control}
                                     name="tokenId"
@@ -166,7 +166,7 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                         </>
                                     )}
                                 />
-                            </ThemedView>
+                            </View>
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity

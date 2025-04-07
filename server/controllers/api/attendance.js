@@ -1,6 +1,5 @@
 const utils = require('../../utils');
 
-const Employee = require('../../models/Employee');
 const Register = require('../../models/Register');
 const Retail = require('../../models/Retail');
 const WorkingAt = require('../../models/WorkingAt');
@@ -8,7 +7,6 @@ const Attendance = require('../../models/Attendance');
 const LocalDevice = require('../../models/LocalDevice');
 const DailyAttendance = require('../../models/DailyAttendance');
 const HttpError = require("../../constants/http-error");
-const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { DAYS_OF_WEEK } = require('../../constants');
@@ -152,17 +150,7 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_retail_not_found', 400);
         }
 
-        const employee = await Employee.findOne({ deviceId: req.deviceId, retailId: retail._id }).exec();
-
-        if (!employee) {
-            throw new HttpError('srv_employee_not_found', 400);
-        }
-
-        try {
-            jwt.verify(token, employee.publicKey);
-        } catch {
-            throw new HttpError('srv_invalid_token', 400);
-        }
+        const { employee } = req
 
         const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
 

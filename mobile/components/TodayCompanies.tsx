@@ -4,12 +4,12 @@ import { useMutation, useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import utc from 'dayjs/plugin/utc';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useAppStore } from '@/stores/useAppStore';
 import { useCompaniesApi } from '@/api/useCompaniesApi';
 import ThemedText from '@/components/theme/ThemedText';
 import { DAYS_OF_WEEK, TIME_FORMAT } from '@/constants/Days';
-import { WorkingHour } from '@/types/working-hour';
 import * as SecureStore from 'expo-secure-store';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
@@ -23,44 +23,35 @@ import _ from 'lodash';
 import { calculateHoursFromMinutes, calculateKilometersFromMeters } from '@/utils';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import BLEScanModal from '@/components/BLEScanModal';
+import { Shift } from '@/types/shift';
 
 dayjs.extend(isBetween);
+dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
-type WorkingHours = Record<string, WorkingHour>;
+const getShiftsText = (shift: Shift): { status: string; message: string } => {
+  const currentTime = dayjs.utc();
+  const openTime = dayjs.utc(shift.start, TIME_FORMAT);
+  let closeTime = dayjs.utc(shift.end, TIME_FORMAT);
 
-interface Company {
-  _id: string;
-  name: string;
-  location: Location & { allowedRadius: number },
-  workingHours: WorkingHours;
-  employeeWorkingHours: WorkingHours;
-  distanceInMeters: number | null;
-  checkInTime: string | null;
-  checkOutTime: string | null;
-  domain: string;
-}
-const getTodayWorkingHours = (workingHours: WorkingHours): { status: string; message: string } => {
-  const todayIndex = dayjs().day();
-  const todayKey = DAYS_OF_WEEK[todayIndex];
-  const hours = workingHours[todayKey];
-
-  if (!hours?.isAvailable) {
-    return { status: 'closed', message: 'misc_today_closed' };
+  if (shift.isOverNight && closeTime.isBefore(openTime)) {
+    closeTime = closeTime.add(1, 'day');
   }
 
-  const currentTime = dayjs();
-  const openTime = dayjs(hours.start, TIME_FORMAT);
-  const closeTime = dayjs(hours.end, TIME_FORMAT);
   const warningTime = openTime.subtract(1, 'hour');
 
-  if (currentTime.isBetween(openTime, closeTime)) {
-    return { status: 'open', message: `${hours.start} - ${hours.end}` };
-  } else if (currentTime.isBetween(warningTime, openTime)) {
-    return { status: 'warning', message: `${hours.start} - ${hours.end}` };
+  const inShiftTime = currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
+  const inWarningTime = currentTime.isAfter(warningTime) && currentTime.isBefore(openTime);
+
+  if (inShiftTime) {
+    return { status: 'open', message: `${shift.start} - ${shift.end}` };
+  } else if (inWarningTime) {
+    return { status: 'warning', message: `${shift.start} - ${shift.end}` };
   }
-  return { status: 'out_of_time', message: `${hours.start} - ${hours.end}` };
+
+  return { status: 'out_of_time', message: `${shift.start} - ${shift.end}` };
 };
+
 
 type AttendanceStatus = { checkInTime: string | number | null; checkOutTime: string | number | null };
 
@@ -141,22 +132,21 @@ const TodayCompanies = () => {
         isLoading: results.some((result) => result.isLoading),
         isFetching: results.some((result) => result.isFetching),
         data: results
-          .map((result) => (result.data as Company[]) || [])
+          .map((result) => (result.data) || [])
           .flat()
           .filter((company, index, self) => self.findIndex(c => c._id === company._id) === index)
           .map((company) => {
-            const { status, message } = getTodayWorkingHours(company.workingHours);
-            const { message: employeeWorkingHourMessage } = getTodayWorkingHours(company.employeeWorkingHours);
-            const attendanceStatus = getAttendanceStatus({ checkInTime: company.checkInTime, checkOutTime: company.checkOutTime, workingHours: company.employeeWorkingHours });
+            const shiftTexts = Object.values(company.shifts).map((shifts) => shifts.map((shift)=>{
+              const { status, message } = getShiftsText(shift);
+              return { status, message, _id: shift._id };
+            })).flat();
+            console.log(shiftTexts)
+            // const { message: employeeWorkingHourMessage } = getTodayWorkingHours(company.employeeWorkingHours);
+            // const attendanceStatus = getAttendanceStatus({ checkInTime: company.checkInTime, checkOutTime: company.checkOutTime, workingHours: company.employeeWorkingHours });
             return {
               ...company,
-              openingHours: t(message),
-              status,
               distanceInMeters: company.distanceInMeters ? Math.round(company.distanceInMeters) : null,
               distanceLeft: company.distanceInMeters ? Math.round(company.location.allowedRadius - company.distanceInMeters) : null,
-              checkInTimeStatus: attendanceStatus.checkInTime,
-              checkOutTimeStatus: attendanceStatus.checkOutTime,
-              employeeWorkingHour: employeeWorkingHourMessage
             };
           }),
         refetch: () => results.forEach((result) => result.refetch()),

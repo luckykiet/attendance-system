@@ -7,7 +7,7 @@ import {
     Switch,
     Typography,
 } from '@mui/material';
-import { daysOfWeeksTranslations, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, getDurationLabel, TIME_FORMAT } from '@/utils';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -147,24 +147,10 @@ export default function WorkingHoursInputs() {
                             <Grid size={{ xs: 6 }}>
                                 <Typography variant="body1">
                                     {t('misc_duration')}:{' '}
-                                    {(() => {
-                                        const startTime = dayjs(watch(`workingHours[${key}].start`), TIME_FORMAT);
-                                        const endTime = dayjs(watch(`workingHours[${key}].end`), TIME_FORMAT);
-                                        let duration;
-
-                                        if (startTime.isValid() && endTime.isValid()) {
-                                            if (startTime.isAfter(endTime)) {
-                                                duration = dayjs.duration(endTime.add(1, 'day').diff(startTime));
-                                            } else {
-                                                duration = dayjs.duration(endTime.diff(startTime));
-                                            }
-
-                                            const hours = Math.floor(duration.asHours());
-                                            const minutes = duration.minutes();
-                                            return `${hours}h ${minutes}m`;
-                                        }
-                                        return '-';
-                                    })()}
+                                    {getDurationLabel(
+                                        watch(`workingHours[${key}].start`),
+                                        watch(`workingHours[${key}].end`),
+                                    )}
                                 </Typography>
                             </Grid>
                         </Grid>
