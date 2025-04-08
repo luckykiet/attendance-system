@@ -140,7 +140,6 @@ const TodayCompanies = () => {
               const { status, message } = getShiftsText(shift);
               return { status, message, _id: shift._id };
             })).flat();
-            console.log(shiftTexts)
             // const { message: employeeWorkingHourMessage } = getTodayWorkingHours(company.employeeWorkingHours);
             // const attendanceStatus = getAttendanceStatus({ checkInTime: company.checkInTime, checkOutTime: company.checkOutTime, workingHours: company.employeeWorkingHours });
             return {

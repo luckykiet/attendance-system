@@ -160,7 +160,7 @@ export const daysOfWeeksTranslations = {
 }
 
 export const REGEX = {
-  phone: /^(\+420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/,
+  phone: /^(\+\d{1,4})?\s?[1-9][0-9]{2}\s?[0-9]{3}\s?[0-9]{3}$/,
   username: /^[a-z0-9]+$/,
 }
 

@@ -42,6 +42,7 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.55.0",
     "react-i18next": "^15.4.1",
+    "react-number-format": "^5.4.3",
     "react-qr-reader": "^3.0.0-beta-1",
     "react-router-dom": "^7.4.1",
     "react-virtualized": "^9.22.6",

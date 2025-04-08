@@ -21,6 +21,7 @@ import { useSetConfirmBox } from '@/stores/confirm';
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useConfigStore } from '@/stores/config';
 import UserSchema from '@/schemas/user';
+import { PatternFormat } from 'react-number-format';
 
 dayjs.extend(customParseFormat);
 
@@ -105,9 +106,9 @@ export default function UserPage() {
             const recaptcha = await executeRecaptcha(`${userId ? 'update' : 'create'}user`);
 
             if (userId) {
-                updateUserMutation.mutate({ ...data, _id: userId, recaptcha });
+                updateUserMutation.mutate({ ...data, _id: userId, phone: data.phone.replace(/\s+/g, ''), recaptcha });
             } else {
-                createUserMutation.mutate({ ...data, recaptcha });
+                createUserMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), recaptcha });
             }
         }
         catch (error) {
@@ -203,13 +204,17 @@ export default function UserPage() {
                                             name="phone"
                                             control={control}
                                             render={({ field, fieldState }) => (
-                                                <TextField
+                                                <PatternFormat
                                                     {...field}
+                                                    customInput={TextField}
                                                     fullWidth
                                                     label={t('misc_telephone')}
                                                     variant="outlined"
                                                     error={fieldState.invalid}
                                                     helperText={fieldState.error?.message && t(fieldState.error.message)}
+                                                    format="+### ### ### ###"
+                                                    mask="_"
+                                                    allowEmptyFormatting
                                                 />
                                             )}
                                         />

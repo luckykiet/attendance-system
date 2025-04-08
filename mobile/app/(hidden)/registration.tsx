@@ -173,7 +173,7 @@ const RegistrationScreen: React.FC = () => {
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             value={value}
-                                            placeholder={t('misc_telephone')}
+                                            placeholder={'+420 123 456 789'}
                                             keyboardType="phone-pad"
                                         />
                                         {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message}</ThemedText>}

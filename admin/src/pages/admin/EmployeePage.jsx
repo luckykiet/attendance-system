@@ -1,7 +1,6 @@
 import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import useTranslation from '@/hooks/useTranslation';
@@ -9,7 +8,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import LoadingCircle from '@/components/LoadingCircle';
 import { fetchEmployee, createEmployee, updateEmployee, deleteEmployee, createEmployeeDeviceRegistration, cancelPairingDevice } from '@/api/employee';
-import { checkPrivileges, getDefaultEmployee, REGEX } from '@/utils';
+import { checkPrivileges, getDefaultEmployee } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { hostname, protocol } from '@/configs';
@@ -22,17 +21,10 @@ import { useSetConfirmBox } from '@/stores/confirm';
 import { QRCodeCanvas } from 'qrcode.react';
 import TransferListEmployees from '@/components/admin/TransferListEmployees';
 import { useConfigStore } from '@/stores/config';
+import { PatternFormat } from 'react-number-format';
+import EmployeeSchema from '@/schemas/employee';
 
 dayjs.extend(customParseFormat);
-
-const employeeSchema = z.object({
-    name: z.string().min(1, { message: 'misc_required' }).max(255),
-    email: z.string().email({ message: 'srv_invalid_email' }),
-    phone: z.string().optional().refine((val) => !val || REGEX.phone.test(val), { message: 'srv_invalid_phone' }),
-    registrationToken: z.string().optional(),
-    deviceId: z.string().optional(),
-    isAvailable: z.boolean(),
-});
 
 export default function EmployeePage() {
     const { employeeId } = useParams();
@@ -56,7 +48,7 @@ export default function EmployeePage() {
 
     const mainForm = useForm({
         mode: 'all',
-        resolver: zodResolver(employeeSchema),
+        resolver: zodResolver(EmployeeSchema),
         defaultValues: getDefaultEmployee(),
     });
 
@@ -129,12 +121,12 @@ export default function EmployeePage() {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptcha= await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
+            const recaptcha = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
             if (employeeId) {
-                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha });
+                updateEmployeeMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), _id: employeeId, recaptcha });
             } else {
-                createEmployeeMutation.mutate({ ...data, recaptcha });
+                createEmployeeMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), recaptcha });
             }
         }
         catch (error) {
@@ -252,13 +244,17 @@ export default function EmployeePage() {
                                         name="phone"
                                         control={control}
                                         render={({ field, fieldState }) => (
-                                            <TextField
+                                            <PatternFormat
                                                 {...field}
+                                                customInput={TextField}
                                                 fullWidth
                                                 label={t('misc_telephone')}
                                                 variant="outlined"
                                                 error={fieldState.invalid}
                                                 helperText={fieldState.error?.message && t(fieldState.error.message)}
+                                                format="+### ### ### ###"
+                                                mask="_"
+                                                allowEmptyFormatting
                                             />
                                         )}
                                     />

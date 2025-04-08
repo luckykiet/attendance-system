@@ -55,6 +55,7 @@ export default function CameraScanner() {
         onError: (error) => {
             const errorMessage = typeof error === 'string' ? error === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error : error.message ? error.message === 'Unknown error' ? 'srv_failed_to_connect_to_server' : error.message : 'misc_error';
             setErrorMessage(errorMessage);
+            registrationFormMutation.reset();
         }
     });
 
@@ -70,14 +71,13 @@ export default function CameraScanner() {
         setIntent(null);
 
         const parsedData = parseAttendanceUrl(data);
-
         if (parsedData.params.domain && parsedData.params.tokenId) {
             const intentObj = {
                 path: parsedData.path,
                 domain: parsedData.params.domain,
                 tokenId: parsedData.params.tokenId,
             };
-
+            
             setIntent(intentObj);
             if (registrationFormMutation.isIdle) {
                 registrationFormMutation.mutate({
