@@ -1,10 +1,11 @@
+import { DEFAULT_AXIOS_TIMEOUT } from '@/constants/App';
 import { GetMyCompaniesResult, TodayWorkplace } from '@/types/workplaces';
 import createAxiosService from '@/utils/axios';
 
 export const useCompaniesApi = () => {
     const routePrefix = '/api/workplaces';
     const getTodayWorkplaces = async (serverUrl: string, formData: { longitude: number; latitude: number } | null) : Promise<TodayWorkplace[]> => {
-        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: 5000 });
+        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: DEFAULT_AXIOS_TIMEOUT });
         const { data: { success, msg } } = await axiosInstance.post('/', {
             longitude: formData?.longitude || null,
             latitude: formData?.latitude || null,
@@ -18,7 +19,7 @@ export const useCompaniesApi = () => {
     };
 
     const getMyCompanies = async (serverUrl: string) : Promise<GetMyCompaniesResult> => {
-        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: 5000 });
+        const axiosInstance = createAxiosService({ serverUrl, route: routePrefix, timeout: DEFAULT_AXIOS_TIMEOUT });
         const { data: { success, msg } } = await axiosInstance.get('/');
 
         if (!success) {

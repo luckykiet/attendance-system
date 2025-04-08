@@ -1,3 +1,4 @@
+import { DEFAULT_AXIOS_TIMEOUT } from '@/constants/App';
 import { AttendanceMutation } from '@/types/attendance';
 import { signJwt } from '@/utils';
 import createAxiosService from '@/utils/axios';
@@ -8,7 +9,7 @@ export const useAttendanceApi = () => {
         const payload = { registerId, latitude, longitude, localDeviceId };
 
         const token = signJwt(payload, deviceKey);
-        const axiosInstance = createAxiosService({ serverUrl: domain, route: routePrefix, timeout: 5000 });
+        const axiosInstance = createAxiosService({ serverUrl: domain, route: routePrefix, timeout: DEFAULT_AXIOS_TIMEOUT });
         const { data: { success, msg, localDevices } } = await axiosInstance.post('/', {
             ...payload,
             token,

@@ -1,0 +1,1 @@
+export const DEFAULT_AXIOS_TIMEOUT = 30000;
