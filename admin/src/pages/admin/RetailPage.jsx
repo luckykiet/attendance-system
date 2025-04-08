@@ -82,9 +82,9 @@ export default function RetailPage() {
             setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
-            setValue('name', data.name);
-            setValue('vin', data.vin);
-            setValue('address', data.address);
+            setValue('name', data.name, { shouldDirty: true });
+            setValue('vin', data.vin, { shouldDirty: true });
+            setValue('address', data.address, { shouldDirty: true });
             setAlertMessage({ msg: t('misc_fetched_successfully'), severity: 'success' });
         },
     });

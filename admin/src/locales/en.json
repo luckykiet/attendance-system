@@ -205,6 +205,7 @@
   "misc_faqs": "frequently asked questions",
   "misc_fetch_ares": "Fetch from ARES",
   "misc_fetch_coordinates": "fetch coordinates",
+  "misc_fetched_successfully": "fetched successfully",
   "misc_fill_pdf": "Fill PDF",
   "misc_filling_in_the_address_fields": "by filling in the address fields",
   "misc_filter": "Filter",
