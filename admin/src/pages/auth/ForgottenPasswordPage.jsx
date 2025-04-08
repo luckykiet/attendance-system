@@ -5,13 +5,13 @@ import {
   Stack,
   TextField,
   Typography,
+  Button
 } from '@mui/material';
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import { LoadingButton } from '@mui/lab';
 import { useMutation } from '@tanstack/react-query';
 import useTranslation from '@/hooks/useTranslation';
 import { forgotPassword } from '@/api/auth';
@@ -119,7 +119,7 @@ export default function ForgottenPasswordPage() {
                     />
                   )}
                 />
-                <LoadingButton
+                <Button
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -128,7 +128,7 @@ export default function ForgottenPasswordPage() {
                   disabled={sendForgottenPasswordMutation.isSuccess}
                 >
                   {t('misc_to_recover_password')}
-                </LoadingButton>
+                </Button>
               </Stack>
             </form>
           </FormProvider>

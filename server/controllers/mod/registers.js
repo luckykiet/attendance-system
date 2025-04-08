@@ -3,7 +3,7 @@ const utils = require('../../utils');
 
 const getRegisters = async (req, res, next) => {
     try {
-        const { isAvailable } = req.body;
+        const isAvailable = req.body?.isAvailable;
         const query = { retailId: req.user.retailId };
 
         if (isAvailable !== undefined) {

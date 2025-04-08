@@ -63,7 +63,7 @@ readFile('locales.csv', 'utf8')
         const localeFolderPath = join(__dirname, `${locale}.json`)
         await writeFile(localeFolderPath, json)
       })
-    )
+    );
   })
   .catch((error) => {
     console.error('Error reading or writing files:', error)

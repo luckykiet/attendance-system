@@ -1,4 +1,4 @@
-import { Link, Grid, InputAdornment, Stack, Typography, TextField } from '@mui/material';
+import { Link, Grid, InputAdornment, Stack, Typography, TextField, Button } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Password, Person, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useState } from 'react';
@@ -13,7 +13,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { LoadingButton } from '@mui/lab';
 import { useConfigStore } from '@/stores/config';
 import { clearAllQueries } from '@/utils';
 
@@ -186,7 +185,7 @@ const LoginForm = () => {
                         </Grid>
                     )}
                     <Grid size={{ xs: 12 }}>
-                        <LoadingButton
+                        <Button
                             disableElevation
                             loading={loginMutation.isPending}
                             fullWidth
@@ -196,7 +195,7 @@ const LoginForm = () => {
                             color="primary"
                         >
                             {t('misc_login', { capitalize: true })}
-                        </LoadingButton>
+                        </Button>
                     </Grid>
                 </Grid>
             </form>

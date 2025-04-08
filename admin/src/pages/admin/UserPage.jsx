@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, InputAdornment } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, InputAdornment, Button } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { useRoles } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import { useSetAlertMessage } from '@/stores/root';
 import { useAuthStore } from '@/stores/auth';
@@ -348,13 +347,13 @@ export default function UserPage() {
                                     </Grid>
                                     <Grid size={{ xs: 12 }}>
                                         <Stack direction="row" spacing={1}>
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createUserMutation.isPending || updateUserMutation.isPending} disabled={deleteUserMutation.isPending || !_.isEmpty(errors)}>
+                                            <Button sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createUserMutation.isPending || updateUserMutation.isPending} disabled={deleteUserMutation.isPending || !_.isEmpty(errors)}>
                                                 {userId ? t('misc_save') : t('misc_create')}
-                                            </LoadingButton>
+                                            </Button>
                                             {user && checkPrivileges('deleteUser', loggedInUser?.role) &&
-                                                <LoadingButton sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteUserMutation.isPending} disabled={createUserMutation.isPending || updateUserMutation.isPending} onClick={handleDelete}>
+                                                <Button sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteUserMutation.isPending} disabled={createUserMutation.isPending || updateUserMutation.isPending} onClick={handleDelete}>
                                                     {t('misc_delete')}
-                                                </LoadingButton>}
+                                                </Button>}
                                         </Stack>
                                     </Grid>
                                 </Grid>

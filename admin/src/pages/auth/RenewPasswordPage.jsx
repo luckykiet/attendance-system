@@ -6,6 +6,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Button
 } from '@mui/material'
 import { Controller, useForm, FormProvider } from 'react-hook-form'
 import { Fragment, useEffect, useState } from 'react'
@@ -13,7 +14,6 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
-import { LoadingButton } from '@mui/lab'
 import LoadingCircle from '@/components/LoadingCircle'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import { resetPassword, checkChangePasswordToken } from '@/api/auth'
@@ -204,7 +204,7 @@ export default function RenewPasswordPage() {
                       )}
                     />
 
-                    <LoadingButton
+                    <Button
                       type="submit"
                       fullWidth
                       variant="contained"
@@ -212,7 +212,7 @@ export default function RenewPasswordPage() {
                       loading={resetPasswordMutation.isPending}
                     >
                       {t('misc_to_recover_password')}
-                    </LoadingButton>
+                    </Button>
                   </Stack>
                 </form>
               </FormProvider>

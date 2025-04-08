@@ -15,9 +15,9 @@ import {
     CardContent,
     CardActions,
     Divider,
+    Button
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { LoadingButton } from '@mui/lab';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { calculateKilometersFromMeters, getDefaultRegister, TIME_FORMAT } from '@/utils';
@@ -446,7 +446,7 @@ export default function RegisterPage() {
                                                                 <Typography variant='body1'>{t('misc_distance')}: {distance.kilometers > 0 ? `${distance.kilometers} km` : ''} {`${distance?.meters} m`}</Typography>
                                                             </Stack>
                                                         </CardContent>
-                                                        <CardActions><LoadingButton variant='contained' color='error' onClick={() => handleDeleteLocalDevice(device.deviceId)}>{t('misc_delete')}</LoadingButton></CardActions>
+                                                        <CardActions><Button variant='contained' color='error' onClick={() => handleDeleteLocalDevice(device.deviceId)}>{t('misc_delete')}</Button></CardActions>
                                                     </Card>
                                                 </Grid>
                                             })}
@@ -475,12 +475,12 @@ export default function RegisterPage() {
                     <Stack direction={'row'} spacing={1} width={'100%'} alignItems={'center'} justifyContent={!_.isEmpty(errors) ? 'space-between' : 'flex-end'}>
                         {!_.isEmpty(errors) ? <FeedbackMessage message={new Error(t('misc_check_fields'))} /> : null}
                         <Stack direction={'row'} spacing={1}>
-                            <LoadingButton loading={isLoading || isFetching || createNewRegisterMutation.isPending || updateRegisterMutation.isPending} disabled={deleteRegisterMutation.isPending} variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+                            <Button loading={isLoading || isFetching || createNewRegisterMutation.isPending || updateRegisterMutation.isPending} disabled={deleteRegisterMutation.isPending} variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
                                 {register ? t('misc_save') : t('misc_create')}
-                            </LoadingButton>
-                            {register && <LoadingButton loading={isLoading || isFetching || deleteRegisterMutation.isPending} disabled={createNewRegisterMutation.isPending || updateRegisterMutation.isPending} variant="contained" color="error" onClick={handleDelete}>
+                            </Button>
+                            {register && <Button loading={isLoading || isFetching || deleteRegisterMutation.isPending} disabled={createNewRegisterMutation.isPending || updateRegisterMutation.isPending} variant="contained" color="error" onClick={handleDelete}>
                                 {t('misc_delete')}
-                            </LoadingButton>}
+                            </Button>}
                         </Stack>
                     </Stack>
                 </FormProvider>

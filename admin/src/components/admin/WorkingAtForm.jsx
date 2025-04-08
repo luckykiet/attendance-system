@@ -30,7 +30,6 @@ import { useSetAlertMessage } from '@/stores/root';
 import { createOrUpdateWorkingAt } from '@/api/working-at';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import FeedbackMessage from '../FeedbackMessage';
-import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -340,9 +339,9 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                 })}
 
                                                 {postMsg && <FeedbackMessage message={postMsg} />}
-                                                <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color={workingAt ? "primary" : "success"} type="submit" loading={saveWorkingAtMutation.isPending} disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}>
+                                                <Button sx={{ minWidth: '200px' }} variant="contained" color={workingAt ? "primary" : "success"} type="submit" loading={saveWorkingAtMutation.isPending} disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}>
                                                     {workingAt ? t('misc_save') : t('misc_create')}
-                                                </LoadingButton>
+                                                </Button>
                                             </Stack>
                                         </form>
                                     </FormProvider>
@@ -471,9 +470,9 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                         : <Typography>{t('misc_check_out')}: -</Typography>}
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12, sm: 6 }}>
-                                                                    <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color={"success"} type="submit" loading={saveAttendanceMutation.isPending}>
+                                                                    <Button sx={{ minWidth: '200px' }} variant="contained" color={"success"} type="submit" loading={saveAttendanceMutation.isPending}>
                                                                         {t('misc_save')}
-                                                                    </LoadingButton>
+                                                                    </Button>
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12 }}>
                                                                     {postAttendanceMsg && <FeedbackMessage message={postAttendanceMsg} />}

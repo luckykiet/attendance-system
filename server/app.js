@@ -99,7 +99,7 @@ app.use(errorLogger)
 app.use(errorResponder)
 
 // Serve static files
-app.get('*', async (req, res) => {
+app.get('*public', async (req, res) => {
   return res.sendFile(
     path.resolve(__dirname, 'public', 'index.html'),
   )

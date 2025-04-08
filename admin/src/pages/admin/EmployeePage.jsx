@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup, Button } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import { hostname, protocol } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import { useSetAlertMessage } from '@/stores/root';
 import { useAuthStore } from '@/stores/auth';
@@ -328,26 +327,26 @@ export default function EmployeePage() {
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>
                                     <ButtonGroup fullWidth>
-                                        <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                        <Button sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
                                             {employeeId ? t('misc_save') : t('misc_create')}
-                                        </LoadingButton>
+                                        </Button>
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => handleGenerateToken()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
+                                            <Button sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => handleGenerateToken()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
                                                 {t(watch('registrationToken') || watch('deviceId') ? 'misc_regenerate_token' : 'misc_generate_token')}
-                                            </LoadingButton>
+                                            </Button>
                                         }
                                         {employee &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => handleGenerateToken(true)} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
+                                            <Button sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => handleGenerateToken(true)} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
                                                 {t(watch('registrationToken') || watch('deviceId') ? 'misc_regenerate_token_and_send' : 'misc_generate_token_and_send')}
-                                            </LoadingButton>
+                                            </Button>
                                         }
-                                        {employee && <LoadingButton sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => handleCancelPairing()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
+                                        {employee && <Button sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => handleCancelPairing()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
                                             {t('misc_cancel_device_pairing')}
-                                        </LoadingButton>}
+                                        </Button>}
                                         {employee && checkPrivileges('deleteEmployee', user?.role) &&
-                                            <LoadingButton sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
+                                            <Button sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
                                                 {t('misc_delete')}
-                                            </LoadingButton>}
+                                            </Button>}
                                     </ButtonGroup>
                                 </Grid>
                             </Grid>

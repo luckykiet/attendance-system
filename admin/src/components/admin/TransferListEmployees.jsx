@@ -23,7 +23,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import LoadingCircle from '../LoadingCircle'
 import WorkingAtForm from './WorkingAtForm'
 import FeedbackMessage from '../FeedbackMessage'
-import { LoadingButton } from '@mui/lab'
 import { useSetAlertMessage } from '@/stores/root'
 import { updateWorkingAts } from '@/api/working-ats'
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3'
@@ -395,7 +394,7 @@ export default function TransferListEmployees({ employeeId }) {
               </Grid>
             </Grid>
             {postMsg && <FeedbackMessage message={postMsg} />}
-            <LoadingButton
+            <Button
               sx={{ minWidth: '200px' }}
               variant="contained"
               color={"success"}
@@ -404,7 +403,7 @@ export default function TransferListEmployees({ employeeId }) {
               disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}
             >
               {t('misc_save')}
-            </LoadingButton>
+            </Button>
           </Stack>
         </form>
       </FormProvider>

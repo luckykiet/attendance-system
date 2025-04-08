@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid, Stack, ButtonGroup } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, ButtonGroup, Button } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +10,6 @@ import { checkPrivileges, getDefaultRetail } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import { useSetAlertMessage, useSetRetail } from '@/stores/root';
 import { useAuthStore } from '@/stores/auth';
@@ -218,7 +217,7 @@ export default function RetailPage() {
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>
                                     <ButtonGroup>
-                                        <LoadingButton sx={{ minWidth: '200px' }}
+                                        <Button sx={{ minWidth: '200px' }}
                                             variant="contained" color="warning" type="button"
                                             loading={updateRetailMutation.isPending || fetchAresMutation.isPending}
                                             disabled={_.isEmpty(watch('tin'))}
@@ -227,14 +226,14 @@ export default function RetailPage() {
                                             }}
                                         >
                                             {t('misc_fetch_ares')}
-                                        </LoadingButton>
-                                        <LoadingButton sx={{ minWidth: '200px' }}
+                                        </Button>
+                                        <Button sx={{ minWidth: '200px' }}
                                             variant="contained" color="success" type="submit"
                                             loading={updateRetailMutation.isPending || fetchAresMutation.isPending}
                                             disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}
                                         >
                                             {t('misc_save')}
-                                        </LoadingButton>
+                                        </Button>
                                     </ButtonGroup>
                                 </Grid>
                             </Grid>
