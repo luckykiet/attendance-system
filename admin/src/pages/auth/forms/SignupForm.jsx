@@ -92,7 +92,14 @@ const SignupForm = () => {
 
     const { data: tinData, isLoading: tinLoading, error: tinError, isFetched: tinFetched } = useQuery({
         queryKey: ['ares', tin],
-        queryFn: () => fetchAresWithTin(tin),
+        queryFn: async () => {
+            try {
+                const recaptcha = await executeRecaptcha(`ares`);
+                return fetchAresWithTin({ tin, recaptcha });
+            } catch (error) {
+                throw new Error(JSON.stringify(error));
+            }
+        },
         enabled: !!tin && /^[0-9]{8}$/.test(tin),
     });
 
@@ -125,8 +132,8 @@ const SignupForm = () => {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptchaToken = await executeRecaptcha('signup');
-            signUpMutation.mutateAsync({ ...data, recaptcha: recaptchaToken || '' });
+            const recaptcha = await executeRecaptcha('signup');
+            signUpMutation.mutateAsync({ ...data, recaptcha });
         } catch (error) {
             setPostMsg(error.message || 'Unknown error');
         }

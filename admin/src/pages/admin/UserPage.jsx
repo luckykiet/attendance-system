@@ -1,7 +1,6 @@
 import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, InputAdornment } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import useTranslation from '@/hooks/useTranslation';
@@ -9,10 +8,10 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import LoadingCircle from '@/components/LoadingCircle';
 import { fetchUser, createUser, updateUser, deleteUser } from '@/api/user';
-import { checkPrivileges, getDefaultUser, REGEX } from '@/utils';
+import { checkPrivileges, getDefaultUser } from '@/utils';
 import { useEffect, useState } from 'react';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { ROLES, useRoles } from '@/configs';
+import { useRoles } from '@/configs';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
@@ -21,59 +20,9 @@ import { useAuthStore } from '@/stores/auth';
 import { useSetConfirmBox } from '@/stores/confirm';
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useConfigStore } from '@/stores/config';
+import UserSchema from '@/schemas/user';
 
 dayjs.extend(customParseFormat);
-
-const userSchema = z.object({
-    userId: z.string().optional(),
-    name: z.string().min(1, { message: 'misc_required' }).max(255),
-    email: z.string().email({ message: 'srv_invalid_email' }),
-    username: z
-        .string({ required_error: 'misc_required' })
-        .trim()
-        .min(6, { message: 'srv_username_length' })
-        .max(20, { message: 'srv_username_length' })
-        .regex(REGEX.username, { message: 'srv_username_no_whitespace' }),
-    phone: z
-        .string()
-        .optional()
-        .refine((val) => !val || REGEX.phone.test(val), { message: 'srv_invalid_phone' }),
-    password: z
-        .string()
-        .min(8, { message: 'srv_password_length' })
-        .max(255, { message: 'srv_password_length' })
-        .optional()
-        .or(z.literal('')),
-    confirmPassword: z
-        .string()
-        .max(255, { message: 'srv_password_length' })
-        .optional()
-        .or(z.literal('')),
-    role: z.enum(ROLES, { message: 'srv_invalid_role' }),
-    notes: z.string().optional(),
-    isAvailable: z.boolean(),
-}).superRefine((data, ctx) => {
-    if (!data.userId && !data.password) {
-        ctx.addIssue({
-            path: ['password'],
-            message: 'misc_required',
-        });
-    }
-
-    if (!data.userId && !data.confirmPassword) {
-        ctx.addIssue({
-            path: ['confirmPassword'],
-            message: 'misc_required',
-        });
-    }
-
-    if (data.password && data.confirmPassword && data.password !== data.confirmPassword) {
-        ctx.addIssue({
-            path: ['confirmPassword'],
-            message: 'srv_passwords_not_match',
-        });
-    }
-});
 
 export default function UserPage() {
     const { userId } = useParams();
@@ -104,7 +53,7 @@ export default function UserPage() {
 
     const mainForm = useForm({
         mode: 'all',
-        resolver: zodResolver(userSchema),
+        resolver: zodResolver(UserSchema),
         defaultValues: getDefaultUser(),
     });
 
@@ -153,12 +102,12 @@ export default function UserPage() {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptchaToken = await executeRecaptcha(`${userId ? 'update' : 'create'}user`);
+            const recaptcha = await executeRecaptcha(`${userId ? 'update' : 'create'}user`);
 
             if (userId) {
-                updateUserMutation.mutate({ ...data, _id: userId, recaptcha: recaptchaToken });
+                updateUserMutation.mutate({ ...data, _id: userId, recaptcha });
             } else {
-                createUserMutation.mutate({ ...data, recaptcha: recaptchaToken });
+                createUserMutation.mutate({ ...data, recaptcha });
             }
         }
         catch (error) {

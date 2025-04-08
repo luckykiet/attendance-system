@@ -1,11 +1,10 @@
 const express = require('express');
 const { getRetail, updateRetail } = require('../../controllers/mod/retail');
-const { checkPrivilege } = require('../../middlewares/privileges');
-
+const { recaptcha, privileges } = require('../../middlewares');
 const router = express.Router();
 
 router.get('/', getRetail);
 
-router.put('/', checkPrivilege(['editRetail']), updateRetail);
+router.put('/', recaptcha.checkReCaptcha, privileges.checkPrivilege(['editRetail']), updateRetail);
 
 module.exports = router;

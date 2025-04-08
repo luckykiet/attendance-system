@@ -71,8 +71,8 @@ const LoginForm = () => {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptchaToken = await executeRecaptcha('login');
-            loginMutation.mutateAsync({ ...data, recaptcha: recaptchaToken});
+            const recaptcha = await executeRecaptcha('login');
+            loginMutation.mutateAsync({ ...data, recaptcha });
         } catch (error) {
             console.error('Login failed:', error);
             setPostMsg(error instanceof Error ? error.message : 'Unknown error');

@@ -8,7 +8,17 @@ export const fetchRetail = async () => {
 };
 
 export const updateRetail = async (data) => {
-    const { data: { msg } } = await axios.put(`/`, { data });
+    const { data: { success, msg } } = await axios.put(`/`, data,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                recaptcha: data.recaptcha,
+                action: 'updateretail',
+            },
+        }
+    );
+    if (!success) {
+        throw new Error(msg);
+    }
     return msg;
 };
-

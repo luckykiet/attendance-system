@@ -1,6 +1,6 @@
 const express = require('express');
 const { getRegister, updateRegister, createRegister, deleteRegister } = require('../../controllers/mod/register');
-const { checkPrivilege } = require('../../middlewares/privileges');
+const { privileges, recaptcha } = require('../../middlewares');
 const { validate } = require('../../middlewares/validation');
 const { NewRegisterValidation, UpdateRegisterValidation, GetRegisterValidation, DeleteRegisterValidation } = require('../../validation/register');
 
@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.get('/:id', validate(GetRegisterValidation), getRegister);
 
-router.put('/', checkPrivilege(['editRegister']), validate(UpdateRegisterValidation), updateRegister);
+router.put('/', privileges.checkPrivilege(['editRegister']), recaptcha.checkReCaptcha, validate(UpdateRegisterValidation), updateRegister);
 
-router.post('/', checkPrivilege(['addRegister']), validate(NewRegisterValidation), createRegister);
+router.post('/', privileges.checkPrivilege(['addRegister']), recaptcha.checkReCaptcha, validate(NewRegisterValidation), createRegister);
 
-router.delete('/:id', checkPrivilege(['addRegister']), validate(DeleteRegisterValidation), deleteRegister);
+router.delete('/:id', privileges.checkPrivilege(['addRegister']), validate(DeleteRegisterValidation), deleteRegister);
 
 module.exports = router;

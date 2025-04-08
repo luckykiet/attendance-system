@@ -4,8 +4,9 @@ const router = express.Router()
 
 const HttpError = require('../../constants/http-error')
 const utils = require('../../utils')
+const { recaptcha } = require('../../middlewares')
 
-router.get('/:tin', async (req, res, next) => {
+router.get('/:tin', recaptcha.checkReCaptcha, async (req, res, next) => {
     const { tin } = req.params
     const result = await utils.fetchAresWithTin(tin)
 

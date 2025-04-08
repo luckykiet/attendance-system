@@ -66,6 +66,10 @@ export default function HomePage() {
     navigate(`/register/${id}`);
   };
 
+  const handleEditRetail = () => {
+    navigate(`/retail`);
+  };
+
   useEffect(() => {
     if (retail) {
       setRetail(retail);
@@ -77,11 +81,18 @@ export default function HomePage() {
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
           {retail ? (
-            <Stack spacing={2}>
-              <Typography align="center" variant="h3" gutterBottom>
-                {retail.name}
-              </Typography>
-              <Typography align="center" variant="h4" gutterBottom>
+            <Stack spacing={2} display={'flex'} alignItems={'center'}>
+              <Stack direction={'row'} spacing={2} >
+                <Typography variant="h3">
+                  {retail.name}
+                </Typography>
+                {checkPrivileges('editRetail', user?.role) && <IconButton
+                  onClick={handleEditRetail}
+                >
+                  <EditIcon />
+                </IconButton>}
+              </Stack>
+              <Typography variant="h4" gutterBottom>
                 {t('misc_tin')}: {retail.tin}
               </Typography>
             </Stack>

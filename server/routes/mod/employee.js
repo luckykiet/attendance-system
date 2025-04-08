@@ -1,21 +1,21 @@
 const express = require('express');
 const { getEmployee, updateEmployee, createEmployee, deleteEmployee, getEmployeeWorkingAt, employeeRegistration, cancelDevicePairing } = require('../../controllers/mod/employee');
-const { checkPrivilege } = require('../../middlewares/privileges');
+const { privileges, recaptcha } = require('../../middlewares');
 
 const router = express.Router();
 
 router.get('/:id', getEmployee);
 router.get('/working-at/:id', getEmployeeWorkingAt);
 
-router.put('/', checkPrivilege(['editEmployee']), updateEmployee);
+router.put('/', recaptcha.checkReCaptcha, privileges.checkPrivilege(['editEmployee']), updateEmployee);
 router.put('/cancel-pairing/:id', cancelDevicePairing);
 
-router.post('/', checkPrivilege(['addEmployee']), createEmployee);
+router.post('/', recaptcha.checkReCaptcha, privileges.checkPrivilege(['addEmployee']), createEmployee);
 
-router.delete('/:id', checkPrivilege(['addEmployee']), deleteEmployee);
+router.delete('/:id', privileges.checkPrivilege(['addEmployee']), deleteEmployee);
 
-router.post('/registration', checkPrivilege(['employeeRegistration']), employeeRegistration);
-router.post('/registration/send', checkPrivilege(['employeeRegistration']), (req, res, next) => {
+router.post('/registration', recaptcha.checkReCaptcha, privileges.checkPrivilege(['employeeRegistration']), employeeRegistration);
+router.post('/registration/send', recaptcha.checkReCaptcha, privileges.checkPrivilege(['employeeRegistration']), (req, res, next) => {
     req.action = 'sendEmployeeDeviceRegistration';
     next();
 }, employeeRegistration);

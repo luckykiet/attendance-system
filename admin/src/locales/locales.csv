@@ -434,6 +434,7 @@ misc_responsible_person	responsible person	người chịu trách nhiệm	zodpov
 misc_restaurant	restaurant	nhà hàng	restaurace
 misc_result	result	kết quả	výsledek
 misc_results_2nd	results	kết quả	výsledků
+misc_retail_edit	Edit retail	Chỉnh sửa doanh nghiệp	Správa podniku
 misc_retail_store	retail store	cửa hàng bán lẻ	maloobchod
 misc_retry	retry	thử lại	opakovat
 misc_returned	returned	trả lại	vráceno
@@ -544,6 +545,7 @@ misc_update	Update	Cập nhập	Aktualizovat
 misc_update_payment_terminal	Update payment terminal	Cập nhập máy trả thẻ	Aktualizovat platební terminál
 misc_update_store	Update store	Cập nhập cửa hàng	Aktualizovat provozovnu
 misc_updated	updated	đã cập nhập	aktualizováno
+misc_updated_successfully	Updated successfully	Cập nhập thành công	Úspěšně aktualizováno
 misc_upload	upload	tải lên	nahrát
 misc_upload_mail_sent	email for signature sent	Gửi email để ký	Email pro podpis odeslán
 misc_upload_photos	upload photos	tải lên ảnh	nahrát fotky

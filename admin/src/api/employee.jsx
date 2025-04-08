@@ -10,8 +10,14 @@ export const fetchEmployee = async (id) => {
     return msg;
 };
 
-export const createEmployeeDeviceRegistration = async (employeeId, send = false) => {
-    const { data: { success, msg } } = await axios.post(`/registration${send ? "/send" : ''}`, { employeeId });
+export const createEmployeeDeviceRegistration = async ({ employeeId, isSend = false, recaptcha }) => {
+    const { data: { success, msg } } = await axios.post(`/registration${isSend ? "/send" : ''}`, { employeeId }, {
+        headers: {
+            'Content-Type': 'application/json',
+            recaptcha: recaptcha,
+            action: 'deviceregistration',
+        },
+    });
     if (!success) {
         throw new Error(msg);
     }

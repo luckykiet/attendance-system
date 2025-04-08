@@ -68,7 +68,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     });
 
     const { watch, control, handleSubmit, reset, setValue, formState: { dirtyFields, errors } } = mainForm;
-    
+
     const shiftFieldArrays = {
         mon: useFieldArray({ control, name: 'shifts.mon' }),
         tue: useFieldArray({ control, name: 'shifts.tue' }),
@@ -112,9 +112,9 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptchaToken = await executeRecaptcha(`${register ? 'update' : 'create'}register`);
+            const recaptcha = await executeRecaptcha(`${register ? 'update' : 'create'}register`);
 
-            saveWorkingAtMutation.mutate({ ...data, registerId: register._id, employeeId, recaptcha: recaptchaToken });
+            saveWorkingAtMutation.mutate({ ...data, registerId: register._id, employeeId, recaptcha });
         }
         catch (error) {
             setPostMsg(error instanceof Error ? error : new Error(error));
@@ -124,8 +124,8 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const onAttendanceSubmit = async (data) => {
         try {
             setPostAttendanceMsg('');
-            const recaptchaToken = await executeRecaptcha(`updateRegister`);
-            saveAttendanceMutation.mutate({ ...data, recaptcha: recaptchaToken });
+            const recaptcha = await executeRecaptcha(`updateRegister`);
+            saveAttendanceMutation.mutate({ ...data, recaptcha });
         }
         catch (error) {
             setPostAttendanceMsg(error instanceof Error ? error : new Error(error));

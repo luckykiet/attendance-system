@@ -23,6 +23,8 @@ const getRetail = async (req, res, next) => {
 
 const updateRetail = async (req, res, next) => {
     try {
+        //Dont update the tin
+        delete req.body.tin;
         const updatedRetail = await Retail.findOneAndUpdate(
             { _id: req.user.retailId },
             { $set: req.body },

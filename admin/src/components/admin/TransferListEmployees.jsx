@@ -307,14 +307,14 @@ export default function TransferListEmployees({ employeeId }) {
   const onSubmit = async (data) => {
     try {
       setPostMsg('')
-      const recaptchaToken = await executeRecaptcha('updateworkingats');
+      const recaptcha = await executeRecaptcha('updateworkingats');
 
       const newLeft = data.left.filter((register) => register.isDirty).map((register) => ({ registerId: register._id, isAvailable: true }))
       const newRight = data.right.filter((register) => register.isDirty).map((register) => ({ registerId: register._id, isAvailable: false }))
       saveWorkingAtsMutation.mutate({
         employeeId,
         workingAts: [...newLeft, ...newRight],
-        recaptcha: recaptchaToken
+        recaptcha
       })
     }
     catch (error) {

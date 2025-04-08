@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router()
-const { checkReCaptcha } = require('../../middlewares/recaptcha');
+const { recaptcha } = require('../../middlewares');
 const { validate } = require('../../middlewares/validation');
 const { body } = require('express-validator')
 const utils = require('../../utils/utils');
@@ -27,7 +27,7 @@ router.post('/isAuthenticated', (req, res, next) => {
 
 router.post(
     '/login',
-    checkReCaptcha,
+    recaptcha.checkReCaptcha,
     validate([
         body('username').notEmpty({ ignore_whitespace: true }),
         body('password').notEmpty(),
@@ -39,7 +39,7 @@ router.post('/signout', signout)
 
 router.post(
     '/signup',
-    checkReCaptcha,
+    recaptcha.checkReCaptcha,
     validate([
         body('username')
             .trim().toLowerCase()

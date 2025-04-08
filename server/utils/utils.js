@@ -86,7 +86,7 @@ const utils = {
             }
         } catch (error) {
             aresLoggers.error(`Error fetching ARES data: ${error.message}`)
-            return { success: false, msg: error instanceof Error ? error.message : error.response?.data || `srv_ares_failed` }
+            return { success: false, msg: `srv_ares_failed` }
         }
     },
     regex: {

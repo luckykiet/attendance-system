@@ -6,6 +6,13 @@ export const getDaysOfWeek = (startWithMonday = false) => {
 
 export const DAYS_OF_WEEK = getDaysOfWeek();
 
+export const getDefaultRetail = () => ({
+  name: '',
+  tin: '',
+  vin: '',
+  address: getDefaultAddress(),
+});
+
 export const getDefaultAddress = () => ({
   street: '',
   city: '',

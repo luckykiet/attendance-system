@@ -117,7 +117,7 @@ export default function EmployeePage() {
     })
 
     const generateEmployeeTokenMutation = useMutation({
-        mutationFn: (isSend = false) => createEmployeeDeviceRegistration(employeeId, isSend),
+        mutationFn: (form) => createEmployeeDeviceRegistration(form),
         onError: (error) => {
             setPostMsg(new Error(JSON.stringify(error)))
         },
@@ -129,12 +129,12 @@ export default function EmployeePage() {
     const onSubmit = async (data) => {
         try {
             setPostMsg('');
-            const recaptchaToken = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
+            const recaptcha= await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
 
             if (employeeId) {
-                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha: recaptchaToken });
+                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha });
             } else {
-                createEmployeeMutation.mutate({ ...data, recaptcha: recaptchaToken });
+                createEmployeeMutation.mutate({ ...data, recaptcha });
             }
         }
         catch (error) {
@@ -161,16 +161,31 @@ export default function EmployeePage() {
         })
     }
 
-    const handleGenerateToken = (isSend = false) => {
-        if (watch('deviceId')) {
-            setConfirmBox({
-                mainText: `${t('misc_this_will_unpair_current_device')}. ${t('misc_want_to_continue')}?`,
-                onConfirm: () => {
-                    generateEmployeeTokenMutation.mutate(isSend);
-                },
-            })
-        } else {
-            generateEmployeeTokenMutation.mutate(isSend);
+    const handleGenerateToken = async (isSend = false) => {
+        try {
+            setPostMsg('');
+            const recaptcha = await executeRecaptcha(`deviceregistration`);
+            if (watch('deviceId')) {
+                setConfirmBox({
+                    mainText: `${t('misc_this_will_unpair_current_device')}. ${t('misc_want_to_continue')}?`,
+                    onConfirm: () => {
+                        generateEmployeeTokenMutation.mutate({
+                            employeeId,
+                            isSend,
+                            recaptcha,
+                        });
+                    },
+                })
+            } else {
+                generateEmployeeTokenMutation.mutate({
+                    employeeId,
+                    isSend,
+                    recaptcha,
+                });
+            }
+        }
+        catch (error) {
+            setPostMsg(error instanceof Error ? error : new Error(error));
         }
     }
 
@@ -196,7 +211,7 @@ export default function EmployeePage() {
                 <Typography variant="h5">
                     {employeeId ? employee ? employee.name : t('srv_employee_not_found') : t('misc_new_employee')}
                 </Typography>
-                {employee || !employeeId ? (
+                {(employee || !employeeId) && (
                     <FormProvider {...mainForm}>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Grid container spacing={2}>
@@ -260,7 +275,7 @@ export default function EmployeePage() {
                                         )}
                                     />
                                 </Grid>
-                                <Grid size={{ xs: 12 }}>
+                                {employee && <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="registrationToken"
                                         control={control}
@@ -294,8 +309,8 @@ export default function EmployeePage() {
                                         }
                                         }
                                     />
-                                </Grid>
-                                <Grid size={{ xs: 12 }}>
+                                </Grid>}
+                                {employee && <Grid size={{ xs: 12 }}>
                                     <Controller
                                         name="deviceId"
                                         control={control}
@@ -309,7 +324,7 @@ export default function EmployeePage() {
                                             />
                                         )}
                                     />
-                                </Grid>
+                                </Grid>}
                             </Grid>
                             <Grid container spacing={2} sx={{ mt: 3 }}>
                                 <Grid size={{ xs: 12 }}>
@@ -342,8 +357,6 @@ export default function EmployeePage() {
                             </Grid>
                         </form>
                     </FormProvider>
-                ) : (
-                    <Typography variant='h6'>{t('srv_employee_not_found')}</Typography>
                 )}
                 {employee &&
                     <>

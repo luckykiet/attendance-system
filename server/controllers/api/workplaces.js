@@ -14,48 +14,62 @@ dayjs.extend(customParseFormat);
 
 const getTodayWorkplaces = async (req, res, next) => {
     try {
-        // date is optional, if not provided, it will take the current date; date format: YYYYMMDD
         const { longitude, latitude, date } = req.body;
+        const hasLocation = !!(longitude && latitude);
 
-        let hasLocation = true;
-        if (!longitude || !latitude) {
-            hasLocation = false;
-        }
-
-        // get the employee(s) by the deviceId
-        const employees = await Employee.find({ deviceId: req.deviceId }).select('retailId').exec();
+        const employees = await Employee.find({ deviceId: req.deviceId, isAvailable: true })
+            .select('retailId')
+            .exec();
 
         if (!employees.length) {
             return res.status(200).json({ success: true, msg: [] });
         }
 
-        // get only the registerIds where the employee is working today
-        const workingAts = await WorkingAt.find({ employeeId: { $in: employees.map(e => e._id) }, isAvailable: true }).select('registerId shifts').exec();
+        const employeeIds = employees.map(e => e._id);
+
+        let workingAts = await WorkingAt.find({ employeeId: { $in: employeeIds }, isAvailable: true })
+            .select('registerId shifts employeeId')
+            .exec();
 
         if (!workingAts.length) {
             return res.status(200).json({ success: true, msg: [] });
         }
 
         const dateToUse = date ? dayjs(date) : dayjs();
-        const dayIndex = dateToUse.day();
-        const dayKey = DAYS_OF_WEEK[dayIndex];
-        let todayShifts = [];
+        const dayKey = DAYS_OF_WEEK[dateToUse.day()];
+
+        // Extract today's shifts only
         workingAts.forEach(wa => {
             const shifts = wa.shifts instanceof Map ? Object.fromEntries(wa.shifts) : wa.shifts;
+            let todayShifts = [];
             if (Array.isArray(shifts[dayKey])) {
                 todayShifts = shifts[dayKey].filter(s => s.isAvailable);
             }
-            delete wa.shifts;
-            wa.shifts[dayKey] = todayShifts;
+            wa.shifts = { [dayKey]: todayShifts };
         });
 
-        const dailyAttendances = await DailyAttendance.find({ date: parseInt(dateToUse.format('YYYYMMDD')), registerId: { $in: workingAts.map((wa) => wa.registerId) } }).exec();
-        const attendances = await Attendance.find({ dailyAttendanceId: { $in: dailyAttendances.map((da) => da._id) } }).select('registerId checkInTime checkOutTime').exec()
+        const registerIds = workingAts.map(w => w.registerId);
+        const registers = await Register.find({ _id: { $in: registerIds }, isAvailable: true })
+            .select('retailId name workingHours address location')
+            .exec();
 
-        // get all registers, where the employee is working at and belongs to the same company
+        const availableRegisterIds = registers.map(r => r._id.toString());
+        workingAts = workingAts.filter(wa => availableRegisterIds.includes(wa.registerId.toString()));
+
+        const filteredRegisterIds = workingAts.map(w => w.registerId);
+
+        const dailyAttendances = await DailyAttendance.find({
+            date: parseInt(dateToUse.format('YYYYMMDD')),
+            registerId: { $in: filteredRegisterIds },
+        }).exec();
+
+        const attendances = await Attendance.find({
+            dailyAttendanceId: { $in: dailyAttendances.map((da) => da._id) },
+        }).select('registerId checkInTime checkOutTime').exec();
+
         const nearbyRegisters = await Register.find({
-            _id: { $in: workingAts.map(w => w.registerId) }
-        }).select('name workingHours location address');
+            _id: { $in: filteredRegisterIds },
+        }).select('name workingHours location address').exec();
 
         const leanNearbyRegisters = nearbyRegisters.map(register => {
             const attendance = attendances.find(a => a.registerId.equals(register._id));
@@ -67,17 +81,27 @@ const getTodayWorkplaces = async (req, res, next) => {
             registerObj.checkOutTime = attendance?.checkOutTime || null;
             registerObj.shifts = workingAt.shifts;
 
-            const regLongitude = registerObj.location.longitude;
-            const regLatitude = registerObj.location.latitude;
-            registerObj.distanceInMeters = hasLocation ? geolib.getDistance({ latitude, longitude }, { latitude: regLatitude, longitude: regLongitude }) : null;
+            if (hasLocation && registerObj.location) {
+                registerObj.distanceInMeters = geolib.getDistance(
+                    { latitude, longitude },
+                    {
+                        latitude: registerObj.location.latitude,
+                        longitude: registerObj.location.longitude,
+                    }
+                );
+            } else {
+                registerObj.distanceInMeters = null;
+            }
+
             return registerObj;
         });
-        if (hasLocation) {
-            leanNearbyRegisters.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
-        } else {
-            leanNearbyRegisters.sort((a, b) => a.name.localeCompare(b.name));
-        }
 
+        leanNearbyRegisters.sort((a, b) =>
+            hasLocation
+                ? a.distanceInMeters - b.distanceInMeters
+                : a.name.localeCompare(b.name)
+        );
+        console.log(leanNearbyRegisters)
         return res.status(200).json({ success: true, msg: leanNearbyRegisters });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));
