@@ -13,6 +13,7 @@ const dayjs = require("dayjs")
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
 dayjs.extend(require('dayjs/plugin/isSameOrAfter'))
+dayjs.extend(require('dayjs/plugin/isBetween'))
 dayjs.extend(require('dayjs/plugin/utc'))
 
 const isValidTime = (time, timeFormat = TIME_FORMAT) => {
@@ -152,6 +153,16 @@ const utils = {
             isStartValid: breakStart.isSameOrAfter(workStart),
             isEndValid: breakEnd.isSameOrBefore(workEnd),
         };
+    },
+    isBetweenTime: ({ time, start, end, timeFormat = TIME_FORMAT }) => {
+        const timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
+        const startMoment = dayjs(start, timeFormat);
+        let endMoment = dayjs(end, timeFormat);
+        if (endMoment.isBefore(startMoment)) {
+            endMoment = endMoment.add(1, 'day');
+        }
+
+        return timeMoment.isBetween(startMoment, endMoment);
     },
 }
 module.exports = utils

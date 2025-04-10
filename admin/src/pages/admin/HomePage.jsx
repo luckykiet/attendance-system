@@ -9,33 +9,13 @@ import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
-import { checkPrivileges, DAYS_OF_WEEK, TIME_FORMAT } from '@/utils';
+import { checkPrivileges, getTodayWorkingHours } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
 import { useConfigStore } from '@/stores/config';
 
 dayjs.extend(customParseFormat);
-
-const getTodayWorkingHours = (workingHours) => {
-  const today = dayjs().day();
-  const todayKey = DAYS_OF_WEEK[today];
-  const hours = workingHours[todayKey];
-
-  if (!hours?.isAvailable) {
-    return { status: 'closed', message: 'misc_closed' };
-  }
-
-  const currentTime = dayjs();
-  const openTime = dayjs(hours.start, TIME_FORMAT);
-  const closeTime = dayjs(hours.end, TIME_FORMAT);
-
-  if (currentTime.isBetween(openTime, closeTime)) {
-    return { status: 'open', message: `${hours.start} - ${hours.end}` };
-  }
-
-  return { status: 'out_of_time', message: `${hours.start} - ${hours.end}` };
-};
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -120,7 +100,7 @@ export default function HomePage() {
                 </Typography>
                 <Grid container spacing={2}>
                   {registers.map((register) => {
-                    const { status, message } = getTodayWorkingHours(register.workingHours);
+                    const { status, message } = getTodayWorkingHours(register.workingHours, t);
                     return (
                       <Grid size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                         <Card variant="outlined" sx={{ position: 'relative' }}>

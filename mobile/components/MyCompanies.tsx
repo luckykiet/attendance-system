@@ -18,6 +18,7 @@ import { GetMyCompaniesResult } from '@/types/workplaces';
 import { useEmployeeApi } from '@/api/useEmployeeApi';
 import * as SecureStore from 'expo-secure-store';
 import { Shift } from '@/types/shift';
+import { PatternFormat } from 'react-number-format';
 
 dayjs.extend(customParseFormat);
 
@@ -174,7 +175,14 @@ const MyCompanies = () => {
                     {item.vin && <ThemedText style={styles.companyDetail}>{t('misc_vin')}: {item.vin}</ThemedText>}
                     <ThemedText style={styles.companyDetail}>{item.address.street}</ThemedText>
                     <ThemedText style={styles.companyDetail}>
-                      {item.address.zip} {item.address.city}
+                      <PatternFormat
+                        value={item.address.zip}
+                        displayType="text"
+                        format="### ##"
+                        renderText={(formattedValue) => (
+                          <ThemedText style={styles.companyDetail}>{formattedValue}</ThemedText>
+                        )}
+                      /> {item.address.city}
                     </ThemedText>
                     <TouchableOpacity
                       style={styles.unpairButton}
@@ -196,7 +204,14 @@ const MyCompanies = () => {
                         <ThemedText style={styles.companyText}>{register.name}</ThemedText>
                         <ThemedText style={styles.companyDetail}>{register.address.street}</ThemedText>
                         <ThemedText style={styles.companyDetail}>
-                          {register.address.zip} {register.address.city}
+                          <PatternFormat
+                            value={item.address.zip}
+                            displayType="text"
+                            format="### ##"
+                            renderText={(formattedValue) => (
+                              <ThemedText style={styles.companyDetail}>{formattedValue}</ThemedText>
+                            )}
+                          /> {register.address.city}
                         </ThemedText>
 
                         <ThemedText style={styles.nearbyLabel}>{t('misc_working_hours')}:</ThemedText>
@@ -239,7 +254,14 @@ const MyCompanies = () => {
                                 {t('misc_email')}: {employee.email}
                               </ThemedText>
                               <ThemedText style={styles.employeeDetail}>
-                                {t('misc_telephone')}: {employee.phone}
+                                {t('misc_telephone')}: <PatternFormat
+                                  value={employee.phone}
+                                  displayType="text"
+                                  format="+### ### ### ###"
+                                  renderText={(formattedValue) => (
+                                    <ThemedText style={styles.employeeDetail}>{formattedValue}</ThemedText>
+                                  )}
+                                />
                               </ThemedText>
                             </View>
                           </>

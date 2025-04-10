@@ -9,10 +9,14 @@ const DailyAttendance = require('../../models/DailyAttendance');
 const HttpError = require("../../constants/http-error");
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
-const { DAYS_OF_WEEK } = require('../../constants');
+const isBetween = require('dayjs/plugin/isBetween');
+const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
 const geolib = require('geolib');
+const _ = require('lodash');
+const { DAY_KEYS } = require('../../configs');
 
 dayjs.extend(customParseFormat);
+dayjs.extend(isBetween);
 
 const getDailyAttendance = async ({ date = null, registerId }) => {
     try {
@@ -52,8 +56,14 @@ const getDailyAttendance = async ({ date = null, registerId }) => {
             dailyAttendance.workingHour = hours;
         }
         // get all employees working at the register
-        const workingHourKey = `workingHours.${dayKey}.isAvailable`;
-        const employeesWorkingAts = await WorkingAt.find({ registerId, [workingHourKey]: true }).select('employeeId').exec();
+        const orConditions = DAY_KEYS.map((day) => ({
+            [`shifts.${day}.0`]: { $exists: true }
+        }));
+        const employeesWorkingAts = await WorkingAt.find({
+            registerId,
+            $or: orConditions
+        }).select('employeeId').exec();
+
         // update the employeeIds in the daily attendance
         dailyAttendance.employeeIds = employeesWorkingAts.map(w => w.employeeId);
         await dailyAttendance.save();
@@ -129,12 +139,18 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
     }
 }
 
-
 const makeAttendance = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, token, localDeviceId } = req.body;
+        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId } = req.body;
+        const tokenPayload = req.tokenPayload;
+        if (!longitude || !latitude || !registerId || !tokenPayload) {
+            throw new HttpError('srv_invalid_request', 400);
+        }
+        const tmpBody = JSON.parse(JSON.stringify(req.body));
+        delete tmpBody.token;
+        delete tokenPayload.timestamp;
 
-        if (!longitude || !latitude || !registerId || !token) {
+        if (!_.isEqual(tmpBody, tokenPayload)) {
             throw new HttpError('srv_invalid_request', 400);
         }
 
@@ -142,6 +158,15 @@ const makeAttendance = async (req, res, next) => {
 
         if (!register) {
             throw new HttpError('srv_register_not_found', 400);
+        }
+
+        const now = dayjs();
+
+        const todayKey = DAYS_OF_WEEK[now.day()];
+        const todayWorkingHour = register.workingHours[todayKey];
+
+        if (!todayWorkingHour.isAvailable || !utils.isBetweenTime({ time: now, start: todayWorkingHour.start, end: todayWorkingHour.end })) {
+            throw new HttpError('srv_workplace_closed', 400);
         }
 
         const retail = await Retail.findOne({ _id: register.retailId }).exec();
@@ -157,78 +182,102 @@ const makeAttendance = async (req, res, next) => {
         if (!workingAt) {
             throw new HttpError('srv_employee_not_employed', 400);
         }
+        // check for overnight shifts
+        const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+        const yesterdayShifts = workingAt.shifts.get(yesterdayKey);
+        const todayShifts = workingAt.shifts.get(todayKey);
 
-        // demo registers
+        if ((!todayShifts && !yesterdayShifts) || (!todayShifts.length && !yesterdayShifts.length)) {
+            throw new HttpError('srv_employee_not_working_today', 400);
+        }
 
-        if (retail.tin === '12345678') {
-            await Register.updateMany({ retailId: retail._id }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
-            register = await Register.findOne({ _id: registerId }).exec();
-            if (register.name === 'Demo always success') {
-                const dailyAttendance = await getDailyAttendance({ registerId });
+        let shift = todayShifts.find(s => s._id.toString() === shiftId)
+        if (!shift) {
+            shift = yesterdayShifts.find(s => s._id.toString() === shiftId);
+            if (!shift) {
+                throw new HttpError('srv_shift_not_found', 400);
+            }
 
-                if (typeof dailyAttendance === 'string') {
-                    throw new HttpError(dailyAttendance, 400);
-                }
-
-                const now = dayjs();
-
-                let attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
-
-                // reset attendance for demo purposes
-                if (attendance && attendance.checkOutTime) {
-                    await Attendance.deleteOne({ _id: attendance._id }).exec();
-                    attendance = null
-                }
-
-                const distanceInMeters = geolib.getDistance({ latitude, longitude }, {
-                    latitude: register.location.coordinates[1],
-                    longitude: register.location.coordinates[0],
-                });
-                if (attendance) {
-                    // checking out
-                    const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
-                    attendance.checkOutTime = now.toDate();
-                    attendance.checkOutLocation = checkOutLocation;
-                    await attendance.save();
-
-                    try {
-                        const update = await updateDailyAttendance({ type: 'checkOut', date: now.toDate(), attendanceId: attendance._id, dailyAttendanceId: dailyAttendance._id });
-                        if (typeof update === 'string') {
-                            throw update;
-                        }
-                    } catch (error) {
-                        console.log(error)
-
-                    }
-                    return res.status(200).json({ success: true, msg: 'srv_checked_out_successfully' });
-                }
-
-                // checking in
-                const checkInLocation = { latitude, longitude, distance: distanceInMeters };
-                const checkInTime = now.toDate();
-                const newAttendance = await new Attendance({
-                    registerId,
-                    dailyAttendanceId: dailyAttendance._id,
-                    employeeId: employee._id,
-                    checkInTime,
-                    checkInLocation,
-                    workingHour: workingAt.workingHours[DAYS_OF_WEEK[now.day()]],
-                }).save();
-
-                try {
-                    const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
-                    if (typeof update === 'string') {
-                        throw update;
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-
-                return res.status(200).json({ success: true, msg: 'srv_checked_in_successfully' });
-            } else if (register.name === 'Demo always fail') {
-                throw new HttpError('srv_outside_allowed_radius', 400);
+            const endTime = dayjs(shift.end, TIME_FORMAT, true);
+            if (now.isAfter(endTime)) {
+                throw new HttpError('srv_shift_already_ended', 400);
             }
         }
+
+        if (!shift || !shift.isAvailable) {
+            throw new HttpError('srv_employee_not_working_today', 400);
+        }
+
+        // demo registers
+        // if (retail.tin === '12345678') {
+        //     await Register.updateMany({ retailId: retail._id }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
+        //     register = await Register.findOne({ _id: registerId }).exec();
+        //     if (register.name === 'Demo always success') {
+        //         const dailyAttendance = await getDailyAttendance({ registerId });
+
+        //         if (typeof dailyAttendance === 'string') {
+        //             throw new HttpError(dailyAttendance, 400);
+        //         }
+
+        //         const now = dayjs();
+
+        //         let attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
+
+        //         // reset attendance for demo purposes
+        //         if (attendance && attendance.checkOutTime) {
+        //             await Attendance.deleteOne({ _id: attendance._id }).exec();
+        //             attendance = null
+        //         }
+
+        //         const distanceInMeters = geolib.getDistance({ latitude, longitude }, {
+        //             latitude: register.location.coordinates[1],
+        //             longitude: register.location.coordinates[0],
+        //         });
+        //         if (attendance) {
+        //             // checking out
+        //             const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
+        //             attendance.checkOutTime = now.toDate();
+        //             attendance.checkOutLocation = checkOutLocation;
+        //             await attendance.save();
+
+        //             try {
+        //                 const update = await updateDailyAttendance({ type: 'checkOut', date: now.toDate(), attendanceId: attendance._id, dailyAttendanceId: dailyAttendance._id });
+        //                 if (typeof update === 'string') {
+        //                     throw update;
+        //                 }
+        //             } catch (error) {
+        //                 console.log(error)
+
+        //             }
+        //             return res.status(200).json({ success: true, msg: 'srv_checked_out_successfully' });
+        //         }
+
+        //         // checking in
+        //         const checkInLocation = { latitude, longitude, distance: distanceInMeters };
+        //         const checkInTime = now.toDate();
+        //         const newAttendance = await new Attendance({
+        //             registerId,
+        //             dailyAttendanceId: dailyAttendance._id,
+        //             employeeId: employee._id,
+        //             checkInTime,
+        //             checkInLocation,
+        //             workingHour: workingAt.workingHours[DAYS_OF_WEEK[now.day()]],
+        //         }).save();
+
+        //         try {
+        //             const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
+        //             if (typeof update === 'string') {
+        //                 throw update;
+        //             }
+        //         } catch (error) {
+        //             console.log(error)
+        //         }
+
+        //         return res.status(200).json({ success: true, msg: 'srv_checked_in_successfully' });
+        //     } else if (register.name === 'Demo always fail') {
+        //         throw new HttpError('srv_outside_allowed_radius', 400);
+        //     }
+        // }
 
         const localDevices = await LocalDevice.find({ registerId }).exec();
 
@@ -252,7 +301,6 @@ const makeAttendance = async (req, res, next) => {
         };
 
         const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
-
         const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
 
         if (distanceInMeters > allowedRadius) {
@@ -272,20 +320,26 @@ const makeAttendance = async (req, res, next) => {
         if (!dailyAttendance.workingHour.isAvailable) {
             throw new HttpError('srv_workplace_closed_today', 400);
         }
-        const now = dayjs();
+        const attendanceQuery = {
+            dailyAttendanceId: dailyAttendance._id,
+            employeeId: employee._id,
+        };
 
-        // check if the employee is trying to check in or out outside the working hours
-        if (now.isAfter(dayjs(dailyAttendance.workingHour.end, 'HH:mm', true))) {
-            throw new HttpError('srv_outside_working_hours', 400);
+        if (attendanceId) {
+            attendanceQuery._id = attendanceId;
         }
 
-        const attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
+        const attendance = await Attendance.findOne(attendanceQuery).exec();
 
-        // if attendance exists, that means the employee has already checked in
         if (attendance) {
+            if (!attendance.shiftId.equals(shift._id)) {
+                throw new HttpError('srv_invalid_shift', 400);
+            }
+
             if (attendance.checkOutTime) {
                 throw new HttpError('srv_already_checked_out', 400);
             }
+
             // checking out
             const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
             attendance.checkOutTime = now.toDate();
@@ -304,17 +358,27 @@ const makeAttendance = async (req, res, next) => {
             return res.status(200).json({ success: true, msg: 'srv_checked_out_successfully' });
         }
 
+        if (attendanceId) {
+            throw new HttpError('srv_attendance_not_found', 400);
+        }
+
         // checking in
         const checkInLocation = { latitude, longitude, distance: distanceInMeters };
         const checkInTime = now.toDate();
-        const newAttendance = await new Attendance({
-            registerId,
+
+        const newAttendance = new Attendance({
+            workingAtId: workingAt._id,
             dailyAttendanceId: dailyAttendance._id,
             employeeId: employee._id,
             checkInTime,
             checkInLocation,
-            workingHour: workingAt.workingHours[DAYS_OF_WEEK[now.day()]],
-        }).save();
+            shiftId: shift._id,
+            start: shift.start,
+            end: shift.end,
+            isOverNight: shift.isOverNight,
+        });
+
+        await newAttendance.save();
 
         try {
             const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
@@ -330,7 +394,6 @@ const makeAttendance = async (req, res, next) => {
         return next(utils.parseExpressErrors(error, 'srv_failed_make_attendance', 500));
     }
 };
-
 
 module.exports = {
     makeAttendance,

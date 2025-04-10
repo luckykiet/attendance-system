@@ -25,7 +25,7 @@ const readCsvFile = async (path) => {
                     const texts = fields.slice(1);
                     const locales = {};
                     headers.slice(1).forEach((locale, index) => {
-                        locales[locale] = texts[index];
+                        locales[locale] = texts[index].trim();
                     });
                     if (!uniqueTranslation.has(key)) {
                         uniqueTranslation.set(key, locales);

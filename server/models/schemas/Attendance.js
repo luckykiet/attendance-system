@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const WorkingHourSchema = require('./WorkingHour');
 const { setUpdatedAt } = require('./utils');
+const { SPECIFIC_BREAKS } = require('../../configs');
 
 const checkSchema = new Schema(
   {
@@ -16,24 +16,38 @@ const checkSchema = new Schema(
 
 const BreakSchema = new Schema(
   {
-    start: { type: Date, required: true },
-    end: { type: Date, required: true },
-    reason: { type: String, required: true }
+    name: { type: String, required: true },
+    type: { type: String, enum: [...SPECIFIC_BREAKS, 'other', 'generic'], default: 'other', required: true },
+    reason: { type: String, required: true },
+    breakHours: {
+      start: { type: String, required: true },
+      end: { type: String, required: true },
+      isOverNight: { type: Boolean, required: true, default: false },
+    },
+    checkInTime: { type: Date, required: true },
+    checkInLocation: { type: checkSchema, required: true },
+    checkOutTime: { type: Date },
+    checkOutLocation: { type: checkSchema },
   },
   { _id: false }
 );
 
 const AttendanceSchema = new Schema(
   {
-    employeeId: { type: Schema.Types.ObjectId, required: true },
-    registerId: { type: Schema.Types.ObjectId, required: true },
+    workingAtId: { type: Schema.Types.ObjectId, required: true },
     dailyAttendanceId: { type: Schema.Types.ObjectId, required: true },
+
     checkInTime: { type: Date, required: true },
     checkInLocation: { type: checkSchema, required: true },
     checkOutTime: { type: Date },
     checkOutLocation: { type: checkSchema },
+
     breaks: { type: [BreakSchema], default: [] },
-    workingHour: { type: WorkingHourSchema, required: true },
+
+    shiftId: { type: Schema.Types.ObjectId, required: true },
+    start: { type: String, required: true},
+    end: { type: String, required: true },
+    isOverNight: { type: Boolean, required: true },
   },
   {
     timestamps: true,
@@ -41,8 +55,8 @@ const AttendanceSchema = new Schema(
 );
 
 AttendanceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
-// Unique on the combination of dailyAttendanceId, employeeId, and shiftNumber
-AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, shiftNumber: 1 }, { unique: true });
+// Unique on the combination of dailyAttendanceId, employeeId, and shiftId
+AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, shiftId: 1 }, { unique: true });
 AttendanceSchema.index({ registerId: 1 });
 AttendanceSchema.index({ employeeId: 1 });
 AttendanceSchema.index({ checkInTime: 1 });

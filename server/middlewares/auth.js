@@ -45,6 +45,7 @@ const ensureTokenVerified = async (req, res, next) => {
 
         try {
             jwt.verify(token, employee.publicKey);
+            req.tokenPayload = jwt.decode(token);
         } catch {
             throw new HttpError('srv_invalid_token', 400);
         }

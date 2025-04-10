@@ -1,6 +1,9 @@
-export type WorkingHour = {
+export type AttendanceWorkingHour = {
     start: string;
     end: string;
     isOverNight: boolean;
-    isAvailable: boolean;
 };
+
+export type WorkingHour = {
+    isAvailable: boolean;
+} & AttendanceWorkingHour;

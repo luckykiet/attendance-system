@@ -1,23 +1,29 @@
 import { Address } from "./address";
+import { Attendance } from "./attendance";
+import { Breaks } from "./breaks";
 import { Weekday } from "./day";
 import { MyEmployee } from "./employee";
 import { MyRetail } from "./retail";
 import { Shift } from "./shift";
+import { SpecificBreaksPerDay } from "./specific-break";
 import { MyWorkingAt } from "./working-at";
 import { WorkingHour } from "./working-hour";
 
 export type TodayWorkplace = {
     _id: string;
+    retailId: string;
     name: string;
     address: Address;
-    checkInTime: string;
-    checkOutTime: string;
+    attendances: Attendance[];
     shifts: Record<Weekday, Shift[]>;
     distanceInMeters: number | null;
-    domain: string | null;
+    domain: string;
     location: {
         allowedRadius: number;
     }
+    workingHours: Record<Weekday, WorkingHour>;
+    specificBreaks: Record<Weekday, SpecificBreaksPerDay>;
+    breaks: Record<Weekday, Breaks[]>;
 }
 
 export type MyWorkplace = {

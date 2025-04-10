@@ -7,7 +7,7 @@ import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 
-import { TIME_FORMAT } from './constants'
+import { DAYS_OF_WEEK, TIME_FORMAT } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
@@ -333,3 +333,27 @@ export const getDurationLabel = (start, end, timeFormat = TIME_FORMAT) => {
 
   return '-';
 }
+
+export const getTodayWorkingHours = (workingHours, t) => {
+  const today = dayjs().day();
+  const todayKey = DAYS_OF_WEEK[today];
+  const hours = workingHours[todayKey];
+
+  if (!hours?.isAvailable) {
+    return { status: 'closed', message: 'misc_closed' };
+  }
+
+  const currentTime = dayjs();
+  const openTime = dayjs(hours.start, TIME_FORMAT);
+  let closeTime = dayjs(hours.end, TIME_FORMAT);
+
+  if (hours?.isOverNight && closeTime.isBefore(openTime)) {
+    closeTime = closeTime.add(1, 'day');
+  }
+
+  if (currentTime.isBetween(openTime, closeTime)) {
+    return { status: 'open', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
+  }
+
+  return { status: 'out_of_time', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
+};

@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { RegistrationForm } from '@/types/registration';
 import { RegistrationIntentData } from '@/types/intents';
+import { Shift } from '@/types/shift';
+import { TodayWorkplace } from '@/types/workplaces';
 
 const UNIQUE_APP_ID_KEY = 'unique_app_id';
 const URLS_KEY = 'urls';
@@ -16,6 +18,14 @@ type AppState = {
     registration: RegistrationForm | null;
     localDevices: string[];
     intent: RegistrationIntentData | null;
+    selectedShift: {
+        shift: Shift,
+        workplace: TodayWorkplace
+    } | null;
+    setSelectedShift: (selectedShift: {
+        shift: Shift,
+        workplace: TodayWorkplace
+    } | null) => void;
     setIntent: (intent: RegistrationIntentData | null) => void;
     setAppId: (appId: string) => void;
     setLocation: (location: Location) => void;
@@ -37,6 +47,7 @@ const initStates = {
     isGettingLocation: false,
     registration: null as RegistrationForm | null,
     localDevices: [],
+    selectedShift: null
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -53,6 +64,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     setLocalDevices: (localDevices) => set({ localDevices }),
 
     setIntent: (intent) => set({ intent }),
+
+    setSelectedShift: (selectedShift) => set({ selectedShift }),
 
     loadAppId: async () => {
         try {

@@ -1,10 +1,16 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DAYS_OF_WEEK } from '@/constants/Days';
+import { DAYS_OF_WEEK, TIME_FORMAT } from '@/constants/Days';
 import JWT from 'expo-jwt';
 import { SupportedAlgorithms } from 'expo-jwt/dist/types/algorithms';
 import dayjs from 'dayjs';
+import { WorkingHour } from '@/types/working-hour';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(customParseFormat);
+dayjs.extend(isBetween);
 
 export const capitalizeFirstLetterOfString = (str: string) => {
     if (!str || str.length === 0) return ''
@@ -134,3 +140,123 @@ export const signJwt = (payload: Record<string, unknown>, secret: string) => {
     }
     return JWT.encode({ ...payload, timestamp: dayjs().unix() }, secret, { algorithm: SupportedAlgorithms.HS512 });
 }
+
+export const getWorkingHoursText = ({
+    todayWorkingHours,
+    yesterdayWorkingHours,
+    t,
+}: {
+    todayWorkingHours: WorkingHour;
+    yesterdayWorkingHours?: WorkingHour;
+    t: (key: string) => string;
+}): {
+    status: string;
+    message: string;
+    isYesterday: boolean;
+} => {
+    const now = dayjs();
+
+    if (yesterdayWorkingHours?.isOverNight) {
+        const openY = dayjs().subtract(1, 'day').hour(Number(yesterdayWorkingHours.start.split(':')[0])).minute(Number(yesterdayWorkingHours.start.split(':')[1]));
+        let closeY = dayjs().hour(Number(yesterdayWorkingHours.end.split(':')[0])).minute(Number(yesterdayWorkingHours.end.split(':')[1]));
+        if (closeY.isBefore(openY)) {
+            closeY = closeY.add(1, 'day');
+        }
+
+        if (now.isBetween(openY, closeY, null, '[)')) {
+            const message = `${yesterdayWorkingHours.start} - ${yesterdayWorkingHours.end} (${t('misc_over_night')})`;
+            return {
+                message,
+                status: 'open',
+                isYesterday: true,
+            };
+        }
+    }
+
+    const shift = todayWorkingHours;
+    const openTime = dayjs(`${dayjs().format('YYYY-MM-DD')} ${shift.start}`, 'YYYY-MM-DD HH:mm');
+    let closeTime = dayjs(`${dayjs().format('YYYY-MM-DD')} ${shift.end}`, 'YYYY-MM-DD HH:mm');
+
+    if (shift.isOverNight && closeTime.isBefore(openTime)) {
+        closeTime = closeTime.add(1, 'day');
+    }
+
+    const warningTime = openTime.subtract(1, 'hour');
+
+    const inBeforeOneHourTime = now.isBefore(openTime) && now.isAfter(warningTime);
+    const inShiftTime = now.isBetween(openTime, closeTime, null, '[)');
+
+    const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+    return {
+        message: timeText,
+        status: inShiftTime ? 'open' : inBeforeOneHourTime ? 'warning' : 'out_of_time',
+        isYesterday: false,
+    };
+};
+
+
+export const getShiftHoursText = (
+    shift: WorkingHour,
+    t: (key: string) => string
+): {
+    status: string;
+    message: string;
+    duration: number;
+} => {
+    const currentTime = dayjs();
+    const openTime = dayjs(shift.start, TIME_FORMAT);
+    let closeTime = dayjs(shift.end, TIME_FORMAT);
+
+    if (shift.isOverNight && closeTime.isBefore(openTime)) {
+        closeTime = closeTime.add(1, 'day');
+    }
+
+    const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+    const durationFromOpeningInMinutes = currentTime.diff(openTime, 'minutes');
+    const result = {
+        message: timeText,
+        duration: durationFromOpeningInMinutes,
+        status: 'out_of_time',
+    };
+
+    if (currentTime.isBefore(openTime)) {
+        result.status = 'open';
+    } else if (currentTime.isBetween(openTime, closeTime)) {
+        result.status = 'warning';
+    }
+
+    return result;
+};
+
+
+export const isBreakWithinShift = (
+    breakStart: string,
+    breakEnd: string,
+    shiftStart: string,
+    shiftEnd: string,
+    isOverNight: boolean
+): boolean => {
+    const format = TIME_FORMAT;
+    const start = dayjs(breakStart, format);
+    const end = dayjs(breakEnd, format);
+    const shiftStartTime = dayjs(shiftStart, format);
+    let shiftEndTime = dayjs(shiftEnd, format);
+
+    if (isOverNight && shiftEndTime.isBefore(shiftStartTime)) {
+        shiftEndTime = shiftEndTime.add(1, 'day');
+    }
+
+    if (end.isBefore(start)) {
+        return (
+            start.isBetween(shiftStartTime, shiftEndTime, null, '[)') ||
+            end.add(1, 'day').isBetween(shiftStartTime, shiftEndTime, null, '[)')
+        );
+    }
+
+    return (
+        start.isBetween(shiftStartTime, shiftEndTime, null, '[)') &&
+        end.isBetween(shiftStartTime, shiftEndTime, null, '(]')
+    );
+};
