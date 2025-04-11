@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import { WorkingHour } from '@/types/working-hour';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import isBetween from 'dayjs/plugin/isBetween';
+import { Shift } from '@/types/shift';
+import { Attendance } from '@/types/attendance';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -195,18 +197,29 @@ export const getWorkingHoursText = ({
     };
 };
 
-
-export const getShiftHoursText = (
-    shift: WorkingHour,
-    t: (key: string) => string
-): {
+export const getShiftHoursText = ({
+    shift,
+    isYesterday,
+    attendance,
+    t,
+}: {
+    shift: Shift;
+    isYesterday: boolean;
+    attendance?: Attendance;
+    t: (key: string) => string;
+}): {
     status: string;
     message: string;
     duration: number;
+    isCheckedIn: boolean;
 } => {
     const currentTime = dayjs();
-    const openTime = dayjs(shift.start, TIME_FORMAT);
+    let openTime = dayjs(shift.start, TIME_FORMAT);
     let closeTime = dayjs(shift.end, TIME_FORMAT);
+
+    if (isYesterday) {
+        openTime = openTime.subtract(1, 'day');
+    }
 
     if (shift.isOverNight && closeTime.isBefore(openTime)) {
         closeTime = closeTime.add(1, 'day');
@@ -214,22 +227,33 @@ export const getShiftHoursText = (
 
     const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
 
-    const durationFromOpeningInMinutes = currentTime.diff(openTime, 'minutes');
-    const result = {
-        message: timeText,
-        duration: durationFromOpeningInMinutes,
-        status: 'out_of_time',
-    };
+    const isInShiftTime = currentTime.isBetween(openTime, closeTime);
+    const isCheckedIn = !!attendance?.checkInTime && dayjs(attendance.checkInTime).isValid();
 
-    if (currentTime.isBefore(openTime)) {
-        result.status = 'open';
-    } else if (currentTime.isBetween(openTime, closeTime)) {
-        result.status = 'warning';
+    let status: 'open' | 'warning' | 'out_of_time' = 'out_of_time';
+    let duration: number;
+
+    if (isCheckedIn && isInShiftTime) {
+        status = 'open';
+        duration = currentTime.diff(openTime, 'minutes');
+    } else if (currentTime.isBefore(openTime)) {
+        status = 'open';
+        duration = currentTime.diff(openTime, 'minutes'); // negative
+    } else if (isInShiftTime) {
+        status = 'warning';
+        duration = currentTime.diff(openTime, 'minutes');
+    } else {
+        status = 'out_of_time';
+        duration = closeTime.diff(currentTime, 'minutes');
     }
 
-    return result;
+    return {
+        status,
+        message: timeText,
+        duration,
+        isCheckedIn,
+    };
 };
-
 
 export const isBreakWithinShift = (
     breakStart: string,

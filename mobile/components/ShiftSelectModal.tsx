@@ -7,7 +7,7 @@ import { useAppStore } from '@/stores/useAppStore';
 import { calculateHoursFromMinutes, getShiftHoursText, isBreakWithinShift } from '@/utils';
 import ThemedView from './theme/ThemedView';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, TIME_FORMAT } from '@/constants/Days';
+import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
 import { SPECIFIC_BREAKS } from '@/constants/SpecificBreak';
 import { Breaks } from '@/types/breaks';
 import { ScrollView } from 'react-native';
@@ -88,6 +88,7 @@ const ShiftSelectModal = () => {
 
     const workplace = selectedShift.workplace;
     const shift = selectedShift.shift;
+    const attendance = workplace.attendances.find(att => att.shiftId === shift._id);
 
     const handleCheckIn = async () => {
         if (selectedShift) {
@@ -169,7 +170,7 @@ const ShiftSelectModal = () => {
                                 return;
                             }
                             const form: AttendanceMutation = { registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
-                            
+
                             setPendingAttendance(form);
                             makeAttendanceMutation.mutate(form);
                         },
@@ -187,15 +188,16 @@ const ShiftSelectModal = () => {
         }
     };
 
-    const todayIndex = dayjs().day();
-    const todayKey = DAYS_OF_WEEK[todayIndex];
+    const now = dayjs();
+    const todayKey = DAYS_OF_WEEK[now.day()];
+    const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
 
     const statusInfo = selectedShift.shift
-        ? getShiftHoursText(selectedShift.shift, t)
+        ? getShiftHoursText({ shift: selectedShift.shift, t, isYesterday: workplace.isYesterday })
         : { status: '', message: '' };
 
-    const specificBreaks = selectedShift.workplace.specificBreaks?.[todayKey];
-    const breaks = selectedShift.workplace.breaks?.[todayKey];
+    const specificBreaks = selectedShift.workplace.specificBreaks?.[workplace.isYesterday ? yesterdayKey : todayKey];
+    const breaks = selectedShift.workplace.breaks?.[workplace.isYesterday ? yesterdayKey : todayKey];
     return (
         <Modal
             visible={!!selectedShift}
@@ -208,13 +210,20 @@ const ShiftSelectModal = () => {
                     <BLEScanModal onResult={handleScanResult} />
                     <ScrollView contentContainerStyle={styles.scrollContent}>
                         <ThemedText style={styles.modalTitle}>{t('misc_shift_details')}</ThemedText>
-
                         <ThemedText>
                             {t('misc_workplace')}: {workplace.name ?? '-'}
                         </ThemedText>
                         <ThemedText>
-                            {t('misc_shift_time')}: {statusInfo.message || '-'}
+                            {t('misc_shift_time')}: {workplace.isYesterday ? `${t(daysOfWeeksTranslations[yesterdayKey].name)} ` : ''}{statusInfo.message || '-'}
                         </ThemedText>
+                        {attendance?.checkInTime && (
+                            <ThemedText>
+                                {t('misc_check_in_time')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                            </ThemedText>)}
+                        {attendance?.checkOutTime && (
+                            <ThemedText>
+                                {t('misc_check_out_time')}: {dayjs(attendance.checkOutTime).format('HH:mm')}
+                            </ThemedText>)}
                         <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
                         {specificBreaks && SPECIFIC_BREAKS.some(type =>
                             specificBreaks[type]?.isAvailable &&
@@ -291,9 +300,15 @@ const ShiftSelectModal = () => {
                         <View style={styles.attendanceInfo}>
                             <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
                         </View>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
-                            <ThemedText style={styles.modalButtonText}>{t('misc_check_in')}</ThemedText>
-                        </TouchableOpacity>
+                        <ThemedText>
+                            {t('misc_check_in')}: {attendance?.checkInTime ? dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss') : t('misc_not_checked_in')}
+                        </ThemedText>
+                        <ThemedText>
+                            {t('misc_check_out')}: {attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : t('misc_not_checked_out')}
+                        </ThemedText>
+                        {!attendance?.checkOutTime && <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
+                            <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
+                        </TouchableOpacity>}
                     </ScrollView>
 
                     <View style={styles.fixedFooter}>

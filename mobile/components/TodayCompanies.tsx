@@ -8,7 +8,7 @@ import utc from 'dayjs/plugin/utc';
 import { useAppStore } from '@/stores/useAppStore';
 import { useCompaniesApi } from '@/api/useCompaniesApi';
 import ThemedText from '@/components/theme/ThemedText';
-import { DAYS_OF_WEEK } from '@/constants/Days';
+import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import useTranslation from '@/hooks/useTranslation';
@@ -38,6 +38,9 @@ const TodayCompanies = () => {
   const colorScheme = useColorScheme();
   const scrollViewRef = useRef<FlatList>(null);
   const [showScrollArrow, setShowScrollArrow] = useState(false);
+  const now = dayjs();
+  const todayKey = DAYS_OF_WEEK[now.day()];
+  const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
 
   const queryResults = useQueries({
     queries: urls.map((url) => ({
@@ -46,32 +49,77 @@ const TodayCompanies = () => {
       enabled: !!appId && urls.length > 0,
     })),
     combine: (results) => {
+      const allWorkplaces = results
+        .map((result) => result.data || [])
+        .flat()
+        .filter((workplace, index, self) => self.findIndex(c => c._id === workplace._id) === index);
+
+      const duplicatedWorkplaces = allWorkplaces.flatMap((workplace) => {
+        const yesterdayWorkingHours = workplace.workingHours[yesterdayKey];
+        const todayWorkingHours = workplace.workingHours[todayKey];
+        const yesterdayShifts = workplace.shifts[yesterdayKey] || [];
+        const todayShifts = workplace.shifts[todayKey] || [];
+
+        const hasTodayShift = todayShifts.length > 0;
+
+        const activeYesterdayShifts = yesterdayShifts.filter((shift) => {
+          const start = dayjs(shift.start, TIME_FORMAT).subtract(1, 'day');
+          let end = dayjs(shift.end, TIME_FORMAT).subtract(1, 'day');
+
+          if (shift.isOverNight || end.isBefore(start)) {
+            end = end.add(1, 'day');
+          }
+
+          return now.isBetween(start, end);
+        });
+
+        const entries = [];
+
+        if (activeYesterdayShifts.length > 0) {
+          const { status, message } = getWorkingHoursText({
+            todayWorkingHours,
+            yesterdayWorkingHours,
+            t,
+          });
+
+          entries.push({
+            ...workplace,
+            shifts: activeYesterdayShifts,
+            isYesterday: true,
+            distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
+            distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
+            openingHours: message,
+            status,
+          });
+        }
+
+        // Add today's shift if it has already started
+        const hasStartedToday = todayWorkingHours?.start && now.isAfter(dayjs(todayWorkingHours.start, TIME_FORMAT));
+
+        if (hasTodayShift && hasStartedToday) {
+          const { status, message } = getWorkingHoursText({
+            todayWorkingHours,
+            t,
+          });
+
+          entries.push({
+            ...workplace,
+            shifts: todayShifts,
+            isYesterday: false,
+            distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
+            distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
+            openingHours: message,
+            status,
+          });
+        }
+
+        return entries;
+      });
+
       return {
         isLoading: results.some((result) => result.isLoading),
         isFetching: results.some((result) => result.isFetching),
-        data: results
-          .map((result) => (result.data) || [])
-          .flat()
-          .filter((workplace, index, self) => self.findIndex(c => c._id === workplace._id) === index)
-          .map((workplace) => {
-            const now = dayjs();
-            const todayKey = DAYS_OF_WEEK[now.day()];
-            const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-
-            const yesterdayWorkingHours = workplace.workingHours[yesterdayKey];
-            const todayWorkingHours = workplace.workingHours[todayKey];
-
-            const { status, message, isYesterday } = getWorkingHoursText({ todayWorkingHours, yesterdayWorkingHours, t });
-
-            return {
-              ...workplace,
-              distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
-              distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
-              shifts: workplace.shifts[isYesterday ? yesterdayKey : todayKey],
-              status,
-              openingHours: workplace.workingHours[todayKey].isAvailable ? message : t('misc_closed'),
-            };
-          }),
+        data: duplicatedWorkplaces,
         refetch: () => results.forEach((result) => result.refetch()),
       };
     }
@@ -114,13 +162,14 @@ const TodayCompanies = () => {
               ref={scrollViewRef}
               style={styles.scrollView}
               data={queryResults.data}
-              renderItem={({ item: workplace }) => {
+              renderItem={({ item: workplace, index }) => {
                 const { kilometers, meters } = workplace.distanceInMeters ? calculateKilometersFromMeters(workplace.distanceInMeters) : { kilometers: 0, meters: 0 };
                 const { kilometers: kmLeft, meters: mLeft } = workplace.distanceLeft ? calculateKilometersFromMeters(workplace.distanceLeft) : { kilometers: 0, meters: 0 };
                 const { hours: checkOutH, minutes: checkOutM } = workplace.checkOutTimeStatus ? calculateHoursFromMinutes(workplace.checkOutTimeStatus) : { hours: 0, minutes: 0 };
                 const { hours: checkInH, minutes: checkInM } = workplace.checkInTimeStatus ? calculateHoursFromMinutes(workplace.checkInTimeStatus) : { hours: 0, minutes: 0 };
 
-                return <View key={workplace._id} style={styles.companyItem}>
+                return <View key={index} style={styles.companyItem}>
+                  {workplace.isYesterday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
                   <ThemedText style={styles.companyText}>{workplace.name}</ThemedText>
                   <ThemedText style={styles.companyDetail}>
                     {workplace.address.street}, <PatternFormat
@@ -181,13 +230,12 @@ const TodayCompanies = () => {
                     </ThemedText>
                   </ThemedText>}
                   {workplace.shifts
-                    .sort((a: Shift, b: Shift) => dayjs(a.start, 'HH:mm').diff(dayjs(b.start, 'HH:mm')))
+                    .sort((a: Shift, b: Shift) => dayjs(a.start, TIME_FORMAT).diff(dayjs(b.start, TIME_FORMAT)))
                     .map((shift: Shift, index: number) => {
-                      const { status, message, duration } = getShiftHoursText(shift, t);
+                      const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
+                      const { status, message, duration, isCheckedIn } = getShiftHoursText({ shift, attendance: attendanceOfShift, isYesterday: workplace.isYesterday, t });
+
                       const { hours, minutes } = calculateHoursFromMinutes(Math.abs(duration));
-                      const attendanceOfShift = workplace.attendances.find(
-                        (attendance: Attendance) => attendance.shiftId === shift._id
-                      );
 
                       return (
                         <TouchableOpacity
@@ -211,13 +259,22 @@ const TodayCompanies = () => {
                               {t('misc_finished')}: {dayjs(attendanceOfShift.checkOutTime).format('HH:mm:ss')}
                             </ThemedText>
                           ) : (
-                            <ThemedText style={styles.shiftDuration}>
-                              {duration < 0
-                                ? `${t('misc_starts_in')}: `
-                                : `${t('misc_delayed')}: `}
-                              {hours > 0 ? `${hours} ${nonCap('misc_hour_short')} ` : ''}
-                              {minutes} {nonCap('misc_min_short')}
-                            </ThemedText>
+                            <>
+                              {isCheckedIn && attendanceOfShift?.checkInTime && (
+                                <ThemedText style={styles.shiftDuration}>
+                                  {t('misc_check_in')}: {dayjs(attendanceOfShift.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                </ThemedText>
+                              )}
+                              <ThemedText style={styles.shiftDuration}>
+                                {duration < 0
+                                  ? `${t('misc_starts_in')}: `
+                                  : isCheckedIn
+                                    ? `${t('misc_until_the_end')}: `
+                                    : `${t('misc_delayed')}: `}
+                                {hours > 0 ? `${hours} ${nonCap('misc_hour_short')} ` : ''}
+                                {minutes} {nonCap('misc_min_short')}
+                              </ThemedText>
+                            </>
                           )}
                         </TouchableOpacity>
                       );
@@ -226,7 +283,7 @@ const TodayCompanies = () => {
                   <ShiftSelectModal />
                 </View>
               }}
-              keyExtractor={(workplace) => workplace._id}
+              keyExtractor={(workplace, index) => `${workplace._id}-${workplace.isYesterday ? 'y' : 't'}-${index}`}
               onScroll={handleScroll}
               scrollEventThrottle={16}
             />
@@ -282,6 +339,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
+  },
+  companyDayText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   companyText: {
     fontSize: 16,

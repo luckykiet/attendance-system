@@ -135,11 +135,11 @@ const getTodayWorkplaces = async (req, res, next) => {
         const dayKey = DAYS_OF_WEEK[dateToUse.day()];
         const yesterdayKey = DAYS_OF_WEEK[dateToUse.subtract(1, 'day').day()];
 
-        // Extract today's shifts only
+        // Extract today's and yesterday's shifts only
         workingAts.forEach(wa => {
             const shifts = wa.shifts instanceof Map ? Object.fromEntries(wa.shifts) : wa.shifts;
             const todayShifts = Array.isArray(shifts[dayKey]) ? shifts[dayKey].filter(s => s.isAvailable) : [];
-            const yesterdayShifts = Array.isArray(shifts[yesterdayKey]) ? shifts[yesterdayKey].filter(s => s.isAvailable && s.isOverNight) : [];
+            const yesterdayShifts = Array.isArray(shifts[yesterdayKey]) ? shifts[yesterdayKey].filter(s => s.isAvailable) : [];
 
             wa.shifts = {
                 [dayKey]: todayShifts,
@@ -155,7 +155,7 @@ const getTodayWorkplaces = async (req, res, next) => {
         }).filter(Boolean);
 
         const dailyAttendances = await DailyAttendance.find({
-            date: parseInt(dateToUse.format('YYYYMMDD')),
+            date: {$in: [parseInt(dateToUse.format('YYYYMMDD')), parseInt(dateToUse.subtract(1, 'day').format('YYYYMMDD'))]},
             registerId: { $in: filteredRegisterIds },
         }).exec();
 
@@ -206,7 +206,7 @@ const getTodayWorkplaces = async (req, res, next) => {
                 ? a.distanceInMeters - b.distanceInMeters
                 : a.name.localeCompare(b.name)
         );
-
+        
         return res.status(200).json({ success: true, msg: leanNearbyRegisters });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));

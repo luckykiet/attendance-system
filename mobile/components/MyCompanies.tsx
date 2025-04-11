@@ -12,7 +12,7 @@ import React from 'react';
 import useTranslation from '@/hooks/useTranslation';
 import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
-import { DayKey, DAYS_OF_WEEK, daysOfWeeksTranslations } from '@/constants/Days';
+import { DayKey, DAYS_OF_WEEK, daysOfWeeksTranslations, getDaysOfWeek } from '@/constants/Days';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GetMyCompaniesResult } from '@/types/workplaces';
 import { useEmployeeApi } from '@/api/useEmployeeApi';
@@ -215,7 +215,7 @@ const MyCompanies = () => {
                         </ThemedText>
 
                         <ThemedText style={styles.nearbyLabel}>{t('misc_working_hours')}:</ThemedText>
-                        {DAYS_OF_WEEK.map((day) => {
+                        {getDaysOfWeek(true).map((day) => {
                           const dayOfWeek = daysOfWeeksTranslations[day];
                           const workingHour = register.workingHours[day];
                           const isToday = day === todayKey;
@@ -268,7 +268,7 @@ const MyCompanies = () => {
                         )}
 
                         <View style={styles.divider} />
-                        <ThemedText style={styles.nearbyLabel}>{t('misc_my_working_hours')}:</ThemedText>
+                        <ThemedText style={[styles.nearbyLabel, { marginBottom: 10 }]}>{t('misc_my_working_hours')}:</ThemedText>
                         {workingAt?.shifts && !isShiftsEmpty(workingAt.shifts) ? (
                           Object.entries(workingAt.shifts).flatMap(([day, shifts]) => {
                             const dayKey = day as DayKey;
@@ -276,32 +276,40 @@ const MyCompanies = () => {
                               dayjs(a.start, 'HH:mm').unix() - dayjs(b.start, 'HH:mm').unix()
                             );
 
-                            return sortedShifts.map((shift, index) => {
-                              const { start, end, isOverNight } = shift;
-                              const dayOfWeek = daysOfWeeksTranslations[dayKey];
-                              const isToday = dayKey === todayKey;
+                            return (
+                              <View
+                                key={dayKey}
+                                style={[
+                                  styles.shiftDayContainer,
+                                  {
+                                    backgroundColor: colorScheme === 'dark' ? '#2c2c2e' : '#f2f2f2',
+                                    borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                                  },
+                                ]}
+                              >
+                                <ThemedText style={styles.shiftDayLabel}>
+                                  {daysOfWeeksTranslations[dayKey]?.name ? t(daysOfWeeksTranslations[dayKey].name) : dayKey}
+                                </ThemedText>
+                                {sortedShifts.map((shift, index) => {
+                                  const { start, end, isOverNight } = shift;
+                                  const isToday = dayKey === todayKey;
 
-                              return (
-                                <View
-                                  key={`${dayKey}-${index}-${start}-${end}`}
-                                  style={[styles.row]}
-                                >
-                                  <ThemedText style={[styles.dayLabel, isToday && styles.today]}>
-                                    {dayOfWeek?.name ? t(dayOfWeek.name) : dayKey}
-                                  </ThemedText>
-                                  <ThemedText style={[styles.hoursText, isToday && styles.today]}>
-                                    {`${start} - ${end}${isOverNight ? ` (${t('misc_over_night')})` : ''}`}
-                                  </ThemedText>
-                                </View>
-                              );
-                            });
+                                  return (
+                                    <View key={`${dayKey}-${index}-${start}-${end}`} style={styles.shiftRow}>
+                                      <ThemedText style={[styles.shiftText, isToday && styles.today]}>
+                                        {`${start} - ${end}${isOverNight ? ` (${t('misc_over_night')})` : ''}`}
+                                      </ThemedText>
+                                    </View>
+                                  );
+                                })}
+                              </View>
+                            );
                           })
                         ) : (
                           <ThemedText style={styles.companyDetail}>
                             {t('misc_you_have_no_shift_assigned')}
                           </ThemedText>
                         )}
-
                       </View>
                     );
                   })}
@@ -418,6 +426,25 @@ const styles = StyleSheet.create({
   hoursText: {
     flex: 1,
   },
+  shiftDayContainer: {
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 6,
+    borderWidth: 1,
+  }, 
+  shiftDayLabel: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+    fontSize: 14,
+  },
+  shiftRow: {
+    paddingLeft: 8,
+    paddingVertical: 2,
+  },
+  shiftText: {
+    fontSize: 14,
+  },
+
 });
 
 export default MyCompanies;

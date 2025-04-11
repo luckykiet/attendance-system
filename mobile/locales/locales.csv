@@ -95,8 +95,10 @@ misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
 misc_check_fields	Check filled fields	Kiểm tra ô đã điền	Zkontrolujte vyplněné údaje!
 misc_check_in	check-in	check-in	příchod
+misc_check_in_time	checked in at	đã check in lúc	byl přítomen v
 misc_check_merchants	check merchants	kiểm tra nhà bán buôn	kontrola obchodníků
 misc_check_out	check-out	check-out	odchod
+misc_check_out_time	checked out at	đã check out lúc	odcházen v
 misc_check_signed_documents	check signed documents	kiểm tra đơn đã ký	kontrola podepsaných dokumentů
 misc_check_unsigned_documents	check unsigned documents	kiểm tra đơn chưa ký	kontrola nepodepsaných dokumentů
 misc_checked_in	checked in	đã check-in	provedl příchod
@@ -358,6 +360,7 @@ misc_no_transaction	No transactions	Không có giao dịch	Žádná transakce
 misc_no_transactions	no transaction	không có giao dịch	žádná transakce
 misc_no_workplace	no workplace	không có nơi làm việc	žádné pracoviště
 misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
+misc_not_checked_out	Not checked out	Chưa check out	Nebylo odhlášeno
 misc_not_included	not included	không được bao gồm	nezahrnuto
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
@@ -534,6 +537,7 @@ misc_to_recover_password	Recover password	Khôi phục mật khẩu	Obnovte hesl
 misc_to_register	Register	Đăng ký	Registrovat
 misc_to_search	Search	Tìm	Vyhledávat
 misc_to_start	Start	Bắt đầu	Zahájit
+misc_today	today	hôm nay	dnes
 misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
@@ -552,6 +556,7 @@ misc_unlock	unlock	mở khoá	odemknout
 misc_unpaired	unpaired	chưa ghép nối	nepárováno
 misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
+misc_until_the_end	Until the end	Đến cuối cùng	Až do konce
 misc_untitled	untitled	chưa điền	nezadáno
 misc_update	Update	Cập nhập	Aktualizovat
 misc_update_payment_terminal	Update payment terminal	Cập nhập máy trả thẻ	Aktualizovat platební terminál
