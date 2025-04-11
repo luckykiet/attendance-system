@@ -62,7 +62,7 @@ const RegisterSchema = BaseRegisterSchema.superRefine(({ breaks, specificBreaks,
         Object.entries(specificBreak).forEach(([type, brk]) => {
             const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
 
-            if (!isStartValid) {
+            if (brk.isAvailable && !isStartValid) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: 'srv_invalid_break_range',
@@ -70,7 +70,7 @@ const RegisterSchema = BaseRegisterSchema.superRefine(({ breaks, specificBreaks,
                 });
             }
 
-            if (!isEndValid) {
+            if (brk.isAvailable && !isEndValid) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: 'srv_invalid_break_range',

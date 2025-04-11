@@ -154,10 +154,16 @@ const utils = {
             isEndValid: breakEnd.isSameOrBefore(workEnd),
         };
     },
-    isBetweenTime: ({ time, start, end, timeFormat = TIME_FORMAT }) => {
-        const timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
-        const startMoment = dayjs(start, timeFormat);
+    isBetweenTime: ({ time, start, end, isYesterday, timeFormat = TIME_FORMAT }) => {
+        let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
+        let startMoment = dayjs(start, timeFormat);
         let endMoment = dayjs(end, timeFormat);
+
+        if (isYesterday) {
+            startMoment = startMoment.subtract(1, 'day');
+            endMoment = endMoment.subtract(1, 'day');
+        }
+
         if (endMoment.isBefore(startMoment)) {
             endMoment = endMoment.add(1, 'day');
         }

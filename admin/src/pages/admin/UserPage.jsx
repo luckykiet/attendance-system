@@ -70,6 +70,7 @@ export default function UserPage() {
             setPostMsg(new Error(JSON.stringify(error)))
         },
         onSuccess: (data) => {
+            setAlertMessage({ msg: 'misc_created', severity: 'success' });
             queryClient.invalidateQueries(['users']);
             navigate(`/user/${data._id}`, { replace: true });
         },
@@ -80,10 +81,11 @@ export default function UserPage() {
         onError: (error) => {
             setPostMsg(new Error(JSON.stringify(error)))
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
+            setAlertMessage({ msg: 'misc_updated', severity: 'success' });
+            setPostMsg('misc_updated');
             queryClient.invalidateQueries(['user', { userId }]);
             queryClient.invalidateQueries(['users']);
-            setPostMsg(data);
         },
     });
 

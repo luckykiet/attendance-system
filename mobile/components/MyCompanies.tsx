@@ -275,7 +275,7 @@ const MyCompanies = () => {
                             const sortedShifts = [...shifts].sort((a, b) =>
                               dayjs(a.start, 'HH:mm').unix() - dayjs(b.start, 'HH:mm').unix()
                             );
-
+                            const isToday = dayKey === todayKey;
                             return (
                               <View
                                 key={dayKey}
@@ -287,16 +287,15 @@ const MyCompanies = () => {
                                   },
                                 ]}
                               >
-                                <ThemedText style={styles.shiftDayLabel}>
+                                <ThemedText style={[styles.shiftDayLabel,  isToday && styles.today]}>
                                   {daysOfWeeksTranslations[dayKey]?.name ? t(daysOfWeeksTranslations[dayKey].name) : dayKey}
                                 </ThemedText>
                                 {sortedShifts.map((shift, index) => {
                                   const { start, end, isOverNight } = shift;
-                                  const isToday = dayKey === todayKey;
 
                                   return (
                                     <View key={`${dayKey}-${index}-${start}-${end}`} style={styles.shiftRow}>
-                                      <ThemedText style={[styles.shiftText, isToday && styles.today]}>
+                                      <ThemedText style={[styles.shiftText]}>
                                         {`${start} - ${end}${isOverNight ? ` (${t('misc_over_night')})` : ''}`}
                                       </ThemedText>
                                     </View>

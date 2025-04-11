@@ -6,8 +6,10 @@ import createAxiosService from '@/utils/axios';
 export const useAttendanceApi = () => {
     const routePrefix = '/api/attendance';
     const logAttendance = async (formData: AttendanceMutation) => {
-        const { registerId, retailId, shiftId, deviceKey, domain, latitude, longitude, localDeviceId } = formData;
-        const payload = { registerId, retailId, latitude, longitude, localDeviceId, shiftId };
+        const { deviceKey, domain } = formData;
+        const payload = JSON.parse(JSON.stringify(formData));
+        delete payload.deviceKey;
+        delete payload.domain;
 
         const token = signJwt(payload, deviceKey);
 

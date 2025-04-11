@@ -59,12 +59,17 @@ const TodayCompanies = () => {
         const todayWorkingHours = workplace.workingHours[todayKey];
         const yesterdayShifts = workplace.shifts[yesterdayKey] || [];
         const todayShifts = workplace.shifts[todayKey] || [];
-
         const hasTodayShift = todayShifts.length > 0;
 
         const activeYesterdayShifts = yesterdayShifts.filter((shift) => {
           const start = dayjs(shift.start, TIME_FORMAT).subtract(1, 'day');
           let end = dayjs(shift.end, TIME_FORMAT).subtract(1, 'day');
+          const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
+
+          // show unfinished shift
+          if(attendanceOfShift?.checkInTime && !attendanceOfShift.checkOutTime) {
+            return true;
+          }
 
           if (shift.isOverNight || end.isBefore(start)) {
             end = end.add(1, 'day');
@@ -93,10 +98,8 @@ const TodayCompanies = () => {
           });
         }
 
-        // Add today's shift if it has already started
-        const hasStartedToday = todayWorkingHours?.start && now.isAfter(dayjs(todayWorkingHours.start, TIME_FORMAT));
-
-        if (hasTodayShift && hasStartedToday) {
+        // Add today's shift
+        if (hasTodayShift) {
           const { status, message } = getWorkingHoursText({
             todayWorkingHours,
             t,
@@ -243,11 +246,12 @@ const TodayCompanies = () => {
                           onPress={() => handleOpenShiftSelection({ shift, workplace })}
                           style={[
                             styles.shiftItem,
-                            status === 'open'
-                              ? { borderColor: Colors.success, backgroundColor: `${Colors.success}20` }
-                              : status === 'warning'
-                                ? { borderColor: Colors.warning, backgroundColor: `${Colors.warning}20` }
-                                : { borderColor: Colors.error, backgroundColor: `${Colors.error}20` },
+                            attendanceOfShift?.checkOutTime ? styles.finishedShift :
+                              status === 'open'
+                                ? { borderColor: Colors.success, backgroundColor: `${Colors.success}20` }
+                                : status === 'warning'
+                                  ? { borderColor: Colors.warning, backgroundColor: `${Colors.warning}20` }
+                                  : { borderColor: Colors.error, backgroundColor: `${Colors.error}20` },
                           ]}
                         >
                           <ThemedText style={styles.shiftText}>
@@ -255,8 +259,8 @@ const TodayCompanies = () => {
                           </ThemedText>
 
                           {attendanceOfShift?.checkOutTime ? (
-                            <ThemedText style={styles.shiftDuration}>
-                              {t('misc_finished')}: {dayjs(attendanceOfShift.checkOutTime).format('HH:mm:ss')}
+                            <ThemedText style={[styles.shiftDuration, styles.finishedText]}>
+                              {t('misc_finished')}: {dayjs(attendanceOfShift.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                             </ThemedText>
                           ) : (
                             <>
@@ -267,9 +271,9 @@ const TodayCompanies = () => {
                               )}
                               <ThemedText style={styles.shiftDuration}>
                                 {duration < 0
-                                  ? `${t('misc_starts_in')}: `
+                                  ? isCheckedIn ? `${t('misc_until_the_end')}: ` : `${t('misc_starts_in')}: `
                                   : isCheckedIn
-                                    ? `${t('misc_until_the_end')}: `
+                                    ? `${t('misc_since_the_end')}: `
                                     : `${t('misc_delayed')}: `}
                                 {hours > 0 ? `${hours} ${nonCap('misc_hour_short')} ` : ''}
                                 {minutes} {nonCap('misc_min_short')}
@@ -371,6 +375,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontStyle: 'italic',
     marginTop: 2,
+  },
+  finishedShift: {
+    borderColor: Colors.secondary,
+    backgroundColor: `${Colors.secondary}20`,
+  },
+
+  finishedText: {
+    color: Colors.secondary,
+    textDecorationLine: 'line-through',
   },
 });
 

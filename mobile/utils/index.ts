@@ -233,18 +233,28 @@ export const getShiftHoursText = ({
     let status: 'open' | 'warning' | 'out_of_time' = 'out_of_time';
     let duration: number;
 
-    if (isCheckedIn && isInShiftTime) {
-        status = 'open';
-        duration = currentTime.diff(openTime, 'minutes');
-    } else if (currentTime.isBefore(openTime)) {
-        status = 'open';
-        duration = currentTime.diff(openTime, 'minutes'); // negative
-    } else if (isInShiftTime) {
-        status = 'warning';
-        duration = currentTime.diff(openTime, 'minutes');
+    if (isCheckedIn) {
+        if (isInShiftTime) {
+            status = 'open';
+            duration = currentTime.diff(closeTime, 'minutes');
+        } else if (currentTime.isAfter(closeTime)) {
+            status = 'warning';
+            duration = currentTime.diff(closeTime, 'minutes');
+        } else {
+            status = 'out_of_time';
+            duration = openTime.diff(currentTime, 'minutes');
+        }
     } else {
-        status = 'out_of_time';
-        duration = closeTime.diff(currentTime, 'minutes');
+        if (currentTime.isBefore(openTime)) {
+            status = 'open';
+            duration = currentTime.diff(openTime, 'minutes');
+        } else if (isInShiftTime) {
+            status = 'warning';
+            duration = currentTime.diff(openTime, 'minutes');
+        } else {
+            status = 'out_of_time';
+            duration = currentTime.diff(openTime, 'minutes');
+        }
     }
 
     return {

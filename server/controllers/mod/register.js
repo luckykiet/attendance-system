@@ -63,7 +63,7 @@ const updateRegister = async (req, res, next) => {
                 throw new HttpError('srv_max_local_devices_exceeded', 400);
             }
         }
-
+      
         Object.assign(foundRegister, {
             ...req.body,
             location: {

@@ -160,15 +160,6 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_register_not_found', 400);
         }
 
-        const now = dayjs();
-
-        const todayKey = DAYS_OF_WEEK[now.day()];
-        const todayWorkingHour = register.workingHours[todayKey];
-
-        if (!todayWorkingHour.isAvailable || !utils.isBetweenTime({ time: now, start: todayWorkingHour.start, end: todayWorkingHour.end })) {
-            throw new HttpError('srv_workplace_closed', 400);
-        }
-
         const retail = await Retail.findOne({ _id: register.retailId }).exec();
 
         if (!retail) {
@@ -183,7 +174,10 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_employee_not_employed', 400);
         }
         // check for overnight shifts
+        const now = dayjs();
+        const todayKey = DAYS_OF_WEEK[now.day()];
         const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+
         const yesterdayShifts = workingAt.shifts.get(yesterdayKey);
         const todayShifts = workingAt.shifts.get(todayKey);
 
@@ -191,14 +185,16 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_employee_not_working_today', 400);
         }
 
+        let isToday = true;
         let shift = todayShifts.find(s => s._id.toString() === shiftId)
         if (!shift) {
             shift = yesterdayShifts.find(s => s._id.toString() === shiftId);
             if (!shift) {
                 throw new HttpError('srv_shift_not_found', 400);
             }
-
-            const endTime = dayjs(shift.end, TIME_FORMAT, true);
+            isToday = false;
+            // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
+            const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
             if (now.isAfter(endTime)) {
                 throw new HttpError('srv_shift_already_ended', 400);
             }
@@ -206,6 +202,12 @@ const makeAttendance = async (req, res, next) => {
 
         if (!shift || !shift.isAvailable) {
             throw new HttpError('srv_employee_not_working_today', 400);
+        }
+
+        const workingHour = register.workingHours[isToday ? todayKey : yesterdayKey];
+
+        if (!workingHour.isAvailable || !utils.isBetweenTime({ time: now, start: workingHour.start, end: workingHour.end, isYesterday: !isToday })) {
+            throw new HttpError('srv_workplace_closed', 400);
         }
 
         // demo registers
@@ -322,7 +324,8 @@ const makeAttendance = async (req, res, next) => {
         }
         const attendanceQuery = {
             dailyAttendanceId: dailyAttendance._id,
-            employeeId: employee._id,
+            workingAtId: workingAt._id,
+            shiftId: shift._id,
         };
 
         if (attendanceId) {

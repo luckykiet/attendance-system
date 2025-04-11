@@ -213,6 +213,7 @@ misc_fetched_successfully	fetched successfully	lấy dữ liệu thành công	z�
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filling_in_the_address_fields	by filling in the address fields	bằng cách điền vào các trường địa chỉ	vyplněním polí adresy
 misc_filter	Filter	Lọc	Filtr
+misc_finished	Finished	Xong	Dokončeno
 misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
 misc_form	Form	Đơn	Formulář
@@ -360,7 +361,8 @@ misc_no_transaction	No transactions	Không có giao dịch	Žádná transakce
 misc_no_transactions	no transaction	không có giao dịch	žádná transakce
 misc_no_workplace	no workplace	không có nơi làm việc	žádné pracoviště
 misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
-misc_not_checked_out	Not checked out	Chưa check out	Nebylo odhlášeno
+misc_not_checked_in	Not checked in	Chưa check in	Příchod nezadáno
+misc_not_checked_out	Not checked out	Chưa check out	Odchod nezadáno
 misc_not_included	not included	không được bao gồm	nezahrnuto
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
@@ -480,6 +482,7 @@ misc_showed	showed	hiển thị	zobrazeno
 misc_signed_documents	signed documents	tài liệu đã ký	podepsané dokumenty
 misc_since_last_month	since last month	từ tháng trước	od minulého měsíce
 misc_since_started	since started	kể từ khi bắt đầu	od začátku
+misc_since_the_end	Since the end	Từ lúc kết thúc	Od konce
 misc_software	Software	Phần mềm	Software
 misc_software_name	Software name	Tên phần mềm	Název softwaru
 misc_sort_by	Sort by	Xếp theo	Seřadit podle
@@ -556,7 +559,7 @@ misc_unlock	unlock	mở khoá	odemknout
 misc_unpaired	unpaired	chưa ghép nối	nepárováno
 misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
-misc_until_the_end	Until the end	Đến cuối cùng	Až do konce
+misc_until_the_end	Until the end	Đến cuối cùng	Do konce
 misc_untitled	untitled	chưa điền	nezadáno
 misc_update	Update	Cập nhập	Aktualizovat
 misc_update_payment_terminal	Update payment terminal	Cập nhập máy trả thẻ	Aktualizovat platební terminál
@@ -786,7 +789,9 @@ srv_invalid_recaptcha	Invalid reCAPTCHA	reCAPTCHA không hợp lệ	Neplatná re
 srv_invalid_recaptcha_request	Invalid reCAPTCHA request	Yêu cầu reCAPTCHA không hợp lệ	Neplatná žádost reCAPTCHA
 srv_invalid_refid	Invalid refID	RefID không hợp lệ	Neplatné refID
 srv_invalid_request	invalid request	yêu cầu không hợp lệ	nesprávný požadavek
+srv_invalid_same_start_end_date	Start date cannot be the same as end date	Ngày bắt đầu không thể giống ngày kết thúc	Datum zahájení nemůže být stejné jako datum ukončení
 srv_invalid_settings	Invalid settings	Cài đặt không hợp lệ	Neplatná nastavení
+srv_invalid_shift	invalid shift	ca làm việc không hợp lệ	neplatná směna
 srv_invalid_street	Invalid street	Đường không hợp lệ	Neplatná ulice
 srv_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không hợp lệ	neplatný typ platebního terminálu
 srv_invalid_time_format	Invalid time format	Định dạng thời gian không hợp lệ	Neplatný formát času
@@ -878,7 +883,7 @@ srv_scan_error	scan error	lỗi quét	chyba skenování
 srv_scan_failed	scan failed	Lỗi quét	Chyba skenování
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
-srv_shift_already_ended	Shift already ended	Đã kết thúc ca làm việc	Ca již skončila
+srv_shift_already_ended	Shift already ended	Đã kết thúc ca làm việc	Směna již skončila
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
 srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy
 srv_signed_out	Signed out	Đã đăng xuất	Odhlášeno

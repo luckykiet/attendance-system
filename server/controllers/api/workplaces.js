@@ -168,7 +168,7 @@ const getTodayWorkplaces = async (req, res, next) => {
             breaks: 1,
             shiftId: 1,
         }).exec();
-
+        
         const nearbyRegisters = [];
 
         filteredRegisterIds.forEach(registerId => {

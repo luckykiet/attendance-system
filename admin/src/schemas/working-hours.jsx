@@ -25,7 +25,14 @@ const WorkingHourSchema = BaseWorkingHourSchema.superRefine(({ start, end, isOve
     const startTime = dayjs(start, TIME_FORMAT, true);
     const endTime = dayjs(end, TIME_FORMAT, true);
 
-    if (!startTime.isValid() || !endTime.isValid()) {
+    if (!startTime.isValid() || !endTime.isValid()) return;
+
+    if (startTime.isSame(endTime)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'srv_invalid_same_start_end_date',
+            path: ['end'],
+        });
         return;
     }
 

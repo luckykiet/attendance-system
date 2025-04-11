@@ -44,14 +44,14 @@ const validateSpecificBreaks = () => {
                 const workingHour = req.body.workingHours?.[day];
                 const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
 
-                if (!isStartValid) {
+                if (brk.isAvailable && !isStartValid) {
                     throw {
                         field: `specificBreaks.${day}.${type}.start`,
                         message: 'srv_invalid_break_range',
                     };
                 }
 
-                if (!isEndValid) {
+                if (brk.isAvailable && !isEndValid) {
                     throw {
                         field: `specificBreaks.${day}.${type}.end`,
                         message: 'srv_invalid_break_range',

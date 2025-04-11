@@ -123,8 +123,11 @@ const ShiftSelectModal = () => {
             }
 
             const currentTime = dayjs();
-            const openTime = dayjs(shift.start, TIME_FORMAT);
-            const closeTime = dayjs(shift.end, TIME_FORMAT);
+            const openTime = workplace.isYesterday ? dayjs(shift.start, TIME_FORMAT).subtract(1, 'day') : dayjs(shift.start, TIME_FORMAT);
+            let closeTime = workplace.isYesterday ? dayjs(shift.end, TIME_FORMAT).subtract(1, 'day') : dayjs(shift.end, TIME_FORMAT);
+            if (shift.isOverNight && closeTime.isBefore(openTime)) {
+                closeTime = closeTime.add(1, 'day');
+            }
 
             let diff = 0;
             let text = `${t('misc_cannot_revert_action')}!`;
@@ -216,14 +219,6 @@ const ShiftSelectModal = () => {
                         <ThemedText>
                             {t('misc_shift_time')}: {workplace.isYesterday ? `${t(daysOfWeeksTranslations[yesterdayKey].name)} ` : ''}{statusInfo.message || '-'}
                         </ThemedText>
-                        {attendance?.checkInTime && (
-                            <ThemedText>
-                                {t('misc_check_in_time')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
-                            </ThemedText>)}
-                        {attendance?.checkOutTime && (
-                            <ThemedText>
-                                {t('misc_check_out_time')}: {dayjs(attendance.checkOutTime).format('HH:mm')}
-                            </ThemedText>)}
                         <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
                         {specificBreaks && SPECIFIC_BREAKS.some(type =>
                             specificBreaks[type]?.isAvailable &&
@@ -300,12 +295,15 @@ const ShiftSelectModal = () => {
                         <View style={styles.attendanceInfo}>
                             <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
                         </View>
-                        <ThemedText>
-                            {t('misc_check_in')}: {attendance?.checkInTime ? dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss') : t('misc_not_checked_in')}
-                        </ThemedText>
-                        <ThemedText>
-                            {t('misc_check_out')}: {attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : t('misc_not_checked_out')}
-                        </ThemedText>
+                        {attendance?.checkInTime ? <ThemedText>
+                            {t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')} </ThemedText> : <ThemedText>
+                            {t('misc_not_checked_in')}
+                        </ThemedText>}
+                        {attendance?.checkOutTime ? <ThemedText>
+                            {t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                        </ThemedText> : <ThemedText>
+                            {t('misc_not_checked_out')}
+                        </ThemedText>}
                         {!attendance?.checkOutTime && <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
                             <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
                         </TouchableOpacity>}

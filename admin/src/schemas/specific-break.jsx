@@ -45,7 +45,8 @@ export const SpecificBreakSchemaWithWorkingHours = BaseSpecificBreakSchema.exten
     }),
 }).superRefine(({ workingHours, ...specificBrk }, ctx) => {
     const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(specificBrk, workingHours);
-    if (!isStartValid) {
+
+    if (specificBrk.isAvailable && !isStartValid) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'srv_invalid_break_range',
@@ -53,7 +54,7 @@ export const SpecificBreakSchemaWithWorkingHours = BaseSpecificBreakSchema.exten
         });
     }
 
-    if (!isEndValid) {
+    if (specificBrk.isAvailable && !isEndValid) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'srv_invalid_break_range',
