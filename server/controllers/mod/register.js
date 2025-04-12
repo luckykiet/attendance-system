@@ -72,7 +72,7 @@ const updateRegister = async (req, res, next) => {
                 allowedRadius: allowedRadius || 100,
             },
         });
-
+        
         const updatedRegister = await foundRegister.save();
 
         if (!updatedRegister) {

@@ -278,7 +278,7 @@ export const isBreakWithinShift = (
     const shiftStartTime = dayjs(shiftStart, format);
     let shiftEndTime = dayjs(shiftEnd, format);
 
-    if (isOverNight && shiftEndTime.isBefore(shiftStartTime)) {
+    if (isOverNight || shiftEndTime.isBefore(shiftStartTime)) {
         shiftEndTime = shiftEndTime.add(1, 'day');
     }
 
@@ -293,4 +293,65 @@ export const isBreakWithinShift = (
         start.isBetween(shiftStartTime, shiftEndTime, null, '[)') &&
         end.isBetween(shiftStartTime, shiftEndTime, null, '(]')
     );
+};
+
+type AttendanceStatus = {
+    checkInTime: {
+        message: string;
+        isSuccess: boolean;
+    } | null;
+    checkOutTime: {
+        message: string;
+        isSuccess: boolean;
+    } | null;
+};
+
+export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, shift, t, noCapT }: { checkInTime: string | null; checkOutTime: string | null, shift: Shift, t: (key: string) => string; noCapT: (key: string) => string; }): AttendanceStatus => {
+    const result: AttendanceStatus = { checkInTime: null, checkOutTime: null };
+    if (!checkInTime && !checkOutTime) {
+        return result;
+    }
+
+    const checkIn = dayjs(checkInTime);
+    const checkOut = dayjs(checkOutTime);
+
+    const openTime = dayjs(shift.start, TIME_FORMAT);
+    let closeTime = dayjs(shift.end, TIME_FORMAT);
+
+    if (shift.isOverNight || closeTime.isBefore(openTime)) {
+        closeTime = closeTime.add(1, 'day');
+    }
+
+    if (checkIn.isValid()) {
+        if (checkIn.isBefore(openTime) || checkIn.isSame(openTime)) {
+            result.checkInTime = {
+                message: t("misc_checked_in_on_time"),
+                isSuccess: true,
+            };
+        } else {
+            const lateDiff = checkIn.diff(openTime, 'minute');
+            const { hours, minutes } = calculateHoursFromMinutes(lateDiff);
+            result.checkInTime = {
+                message: `${t("misc_late")} ${hours > 0 ? `${hours} ${noCapT("misc_hour_short")}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT("misc_min_short")}` : ''}`,
+                isSuccess: false,
+            };
+        }
+    }
+
+    if (checkOut.isValid()) {
+        if (checkOut.isAfter(closeTime) || checkOut.isSame(closeTime)) {
+            result.checkOutTime = {
+                message: t("misc_checked_out_on_time"),
+                isSuccess: true,
+            }
+        } else {
+            const earlyDiff = checkOut.diff(closeTime, 'minute');
+            const { hours, minutes } = calculateHoursFromMinutes(earlyDiff);
+            result.checkOutTime = {
+                message: `${t("misc_early")} ${hours > 0 ? `${hours} ${noCapT("misc_hour_short")}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT("misc_min_short")}` : ''}`,
+                isSuccess: false,
+            }
+        }
+    }
+    return result;
 };

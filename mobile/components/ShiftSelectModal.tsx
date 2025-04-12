@@ -4,7 +4,7 @@ import ThemedText from './theme/ThemedText';
 import { Colors } from '@/constants/Colors';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
-import { calculateHoursFromMinutes, getShiftHoursText, isBreakWithinShift } from '@/utils';
+import { calculateHoursFromMinutes, getAttendanceStatus, getShiftHoursText, isBreakWithinShift } from '@/utils';
 import ThemedView from './theme/ThemedView';
 import dayjs from 'dayjs';
 import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
@@ -17,53 +17,12 @@ import { AttendanceMutation } from '@/types/attendance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAttendanceApi } from '@/api/useAttendanceApi';
 import BLEScanModal from './BLEScanModal';
-
-// type AttendanceStatus = { checkInTime: string | number | null; checkOutTime: string | number | null };
-
-// const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, workingHours }: { checkInTime: string | null; checkOutTime: string | null, workingHours: WorkingHours }): AttendanceStatus => {
-//   const result: AttendanceStatus = { checkInTime: null, checkOutTime: null };
-//   if (!checkInTime && !checkOutTime) {
-//     return result;
-//   }
-//   const todayIndex = dayjs().day();
-//   const todayKey = DAYS_OF_WEEK[todayIndex];
-//   const hours = workingHours[todayKey];
-
-//   if (!hours?.isAvailable) {
-//     return result;
-//   }
-
-//   const checkIn = dayjs(checkInTime);
-//   const checkOut = dayjs(checkOutTime);
-
-//   const openTime = dayjs(hours.start, TIME_FORMAT);
-//   const closeTime = dayjs(hours.end, TIME_FORMAT);
-
-//   if (checkIn.isValid()) {
-//     if (checkIn.isBefore(openTime) || checkIn.isSame(openTime)) {
-//       result.checkInTime = "misc_checked_in_on_time";
-//     } else {
-//       const lateDiff = checkIn.diff(openTime, 'minute');
-//       result.checkInTime = lateDiff;
-//     }
-//   }
-
-//   if (checkOut.isValid()) {
-//     if (checkOut.isAfter(closeTime) || checkOut.isSame(closeTime)) {
-//       result.checkOutTime = "misc_checked_out_on_time";
-//     } else {
-//       const earlyDiff = checkOut.diff(closeTime, 'minute');
-//       result.checkOutTime = earlyDiff;
-//     }
-//   }
-//   return result;
-// };
-
+import _ from 'lodash';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
     const { t } = useTranslation();
-    const { t: nonCapT } = useTranslation({ capitalize: false });
+    const { t: noCapT } = useTranslation({ capitalize: false });
     const { selectedShift, setSelectedShift, location, setLocalDevices } = useAppStore();
     const { logAttendance } = useAttendanceApi();
     const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
@@ -89,6 +48,14 @@ const ShiftSelectModal = () => {
     const workplace = selectedShift.workplace;
     const shift = selectedShift.shift;
     const attendance = workplace.attendances.find(att => att.shiftId === shift._id);
+
+    const attendanceStatus = attendance ? getAttendanceStatus({
+        checkInTime: attendance.checkInTime?.toString(),
+        checkOutTime: attendance.checkOutTime?.toString(),
+        shift: shift,
+        t,
+        noCapT,
+    }) : null;
 
     const handleCheckIn = async () => {
         if (selectedShift) {
@@ -150,7 +117,7 @@ const ShiftSelectModal = () => {
             }
 
             const { hours, minutes } = calculateHoursFromMinutes(diff);
-            text += `${hours} ${nonCapT('misc_hour_short')} ${minutes} ${nonCapT('misc_min_short')}`;
+            text += `${hours} ${noCapT('misc_hour_short')} ${minutes} ${noCapT('misc_min_short')}`;
 
             Alert.alert(
                 t(!checkInTime ? 'misc_confirm_check_in' : 'misc_confirm_check_out'),
@@ -246,7 +213,7 @@ const ShiftSelectModal = () => {
                                                 {brk.isOverNight ? ` (${t('misc_over_night')})` : ''}
                                             </ThemedText>
                                             <ThemedText style={styles.breakDurationText}>
-                                                {t('misc_duration')}: {hours > 0 ? `${hours} ${nonCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${nonCapT('misc_min_short', { capitalize: false })}` : ''}
+                                                {t('misc_duration')}: {hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short', { capitalize: false })}` : ''}
                                             </ThemedText>
                                         </View>
                                         <TouchableOpacity
@@ -276,7 +243,7 @@ const ShiftSelectModal = () => {
                                                     {b.isOverNight ? ` (${t('misc_over_night')})` : ''}
                                                 </ThemedText>
                                                 <ThemedText style={styles.breakDurationText}>
-                                                    {t('misc_duration')}: {hours > 0 ? `${hours} ${nonCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${nonCapT('misc_min_short', { capitalize: false })}` : ''}
+                                                    {t('misc_duration')}: {hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short', { capitalize: false })}` : ''}
                                                 </ThemedText>
                                             </View>
                                             <TouchableOpacity
@@ -295,15 +262,30 @@ const ShiftSelectModal = () => {
                         <View style={styles.attendanceInfo}>
                             <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
                         </View>
-                        {attendance?.checkInTime ? <ThemedText>
-                            {t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')} </ThemedText> : <ThemedText>
-                            {t('misc_not_checked_in')}
-                        </ThemedText>}
-                        {attendance?.checkOutTime ? <ThemedText>
-                            {t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
-                        </ThemedText> : <ThemedText>
-                            {t('misc_not_checked_out')}
-                        </ThemedText>}
+                        <View style={styles.attendanceStatusContainer}>
+                            {attendance?.checkInTime ? <>
+                                <ThemedText>
+                                    {t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                </ThemedText>
+                                {attendanceStatus && !_.isEmpty(attendanceStatus.checkInTime) && <ThemedText style={attendanceStatus.checkInTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
+                                    {t(attendanceStatus.checkInTime.message)}
+                                </ThemedText>}
+                            </> : <ThemedText>
+                                {t('misc_not_checked_in')}
+                            </ThemedText>}
+                        </View>
+                        <View style={styles.attendanceStatusContainer}>
+                            {attendance?.checkOutTime ? <>
+                                <ThemedText>
+                                    {t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                </ThemedText>
+                                {attendanceStatus && !_.isEmpty(attendanceStatus.checkOutTime) && <ThemedText style={attendanceStatus.checkOutTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
+                                    {t(attendanceStatus.checkOutTime.message)}
+                                </ThemedText>}
+                            </> : <ThemedText>
+                                {t('misc_not_checked_out')}
+                            </ThemedText>}
+                        </View>
                         {!attendance?.checkOutTime && <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
                             <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
                         </TouchableOpacity>}
@@ -404,6 +386,10 @@ const styles = StyleSheet.create({
     attendanceInfo: {
         flexShrink: 1,
         marginRight: 10,
+    },
+    attendanceStatusContainer: {
+        flexShrink: 1,
+        marginTop: 10,
     },
 });
 

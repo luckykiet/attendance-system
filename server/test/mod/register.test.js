@@ -182,6 +182,7 @@ describe(`POST ${routePrefix}`, () => {
 
         // Case 1: duration too low (< 15)
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
+        payload1.specificBreaks.mon.lunch.isAvailable = true;
         payload1.specificBreaks.mon.lunch.duration = 5;
 
         const res1 = await request
@@ -274,6 +275,7 @@ describe(`POST ${routePrefix}`, () => {
         const payload7 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload7.workingHours.mon.end = '23:49';
         payload7.specificBreaks.mon.dinner.end = '23:50';
+        payload7.specificBreaks.mon.dinner.isAvailable = true;
 
         const res7 = await request
             .post(`${routePrefix}`)
@@ -552,6 +554,7 @@ describe(`PUT ${routePrefix}`, () => {
         // Case 1: duration too low (< 15)
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload1._id = createdId;
+        payload1.specificBreaks.mon.lunch.isAvailable = true;
         payload1.specificBreaks.mon.lunch.duration = 5;
 
         const res1 = await request
@@ -568,6 +571,7 @@ describe(`PUT ${routePrefix}`, () => {
         const payload2 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload2._id = createdId;
         payload2.specificBreaks.mon.lunch.start = 'invalid';
+        payload2.specificBreaks.mon.lunch.isAvailable = true;
 
         const res2 = await request
             .put(`${routePrefix}`)
@@ -589,6 +593,7 @@ describe(`PUT ${routePrefix}`, () => {
         payload3.specificBreaks.mon.lunch.start = '22:00';
         payload3.specificBreaks.mon.lunch.end = '06:00';
         payload3.specificBreaks.mon.lunch.isOverNight = false;
+        payload3.specificBreaks.mon.lunch.isAvailable = true;
 
         const res3 = await request
             .put(`${routePrefix}`)
@@ -650,6 +655,7 @@ describe(`PUT ${routePrefix}`, () => {
         payload7._id = createdId;
         payload7.workingHours.mon.end = '23:49';
         payload7.specificBreaks.mon.dinner.end = '23:50';
+        payload7.specificBreaks.mon.dinner.isAvailable = true;
 
         const res7 = await request
             .put(`${routePrefix}`)
@@ -665,6 +671,7 @@ describe(`PUT ${routePrefix}`, () => {
         const payload8 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload8._id = createdId;
         payload8.specificBreaks.mon.dinner.duration = -50;
+        payload8.specificBreaks.mon.dinner.isAvailable = true;
 
         const res8 = await request
             .put(`${routePrefix}`)
@@ -680,6 +687,7 @@ describe(`PUT ${routePrefix}`, () => {
         const payload9 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload9._id = createdId;
         payload9.specificBreaks.mon.dinner.duration = 0;
+        payload9.specificBreaks.mon.dinner.isAvailable = true;
 
         const res9 = await request
             .put(`${routePrefix}`)
@@ -746,7 +754,7 @@ describe(`PUT ${routePrefix}`, () => {
 
         expect(response.status).toBe(403);
     });
-    
+
     test('should prevent user from other retail to update a register', async () => {
         const { createdId } = await createRegister(request);
 

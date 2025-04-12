@@ -42,6 +42,9 @@ const validateSpecificBreaks = () => {
 
             body(`specificBreaks.${day}.${type}`).custom((brk, { req }) => {
                 const workingHour = req.body.workingHours?.[day];
+                if (!workingHour) {
+                    return true;
+                };
                 const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHour);
 
                 if (brk.isAvailable && !isStartValid) {
