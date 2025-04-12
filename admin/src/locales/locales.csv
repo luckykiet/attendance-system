@@ -80,6 +80,8 @@ misc_bills	bills	hoá đơn	faktury
 misc_birth_number	birth number	số sinh	rodné číslo
 misc_bluetooth_permission_required	Bluetooth permission required to scan for local attendance devices	cần quyền sử dụng Bluetooth để quét thiết bị điểm danh	musíte povolit použití Bluetooth pro skenování lokální zařízení docházky
 misc_break	break time	thời gian nghỉ	přestávka
+misc_break_submission_failed	break submission failed	gửi\ đơn nghỉ thất bại	žádost o přestávku selhala
+misc_break_submitted	break submitted	đã gửi đơn nghỉ	žádost o přestávku odeslána
 misc_breakfast	Breakfast	Bữa sáng	Snídaně
 misc_bubble_tea	bubble tea	trà sữa	mléčný čaj
 misc_by_partners	by partners	theo đối tác	podle partnera
@@ -327,6 +329,7 @@ misc_move_from	move from	chuyển từ	odkazován od
 misc_move_status_to	move status to	chuyển trạng thái thành	přepnout do statusu
 misc_move_to	move to	chuyển đến	odkazován na
 misc_must_be_registered_by_employer	you must be registered by employer	bạn phải được đăng ký bởi nhà tuyển dụng	musíte být registrován(a) zaměstnavatelem
+misc_must_have_attendance	must have attendance	phải có điểm danh	musíte zahájit docházku
 misc_my_profile	my profile	thông tin cá nhân	osobní profil
 misc_my_today_workplaces	my today working places	nơi làm việc hôm nay của tôi	moje dnešní pracoviště
 misc_my_working_hours	my working hours	thời gian làm việc của tôi	moje pracovní doba
@@ -364,6 +367,7 @@ misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
 misc_not_checked_in	Not checked in	Chưa check in	Příchod nezadáno
 misc_not_checked_out	Not checked out	Chưa check out	Odchod nezadáno
 misc_not_included	not included	không được bao gồm	nezahrnuto
+misc_not_started	not started	chưa bắt đầu	nezačalo
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
 misc_opening	opening	đang mở	otevřeno
@@ -371,6 +375,7 @@ misc_opening_soon	opening soon	sắp mở cửa	brzy otevřeno
 misc_operations	Operations	Tác vụ	Operace
 misc_others	others	khác	jiné
 misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
+misc_outside_time	outside time	ngoài thời gian	mimo čas
 misc_over_night	Overnight	Qua đêm	Přes noc
 misc_partner	partner	đối tác	partner
 misc_partner_of	partner of	đối tác của	partnerem od
@@ -502,6 +507,7 @@ misc_stores_list	Stores list	Danh sách cửa hàng	Seznam provozoven
 misc_stores_shortcut	stores	cửa hàng	prov.
 misc_street	Street	Đường	Ulice
 misc_submit	Submit	Gửi	Odeslat
+misc_submit_break	submit break	gửi đơn nghỉ	odeslat přestávku
 misc_submitted	submitted	đã nhận	zadáno
 misc_summary	summary	tổng kết	shrnutí
 misc_supervisor	supervisor	cấp trên	vedoucí
@@ -664,6 +670,7 @@ srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo m
 srv_biometric_permissions_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
 srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
 srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
+srv_break_not_found	Break not found	Không tìm thấy thời gian nghỉ	žádná přestávka nenalezena
 srv_break_out_of_working_hours	break out of working hours	ngoài giờ làm việc	přestávka mimo pracovní dobu
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
@@ -729,6 +736,7 @@ srv_failed_to_login	Failed to login	Đăng nhập không thành công	Přihláš
 srv_failed_to_make_attendance	failed to make attendance	điểm danh thất bại	neúspěšné zaznamenání docházky
 srv_failed_to_registration	Failed to registration	Đăng ký thất bại	Registrace selhala
 srv_failed_to_submit	failed to submit	gửi không thành công	odeslání selhalo
+srv_failed_to_submit_break	failed to submit break	gửi đơn nghỉ thất bại	žádost o přestávku selhala
 srv_failed_to_update	failed to update	cập nhập không thành công	aktualizace selhala
 srv_failed_to_upload	failed to upload	tải lên không thành công	nahrávání selhalo
 srv_failed_unregister_local_device	Failed to unregister local device	Hủy đăng ký thiết bị cục bộ không thành công	Nezdařilo se odregistrovat lokální zařízení
@@ -808,6 +816,7 @@ srv_items_empty	items are empty	mục trống	položky jsou prázdné
 srv_leads_imported	Leads imported	Khách hàng tiềm năng đã được nhập	Zákazníci importováni
 srv_location_not_found	Location not found	Không tìm thấy vị trí	lokace nenalezena
 srv_location_required_to_make_attendance	location is required to make attendance	vị trí là bắt buộc để điểm danh	lokace je povinná pro zaznamenání docházky
+srv_location_required_to_submit_break	location is required to submit tje break	địa điểm cần thiết để gửi đơn nghỉ	požadováno místo pro odeslání přestávky
 srv_log_in_failed	Log in failed	Đăng nhập không thành công	Přihlášení se nezdařilo
 srv_login_expired	login expired	đăng nhập hết hạn	přihlášení expirováno
 srv_mail_send_failed	Mail send failed	Gửi thư không thành công	Odeslání e-mailu se nezdařilo

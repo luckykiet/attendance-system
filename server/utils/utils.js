@@ -44,6 +44,19 @@ const getTranslations = async (lang) => {
     }
 }
 
+const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
+    const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
+    let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
+
+    if (endTime.isBefore(startTime)) {
+        endTime = endTime.add(1, 'day');
+    }
+    return {
+        startTime,
+        endTime,
+    }
+}
+
 const utils = {
     fetchAresWithTin: async (tin) => {
         const aresLoggers = winston.loggers.get('ares')
@@ -135,19 +148,9 @@ const utils = {
         return isOverNight(start, end, timeFormat)
     },
     validateBreaksWithinWorkingHours: (brk, workingHours, timeFormat = TIME_FORMAT) => {
-        const workStart = dayjs(workingHours.start, timeFormat);
-        let workEnd = dayjs(workingHours.end, timeFormat);
+        const { start: workStart, end: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
 
-        if (workEnd.isBefore(workStart)) {
-            workEnd = workEnd.add(1, 'day');
-        }
-
-        let breakStart = dayjs(brk.start, timeFormat);
-        let breakEnd = dayjs(brk.end, timeFormat);
-
-        if (breakEnd.isBefore(breakStart)) {
-            breakEnd = breakEnd.add(1, 'day');
-        }
+        const { start: breakStart, end: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
 
         return {
             isStartValid: breakStart.isSameOrAfter(workStart),
@@ -156,19 +159,13 @@ const utils = {
     },
     isBetweenTime: ({ time, start, end, isYesterday, timeFormat = TIME_FORMAT }) => {
         let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
-        let startMoment = dayjs(start, timeFormat);
-        let endMoment = dayjs(end, timeFormat);
 
-        if (isYesterday) {
-            startMoment = startMoment.subtract(1, 'day');
-            endMoment = endMoment.subtract(1, 'day');
-        }
-
-        if (endMoment.isBefore(startMoment)) {
-            endMoment = endMoment.add(1, 'day');
-        }
+        const { start: startMoment, end: endMoment } = getStartEndTime({ start, end, timeFormat, isToday: !isYesterday });
 
         return timeMoment.isBetween(startMoment, endMoment);
     },
+    getStartEndTime: ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
+        return getStartEndTime({ start, end, timeFormat, isToday })
+    }
 }
 module.exports = utils

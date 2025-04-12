@@ -1,5 +1,6 @@
 //@ts-check
 const { auth, cache } = require('../../middlewares');
+const { ensureTokenVerified } = require('../../middlewares/auth');
 
 module.exports = function (app, apiPrefix) {
     app.use(apiPrefix, cache.noCache);
@@ -17,4 +18,5 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/absence-request', require('./absence-request'));
     app.use(apiPrefix + '/absence-requests', require('./absence-requests'));
     app.use(apiPrefix + '/employee', require('./employee'));
+    app.use(apiPrefix + '/specific-break', ensureTokenVerified, require('./specific-break'));
 };

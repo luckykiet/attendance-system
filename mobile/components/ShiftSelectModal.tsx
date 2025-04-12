@@ -4,20 +4,21 @@ import ThemedText from './theme/ThemedText';
 import { Colors } from '@/constants/Colors';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
-import { calculateHoursFromMinutes, getAttendanceStatus, getShiftHoursText, isBreakWithinShift } from '@/utils';
+import { calculateHoursFromMinutes, checkBiometric, getAttendanceStatus, getShiftHoursText, getStartEndTime, isBreakWithinShift } from '@/utils';
 import ThemedView from './theme/ThemedView';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
-import { SPECIFIC_BREAKS } from '@/constants/SpecificBreak';
+import { DAYS_OF_WEEK, daysOfWeeksTranslations } from '@/constants/Days';
+import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
 import { Breaks } from '@/types/breaks';
 import { ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { AttendanceMutation } from '@/types/attendance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAttendanceApi } from '@/api/useAttendanceApi';
 import BLEScanModal from './BLEScanModal';
 import _ from 'lodash';
+import { SpecificBreakMutation, SpecificBreakTypes } from '@/types/specific-break';
+import { useSpecificBreakApi } from '@/api/useSpecificBreakApi';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
@@ -25,6 +26,7 @@ const ShiftSelectModal = () => {
     const { t: noCapT } = useTranslation({ capitalize: false });
     const { selectedShift, setSelectedShift, location, setLocalDevices } = useAppStore();
     const { logAttendance } = useAttendanceApi();
+    const { applySpecificBreak } = useSpecificBreakApi();
     const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
 
     const makeAttendanceMutation = useMutation(
@@ -40,6 +42,22 @@ const ShiftSelectModal = () => {
                 }
             },
             onError: (error) => Alert.alert(t('misc_attendance_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_make_attendance')),
+        }
+    )
+
+    const applySpecificBreakMutation = useMutation(
+        {
+            mutationFn: (data: SpecificBreakMutation) => applySpecificBreak(data),
+            onSuccess: (data) => {
+                if (data.localDevices) {
+                    setLocalDevices(data.localDevices);
+                } else {
+                    Alert.alert(t('misc_break_submitted'), t(data.msg))
+                    setPendingAttendance(null);
+                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                }
+            },
+            onError: (error) => Alert.alert(t('misc_break_submission_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_submit_break')),
         }
     )
 
@@ -69,32 +87,22 @@ const ShiftSelectModal = () => {
             }
 
             const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
+
             if (biometricEnabled === 'true') {
-                const hasHardware = await LocalAuthentication.hasHardwareAsync();
-                const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+                const result = await checkBiometric(t);
 
-                if (!hasHardware || !isEnrolled) {
-                    Alert.alert(t('misc_error'), t('srv_biometric_permissions_disabled'));
-                    return;
-                }
-
-                const biometricResult = await LocalAuthentication.authenticateAsync({
-                    promptMessage: t('misc_authenticate_to_continue'),
-                    cancelLabel: t('misc_cancel'),
-                });
-
-                if (!biometricResult.success) {
+                if (!result.success) {
+                    if (_.isObject(result.msg)) {
+                        Alert.alert(t(result.msg.title), t(result.msg.message));
+                        return;
+                    }
                     Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
                     return;
                 }
             }
 
             const currentTime = dayjs();
-            const openTime = workplace.isYesterday ? dayjs(shift.start, TIME_FORMAT).subtract(1, 'day') : dayjs(shift.start, TIME_FORMAT);
-            let closeTime = workplace.isYesterday ? dayjs(shift.end, TIME_FORMAT).subtract(1, 'day') : dayjs(shift.end, TIME_FORMAT);
-            if (shift.isOverNight && closeTime.isBefore(openTime)) {
-                closeTime = closeTime.add(1, 'day');
-            }
+            const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: !workplace.isYesterday });
 
             let diff = 0;
             let text = `${t('misc_cannot_revert_action')}!`;
@@ -152,6 +160,89 @@ const ShiftSelectModal = () => {
         setSelectedShift(null);
     };
 
+    const handleSpecificBreakSubmit = async (breakKey: SpecificBreakTypes) => {
+        if (selectedShift) {
+            const { _id: registerId, retailId, domain, attendances, specificBreaks, isYesterday } = workplace;
+            const { _id: shiftId } = shift;
+
+            const attendance = attendances.find(att => att.shiftId === shiftId);
+
+            if (!attendance) {
+                Alert.alert(t('misc_error'), t('misc_must_have_attendance'));
+                return;
+            }
+
+            if (attendance.checkOutTime) {
+                Alert.alert(t('srv_already_checked_out'));
+                return;
+            }
+            const now = dayjs();
+            const todayKey = DAYS_OF_WEEK[now.day()];
+            const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+
+            const dayKey = isYesterday ? yesterdayKey : todayKey;
+            if (!specificBreaks[dayKey] || !specificBreaks[dayKey][breakKey] || !specificBreaks[dayKey][breakKey].isAvailable) {
+                Alert.alert(t('misc_error'), t('misc_break_not_available'));
+                return;
+            }
+
+            const specificBreak = specificBreaks[dayKey][breakKey];
+
+            const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
+
+            if (biometricEnabled === 'true') {
+                const result = await checkBiometric(t);
+
+                if (!result.success) {
+                    if (_.isObject(result.msg)) {
+                        Alert.alert(t(result.msg.title), t(result.msg.message));
+                        return;
+                    }
+                    Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
+                    return;
+                }
+            }
+
+            let text = `${t('misc_cannot_revert_action')}!`;
+            text += `\n${t(specificBreakTranslations[breakKey].name)}: ${specificBreak.start} - ${specificBreak.end}${specificBreak.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+            const { hours, minutes } = calculateHoursFromMinutes(specificBreak.duration);
+
+            text += `\n${t('misc_duration')}: ${hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}`;
+
+            Alert.alert(
+                t('misc_submit_break'),
+                text,
+                [
+                    {
+                        text: t('misc_cancel'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: t('misc_confirm'),
+                        onPress: async () => {
+                            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+                            if (!deviceKey) {
+                                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                                return;
+                            }
+                            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
+                                Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
+                                return;
+                            }
+                            const form: SpecificBreakMutation = { breakKey, registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
+
+                            setPendingAttendance(form);
+                            applySpecificBreakMutation.mutate(form);
+                        },
+                    },
+                ],
+                { cancelable: true }
+            );
+        }
+        setSelectedShift(null);
+    };
+
     const handleScanResult = (result: boolean, foundDevices: string[]) => {
         if (result && pendingAttendance) {
             makeAttendanceMutation.mutate({ ...pendingAttendance, localDeviceId: foundDevices[0] });
@@ -188,21 +279,13 @@ const ShiftSelectModal = () => {
                         </ThemedText>
                         <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
                         {specificBreaks && SPECIFIC_BREAKS.some(type =>
-                            specificBreaks[type]?.isAvailable &&
-                            isBreakWithinShift(
-                                specificBreaks[type].start,
-                                specificBreaks[type].end,
-                                shift.start,
-                                shift.end,
-                                shift.isOverNight
-                            )
+                            specificBreaks[type]?.isAvailable
                         ) ? (
                             SPECIFIC_BREAKS.map((type) => {
                                 const brk = specificBreaks[type];
                                 if (!brk || !brk.isAvailable) return null;
 
-                                const isInShift = isBreakWithinShift(brk.start, brk.end, shift.start, shift.end, shift.isOverNight);
-                                if (!isInShift) return null;
+                                const isInShift = isBreakWithinShift(brk.start, brk.end, shift.start, shift.end);
 
                                 const { hours, minutes } = calculateHoursFromMinutes(brk.duration);
                                 return (
@@ -217,10 +300,18 @@ const ShiftSelectModal = () => {
                                             </ThemedText>
                                         </View>
                                         <TouchableOpacity
-                                            style={styles.breakButton}
-                                            onPress={() => console.log(`Begin specific break: ${type}`)}
+                                            style={[
+                                                styles.breakButton,
+                                                !isInShift && styles.buttonDisabled,
+                                            ]}
+                                            disabled={!isInShift}
+                                            activeOpacity={isInShift ? 0.7 : 1}
+                                            onPress={() => handleSpecificBreakSubmit(type)}
                                         >
-                                            <ThemedText style={styles.breakButtonText}>{t('misc_to_start')}</ThemedText>
+                                            <ThemedText style={[
+                                                styles.breakButtonText,
+                                                !isInShift && styles.buttonTextDisabled
+                                            ]}>{t(!isInShift ? 'misc_out_of_time' : 'misc_to_start')}</ThemedText>
                                         </TouchableOpacity>
                                     </View>
                                 );
@@ -230,9 +321,9 @@ const ShiftSelectModal = () => {
                         )}
 
                         <ThemedText style={styles.groupHeader}>{t('misc_generic_breaks')}</ThemedText>
-                        {breaks?.some(b => isBreakWithinShift(b.start, b.end, shift.start, shift.end, shift.isOverNight)) ? (
+                        {breaks?.some(b => isBreakWithinShift(b.start, b.end, shift.start, shift.end)) ? (
                             breaks
-                                .filter((b) => isBreakWithinShift(b.start, b.end, shift.start, shift.end, shift.isOverNight))
+                                .filter((b) => isBreakWithinShift(b.start, b.end, shift.start, shift.end))
                                 .map((b: Breaks, idx: number) => {
                                     const { hours, minutes } = calculateHoursFromMinutes(b.duration);
                                     return (
@@ -390,6 +481,12 @@ const styles = StyleSheet.create({
     attendanceStatusContainer: {
         flexShrink: 1,
         marginTop: 10,
+    },
+    buttonDisabled: {
+        backgroundColor: Colors.secondary,
+    },
+    buttonTextDisabled: {
+        color: 'white',
     },
 });
 

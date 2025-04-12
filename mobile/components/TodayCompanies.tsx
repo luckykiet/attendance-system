@@ -17,7 +17,7 @@ import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
 
 import _ from 'lodash';
-import { calculateHoursFromMinutes, calculateKilometersFromMeters, getShiftHoursText, getWorkingHoursText } from '@/utils';
+import { calculateHoursFromMinutes, calculateKilometersFromMeters, getShiftHoursText, getStartEndTime, getWorkingHoursText } from '@/utils';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { PatternFormat } from 'react-number-format';
 import { Shift } from '@/types/shift';
@@ -62,17 +62,13 @@ const TodayCompanies = () => {
         const hasTodayShift = todayShifts.length > 0;
 
         const activeYesterdayShifts = yesterdayShifts.filter((shift) => {
-          const start = dayjs(shift.start, TIME_FORMAT).subtract(1, 'day');
-          let end = dayjs(shift.end, TIME_FORMAT).subtract(1, 'day');
+          const { startTime: start, endTime: end } = getStartEndTime({ start: shift.start, end: shift.end, isToday: false });
+
           const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
 
           // show unfinished shift
-          if(attendanceOfShift?.checkInTime && !attendanceOfShift.checkOutTime) {
+          if (attendanceOfShift?.checkInTime && !attendanceOfShift.checkOutTime) {
             return true;
-          }
-
-          if (shift.isOverNight || end.isBefore(start)) {
-            end = end.add(1, 'day');
           }
 
           return now.isBetween(start, end);

@@ -294,19 +294,9 @@ export const clearAllQueries = (queryClient) => {
 }
 
 export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
-  const workStart = dayjs(workingHours.start, timeFormat);
-  let workEnd = dayjs(workingHours.end, timeFormat);
+  const { start: workStart, end: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
 
-  if (workEnd.isBefore(workStart)) {
-    workEnd = workEnd.add(1, 'day');
-  }
-
-  let breakStart = dayjs(brk.start, timeFormat);
-  let breakEnd = dayjs(brk.end, timeFormat);
-
-  if (breakEnd.isBefore(breakStart)) {
-    breakEnd = breakEnd.add(1, 'day');
-  }
+  const { start: breakStart, end: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
 
   return {
     isStartValid: breakStart.isSameOrAfter(workStart),
@@ -344,12 +334,8 @@ export const getTodayWorkingHours = (workingHours, t) => {
   }
 
   const currentTime = dayjs();
-  const openTime = dayjs(hours.start, TIME_FORMAT);
-  let closeTime = dayjs(hours.end, TIME_FORMAT);
 
-  if (hours?.isOverNight && closeTime.isBefore(openTime)) {
-    closeTime = closeTime.add(1, 'day');
-  }
+  const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: hours.start, end: hours.end, timeFormat: TIME_FORMAT });
 
   if (currentTime.isBetween(openTime, closeTime)) {
     return { status: 'open', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
@@ -357,3 +343,16 @@ export const getTodayWorkingHours = (workingHours, t) => {
 
   return { status: 'out_of_time', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
 };
+
+const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
+  const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
+  let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
+
+  if (endTime.isBefore(startTime)) {
+    endTime = endTime.add(1, 'day');
+  }
+  return {
+    startTime,
+    endTime,
+  }
+}

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const RetailSchema = require('./schemas/Retail')
 
-const RetailModel = mongoose.model('retails', RetailSchema)
+const Retail = mongoose.model('retails', RetailSchema)
 
-module.exports = RetailModel
+module.exports = Retail

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const DailyAttendanceSchema = require('./schemas/DailyAttendance')
 
-const DailyAttendanceModel = mongoose.model('dailyattendances', DailyAttendanceSchema)
+const DailyAttendance = mongoose.model('dailyattendances', DailyAttendanceSchema)
 
-module.exports = DailyAttendanceModel
+module.exports = DailyAttendance

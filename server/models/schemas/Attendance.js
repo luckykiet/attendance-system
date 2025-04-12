@@ -1,36 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { setUpdatedAt } = require('./utils');
-const { SPECIFIC_BREAKS } = require('../../configs');
-
-const checkSchema = new Schema(
-  {
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-    distance: { type: Number, required: true }
-  },
-  {
-    _id: false
-  }
-);
-
-const BreakSchema = new Schema(
-  {
-    name: { type: String, required: true },
-    type: { type: String, enum: [...SPECIFIC_BREAKS, 'other', 'generic'], default: 'other', required: true },
-    reason: { type: String, required: true },
-    breakHours: {
-      start: { type: String, required: true },
-      end: { type: String, required: true },
-      isOverNight: { type: Boolean, required: true, default: false },
-    },
-    checkInTime: { type: Date, required: true },
-    checkInLocation: { type: checkSchema, required: true },
-    checkOutTime: { type: Date },
-    checkOutLocation: { type: checkSchema },
-  },
-  { _id: false }
-);
+const CheckSchema = require('./Check');
+const AttendanceBreakSchema = require('./AttendanceBreak');
 
 const AttendanceSchema = new Schema(
   {
@@ -38,14 +10,14 @@ const AttendanceSchema = new Schema(
     dailyAttendanceId: { type: Schema.Types.ObjectId, required: true },
 
     checkInTime: { type: Date, required: true },
-    checkInLocation: { type: checkSchema, required: true },
+    checkInLocation: { type: CheckSchema, required: true },
     checkOutTime: { type: Date },
-    checkOutLocation: { type: checkSchema },
+    checkOutLocation: { type: CheckSchema },
 
-    breaks: { type: [BreakSchema], default: [] },
+    breaks: { type: [AttendanceBreakSchema], default: [] },
 
     shiftId: { type: Schema.Types.ObjectId, required: true },
-    start: { type: String, required: true},
+    start: { type: String, required: true },
     end: { type: String, required: true },
     isOverNight: { type: Boolean, required: true },
   },

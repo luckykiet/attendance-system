@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const RegistrationSchema = require('./schemas/Registration')
 
-const RegistrationModel = mongoose.model('registrations', RegistrationSchema)
+const Registration = mongoose.model('registrations', RegistrationSchema)
 
-module.exports = RegistrationModel
+module.exports = Registration

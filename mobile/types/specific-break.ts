@@ -11,3 +11,16 @@ export type SpecificBreak = {
     isOverNight: boolean;
     isAvailable: boolean;
 }
+
+export type SpecificBreakMutation = {
+    registerId: string,
+    retailId: string,
+    shiftId: string,
+    attendanceId: string | null,
+    deviceKey: string,
+    domain: string,
+    longitude: number,
+    latitude: number,
+    localDeviceId?: string,
+    breakKey: SpecificBreakTypes,
+};
