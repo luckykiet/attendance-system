@@ -9,7 +9,7 @@ import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
-import { checkPrivileges, DAYS_OF_WEEK, getStartEndTime, getWorkingHoursText } from '@/utils';
+import { checkPrivileges, DAYS_OF_WEEK, daysOfWeeksTranslations, getStartEndTime, getWorkingHoursText } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
@@ -116,7 +116,7 @@ export default function HomePage() {
                       isToday,
                       t
                     })
-                    
+
                     return (
                       <Grid size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                         <Card variant="outlined" sx={{ position: 'relative' }}>
@@ -144,7 +144,7 @@ export default function HomePage() {
                                 color: status === 'open' ? 'success.main' : 'error.main',
                               }}
                             >
-                              {t(message)}
+                               {t(daysOfWeeksTranslations[isToday ? todayKey : yesterdayKey].name)}: {t(message)}
                             </Typography>}
                             {!register.isAvailable && <Typography
                               variant="body2"
