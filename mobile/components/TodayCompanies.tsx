@@ -57,6 +57,7 @@ const TodayCompanies = () => {
       const duplicatedWorkplaces = allWorkplaces.flatMap((workplace) => {
         const yesterdayWorkingHours = workplace.workingHours[yesterdayKey];
         const todayWorkingHours = workplace.workingHours[todayKey];
+
         const yesterdayShifts = workplace.shifts[yesterdayKey] || [];
         const todayShifts = workplace.shifts[todayKey] || [];
         const hasTodayShift = todayShifts.length > 0;
@@ -78,15 +79,15 @@ const TodayCompanies = () => {
 
         if (activeYesterdayShifts.length > 0) {
           const { status, message } = getWorkingHoursText({
-            todayWorkingHours,
-            yesterdayWorkingHours,
+            workingHour: yesterdayWorkingHours,
+            isToday: false,
             t,
           });
 
           entries.push({
             ...workplace,
             shifts: activeYesterdayShifts,
-            isYesterday: true,
+            isToday: false,
             distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
             distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
             openingHours: message,
@@ -97,14 +98,15 @@ const TodayCompanies = () => {
         // Add today's shift
         if (hasTodayShift) {
           const { status, message } = getWorkingHoursText({
-            todayWorkingHours,
+            workingHour: todayWorkingHours,
+            isToday: true,
             t,
           });
 
           entries.push({
             ...workplace,
             shifts: todayShifts,
-            isYesterday: false,
+            isToday: true,
             distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
             distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
             openingHours: message,
@@ -168,7 +170,7 @@ const TodayCompanies = () => {
                 const { hours: checkInH, minutes: checkInM } = workplace.checkInTimeStatus ? calculateHoursFromMinutes(workplace.checkInTimeStatus) : { hours: 0, minutes: 0 };
 
                 return <View key={index} style={styles.companyItem}>
-                  {workplace.isYesterday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
+                  {!workplace.isToday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
                   <ThemedText style={styles.companyText}>{workplace.name}</ThemedText>
                   <ThemedText style={styles.companyDetail}>
                     {workplace.address.street}, <PatternFormat
@@ -195,9 +197,9 @@ const TodayCompanies = () => {
                   >
                     {t('misc_status')}: {workplace.status === 'open' ? t('misc_opening') : workplace.status === 'warning' ? t('misc_opening_soon') : t('misc_closed')}
                   </ThemedText>
-                  {workplace.distanceInMeters && <ThemedText style={styles.companyDetail}>
-                    {t('misc_distance')}: {kilometers > 0 ? `${kilometers} km` : ''} {`${meters} m`}
-                  </ThemedText>}
+                  <ThemedText style={styles.companyDetail}>
+                    {t('misc_distance')}: {workplace.distanceInMeters ? `${kilometers > 0 ? `${kilometers} km ` : ''}${meters} m` : `${t('misc_getting_location')}...`}
+                  </ThemedText>
                   {workplace.distanceInMeters && <ThemedText
                     style={[
                       styles.companyDetail,
@@ -232,9 +234,13 @@ const TodayCompanies = () => {
                     .sort((a: Shift, b: Shift) => dayjs(a.start, TIME_FORMAT).diff(dayjs(b.start, TIME_FORMAT)))
                     .map((shift: Shift, index: number) => {
                       const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
-                      const { status, message, duration, isCheckedIn } = getShiftHoursText({ shift, attendance: attendanceOfShift, isYesterday: workplace.isYesterday, t });
+                      const { status, message, duration, isCheckedIn } = getShiftHoursText({ shift, attendance: attendanceOfShift, isToday: workplace.isToday, t });
 
                       const { hours, minutes } = calculateHoursFromMinutes(Math.abs(duration));
+                      const { endTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: false });
+                      const isShiftEnded = endTime && now.isAfter(endTime.add(shift.allowedOverTime || 0, 'minute'));
+                      const isShiftEndedWithoutCheckOut = isShiftEnded && !attendanceOfShift?.checkOutTime;
+                      const finalStatus = isShiftEndedWithoutCheckOut ? 'out_of_time' : status;
 
                       return (
                         <TouchableOpacity
@@ -243,9 +249,9 @@ const TodayCompanies = () => {
                           style={[
                             styles.shiftItem,
                             attendanceOfShift?.checkOutTime ? styles.finishedShift :
-                              status === 'open'
+                              finalStatus === 'open'
                                 ? { borderColor: Colors.success, backgroundColor: `${Colors.success}20` }
-                                : status === 'warning'
+                                : finalStatus === 'warning'
                                   ? { borderColor: Colors.warning, backgroundColor: `${Colors.warning}20` }
                                   : { borderColor: Colors.error, backgroundColor: `${Colors.error}20` },
                           ]}
@@ -260,12 +266,14 @@ const TodayCompanies = () => {
                             </ThemedText>
                           ) : (
                             <>
-                              {isCheckedIn && attendanceOfShift?.checkInTime && (
+                              {isCheckedIn && (
                                 <ThemedText style={styles.shiftDuration}>
                                   {t('misc_check_in')}: {dayjs(attendanceOfShift.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
                                 </ThemedText>
                               )}
-                              <ThemedText style={styles.shiftDuration}>
+                              {isShiftEndedWithoutCheckOut ? <ThemedText style={[styles.shiftDuration, { color: Colors.error }]}>
+                                {t('srv_shift_already_ended')}: {dayjs(endTime).format('DD/MM/YYYY HH:mm:ss')}
+                              </ThemedText> : <ThemedText style={styles.shiftDuration}>
                                 {duration < 0
                                   ? isCheckedIn ? `${t('misc_until_the_end')}: ` : `${t('misc_starts_in')}: `
                                   : isCheckedIn
@@ -274,6 +282,8 @@ const TodayCompanies = () => {
                                 {hours > 0 ? `${hours} ${nonCap('misc_hour_short')} ` : ''}
                                 {minutes} {nonCap('misc_min_short')}
                               </ThemedText>
+                              }
+
                             </>
                           )}
                         </TouchableOpacity>
@@ -283,7 +293,7 @@ const TodayCompanies = () => {
                   <ShiftSelectModal />
                 </View>
               }}
-              keyExtractor={(workplace, index) => `${workplace._id}-${workplace.isYesterday ? 'y' : 't'}-${index}`}
+              keyExtractor={(workplace, index) => `${workplace._id}-${workplace.isToday ? 'y' : 't'}-${index}`}
               onScroll={handleScroll}
               scrollEventThrottle={16}
             />

@@ -14,14 +14,14 @@ const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
 const _ = require('lodash');
 const utils = require('../../utils');
 const Attendance = require("../../models/Attendance");
-const AttendanceBreakSchema = require("../../models/schemas/AttendanceBreak");
+const mongoose = require("mongoose");
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 
 const applySpecificBreak = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId, breakId, breakKey } = req.body;
+        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId, _id, breakKey } = req.body;
         const tokenPayload = req.tokenPayload;
 
         if (!longitude || !latitude || !registerId || !attendanceId || !shiftId || !breakKey || !tokenPayload) {
@@ -135,18 +135,21 @@ const applySpecificBreak = async (req, res, next) => {
             throw new HttpError('srv_break_not_found', 400);
         }
 
-        const { start: breakStartTime, end: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
+        const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
 
-        attendance.breaks.some((b) => {
-            if (b.checkInTime && !b.checkOutTime && b.type !== breakId) {
-                throw new HttpError('srv_already_on_break', 400);
-            }
-        });
+        if (!now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+            throw new HttpError('srv_outside_time', 400);
+        }
 
-        let breakToApply = shift.breaks.find(b => b._id.toString() === breakId);
-        if (!breakToApply) {
-            breakToApply = {
-                _id: new AttendanceBreakSchema.Types.ObjectId(),
+        const attendanceBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime);
+        console.log(attendanceBreak, _id)
+        if (attendanceBreak && _id && !attendanceBreak._id.equals(_id)) {
+            throw new HttpError('srv_some_break_is_pending', 400);
+        }
+
+        if (!attendanceBreak) {
+            const newBreak = {
+                _id: new mongoose.Types.ObjectId(),
                 name: `misc_${breakKey}`,
                 type: breakKey,
                 reason: breakKey,
@@ -155,9 +158,32 @@ const applySpecificBreak = async (req, res, next) => {
                     end: shift.end,
                     isOverNight: shift.isOverNight,
                 },
+                checkInTime: now.toDate(),
+                checkInLocation: {
+                    latitude,
+                    longitude,
+                    distance: distanceInMeters,
+                },
             }
+            attendance.breaks.push(newBreak);
+            await attendance.save();
+            return res.status(200).json({ success: true, msg: 'srv_break_started_successfully' });
         }
-        return res.status(200).json({ success: true, msg: 'srv_checked_in_successfully' });
+
+        attendanceBreak.name = `misc_${breakKey}`;
+        attendanceBreak.type = breakKey;
+        attendanceBreak.reason = breakKey;
+        attendanceBreak.breakHours.start = shift.start;
+        attendanceBreak.breakHours.end = shift.end;
+        attendanceBreak.breakHours.isOverNight = shift.isOverNight;
+        attendanceBreak.checkOutTime = now.toDate();
+        attendanceBreak.checkOutLocation = {
+            latitude,
+            longitude,
+            distance: distanceInMeters,
+        };
+        await attendance.save();
+        return res.status(200).json({ success: true, msg: 'srv_break_finished_successfully' });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_failed_make_attendance', 500));
     }

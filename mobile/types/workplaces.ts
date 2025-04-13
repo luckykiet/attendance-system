@@ -24,7 +24,7 @@ export type TodayWorkplace = {
     workingHours: Record<Weekday, WorkingHour>;
     specificBreaks: Record<Weekday, SpecificBreaksPerDay>;
     breaks: Record<Weekday, Breaks[]>;
-    isYesterday: boolean;
+    isToday: boolean;
 }
 
 export type MyWorkplace = {

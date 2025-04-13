@@ -148,19 +148,19 @@ const utils = {
         return isOverNight(start, end, timeFormat)
     },
     validateBreaksWithinWorkingHours: (brk, workingHours, timeFormat = TIME_FORMAT) => {
-        const { start: workStart, end: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
+        const { startTime: workStart, endTime: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
 
-        const { start: breakStart, end: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
+        const { startTime: breakStart, endTime: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
 
         return {
             isStartValid: breakStart.isSameOrAfter(workStart),
             isEndValid: breakEnd.isSameOrBefore(workEnd),
         };
     },
-    isBetweenTime: ({ time, start, end, isYesterday, timeFormat = TIME_FORMAT }) => {
+    isBetweenTime: ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
         let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
 
-        const { start: startMoment, end: endMoment } = getStartEndTime({ start, end, timeFormat, isToday: !isYesterday });
+        const { startTime: startMoment, endTime: endMoment } = getStartEndTime({ start, end, timeFormat, isToday });
 
         return timeMoment.isBetween(startMoment, endMoment);
     },

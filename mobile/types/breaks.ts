@@ -1,6 +1,7 @@
 import { SpecificBreakTypes } from "./specific-break";
 
 export type Breaks = {
+    _id: string;
     start: string,
     end: string,
     name: string,
@@ -9,6 +10,7 @@ export type Breaks = {
 }
 
 export type AttendanceBreak = {
+    _id: string;
     name: string;
     type: SpecificBreakTypes | 'other' | 'generic';
     reason: string;

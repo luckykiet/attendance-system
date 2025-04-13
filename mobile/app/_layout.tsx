@@ -27,6 +27,7 @@ const queryClient = new QueryClient({
 });
 
 import { checkReinstallation } from '@/utils';
+import VersionCheck from '@/components/VersionCheck';
 
 export default function RootLayout() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -76,6 +77,7 @@ export default function RootLayout() {
             <Stack.Screen name="(hidden)/registration" options={{ headerShown: false }} />
           </Stack>
         </AppLock>
+        <VersionCheck />
       </QueryClientProvider>
     </ThemeProvider>
   );

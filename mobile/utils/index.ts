@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,9 +11,16 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import isBetween from 'dayjs/plugin/isBetween';
 import { Shift } from '@/types/shift';
 import { Attendance } from '@/types/attendance';
+import { Platform } from 'react-native';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
+
+export const isAndroid = /^android$/i.test(Platform.OS);
+export const isIOS = /^ios$/i.test(Platform.OS);
+
+export const androidPackage = Constants.expoConfig?.android?.package || '';
+export const iosAppStoreId = Constants.expoConfig?.ios && 'appStoreId' in Constants.expoConfig.ios ? Constants.expoConfig.ios.appStoreId : '';
 
 export const capitalizeFirstLetterOfString = (str: string) => {
     if (!str || str.length === 0) return ''
@@ -144,58 +152,44 @@ export const signJwt = (payload: Record<string, unknown>, secret: string) => {
 }
 
 export const getWorkingHoursText = ({
-    todayWorkingHours,
-    yesterdayWorkingHours,
+    workingHour,
+    isToday,
     t,
 }: {
-    todayWorkingHours: WorkingHour;
-    yesterdayWorkingHours?: WorkingHour;
+    workingHour: WorkingHour;
+    isToday: boolean;
     t: (key: string) => string;
 }): {
     status: string;
     message: string;
-    isYesterday: boolean;
+    isToday: boolean;
 } => {
     const now = dayjs();
 
-    if (yesterdayWorkingHours) {
-        const { startTime: openY, endTime: closeY } = getStartEndTime({ start: yesterdayWorkingHours.start, end: yesterdayWorkingHours.end, isToday: false });
-
-        if (now.isBetween(openY, closeY, null, '[)')) {
-            const message = `${yesterdayWorkingHours.start} - ${yesterdayWorkingHours.end} (${t('misc_over_night')})`;
-            return {
-                message,
-                status: 'open',
-                isYesterday: true,
-            };
-        }
-    }
-
-    const shift = todayWorkingHours;
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: true });
+    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: workingHour.start, end: workingHour.end, isToday });
 
     const warningTime = openTime.subtract(1, 'hour');
 
     const inBeforeOneHourTime = now.isBefore(openTime) && now.isAfter(warningTime);
     const inShiftTime = now.isBetween(openTime, closeTime, null, '[)');
 
-    const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+    const timeText = `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
 
     return {
         message: timeText,
         status: inShiftTime ? 'open' : inBeforeOneHourTime ? 'warning' : 'out_of_time',
-        isYesterday: false,
+        isToday,
     };
 };
 
 export const getShiftHoursText = ({
     shift,
-    isYesterday,
+    isToday,
     attendance,
     t,
 }: {
     shift: Shift;
-    isYesterday: boolean;
+    isToday: boolean;
     attendance?: Attendance;
     t: (key: string) => string;
 }): {
@@ -205,7 +199,7 @@ export const getShiftHoursText = ({
     isCheckedIn: boolean;
 } => {
     const currentTime = dayjs();
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: !isYesterday });
+    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday });
 
     const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
 
@@ -248,26 +242,13 @@ export const getShiftHoursText = ({
 };
 
 export const isBreakWithinShift = (
-    breakStart: string,
-    breakEnd: string,
-    shiftStart: string,
-    shiftEnd: string
+    { breakStart, breakEnd, shiftStart, shiftEnd }: { breakStart: string; breakEnd: string; shiftStart: string; shiftEnd: string }
 ): boolean => {
-    const { startTime: start, endTime: end } = getStartEndTime({ start: breakStart, end: breakEnd, isToday: true });
+    const { startTime: start } = getStartEndTime({ start: breakStart, end: breakEnd });
 
-    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shiftStart, end: shiftEnd, isToday: true });
+    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shiftStart, end: shiftEnd });
 
-    if (end.isBefore(start)) {
-        return (
-            start.isBetween(shiftStartTime, shiftEndTime, null, '[)') ||
-            end.add(1, 'day').isBetween(shiftStartTime, shiftEndTime, null, '[)')
-        );
-    }
-
-    return (
-        start.isBetween(shiftStartTime, shiftEndTime, null, '[)') &&
-        end.isBetween(shiftStartTime, shiftEndTime, null, '(]')
-    );
+    return start.isBetween(shiftStartTime, shiftEndTime, null, '[]')
 };
 
 type AttendanceStatus = {
@@ -281,7 +262,7 @@ type AttendanceStatus = {
     } | null;
 };
 
-export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, shift, t, noCapT }: { checkInTime: string | null; checkOutTime: string | null, shift: Shift, t: (key: string) => string; noCapT: (key: string) => string; }): AttendanceStatus => {
+export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, isToday = true, shift, t, noCapT }: { checkInTime: string | null; checkOutTime: string | null, shift: Shift, isToday: boolean, t: (key: string) => string; noCapT: (key: string) => string; }): AttendanceStatus => {
     const result: AttendanceStatus = { checkInTime: null, checkOutTime: null };
     if (!checkInTime && !checkOutTime) {
         return result;
@@ -290,7 +271,7 @@ export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, s
     const checkIn = dayjs(checkInTime);
     const checkOut = dayjs(checkOutTime);
 
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: true });
+    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday });
 
     if (checkIn.isValid()) {
         if (checkIn.isBefore(openTime) || checkIn.isSame(openTime)) {
@@ -377,7 +358,7 @@ export const checkBiometric = async (t: (key: string) => string): Promise<Biomet
     };
 };
 
-export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_FORMAT }: { start: string, end: string, isToday: boolean, timeFormat?: string }): { startTime: Dayjs, endTime: Dayjs } => {
+export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_FORMAT }: { start: string, end: string, isToday?: boolean, timeFormat?: string }): { startTime: Dayjs, endTime: Dayjs } => {
     const startTime = isToday ? dayjs(start, timeFormat) : dayjs(start, timeFormat).subtract(1, 'day');
     let endTime = isToday ? dayjs(end, timeFormat) : dayjs(end, timeFormat).subtract(1, 'day');
 

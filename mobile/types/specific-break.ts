@@ -13,6 +13,7 @@ export type SpecificBreak = {
 }
 
 export type SpecificBreakMutation = {
+    _id?: string,
     registerId: string,
     retailId: string,
     shiftId: string,

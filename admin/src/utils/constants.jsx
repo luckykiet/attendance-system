@@ -112,6 +112,7 @@ export const getDefaultShift = () => ({
   end: '17:00',
   isOverNight: false,
   isAvailable: true,
+  allowedOverTime: 0,
 });
 
 export const getDefaultAttendance = () => ({

@@ -38,6 +38,8 @@ misc_aggregation 	Aggregation	Tổng hợp	Agregace
 misc_align_camera_to_qr_code	align camera to QR code	di chuyển camera đến mã QR	zaměřte kameru na QR kód
 misc_all	all	tất cả	všechny
 misc_allow_camera_permission_to_do_registration	allow camera access to scan registration QR Code	hãy cho phép truy cập camera để scan mã QR đăng ký	povolte přístup ke kameře pro skenování registračního QR kódu
+misc_allowed_overtime	Allowed overtime	Thời gian làm thêm được phép	Povolený přesčas
+misc_allowed_overtime_desc	Max allowed time for early check in or late check outside of working hours.	Tối đa thời gian cho phép để check in sớm hoặc check out muộn ngoài giờ làm việc.	Maximální povolený čas pro brzké přihlášení nebo pozdní odhlášení mimo pracovní dobu.
 misc_allowed_radius	allowed radius	bán kính cho phép	povolený poloměr
 misc_amount	Amount	Số lượng	Počet
 misc_amount_records	Records amount	Số lượng đơn	Počet záznamů
@@ -180,6 +182,7 @@ misc_download_csv	Download CSV	Tải CSV	Stáhnout CSV
 misc_draft_saved	draft saved	đã lưu nháp	koncept uložen
 misc_duplicate	duplicate	trùng lặp	duplikát
 misc_duration	Duration	Thời lượng	Doba trvání
+misc_earliest_check_in_time	Earliest check-in time	Thời gian check-in sớm nhất	Nejbližší možný čas přihlášení
 misc_early	early	sớm	dříve
 misc_edit	Edit	Chỉnh sửa	Editace
 misc_edit_form	Edit form	Sửa đơn	Úprava formuláře
@@ -237,6 +240,8 @@ misc_generate_token_and_send	generate token and send	tạo token và gửi	gener
 misc_generic_breaks	Generic breaks	Thời gian nghỉ chung	Obecné přestávky
 misc_get_current_location	get current location	lấy vị trí hiện tại	získat aktuální polohu
 misc_get_pdf	get PDF	tải PDF	stáhnout PDF
+misc_getting_location	Getting location	Đang lấy vị trí	Získávání lokace
+misc_getting_location_failed	Getting location failed	Không thể lấy vị trí	nelze získat lokaci
 misc_grant_bluetooth_permission	grant Bluetooth permission	cho phép quyền Bluetooth	udělit povolení k použití Bluetooth
 misc_grant_location_permission	grant location permission	cấp quyền truy cập vị trí	udělit povolení k použití polohy
 misc_grant_permission	grant permission	cho phép quyền	udělit povolení
@@ -271,6 +276,7 @@ misc_language	Language	Ngôn ngữ	Jazyk
 misc_last_name	last name	họ	příjmení
 misc_last_update	last update	cập nhập lần cuối	poslední aktualizace
 misc_late	late	trễ	pozdě
+misc_latest_check_out_time	Latest check-out time	Thời gian check-out muộn nhất	Nejpozdější čas odhlášení
 misc_latitude	latitude	vĩ độ	zeměpisná šířka
 misc_leads	leads	leads	leads
 misc_load_transactions	load transactions	tải giao dịch	načíst transakce
@@ -297,6 +303,7 @@ misc_method	Method	Phương thức	Metoda
 misc_min	minute	phút	minut
 misc_min_short	min.	phút	min.
 misc_mins	minutes	phút	minuty
+misc_minutes	Minutes	Phút	Minuty
 misc_missing	missing	thiếu	chybí
 misc_model	model	model	model
 misc_modified	modifed	đã thay đổi	modifikováno
@@ -357,6 +364,7 @@ misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
 misc_no_local_device	no local devices	không có thiết bị cục bộ	není žádné lokální zařízení
 misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
+misc_no_shifts	no shifts	không có ca làm việc	žádné směny
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
 misc_no_terminal	no terminals	không có máy	žádný terminál
 misc_no_terminal_model	mo specific terminal model	không có model máy chính xác	není specifický model terminálu
@@ -500,6 +508,7 @@ misc_store	Store	Cửa hàng	Provozovna
 misc_store_added	Store added	Cửa hàng đã được thêm	Provozovna přidána
 misc_store_address	Store address	Địa chỉ cửa hàng	Adresa obchodu
 misc_store_deleted	Store deleted	Cửa hàng đã được xoá	Provozovna odstraněna
+misc_store_error	store error	lỗi cửa hàng	chyba obchodu
 misc_store_name	Store name	Tên cửa hàng	Název provozovny
 misc_store_updated	Store updated	Cửa hàng đã được cập nhập	Provozovna aktualizována
 misc_stores	stores	cửa hàng	provozovny
@@ -568,6 +577,8 @@ misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané do
 misc_until_the_end	Until the end	Đến cuối cùng	Do konce
 misc_untitled	untitled	chưa điền	nezadáno
 misc_update	Update	Cập nhập	Aktualizovat
+misc_update_available_text	Update available!	Đã có bản cập nhật mới!	Dostupná aktualizace!
+misc_update_now	Update now	Cập nhập ngay	Celková aktualizace
 misc_update_payment_terminal	Update payment terminal	Cập nhập máy trả thẻ	Aktualizovat platební terminál
 misc_update_store	Update store	Cập nhập cửa hàng	Aktualizovat provozovnu
 misc_updated	updated	đã cập nhập	aktualizováno
@@ -670,8 +681,10 @@ srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo m
 srv_biometric_permissions_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
 srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
 srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
+srv_break_finished_successfully	break finished successfully	kết thúc nghỉ thành công	přestávka úspěšně ukončena
 srv_break_not_found	Break not found	Không tìm thấy thời gian nghỉ	žádná přestávka nenalezena
 srv_break_out_of_working_hours	break out of working hours	ngoài giờ làm việc	přestávka mimo pracovní dobu
+srv_break_started_successfully	break started successfully	bắt đầu nghỉ thành công	přestávka úspěšně zahájena
 srv_can_not_after_today	Cannot be after today	Không thể sau hôm nay	Nemůže být po dnešním dni
 srv_can_not_self_reference	Cannot make self reference	Không được tạo liên kết lên cùng đơn	Nelze vytvořit odkaz na sebe
 srv_canceled_by_user	cancelled by user	huỷ bởi người dùng	zrušeno uživatelem
@@ -756,6 +769,7 @@ srv_insufficient_privileges	insufficient privileges	quyền hạn không đủ	n
 srv_invalid_action_request	Invalid action request	Yêu cầu hành động không hợp lệ	Neplatná žádost o akci
 srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_allowed_radius	Invalid allowed radius	Đường kính cho phép không hợp lệ	Neplatný povolený poloměr
+srv_invalid_allowedOverTime	Invalid allowed overtime	Thời gian làm thêm không hợp lệ	Nesprávný povolený přesčas
 srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
 srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
 srv_invalid_bank_account	Invalid bank account	Tài khoản ngân hàng không hợp lệ	Neplatný bankovní účet
@@ -782,6 +796,7 @@ srv_invalid_latitude	Invalid latitude	Vĩ độ	Neplatná zeměpisná šířka
 srv_invalid_length	invalid length	độ dài không hợp lệ	neplatná délka
 srv_invalid_local_device	invalid local device	Thiết bị cục bộ không hợp lệ	neplatné lokální zařízení
 srv_invalid_longitude	Invalid longitude	Kinh độ	Neplatná zeměpisná délka
+srv_invalid_max_allowedOverTime	Max 1440 minutes (24 hours)	Tối đa 1440 phút (24 giờ)	Nejvýše 1440 minut (24 hodin)
 srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník
 srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
@@ -855,6 +870,7 @@ srv_not_base64	Not Base64	Không phải Base64	Není Base64
 srv_not_found	not found	không tìm thấy	nenalezeno
 srv_not_included	not included	không được bao gồm	nezahrnuto
 srv_outside_allowed_radius	you are outside allowed location	bạn đang ở ngoài vị trí cho phép	jste mimo povolené lokace
+srv_outside_time	outside time	ngoài thời gian	mimo čas
 srv_outside_working_hours	outside working hours	ngoài giờ làm việc	mimo pracovní dobu
 srv_page_not_found	page not found	trang không tìm thấy	stránka nenalezena
 srv_passsword_length	Password must have at least 8 characters	Mật khẩu phải có ít nhất 8 ký tự	Heslo musí mít alespoň 8 znaků
@@ -893,9 +909,11 @@ srv_scan_failed	scan failed	Lỗi quét	Chyba skenování
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
 srv_shift_already_ended	Shift already ended	Đã kết thúc ca làm việc	Směna již skončila
+srv_shift_not_started	Shift not started	Chưa bắt đầu ca làm việc	Směna ještě nezačala
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
 srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy
 srv_signed_out	Signed out	Đã đăng xuất	Odhlášeno
+srv_some_break_is_pending	some break is pending	có đơn nghỉ đang chạy	nějaká přestávka je v běhu
 srv_something_wrong	Oops, something is wrong	Oops, trang bị lỗi	Oops, výskytla se chyba
 srv_start_can_not_older_than_end	start cannot be after end date	bắt đầu không thể sau ngày kết thúc	zahájení nemůže být pozdější než datum ukončení
 srv_start_day_can_not_after_end_day	Start day cannot be after end day	Ngày bắt đầu không thể sau ngày kết thúc	Den začátku nemůže být po dni ukončení

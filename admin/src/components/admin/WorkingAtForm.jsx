@@ -16,6 +16,7 @@ import {
     FormControlLabel,
     FormGroup,
     Switch,
+    InputAdornment,
 } from '@mui/material';
 import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,6 +41,7 @@ import { updateAttendance } from '@/api/attendance';
 import { useConfigStore } from '@/stores/config';
 import AttendanceSchema from '@/schemas/attendance';
 import WorkingAtSchema from '@/schemas/working-at';
+import CustomPopover from '../CustomPopover';
 
 dayjs.extend(customParseFormat);
 
@@ -181,23 +183,48 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                         />
                                                     )}
                                                 />
-                                                <Typography variant="h5">{t('misc_working_hours')}</Typography>
-
+                                                <Divider />
                                                 {getDaysOfWeek(true).map((day) => {
                                                     const { fields, append, remove } = shiftFieldArrays[day];
 
                                                     return (
-                                                        <Stack key={day} spacing={1}>
+                                                        <Stack key={day} spacing={2}>
                                                             <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                                                <Typography variant="h6">{t(daysOfWeeksTranslations[day].name)}</Typography>
+                                                                <Typography variant="h5">{t(daysOfWeeksTranslations[day].name)}</Typography>
                                                                 <Button variant="outlined" onClick={() => append(getDefaultShift())}>
                                                                     {t('misc_add_shift')}
                                                                 </Button>
                                                             </Stack>
                                                             <Stack spacing={4}>
-                                                                {fields.map((field, index) => {
+                                                                {fields.length ? fields.map((field, index) => {
                                                                     const fieldKey = `shifts.${day}.${index}`;
-                                                                    return <Grid key={field.id} container spacing={2}>
+                                                                    return <Grid key={field.id} container spacing={2} border={1} borderColor={'grey.300'} borderRadius={2} padding={2}>
+                                                                        <Grid size={{ xs: 12 }} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                                                                            <Typography variant="h6">{t('misc_shift')} {index + 1}</Typography>
+                                                                            <Controller
+                                                                                name={`${fieldKey}.isAvailable`}
+                                                                                control={control}
+                                                                                render={({ field: { ref, ...field } }) => (
+                                                                                    <FormGroup>
+                                                                                        <FormControlLabel
+                                                                                            inputRef={ref}
+                                                                                            label={t('misc_available')}
+                                                                                            labelPlacement="start"
+                                                                                            control={
+                                                                                                <Switch
+                                                                                                    size="large"
+                                                                                                    checked={field.value}
+                                                                                                    {...field}
+                                                                                                    color="success"
+                                                                                                    onBlur={handleSubmit}
+                                                                                                    id={`switch-${day}-${index}-isAvailable`}
+                                                                                                />
+                                                                                            }
+                                                                                        />
+                                                                                    </FormGroup>
+                                                                                )}
+                                                                            />
+                                                                        </Grid>
                                                                         <Grid size={{ xs: 12, sm: 6 }}>
                                                                             <Controller
                                                                                 name={`${fieldKey}.start`}
@@ -298,46 +325,51 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                 </Grid>
                                                                             </Grid>
                                                                         </Grid>
-                                                                        <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'start' }}>
+                                                                        <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                                             <Controller
-                                                                                name={`${fieldKey}.isAvailable`}
+                                                                                name={`${fieldKey}.allowedOverTime`}
                                                                                 control={control}
-                                                                                render={({ field: { ref, ...field } }) => (
-                                                                                    <FormGroup>
-                                                                                        <FormControlLabel
-                                                                                            inputRef={ref}
-                                                                                            label={t('misc_available')}
-                                                                                            labelPlacement="start"
-                                                                                            control={
-                                                                                                <Switch
-                                                                                                    size="large"
-                                                                                                    checked={field.value}
-                                                                                                    {...field}
-                                                                                                    color="success"
-                                                                                                    onBlur={handleSubmit}
-                                                                                                    id={`switch-${day}-${index}-isAvailable`}
-                                                                                                />
+                                                                                render={({ field, fieldState }) => (
+                                                                                    <TextField
+                                                                                        {...field}
+                                                                                        label={`${t('misc_allowed_overtime')} (${t('misc_minutes')})`}
+                                                                                        type="number"
+                                                                                        onChange={(e) => {
+                                                                                            const value = e.target.value;
+                                                                                            if (!isNaN(value)) {
+                                                                                                field.onChange(parseInt(value));
                                                                                             }
-                                                                                        />
-                                                                                    </FormGroup>
+                                                                                        }}
+                                                                                        slotProps={{
+                                                                                            input: {
+                                                                                                startAdornment: (
+                                                                                                    <InputAdornment position="start">
+                                                                                                        <CustomPopover
+                                                                                                            content={<Stack spacing={1}>
+                                                                                                                <Typography variant="body2">{t('misc_allowed_overtime_desc')}</Typography>
+                                                                                                            </Stack>}
+                                                                                                        />
+                                                                                                    </InputAdornment>
+                                                                                                ),
+                                                                                            },
+                                                                                        }}
+                                                                                        variant="outlined"
+                                                                                        error={fieldState.invalid}
+                                                                                        helperText={fieldState.invalid && t(fieldState.error.message)}
+                                                                                    />
                                                                                 )}
                                                                             />
-                                                                        </Grid>
-                                                                        <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'end' }}>
                                                                             <Button color="error" onClick={() => remove(index)}>
                                                                                 {t('misc_remove')}
                                                                             </Button>
                                                                         </Grid>
-                                                                        <Grid size={{ xs: 12 }}>
-                                                                            <Divider />
-                                                                        </Grid>
                                                                     </Grid>
-                                                                })}
+                                                                }) : <Typography variant='body1' textAlign={'center'}>{t('misc_no_shifts')}</Typography>}
                                                             </Stack>
                                                         </Stack>
                                                     );
                                                 })}
-
+                                                <Divider />
                                                 {postMsg && <FeedbackMessage message={postMsg} />}
                                                 <Button sx={{ minWidth: '200px' }} variant="contained" color={workingAt ? "primary" : "success"} type="submit" loading={saveWorkingAtMutation.isPending} disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}>
                                                     {workingAt ? t('misc_save') : t('misc_create')}

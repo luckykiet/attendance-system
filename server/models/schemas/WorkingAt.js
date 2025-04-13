@@ -20,9 +20,9 @@ const WorkingAtSchema = new Schema(
                     return acc;
                 }, {}),
         }
-
     },
     {
+        strict: true,
         timestamps: true,
     }
 );

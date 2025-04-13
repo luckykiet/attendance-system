@@ -4,4 +4,5 @@ export type Shift = {
     end: string;
     isOverNight: boolean;
     isAvailable: boolean;
+    allowedOverTime: number;
 }

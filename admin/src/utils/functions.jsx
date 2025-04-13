@@ -294,9 +294,9 @@ export const clearAllQueries = (queryClient) => {
 }
 
 export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
-  const { start: workStart, end: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
+  const { startTime: workStart, endTime: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
 
-  const { start: breakStart, end: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
+  const { startTime: breakStart, endTime: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
 
   return {
     isStartValid: breakStart.isSameOrAfter(workStart),

@@ -15,7 +15,7 @@ const createOrUpdateWorkingAt = async (req, res, next) => {
         }
 
         let workingAt = await WorkingAt.findOne({ employeeId: req.body.employeeId, registerId: req.body.registerId });
-
+        
         if (workingAt) {
             workingAt = await WorkingAt.findOneAndUpdate(
                 { _id: workingAt._id },
