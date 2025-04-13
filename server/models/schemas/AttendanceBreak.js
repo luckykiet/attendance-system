@@ -8,7 +8,7 @@ const AttendanceBreakSchema = new Schema(
     {
         name: { type: String, required: true },
         type: { type: String, enum: [...SPECIFIC_BREAKS, 'other', 'generic'], default: 'other', required: true },
-        reason: { type: String, required: true },
+        breakId: { type: Schema.Types.ObjectId, default: null },
         breakHours: {
             start: { type: String, required: true },
             end: { type: String, required: true },

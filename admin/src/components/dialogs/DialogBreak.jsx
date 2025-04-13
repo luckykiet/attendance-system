@@ -57,6 +57,8 @@ export const DialogBreak = ({
         control,
         handleSubmit,
         reset,
+        watch,
+        setValue,
         formState: { errors },
     } = mainForm;
 
@@ -118,7 +120,14 @@ export const DialogBreak = ({
                                                 <TimePicker
                                                     {...field}
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
-                                                    onChange={(date) => field.onChange(date.format(TIME_FORMAT))}
+                                                    onChange={(date) => {
+                                                        const formattedDate = date.format(TIME_FORMAT);
+                                                        const endTime = dayjs(watch(`end`), TIME_FORMAT);
+                                                        const isOverNight = date.isAfter(endTime);
+
+                                                        setValue(`isOverNight`, isOverNight);
+                                                        field.onChange(formattedDate);
+                                                    }}
                                                     label={t('msg_from')}
                                                     format={TIME_FORMAT}
                                                     views={['hours', 'minutes']}
@@ -140,7 +149,14 @@ export const DialogBreak = ({
                                                 <TimePicker
                                                     {...field}
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
-                                                    onChange={(date) => field.onChange(date.format(TIME_FORMAT))}
+                                                    onChange={(date) => {
+                                                        const formattedDate = date.format(TIME_FORMAT);
+                                                        const startTime = dayjs(watch(`end`), TIME_FORMAT);
+                                                        const isOverNight = startTime.isAfter(date);
+
+                                                        setValue(`isOverNight`, isOverNight);
+                                                        field.onChange(formattedDate);
+                                                    }}
                                                     label={t('msg_to')}
                                                     format={TIME_FORMAT}
                                                     views={['hours', 'minutes']}

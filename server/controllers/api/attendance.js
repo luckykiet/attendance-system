@@ -349,6 +349,12 @@ const makeAttendance = async (req, res, next) => {
                 throw new HttpError('srv_already_checked_out', 400);
             }
 
+            const foundPendingBreak = attendance.breaks.find(b => !b.checkOutTime);
+
+            if (foundPendingBreak) {
+                throw new HttpError('srv_pending_breaks', 400);
+            }
+
             // checking out
             const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
             attendance.checkOutTime = now.toDate();

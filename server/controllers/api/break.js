@@ -18,12 +18,12 @@ const mongoose = require("mongoose");
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 
-const applySpecificBreak = async (req, res, next) => {
+const applyBreak = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId, _id, breakKey } = req.body;
+        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId, _id, name, breakId } = req.body;
         const tokenPayload = req.tokenPayload;
 
-        if (!longitude || !latitude || !registerId || !attendanceId || !shiftId || !breakKey || !tokenPayload) {
+        if (!longitude || !latitude || !registerId || !attendanceId || !shiftId || !name || !tokenPayload) {
             throw new HttpError('srv_invalid_request', 400);
         }
 
@@ -123,17 +123,22 @@ const applySpecificBreak = async (req, res, next) => {
         if (attendance.checkOutTime) {
             throw new HttpError('srv_already_checked_out', 400);
         }
+        let breakTemplate = null;
 
-        const breakTemplate = register.specificBreaks[isToday ? todayKey : yesterdayKey][breakKey];
+        if (breakId) {
+            breakTemplate = register.breaks[isToday ? todayKey : yesterdayKey].find((b) => b._id.toString() === breakId);
 
-        if (!breakTemplate || !breakTemplate.isAvailable) {
-            throw new HttpError('srv_break_not_found', 400);
+            if (!breakTemplate) {
+                throw new HttpError('srv_break_not_found', 400);
+            }
         }
 
-        const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
+        if (breakTemplate) {
+            const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
 
-        if (!now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
-            throw new HttpError('srv_outside_time', 400);
+            if (!now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+                throw new HttpError('srv_outside_time', 400);
+            }
         }
 
         const attendanceBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime);
@@ -141,35 +146,30 @@ const applySpecificBreak = async (req, res, next) => {
         if (attendanceBreak && _id && !attendanceBreak._id.equals(_id)) {
             throw new HttpError('srv_some_break_is_pending', 400);
         }
+        const newBreak = {
+            _id: _id ? _id : new mongoose.Types.ObjectId(),
+            breakId: breakId ? breakId : null,
+            name: breakTemplate ? breakTemplate.name : name,
+            type: breakTemplate ? 'generic' : 'other',
+            breakHours: {
+                start: shift.start,
+                end: shift.end,
+                isOverNight: shift.isOverNight,
+            },
+        }
 
         if (!attendanceBreak) {
-            const newBreak = {
-                _id: new mongoose.Types.ObjectId(),
-                name: `misc_${breakKey}`,
-                type: breakKey,
-                breakHours: {
-                    start: breakTemplate.start,
-                    end: breakTemplate.end,
-                    isOverNight: breakTemplate.isOverNight,
-                },
-                checkInTime: now.toDate(),
-                checkInLocation: {
-                    latitude,
-                    longitude,
-                    distance: distanceInMeters,
-                },
-            }
+            newBreak.checkInTime = now.toDate();
+            newBreak.checkInLocation = {
+                latitude,
+                longitude,
+                distance: distanceInMeters,
+            };
             attendance.breaks.push(newBreak);
             await attendance.save();
             return res.status(200).json({ success: true, msg: 'srv_break_started_successfully' });
         }
 
-        attendanceBreak.name = `misc_${breakKey}`;
-        attendanceBreak.type = breakKey;
-        attendanceBreak.reason = breakKey;
-        attendanceBreak.breakHours.start = shift.start;
-        attendanceBreak.breakHours.end = shift.end;
-        attendanceBreak.breakHours.isOverNight = shift.isOverNight;
         attendanceBreak.checkOutTime = now.toDate();
         attendanceBreak.checkOutLocation = {
             latitude,
@@ -184,5 +184,5 @@ const applySpecificBreak = async (req, res, next) => {
 };
 
 module.exports = {
-    applySpecificBreak,
+    applyBreak,
 }

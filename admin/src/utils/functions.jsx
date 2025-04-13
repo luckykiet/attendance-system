@@ -7,7 +7,7 @@ import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 
-import { DAYS_OF_WEEK, TIME_FORMAT } from './constants'
+import { TIME_FORMAT } from './constants'
 dayjs.extend(duration)
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
@@ -324,27 +324,27 @@ export const getDurationLabel = (start, end, timeFormat = TIME_FORMAT) => {
   return '-';
 }
 
-export const getTodayWorkingHours = (workingHours, t) => {
-  const today = dayjs().day();
-  const todayKey = DAYS_OF_WEEK[today];
-  const hours = workingHours[todayKey];
-
-  if (!hours?.isAvailable) {
+export const getWorkingHoursText = ({
+  workingHour,
+  isToday,
+  t,
+}) => {
+  if (!workingHour.isAvailable) {
     return { status: 'closed', message: 'misc_closed' };
   }
 
   const currentTime = dayjs();
 
-  const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: hours.start, end: hours.end, timeFormat: TIME_FORMAT });
+  const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: workingHour.start, end: workingHour.end, timeFormat: TIME_FORMAT, isToday });
 
   if (currentTime.isBetween(openTime, closeTime)) {
-    return { status: 'open', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
+    return { status: 'open', message: `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
   }
 
-  return { status: 'out_of_time', message: `${hours.start} - ${hours.end}${hours.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
+  return { status: 'out_of_time', message: `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
 };
 
-const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
+export const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
   const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
   let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
 

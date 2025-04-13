@@ -9,7 +9,7 @@ import ThemedView from './theme/ThemedView';
 import dayjs from 'dayjs';
 import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
 import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
-import { Breaks } from '@/types/breaks';
+import { BreakMutation, Breaks } from '@/types/breaks';
 import { ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { AttendanceMutation } from '@/types/attendance';
@@ -19,6 +19,7 @@ import BLEScanModal from './BLEScanModal';
 import _ from 'lodash';
 import { SpecificBreakMutation, SpecificBreakTypes } from '@/types/specific-break';
 import { useSpecificBreakApi } from '@/api/useSpecificBreakApi';
+import { useBreakApi } from '@/api/useBreakApi';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
@@ -27,6 +28,7 @@ const ShiftSelectModal = () => {
     const { selectedShift, setSelectedShift, location, setLocalDevices } = useAppStore();
     const { logAttendance } = useAttendanceApi();
     const { applySpecificBreak } = useSpecificBreakApi();
+    const { applyBreak } = useBreakApi();
     const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
 
     const makeAttendanceMutation = useMutation(
@@ -36,9 +38,10 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
+                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_attendance_success'), t(data.msg))
                     setPendingAttendance(null);
-                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    setSelectedShift(null);
                 }
             },
             onError: (error) => {
@@ -55,9 +58,30 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
+                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_break_submitted'), t(data.msg))
                     setPendingAttendance(null);
+                    setSelectedShift(null);
+                }
+            },
+            onError: (error) => {
+                setPendingAttendance(null);
+                Alert.alert(t('misc_break_submission_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_submit_break'))
+            },
+        }
+    )
+
+    const applyBreakMutation = useMutation(
+        {
+            mutationFn: (data: BreakMutation) => applyBreak(data),
+            onSuccess: (data) => {
+                if (data.localDevices) {
+                    setLocalDevices(data.localDevices);
+                } else {
                     queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    Alert.alert(t('misc_break_submitted'), t(data.msg))
+                    setPendingAttendance(null);
+                    setSelectedShift(null);
                 }
             },
             onError: (error) => {
@@ -166,7 +190,6 @@ const ShiftSelectModal = () => {
                 { cancelable: true }
             );
         }
-        setSelectedShift(null);
     };
 
     const handleSpecificBreakSubmit = async ({ breakKey, _id }: { breakKey: SpecificBreakTypes, _id?: string }) => {
@@ -249,7 +272,93 @@ const ShiftSelectModal = () => {
                 { cancelable: true }
             );
         }
-        setSelectedShift(null);
+    };
+
+    // _id is the id of the break, breakId is the id from workplace.breaks
+    const handleBreakSubmit = async (data: { _id?: string, breakId?: string, name: string }) => {
+        if (selectedShift) {
+            const { _id: registerId, retailId, domain, attendances, breaks, isToday } = workplace;
+            const { _id: shiftId } = shift;
+            const { _id, breakId, name } = data;
+
+            const attendance = attendances.find(att => att.shiftId === shiftId);
+
+            if (!attendance) {
+                Alert.alert(t('misc_error'), t('misc_must_have_attendance'));
+                return;
+            }
+
+            if (attendance.checkOutTime) {
+                Alert.alert(t('srv_already_checked_out'));
+                return;
+            }
+
+            const dayKey = !isToday ? yesterdayKey : todayKey;
+
+            let foundBreakTemplate = null;
+
+            if (breakId) {
+                foundBreakTemplate = breaks[dayKey].find(b => b._id === breakId);
+                if (!foundBreakTemplate) {
+                    Alert.alert(t('misc_error'), t('misc_break_not_available'));
+                    return;
+                }
+            }
+
+            const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
+
+            if (biometricEnabled === 'true') {
+                const result = await checkBiometric(t);
+
+                if (!result.success) {
+                    if (_.isObject(result.msg)) {
+                        Alert.alert(t(result.msg.title), t(result.msg.message));
+                        return;
+                    }
+                    Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
+                    return;
+                }
+            }
+
+            let text = `${t('misc_cannot_revert_action')}!`;
+            text += `\n${t(name)}`
+            if (foundBreakTemplate) {
+                text += `: ${foundBreakTemplate.start} - ${foundBreakTemplate.end}${foundBreakTemplate.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+                const { hours, minutes } = calculateHoursFromMinutes(foundBreakTemplate.duration);
+
+                text += `\n${t('misc_duration')}: ${hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}`;
+            }
+
+            Alert.alert(
+                t('misc_submit_break'),
+                text,
+                [
+                    {
+                        text: t('misc_cancel'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: t('misc_confirm'),
+                        onPress: async () => {
+                            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+                            if (!deviceKey) {
+                                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                                return;
+                            }
+                            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
+                                Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
+                                return;
+                            }
+                            const form: BreakMutation = { _id, registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, breakId, name };
+
+                            setPendingAttendance(form);
+                            applyBreakMutation.mutate(form);
+                        },
+                    },
+                ],
+                { cancelable: true }
+            );
+        }
     };
 
     const handleScanResult = (result: boolean, foundDevices: string[]) => {
@@ -268,6 +377,7 @@ const ShiftSelectModal = () => {
 
     const specificBreaks = selectedShift.workplace.specificBreaks?.[!workplace.isToday ? yesterdayKey : todayKey];
     const breaks = selectedShift.workplace.breaks?.[!workplace.isToday ? yesterdayKey : todayKey];
+    const allowedOverTime = shift.allowedOverTime || 0;
     return (
         <Modal
             visible={!!selectedShift}
@@ -286,10 +396,8 @@ const ShiftSelectModal = () => {
                         <ThemedText>
                             {t('misc_shift_time')}: {!workplace.isToday ? `${t(daysOfWeeksTranslations[yesterdayKey].name)} ` : ''}{statusInfo.message || '-'}
                         </ThemedText>
-                        {shift.allowedOverTime && <>
-                            <ThemedText style={{ color: Colors.warning }}>{t('misc_earliest_check_in_time')}: {shiftStartTime.subtract(shift.allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
-                            <ThemedText style={{ color: Colors.warning }}>{t('misc_latest_check_out_time')}: {shiftEndTime.add(shift.allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
-                        </>}
+                        <ThemedText style={{ color: Colors.warning }}>{t('misc_earliest_check_in_time')}: {shiftStartTime.subtract(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
+                        <ThemedText style={{ color: Colors.warning }}>{t('misc_latest_check_out_time')}: {shiftEndTime.add(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
                         <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
                         {specificBreaks && SPECIFIC_BREAKS.some(type =>
                             specificBreaks[type]?.isAvailable
@@ -305,6 +413,7 @@ const ShiftSelectModal = () => {
                                 const attendanceBreak = attendance?.breaks.find(b => b.type === type);
                                 const isBreakNotAvailable = !now.isBetween(startTime, endTime, null, '[]') || !_.isEmpty(attendanceBreak?.checkOutTime);
 
+                                const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
                                 return (
                                     <View key={type} style={styles.breakRow}>
                                         <View style={styles.breakInfo}>
@@ -327,7 +436,7 @@ const ShiftSelectModal = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.breakButton,
-                                                isBreakNotAvailable && styles.buttonDisabled,
+                                                isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
                                             ]}
                                             disabled={isBreakNotAvailable}
                                             activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
@@ -335,8 +444,9 @@ const ShiftSelectModal = () => {
                                         >
                                             <ThemedText style={[
                                                 styles.breakButtonText,
-                                                isBreakNotAvailable && styles.buttonTextDisabled
-                                            ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : 'misc_to_start')}</ThemedText>
+                                                isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
+
+                                            ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
                                         </TouchableOpacity>
                                     </View>
                                 );
@@ -354,6 +464,7 @@ const ShiftSelectModal = () => {
                                     const { startTime, endTime } = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
                                     const attendanceBreak = attendance?.breaks.find(brk => b._id === brk._id);
                                     const isBreakNotAvailable = !now.isBetween(startTime, endTime, null, '[]') || !_.isEmpty(attendanceBreak?.checkOutTime);
+                                    const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
                                     return (
                                         <View key={idx} style={styles.breakRow}>
                                             <View style={styles.breakInfo}>
@@ -376,15 +487,15 @@ const ShiftSelectModal = () => {
                                             <TouchableOpacity
                                                 style={[
                                                     styles.breakButton,
-                                                    isBreakNotAvailable && styles.buttonDisabled,
+                                                    isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
                                                 ]}
                                                 disabled={isBreakNotAvailable}
                                                 activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
-                                                onPress={() => console.log('Begin break')}
+                                                onPress={() => handleBreakSubmit({ _id: attendanceBreak?._id, breakId: b._id, name: b.name })}
                                             >
                                                 <ThemedText style={[
                                                     styles.breakButtonText,
-                                                    isBreakNotAvailable && styles.buttonTextDisabled
+                                                    isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
                                                 ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : 'misc_to_start')}</ThemedText>
                                             </TouchableOpacity>
                                         </View>
@@ -534,7 +645,13 @@ const styles = StyleSheet.create({
     buttonDisabled: {
         backgroundColor: Colors.secondary,
     },
+    buttonPending: {
+        backgroundColor: Colors.warning,
+    },
     buttonTextDisabled: {
+        color: 'white',
+    },
+    buttonTextPending: {
         color: 'white',
     },
 });

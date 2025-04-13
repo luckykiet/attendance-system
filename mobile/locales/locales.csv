@@ -82,6 +82,7 @@ misc_bills	bills	hoá đơn	faktury
 misc_birth_number	birth number	số sinh	rodné číslo
 misc_bluetooth_permission_required	Bluetooth permission required to scan for local attendance devices	cần quyền sử dụng Bluetooth để quét thiết bị điểm danh	musíte povolit použití Bluetooth pro skenování lokální zařízení docházky
 misc_break	break time	thời gian nghỉ	přestávka
+misc_break_not_available	Break not available	Không có đơn nghỉ	žádná přestávka
 misc_break_submission_failed	break submission failed	gửi\ đơn nghỉ thất bại	žádost o přestávku selhala
 misc_break_submitted	break submitted	đã gửi đơn nghỉ	žádost o přestávku odeslána
 misc_breakfast	Breakfast	Bữa sáng	Snídaně
@@ -218,6 +219,7 @@ misc_fetched_successfully	fetched successfully	lấy dữ liệu thành công	z�
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filling_in_the_address_fields	by filling in the address fields	bằng cách điền vào các trường địa chỉ	vyplněním polí adresy
 misc_filter	Filter	Lọc	Filtr
+misc_finish	finish	hoàn tất	ukončit
 misc_finished	Finished	Xong	Dokončeno
 misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
@@ -883,6 +885,7 @@ srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không
 srv_password_reset_send_to_email	Password reset sent to email	Đặt lại mật khẩu gửi vào email	Obnovení hesla odesláno na email
 srv_passwords_changed	passwords changed	mật khẩu đã đổi	heslo změněno
 srv_passwords_not_match	Passwords do not match	Mật khẩu không khớp	Hesla se neshodují
+srv_pending_breaks	You have pending breaks	bạn có đơn nghỉ đang chạy	máte probíhající přestávky
 srv_permission_denied	Permission denied	Từ chối quyền truy cập	Odmítnuto oprávnění
 srv_permission_required	Permission required	Quyền truy cập cần thiết	Požadováno oprávnění
 srv_pick_software	pick a software	hãy chọn phần mềm	vyberte software

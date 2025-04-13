@@ -166,6 +166,17 @@ const utils = {
     },
     getStartEndTime: ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
         return getStartEndTime({ start, end, timeFormat, isToday })
+    },
+    confirmTokenPayload: (payload) => {
+        if (!payload) {
+            return false
+        }
+        const tmpBody = JSON.parse(JSON.stringify(payload));
+        delete tmpBody.token;
+        delete payload.timestamp;
+
+
+        return !_.isEqual(tmpBody, payload)
     }
 }
 module.exports = utils

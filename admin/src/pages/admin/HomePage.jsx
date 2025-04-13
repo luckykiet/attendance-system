@@ -9,7 +9,7 @@ import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
-import { checkPrivileges, getTodayWorkingHours } from '@/utils';
+import { checkPrivileges, DAYS_OF_WEEK, getStartEndTime, getWorkingHoursText } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
@@ -56,6 +56,10 @@ export default function HomePage() {
     }
   }, [retail, setRetail]);
 
+  const now = dayjs();
+  const todayKey = DAYS_OF_WEEK[now.day()];
+  const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+
   return (
     <Container sx={{ mb: 4, pt: 6 }}>
       <Grid container spacing={2}>
@@ -100,7 +104,19 @@ export default function HomePage() {
                 </Typography>
                 <Grid container spacing={2}>
                   {registers.map((register) => {
-                    const { status, message } = getTodayWorkingHours(register.workingHours, t);
+                    const yesterdayWorkingHours = register.workingHours[yesterdayKey];
+
+                    const { startTime: start, endTime: end } = getStartEndTime({ start: yesterdayWorkingHours.start, end: yesterdayWorkingHours.end, isToday: false });
+
+                    const isToday = !now.isBetween(start, end);
+                    const todayWorkingHours = register.workingHours[todayKey];
+
+                    const { status, message } = getWorkingHoursText({
+                      workingHour: isToday ? todayWorkingHours : yesterdayWorkingHours,
+                      isToday,
+                      t
+                    })
+                    
                     return (
                       <Grid size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                         <Card variant="outlined" sx={{ position: 'relative' }}>

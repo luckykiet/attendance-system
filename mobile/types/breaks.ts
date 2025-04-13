@@ -9,6 +9,21 @@ export type Breaks = {
     isOverNight: boolean,
 }
 
+export type BreakMutation = {
+    _id?: string,
+    breakId?: string,
+    registerId: string,
+    retailId: string,
+    shiftId: string,
+    attendanceId: string | null,
+    deviceKey: string,
+    domain: string,
+    longitude: number,
+    latitude: number,
+    localDeviceId?: string,
+    name: string,
+};
+
 export type AttendanceBreak = {
     _id: string;
     name: string;
