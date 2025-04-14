@@ -242,14 +242,26 @@ export const getShiftHoursText = ({
 };
 
 export const isBreakWithinShift = (
-    { breakStart, breakEnd, shiftStart, shiftEnd }: { breakStart: string; breakEnd: string; shiftStart: string; shiftEnd: string }
+    {
+        breakStart,
+        breakEnd,
+        shiftStart,
+        shiftEnd,
+        isToday,
+    }: {
+        breakStart: string;
+        breakEnd: string;
+        shiftStart: string;
+        shiftEnd: string;
+        isToday: boolean;
+    }
 ): boolean => {
-    const { startTime: start } = getStartEndTime({ start: breakStart, end: breakEnd });
+    const { startTime: breakStartTime, endTime: breakEndTime } = getStartEndTime({ start: breakStart, end: breakEnd, isToday });
+    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shiftStart, end: shiftEnd, isToday });
 
-    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shiftStart, end: shiftEnd });
-
-    return start.isBetween(shiftStartTime, shiftEndTime, null, '[]')
+    return breakStartTime.isBefore(shiftEndTime) && breakEndTime.isAfter(shiftStartTime);
 };
+
 
 type AttendanceStatus = {
     checkInTime: {

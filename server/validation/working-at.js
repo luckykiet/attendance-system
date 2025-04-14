@@ -25,7 +25,7 @@ const validateShifts = () => {
 
         body(`shifts.${day}.*.allowedOverTime`)
             .notEmpty().withMessage('misc_required').bail()
-            .isInt({ min: 0, max: 24 * 60 }).withMessage('srv_invalid_max_allowedOverTime'),
+            .isInt({ min: 5, max: 24 * 60 }).withMessage('srv_invalid_allowedOverTime_range'),
 
         body(`shifts.${day}.*.isOverNight`)
             .isBoolean().withMessage('misc_required')

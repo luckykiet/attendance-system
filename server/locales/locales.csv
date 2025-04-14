@@ -200,7 +200,9 @@ misc_error	chyba	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
 misc_examples	examples	ví dụ	příklady
+misc_exceeded_time	exceeded time	vượt quá thời gian	překročen čas
 misc_expected	expected	mong muốn	očekávaný
+misc_expected_end_time	Expected end time	Thời gian kết thúc dự kiến	Předpokládaný čas ukončení
 misc_expiration_date	expiration date	ngày hết hạn	den expirace
 misc_export	export	export	exportovat
 misc_exposure_date	exposure date	ngày hiệu lực	den vystavení
@@ -293,6 +295,7 @@ misc_lunch	Lunch	Bữa trưa	Oběd
 misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
 misc_maturity_period	Maturity period	Thời hạn đáo hạn	Doba splatnosti
+misc_max_duration	max duration	thời gian tối đa	maximální doba trvání
 misc_max_local_devices	max local devices	thiết bị cục bộ tối đa	Maximální lokální zařízení
 misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
@@ -466,6 +469,7 @@ misc_returned_date	Returned date	Ngày trả lại	Den vrácení
 misc_role	Role	Chức vụ	Role
 misc_row	row	hàng	řádek
 misc_rows_per_page	Rows per page	Hàng trên trang	Řádků na stránku
+misc_running_break	Running break	Thời gian nghỉ hiện tại	Probíhající přestávka
 misc_same_store	same store	cùng một cửa hàng	stejný obchod
 misc_save	Save	Lưu	Uložit
 misc_save_and_back	Save and back	Lưu và trở lại	Uložit a zpět
@@ -547,6 +551,7 @@ misc_terminal_wifi_name	Mobile terminal	Máy trả thẻ di động	Mobilní ter
 misc_test_mode	Test mode	Test mode	Testovací režim
 misc_this_month	this month	tháng hiện tại	tento měsíc
 misc_this_will_unpair_current_device	this will unpair current device	điều này sẽ hủy ghép nối thiết bị hiện tại	aktuální zařízení bude odpojeno
+misc_time_left	time left	thời gian còn lại	zbývající čas
 misc_tin	TIN	IČO	IČO
 misc_tin_changed	TIN changed	Đổi IČO	Změna IČO
 misc_title	title	bằng cấp	titul
@@ -772,6 +777,7 @@ srv_invalid_action_request	Invalid action request	Yêu cầu hành động khôn
 srv_invalid_address	Invalid address	Địa chỉ không hợp lệ	Neplatná adresa
 srv_invalid_allowed_radius	Invalid allowed radius	Đường kính cho phép không hợp lệ	Neplatný povolený poloměr
 srv_invalid_allowedOverTime	Invalid allowed overtime	Thời gian làm thêm không hợp lệ	Nesprávný povolený přesčas
+srv_invalid_allowedOverTime_range	5 - 1440 Minutes	5 - 1440 phút	5 - 1440 minut
 srv_invalid_answer	Invalid answer	Câu trả lời không hợp lệ	Nesprávná odpověď
 srv_invalid_bank	Invalid bank	Ngân hàng không hợp lệ	Neplatná banka
 srv_invalid_bank_account	Invalid bank account	Tài khoản ngân hàng không hợp lệ	Neplatný bankovní účet
@@ -800,6 +806,7 @@ srv_invalid_local_device	invalid local device	Thiết bị cục bộ không h�
 srv_invalid_longitude	Invalid longitude	Kinh độ	Neplatná zeměpisná délka
 srv_invalid_max_allowedOverTime	Max 1440 minutes (24 hours)	Tối đa 1440 phút (24 giờ)	Nejvýše 1440 minut (24 hodin)
 srv_invalid_merchant	Invalid merchant	Nhà bán buôn không hợp lệ	Neplatný obchodník
+srv_invalid_min_allowedOverTime	Min. 5 minutes	Tối thiểu 5 phút	Nejméně 5 minut
 srv_invalid_name	invalid name	tên không hợp lệ	neplatné jméno
 srv_invalid_number	invalid number	số không hợp lệ	neplatné číslo
 srv_invalid_overnight	Invalid overnight	Quá đêm không hợp lệ	Neplatná přenocování

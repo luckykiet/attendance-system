@@ -11,7 +11,7 @@ export type Breaks = {
 
 export type BreakMutation = {
     _id?: string,
-    breakId?: string,
+    breakId?: string | null,
     registerId: string,
     retailId: string,
     shiftId: string,
@@ -26,12 +26,13 @@ export type BreakMutation = {
 
 export type AttendanceBreak = {
     _id: string;
+    breakId: string | null;
     name: string;
     type: SpecificBreakTypes | 'other' | 'generic';
-    reason: string;
     breakHours: {
         start: string;
         end: string;
+        duration: number;
         isOverNight: boolean;
     },
     checkInTime: Date;

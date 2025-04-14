@@ -132,7 +132,7 @@ const applySpecificBreak = async (req, res, next) => {
 
         const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
 
-        if (!now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+        if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
             throw new HttpError('srv_outside_time', 400);
         }
 
@@ -151,6 +151,7 @@ const applySpecificBreak = async (req, res, next) => {
                     start: breakTemplate.start,
                     end: breakTemplate.end,
                     isOverNight: breakTemplate.isOverNight,
+                    duration: breakTemplate.duration,
                 },
                 checkInTime: now.toDate(),
                 checkInLocation: {
@@ -166,10 +167,10 @@ const applySpecificBreak = async (req, res, next) => {
 
         attendanceBreak.name = `misc_${breakKey}`;
         attendanceBreak.type = breakKey;
-        attendanceBreak.reason = breakKey;
         attendanceBreak.breakHours.start = shift.start;
         attendanceBreak.breakHours.end = shift.end;
         attendanceBreak.breakHours.isOverNight = shift.isOverNight;
+        attendanceBreak.breakHours.duration = breakTemplate.duration;
         attendanceBreak.checkOutTime = now.toDate();
         attendanceBreak.checkOutLocation = {
             latitude,

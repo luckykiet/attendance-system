@@ -18,5 +18,6 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/absence-request', require('./absence-request'));
     app.use(apiPrefix + '/absence-requests', require('./absence-requests'));
     app.use(apiPrefix + '/employee', require('./employee'));
+    app.use(apiPrefix + '/break', ensureTokenVerified, require('./break'));
     app.use(apiPrefix + '/specific-break', ensureTokenVerified, require('./specific-break'));
 };

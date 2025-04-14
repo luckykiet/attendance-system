@@ -136,7 +136,7 @@ const applyBreak = async (req, res, next) => {
         if (breakTemplate) {
             const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
 
-            if (!now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+            if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
                 throw new HttpError('srv_outside_time', 400);
             }
         }
@@ -146,15 +146,19 @@ const applyBreak = async (req, res, next) => {
         if (attendanceBreak && _id && !attendanceBreak._id.equals(_id)) {
             throw new HttpError('srv_some_break_is_pending', 400);
         }
+
+
+
         const newBreak = {
             _id: _id ? _id : new mongoose.Types.ObjectId(),
             breakId: breakId ? breakId : null,
             name: breakTemplate ? breakTemplate.name : name,
             type: breakTemplate ? 'generic' : 'other',
             breakHours: {
-                start: shift.start,
-                end: shift.end,
-                isOverNight: shift.isOverNight,
+                start: breakTemplate.start,
+                end: breakTemplate.end,
+                isOverNight: breakTemplate.isOverNight,
+                duration: breakTemplate.duration,
             },
         }
 

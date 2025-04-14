@@ -168,7 +168,7 @@ const TodayCompanies = () => {
                 const { kilometers: kmLeft, meters: mLeft } = workplace.distanceLeft ? calculateKilometersFromMeters(workplace.distanceLeft) : { kilometers: 0, meters: 0 };
                 const { hours: checkOutH, minutes: checkOutM } = workplace.checkOutTimeStatus ? calculateHoursFromMinutes(workplace.checkOutTimeStatus) : { hours: 0, minutes: 0 };
                 const { hours: checkInH, minutes: checkInM } = workplace.checkInTimeStatus ? calculateHoursFromMinutes(workplace.checkInTimeStatus) : { hours: 0, minutes: 0 };
-
+                
                 return <View key={index} style={styles.companyItem}>
                   {!workplace.isToday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
                   <ThemedText style={styles.companyText}>{workplace.name}</ThemedText>
@@ -237,8 +237,8 @@ const TodayCompanies = () => {
                       const { status, message, duration, isCheckedIn } = getShiftHoursText({ shift, attendance: attendanceOfShift, isToday: workplace.isToday, t });
 
                       const { hours, minutes } = calculateHoursFromMinutes(Math.abs(duration));
-                      const { endTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: false });
-                      const isShiftEnded = endTime && now.isAfter(endTime.add(shift.allowedOverTime || 0, 'minute'));
+                      const { endTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                      const isShiftEnded = endTime && now.isAfter(endTime.add(shift.allowedOverTime || 5, 'minute'));
                       const isShiftEndedWithoutCheckOut = isShiftEnded && !attendanceOfShift?.checkOutTime;
                       const finalStatus = isShiftEndedWithoutCheckOut ? 'out_of_time' : status;
 

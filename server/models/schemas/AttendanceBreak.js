@@ -13,6 +13,7 @@ const AttendanceBreakSchema = new Schema(
             start: { type: String, required: true },
             end: { type: String, required: true },
             isOverNight: { type: Boolean, required: true, default: false },
+            duration: { type: Number, required: true },
         },
         checkInTime: { type: Date, required: true },
         checkInLocation: { type: CheckSchema, required: true },
