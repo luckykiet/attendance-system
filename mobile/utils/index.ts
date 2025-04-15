@@ -414,7 +414,7 @@ export const getStartEndTime = ({
     timeFormat?: string;
     baseDay?: Dayjs;
 }): { startTime: Dayjs; endTime: Dayjs; isOverNight: boolean } => {
-    const base = dayjs(baseDay);
+    const base = isToday ? dayjs(baseDay) : dayjs(baseDay).subtract(1, 'day');
 
     const startParsed = dayjs(start, timeFormat);
     const endParsed = dayjs(end, timeFormat);

@@ -278,7 +278,7 @@ const makeAttendance = async (req, res, next) => {
             if (foundPendingBreak) {
                 throw new HttpError('srv_pending_breaks', 400);
             }
-
+            
             if (now.isBefore(shiftEndTime) && !reason) {
                 throw new HttpError('srv_reason_for_early_check_out_required', 400);
             }
