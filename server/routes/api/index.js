@@ -20,4 +20,5 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/employee', require('./employee'));
     app.use(apiPrefix + '/break', ensureTokenVerified, require('./break'));
     app.use(apiPrefix + '/specific-break', ensureTokenVerified, require('./specific-break'));
+    app.use(apiPrefix + '/pause', ensureTokenVerified, require('./pause'));
 };

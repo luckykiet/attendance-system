@@ -4,7 +4,7 @@ import ThemedText from './theme/ThemedText';
 import { Colors } from '@/constants/Colors';
 import useTranslation from '@/hooks/useTranslation';
 import { useAppStore } from '@/stores/useAppStore';
-import { calculateHoursFromMinutes, checkBiometric, getAttendanceStatus, getShiftHoursText, getStartEndTime, isBreakWithinShift } from '@/utils';
+import { calculateHoursFromMinutes, checkBiometric, getAttendanceStatus, getDiffDurationText, getShiftHoursText, getStartEndTime, isBreakWithinShift } from '@/utils';
 import ThemedView from './theme/ThemedView';
 import dayjs from 'dayjs';
 import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
@@ -20,6 +20,9 @@ import _ from 'lodash';
 import { SpecificBreakMutation, SpecificBreakTypes } from '@/types/specific-break';
 import { useSpecificBreakApi } from '@/api/useSpecificBreakApi';
 import { useBreakApi } from '@/api/useBreakApi';
+import ReasonPromptModal, { ReasonData } from './ReasonPromptModal';
+import { AttendancePauseMutation } from '@/types/pause';
+import { usePauseApi } from '@/api/usePauseApi';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
@@ -29,7 +32,34 @@ const ShiftSelectModal = () => {
     const { logAttendance } = useAttendanceApi();
     const { applySpecificBreak } = useSpecificBreakApi();
     const { applyBreak } = useBreakApi();
+    const { applyPause } = usePauseApi();
     const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
+    const [showReasonModal, setShowReasonModal] = useState(false);
+    const [checkoutForm, setCheckoutForm] = useState<AttendanceMutation | null>(null);
+    const [isSubmittingAttendance, setIsSubmittingAttendance] = useState(false);
+
+    const [diff, setDiff] = useState<number>(0);
+    const [reasonModalTitle, setReasonModalTitle] = useState<string>('misc_reason_for_early_check_out');
+
+    const submitPauseMutation = useMutation(
+        {
+            mutationFn: (data: AttendancePauseMutation) => applyPause(data),
+            onSuccess: (data) => {
+                if (data.localDevices) {
+                    setLocalDevices(data.localDevices);
+                } else {
+                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    Alert.alert(t('misc_shift_pause_successfully'), t(data.msg))
+                    setPendingAttendance(null);
+                    setSelectedShift(null);
+                }
+            },
+            onError: (error) => {
+                setPendingAttendance(null);
+                Alert.alert(t('misc_attendance_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_make_attendance'))
+            },
+        }
+    )
 
     const makeAttendanceMutation = useMutation(
         {
@@ -98,8 +128,8 @@ const ShiftSelectModal = () => {
     const attendance = workplace.attendances.find(att => att.shiftId === shift._id);
 
     const attendanceStatus = attendance ? getAttendanceStatus({
-        checkInTime: attendance.checkInTime?.toString(),
-        checkOutTime: attendance.checkOutTime?.toString(),
+        checkInTime: attendance.checkInTime,
+        checkOutTime: attendance.checkOutTime,
         shift: shift,
         isToday: workplace.isToday,
         t,
@@ -108,14 +138,47 @@ const ShiftSelectModal = () => {
 
     const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
 
-    const handleCheckIn = async () => {
+    const handleSubmitPause = async ({ _id }: { _id?: string }) => {
         if (selectedShift) {
             const { _id: registerId, retailId, domain, attendances } = workplace;
             const { _id: shiftId } = shift;
 
             const attendance = attendances.find(att => att.shiftId === shiftId);
-            if (attendance && attendance.checkInTime && attendance.checkOutTime) {
+
+            if (!attendance) {
+                Alert.alert(t('misc_error'), t('misc_must_have_attendance'));
+                return;
+            }
+
+            if (attendance && attendance.checkOutTime) {
                 Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
+                return;
+            }
+
+            let pause = null;
+
+            if (_id) {
+                pause = attendance?.pauses.find(p => p._id === _id);
+                if (!pause) {
+                    Alert.alert(t('misc_error'), t('misc_pause_not_found'));
+                    return;
+                }
+
+                if (pause && pause.checkOutTime) {
+                    Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
+                    return;
+                }
+            }
+
+            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+
+            if (!deviceKey) {
+                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                return;
+            }
+
+            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
+                Alert.alert(t('misc_error'), t('srv_location_required_to_make_attendance'));
                 return;
             }
 
@@ -135,12 +198,77 @@ const ShiftSelectModal = () => {
             }
 
             const currentTime = dayjs();
+
+            const form: AttendancePauseMutation = {
+                registerId,
+                retailId,
+                deviceKey,
+                domain,
+                longitude: location.longitude,
+                latitude: location.latitude,
+                shiftId,
+                attendanceId: attendance._id,
+                _id: pause?._id,
+                name: pause?.name || t('misc_pause'),
+            };
+
+            if (!_id) {
+                const { endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                const difference = closeTime.diff(currentTime, 'minute');
+
+                setReasonModalTitle('misc_reason_for_pause');
+                setDiff(difference);
+                setCheckoutForm(form);
+                setShowReasonModal(true);
+                setIsSubmittingAttendance(false)
+                return;
+            }
+
+            const difference = currentTime.diff(pause?.checkInTime, 'minute');
+            const durationText = getDiffDurationText(difference, noCapT);
+            let text = `${t('misc_cannot_revert_action')}!`;
+            text += `\n${t('misc_duration')}: ${durationText}`;
+
+            Alert.alert(
+                t('misc_finish_pause'),
+                text,
+                [
+                    {
+                        text: t('misc_cancel'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: t('misc_confirm'),
+                        onPress: async () => {
+                            setPendingAttendance(form);
+                            submitPauseMutation.mutate(form);
+                        },
+                    },
+                ],
+                { cancelable: true }
+            );
+
+        }
+    };
+
+    const handleCheckIn = async () => {
+        if (selectedShift) {
+            const { _id: registerId, retailId, domain, attendances } = workplace;
+            const { _id: shiftId } = shift;
+
+            const attendance = attendances.find(att => att.shiftId === shiftId);
+            if (attendance && attendance.checkOutTime) {
+                Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
+                return;
+            }
+
+            const currentTime = dayjs();
             const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
 
             let diff = 0;
             let text = `${t('misc_cannot_revert_action')}!`;
             const checkInTime = attendance?.checkInTime;
-
+            let isEarlyCheckOut = false;
             if (!checkInTime) {
                 diff = currentTime.diff(openTime, 'minute');
                 if (currentTime.isBefore(openTime)) {
@@ -151,10 +279,58 @@ const ShiftSelectModal = () => {
             } else {
                 diff = currentTime.diff(closeTime, 'minute');
                 if (currentTime.isBefore(closeTime)) {
+                    isEarlyCheckOut = true;
                     text += `\n${t('misc_early')}: `;
                 } else {
                     text += `\n${t('misc_late')}: `;
                 }
+            }
+
+            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+            if (!deviceKey) {
+                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                return;
+            }
+
+            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
+                Alert.alert(t('misc_error'), t('srv_location_required_to_make_attendance'));
+                return;
+            }
+
+            const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
+
+            if (biometricEnabled === 'true') {
+                const result = await checkBiometric(t);
+
+                if (!result.success) {
+                    if (_.isObject(result.msg)) {
+                        Alert.alert(t(result.msg.title), t(result.msg.message));
+                        return;
+                    }
+                    Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
+                    return;
+                }
+            }
+
+            if (isEarlyCheckOut) {
+                const form: AttendanceMutation = {
+                    registerId,
+                    retailId,
+                    deviceKey,
+                    domain,
+                    longitude: location.longitude,
+                    latitude: location.latitude,
+                    shiftId,
+                    attendanceId: attendance ? attendance._id : null,
+                };
+                const difference = currentTime.diff(closeTime, 'minute');
+
+                setReasonModalTitle('misc_reason_for_early_check_out');
+                setDiff(difference);
+                setCheckoutForm(form);
+                setShowReasonModal(true);
+                setIsSubmittingAttendance(true);
+                return;
             }
 
             const { hours, minutes } = calculateHoursFromMinutes(diff);
@@ -171,15 +347,6 @@ const ShiftSelectModal = () => {
                     {
                         text: t('misc_confirm'),
                         onPress: async () => {
-                            const deviceKey = await SecureStore.getItemAsync('deviceKey');
-                            if (!deviceKey) {
-                                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
-                                return;
-                            }
-                            if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
-                                Alert.alert(t('misc_error'), t('srv_location_required_to_make_attendance'));
-                                return;
-                            }
                             const form: AttendanceMutation = { registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
 
                             setPendingAttendance(form);
@@ -228,6 +395,15 @@ const ShiftSelectModal = () => {
 
             const specificBreak = specificBreaks[dayKey][breakKey];
 
+            let text = `${t('misc_cannot_revert_action')}!`;
+            text += `\n${t(specificBreakTranslations[breakKey].name)}: ${specificBreak.start} - ${specificBreak.end}${specificBreak.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+            const duration = attendanceBreak?.checkInTime ? dayjs(attendanceBreak.checkInTime).diff(now, 'minutes') : specificBreak.duration;
+
+            const durationText = getDiffDurationText(duration, noCapT);
+
+            text += `\n${t('misc_duration')}: ${durationText}`;
+
             const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
 
             if (biometricEnabled === 'true') {
@@ -242,15 +418,6 @@ const ShiftSelectModal = () => {
                     return;
                 }
             }
-
-            let text = `${t('misc_cannot_revert_action')}!`;
-            text += `\n${t(specificBreakTranslations[breakKey].name)}: ${specificBreak.start} - ${specificBreak.end}${specificBreak.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
-
-            const duration = attendanceBreak?.checkInTime ? dayjs(attendanceBreak.checkInTime).diff(now, 'minutes') : specificBreak.duration;
-
-            const { hours, minutes } = calculateHoursFromMinutes(duration);
-
-            text += `\n${t('misc_duration')}: ${hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}`;
 
             Alert.alert(
                 t('misc_submit_break'),
@@ -322,6 +489,18 @@ const ShiftSelectModal = () => {
                     return;
                 }
             }
+            const currentTime = dayjs();
+            let text = `${t('misc_cannot_revert_action')}!`;
+            text += `\n${t(name)}`
+            if (foundBreakTemplate) {
+                text += `: ${foundBreakTemplate.start} - ${foundBreakTemplate.end}${foundBreakTemplate.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+                const duration = attendanceBreak?.checkInTime ? dayjs(attendanceBreak.checkInTime).diff(currentTime, 'minutes') : foundBreakTemplate.duration;
+
+                const durationText = getDiffDurationText(duration, noCapT);
+
+                text += `\n${t('misc_duration')}: ${durationText}`;
+            }
 
             const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
 
@@ -336,18 +515,6 @@ const ShiftSelectModal = () => {
                     Alert.alert(t('srv_authentication_failed'), t('srv_please_try_again'));
                     return;
                 }
-            }
-            const currentTime = dayjs();
-            let text = `${t('misc_cannot_revert_action')}!`;
-            text += `\n${t(name)}`
-            if (foundBreakTemplate) {
-                text += `: ${foundBreakTemplate.start} - ${foundBreakTemplate.end}${foundBreakTemplate.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
-
-                const duration = attendanceBreak?.checkInTime ? dayjs(attendanceBreak.checkInTime).diff(currentTime, 'minutes') : foundBreakTemplate.duration;
-
-                const { hours, minutes } = calculateHoursFromMinutes(duration);
-
-                text += `\n${t('misc_duration')}: ${hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}`;
             }
 
             Alert.alert(
@@ -401,6 +568,7 @@ const ShiftSelectModal = () => {
     const allowedOverTime = shift.allowedOverTime || 5;
 
     const runningBreak = attendance?.breaks.find(b => b.checkInTime && !b.checkOutTime);
+    const lastestPause = attendance?.pauses?.find(p => p.checkInTime && !p.checkOutTime);
 
     return (
         <Modal
@@ -431,9 +599,7 @@ const ShiftSelectModal = () => {
                                 return brk && brk.isAvailable
                             }).map((type, idx, arr) => {
                                 const brk = specificBreaks[type];
-
-                                const { hours, minutes } = calculateHoursFromMinutes(brk.duration);
-
+                                const maxDurationText = getDiffDurationText(brk.duration, noCapT);
                                 const { startTime, endTime } = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
 
                                 const attendanceBreak = attendance?.breaks.find(b => b.type === type);
@@ -444,9 +610,9 @@ const ShiftSelectModal = () => {
 
                                 const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
 
-                                const realDurationCalculated = realDuration ? calculateHoursFromMinutes(realDuration) : { hours: 0, minutes: 0 };
 
                                 const isExceededTime = realDuration && realDuration > brk.duration;
+
 
                                 return (
                                     <Fragment key={type}>
@@ -457,7 +623,7 @@ const ShiftSelectModal = () => {
                                                     {brk.isOverNight ? ` (${t('misc_over_night')})` : ''}
                                                 </ThemedText>
                                                 <ThemedText style={styles.breakDurationText}>
-                                                    {t('misc_max_duration')}: {hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}
+                                                    {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
                                                 </ThemedText>
                                                 {attendanceBreak?.checkInTime &&
                                                     <ThemedText style={styles.breakTimeText}>
@@ -468,13 +634,10 @@ const ShiftSelectModal = () => {
                                                         {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                     </ThemedText>}
                                                 {_.isNumber(realDuration) && realDuration > 0 && (() => {
-                                                    const { hours, minutes } = realDurationCalculated;
+                                                    const durationText = getDiffDurationText(realDuration, noCapT);
 
-                                                    const durationStr = (hours || minutes)
-                                                        ? [
-                                                            hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : '',
-                                                            minutes > 0 ? `${minutes} ${noCapT('misc_min_short')}` : ''
-                                                        ].filter(Boolean).join(' ')
+                                                    const durationStr = realDuration
+                                                        ? durationText
                                                         : `0 ${noCapT('misc_min_short')}`;
 
                                                     const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
@@ -520,7 +683,8 @@ const ShiftSelectModal = () => {
                             breaks
                                 .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end, isToday: workplace.isToday }))
                                 .map((b: Breaks, idx: number, arr) => {
-                                    const { hours, minutes } = calculateHoursFromMinutes(b.duration);
+
+                                    const maxDurationText = getDiffDurationText(b.duration, noCapT);
                                     const { startTime, endTime } = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
                                     const attendanceBreak = attendance?.breaks.find(brk => brk.breakId && b._id === brk.breakId);
 
@@ -529,8 +693,6 @@ const ShiftSelectModal = () => {
                                     const isBreakNotAvailable = (!isBreakPending && !now.isBetween(startTime, endTime, null, '[]')) || !_.isEmpty(attendanceBreak?.checkOutTime);
 
                                     const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
-
-                                    const realDurationCalculated = realDuration ? calculateHoursFromMinutes(realDuration) : { hours: 0, minutes: 0 };
 
                                     const isExceededTime = realDuration && realDuration > b.duration;
                                     return (
@@ -542,7 +704,7 @@ const ShiftSelectModal = () => {
                                                         {b.isOverNight ? ` (${t('misc_over_night')})` : ''}
                                                     </ThemedText>
                                                     <ThemedText style={styles.breakDurationText}>
-                                                        {t('misc_max_duration')}: {hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}{minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}
+                                                        {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
                                                     </ThemedText>
                                                     {attendanceBreak?.checkInTime &&
                                                         <ThemedText style={styles.breakTimeText}>
@@ -553,14 +715,10 @@ const ShiftSelectModal = () => {
                                                             {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                         </ThemedText>}
                                                     {_.isNumber(realDuration) && realDuration > 0 && (() => {
-                                                        const { hours, minutes } = realDurationCalculated;
+                                                        const durationText = getDiffDurationText(realDuration, noCapT);
 
-                                                        const durationStr = (hours || minutes)
-                                                            ? [
-                                                                hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : '',
-                                                                minutes > 0 ? `${minutes} ${noCapT('misc_min_short')}` : ''
-                                                            ].filter(Boolean).join(' ')
-                                                            : `0 ${noCapT('misc_min_short')}`;
+                                                        const durationStr = realDuration
+                                                            ? durationText : `0 ${noCapT('misc_min_short')}`;
 
                                                         const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
 
@@ -600,6 +758,38 @@ const ShiftSelectModal = () => {
                             <ThemedText style={styles.breakText}>{t('misc_no_breaks')}</ThemedText>
                         )}
 
+                        {!_.isEmpty(attendance?.pauses ?? []) && (attendance?.pauses?.length ?? 0) > 0 && <>
+                            <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
+                            {attendance?.pauses.map((p, idx, arr) => {
+                                const isPending = p.checkInTime && !p.checkOutTime;
+                                return (
+                                    <Fragment key={p._id}>
+                                        <View style={styles.breakRow}>
+                                            <View style={styles.breakInfo}>
+                                                <ThemedText style={styles.breakText}>
+                                                    {t(p.name)}
+                                                </ThemedText>
+                                                <ThemedText style={styles.breakTimeText}>
+                                                    {t('msg_from')}: {dayjs(p.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                </ThemedText>
+                                                {p.checkOutTime &&
+                                                    <ThemedText style={styles.breakTimeText}>
+                                                        {t('msg_to')}: {dayjs(p.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                    </ThemedText>}
+                                            </View>
+                                            {isPending && <TouchableOpacity
+                                                style={[styles.breakButton, styles.buttonPending]}
+                                                onPress={() => handleSubmitPause({ _id: p._id })}
+                                            >
+                                                <ThemedText style={[styles.breakButtonText]}>{t('misc_finish')}</ThemedText>
+                                            </TouchableOpacity>}
+                                        </View>
+                                        {idx < arr.length - 1 && <View style={styles.breakDivider} />}
+                                    </Fragment>
+                                );
+                            })}
+                        </>}
+
                         <View style={styles.attendanceInfo}>
                             <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
                         </View>
@@ -633,8 +823,7 @@ const ShiftSelectModal = () => {
                                 const expectedEndTime = startTime.add(runningBreak.breakHours.duration, 'minutes');
                                 const timeLeft = expectedEndTime.diff(now, 'minute');
 
-                                const { hours, minutes } = calculateHoursFromMinutes(timeLeft);
-                                const timeLeftText = `${hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT('misc_min_short')}` : ''}`;
+                                const timeLeftText = getDiffDurationText(timeLeft, noCapT);
 
                                 return <>
                                     <ThemedText style={styles.groupHeader}>{t('misc_running_break')}: {t(runningBreak.name)}</ThemedText>
@@ -659,10 +848,34 @@ const ShiftSelectModal = () => {
                                     </TouchableOpacity>
                                 </>
                             })()
-                            : !attendance?.checkOutTime && <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
-                                <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
-                            </TouchableOpacity>}
-                        { }
+                            : lastestPause ?
+                                <>
+                                    <ThemedText style={styles.groupHeader}>{t('misc_running_pause')}: {t(lastestPause.name)}</ThemedText>
+                                    <ThemedText>{t('msg_from')}: {dayjs(lastestPause.checkInTime).format('DD/MM/YYYY HH:mm:ss')}</ThemedText>
+                                    <View style={styles.buttonGroup}>
+                                        <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
+                                            handleSubmitPause({
+                                                _id: lastestPause._id
+                                            })
+                                        }}>
+                                            <ThemedText style={[styles.modalButtonText]}>{t('misc_finish')}</ThemedText>
+                                        </TouchableOpacity>
+                                    </View>
+                                </>
+                                : !attendance?.checkOutTime && <>
+                                    <View style={styles.buttonGroup}>
+                                        {attendance?.checkInTime && <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
+                                            handleSubmitPause({
+                                                _id: undefined
+                                            })
+                                        }}>
+                                            <ThemedText style={[styles.modalButtonText]}>{t('misc_pause_shift')}</ThemedText>
+                                        </TouchableOpacity>}
+                                        <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
+                                            <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
+                                        </TouchableOpacity>
+                                    </View>
+                                </>}
                     </ScrollView>
 
                     <View style={styles.fixedFooter}>
@@ -673,6 +886,35 @@ const ShiftSelectModal = () => {
                             <ThemedText style={styles.modalButtonText}>{t('misc_close')}</ThemedText>
                         </TouchableOpacity>
                     </View>
+                    <ReasonPromptModal
+                        title={reasonModalTitle}
+                        diff={diff}
+                        visible={showReasonModal}
+                        onCancel={() => {
+                            setShowReasonModal(false);
+                            setCheckoutForm(null);
+                        }}
+                        onConfirm={(data: ReasonData) => {
+                            if (isSubmittingAttendance) {
+                                if (checkoutForm) {
+                                    const formWithReason = { ...checkoutForm, ...data };
+                                    setPendingAttendance(formWithReason);
+                                    makeAttendanceMutation.mutate(formWithReason);
+                                }
+                                setShowReasonModal(false);
+                                setCheckoutForm(null);
+                            } else {
+                                if (checkoutForm) {
+                                    const formWithReason = { ...checkoutForm, name: data.reason };
+                                    setPendingAttendance(formWithReason);
+                                    submitPauseMutation.mutate(formWithReason);
+                                }
+                            }
+                            setShowReasonModal(false);
+                            setCheckoutForm(null);
+                        }}
+                    />
+
                 </View>
             </ThemedView>
         </Modal>
@@ -775,6 +1017,12 @@ const styles = StyleSheet.create({
     },
     buttonDisabled: {
         backgroundColor: Colors.secondary,
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 10,
+        marginTop: 10,
     },
     buttonPending: {
         backgroundColor: Colors.warning,

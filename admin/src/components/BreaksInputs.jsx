@@ -7,7 +7,7 @@ import {
     Stack,
     Paper,
 } from '@mui/material';
-import { daysOfWeeksTranslations, minutesToHour } from '@/utils';
+import { daysOfWeeksTranslations, getStartEndTime, minutesToHour, TIME_FORMAT } from '@/utils';
 import _ from 'lodash';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
@@ -57,7 +57,12 @@ const DayField = ({ day }) => {
             </Stack>
             <IconButton
                 color="primary"
-                onClick={() => append({ start: watch(`workingHours.${day}.start`) || '11:00', end: watch(`workingHours.${day}.end`) || '13:00', name: 'Break', duration: 60, isOverNight: false })}
+                onClick={() => {
+                    const start = watch(`workingHours.${day}.start`);
+                    const end = watch(`workingHours.${day}.end`);
+                    const { startTime, endTime, isOverNight } = getStartEndTime({ start, end });
+                    append({ start: startTime.format(TIME_FORMAT) || '11:00', end: endTime.format(TIME_FORMAT) || '13:00', name: 'Break', duration: 60, isOverNight })
+                }}
             >
                 <AddCircleIcon />
             </IconButton>

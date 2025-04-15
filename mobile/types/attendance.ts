@@ -1,5 +1,6 @@
 import { AttendanceBreak } from "./breaks";
 import { MyEmployee } from "./employee";
+import { Pause } from "./pause";
 import { MyRetail } from "./retail";
 import { MyWorkingAt } from "./working-at";
 import { WorkingHour } from "./working-hour";
@@ -15,6 +16,7 @@ export type AttendanceMutation = {
     longitude: number,
     latitude: number,
     localDeviceId?: string
+    reason?: string,
 };
 
 export type Attendance = {
@@ -24,6 +26,8 @@ export type Attendance = {
     checkInTime: Date;
     checkOutTime: Date;
     breaks: AttendanceBreak[];
+    pauses: Pause[];
+    reason?: string;
 
     shiftId: string;
     start: string;

@@ -135,7 +135,7 @@ const RegistrationScreen: React.FC = () => {
                                             value={value}
                                             placeholder="Jan Novak"
                                         />
-                                        {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message}</ThemedText>}
+                                        {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
                                     </>
                                 )}
                             />
@@ -156,7 +156,7 @@ const RegistrationScreen: React.FC = () => {
                                             placeholder={t('misc_email')}
                                             keyboardType="email-address"
                                         />
-                                        {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message}</ThemedText>}
+                                         {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
                                     </>
                                 )}
                             />
@@ -176,7 +176,7 @@ const RegistrationScreen: React.FC = () => {
                                             placeholder={'+420 123 456 789'}
                                             keyboardType="phone-pad"
                                         />
-                                        {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{fieldState.error?.message}</ThemedText>}
+                                         {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
                                     </>
                                 )}
                             />

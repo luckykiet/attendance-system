@@ -75,6 +75,11 @@ export const calculateKilometersFromMeters = (pureMeters: number) => {
     return { kilometers, meters };
 };
 
+export const getDiffDurationText = (diffInMinutes: number, t: (key: string) => string) => {
+    const { hours, minutes } = calculateHoursFromMinutes(diffInMinutes);
+    return `${hours > 0 ? `${hours} ${t('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${t('misc_min_short')}` : ''}`;
+}
+
 export const authenticate = async (t: (text: string) => string) => {
     try {
         const hasHardware = await LocalAuthentication.hasHardwareAsync();
@@ -274,16 +279,41 @@ type AttendanceStatus = {
     } | null;
 };
 
-export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, isToday = true, shift, t, noCapT }: { checkInTime: string | null; checkOutTime: string | null, shift: Shift, isToday: boolean, t: (key: string) => string; noCapT: (key: string) => string; }): AttendanceStatus => {
+export const getAttendanceStatus = ({
+    checkInTime = null,
+    checkOutTime = null,
+    isToday = true,
+    shift,
+    t,
+    noCapT,
+    baseDay = dayjs(),
+}: {
+    checkInTime: Date | null;
+    checkOutTime: Date | null;
+    shift: { start?: string; end?: string };
+    isToday?: boolean;
+    t: (key: string) => string;
+    noCapT: (key: string) => string;
+    baseDay?: Dayjs;
+}): AttendanceStatus => {
     const result: AttendanceStatus = { checkInTime: null, checkOutTime: null };
     if (!checkInTime && !checkOutTime) {
         return result;
     }
 
+    if (!shift.start || !shift.end) {
+        return result;
+    }
+
+    const { startTime: openTime, endTime: closeTime } = getStartEndTime({
+        start: shift.start,
+        end: shift.end,
+        isToday,
+        baseDay,
+    });
+
     const checkIn = dayjs(checkInTime);
     const checkOut = dayjs(checkOutTime);
-
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday });
 
     if (checkIn.isValid()) {
         if (checkIn.isBefore(openTime) || checkIn.isSame(openTime)) {
@@ -306,16 +336,17 @@ export const getAttendanceStatus = ({ checkInTime = null, checkOutTime = null, i
             result.checkOutTime = {
                 message: t("misc_checked_out_on_time"),
                 isSuccess: true,
-            }
+            };
         } else {
-            const earlyDiff = checkOut.diff(closeTime, 'minute');
+            const earlyDiff = closeTime.diff(checkOut, 'minute'); // <-- fix: was reversed
             const { hours, minutes } = calculateHoursFromMinutes(earlyDiff);
             result.checkOutTime = {
                 message: `${t("misc_early")} ${hours > 0 ? `${hours} ${noCapT("misc_hour_short")}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT("misc_min_short")}` : ''}`,
                 isSuccess: false,
-            }
+            };
         }
     }
+
     return result;
 };
 
@@ -370,9 +401,41 @@ export const checkBiometric = async (t: (key: string) => string): Promise<Biomet
     };
 };
 
-export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_FORMAT }: { start: string, end: string, isToday?: boolean, timeFormat?: string }): { startTime: Dayjs, endTime: Dayjs, isOverNight: boolean } => {
-    const startTime = isToday ? dayjs(start, timeFormat) : dayjs(start, timeFormat).subtract(1, 'day');
-    let endTime = isToday ? dayjs(end, timeFormat) : dayjs(end, timeFormat).subtract(1, 'day');
+export const getStartEndTime = ({
+    start,
+    end,
+    isToday = true,
+    timeFormat = TIME_FORMAT,
+    baseDay = dayjs(),
+}: {
+    start: string;
+    end: string;
+    isToday?: boolean;
+    timeFormat?: string;
+    baseDay?: Dayjs;
+}): { startTime: Dayjs; endTime: Dayjs; isOverNight: boolean } => {
+    const base = dayjs(baseDay);
+
+    const startParsed = dayjs(start, timeFormat);
+    const endParsed = dayjs(end, timeFormat);
+
+    const startTime = base
+        .hour(startParsed.hour())
+        .minute(startParsed.minute())
+        .second(0)
+        .millisecond(0);
+
+    let endTime = base
+        .hour(endParsed.hour())
+        .minute(endParsed.minute())
+        .second(0)
+        .millisecond(0);
+
+    if (!isToday) {
+        startTime.subtract(1, 'day');
+        endTime = endTime.subtract(1, 'day');
+    }
+
     let isOverNight = false;
     if (endTime.isBefore(startTime)) {
         isOverNight = true;
@@ -380,4 +443,4 @@ export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_
     }
 
     return { startTime, endTime, isOverNight };
-}
+};

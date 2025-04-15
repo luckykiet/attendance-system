@@ -1,17 +1,14 @@
 const utils = require('../../utils');
 
 const Register = require('../../models/Register');
-const Retail = require('../../models/Retail');
 const WorkingAt = require('../../models/WorkingAt');
 const Attendance = require('../../models/Attendance');
-const LocalDevice = require('../../models/LocalDevice');
 const DailyAttendance = require('../../models/DailyAttendance');
 const HttpError = require("../../constants/http-error");
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const isBetween = require('dayjs/plugin/isBetween');
-const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
-const geolib = require('geolib');
+const { DAYS_OF_WEEK } = require('../../constants');
 const _ = require('lodash');
 const { DAY_KEYS } = require('../../configs');
 
@@ -141,7 +138,7 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
 
 const makeAttendance = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId } = req.body;
+        const { latitude, longitude, registerId, attendanceId, reason } = req.body;
         const tokenPayload = req.tokenPayload;
         if (!longitude || !latitude || !registerId || !tokenPayload) {
             throw new HttpError('srv_invalid_request', 400);
@@ -153,68 +150,17 @@ const makeAttendance = async (req, res, next) => {
         if (!_.isEqual(tmpBody, tokenPayload)) {
             throw new HttpError('srv_invalid_request', 400);
         }
+        const resources = await utils.checkEmployeeResources(req);
 
-        let register = await Register.findOne({ _id: registerId }).exec();
-
-        if (!register) {
-            throw new HttpError('srv_register_not_found', 400);
+        if (!resources) {
+            throw new HttpError('srv_invalid_request', 400);
         }
 
-        const retail = await Retail.findOne({ _id: register.retailId }).exec();
-
-        if (!retail) {
-            throw new HttpError('srv_retail_not_found', 400);
+        if (resources.localDevices) {
+            return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: resources.localDevices.map(d => d.uuid) });
         }
 
-        const { employee } = req
-
-        const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
-
-        if (!workingAt) {
-            throw new HttpError('srv_employee_not_employed', 400);
-        }
-        // check for overnight shifts
-        const now = dayjs();
-        const todayKey = DAYS_OF_WEEK[now.day()];
-        const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-
-        const yesterdayShifts = workingAt.shifts.get(yesterdayKey);
-        const todayShifts = workingAt.shifts.get(todayKey);
-
-        if ((!todayShifts && !yesterdayShifts) || (!todayShifts.length && !yesterdayShifts.length)) {
-            throw new HttpError('srv_employee_not_working_today', 400);
-        }
-
-        let isToday = true;
-        let shift = todayShifts.find(s => s._id.toString() === shiftId)
-        if (!shift) {
-            shift = yesterdayShifts.find(s => s._id.toString() === shiftId);
-            if (!shift) {
-                throw new HttpError('srv_shift_not_found', 400);
-            }
-            isToday = false;
-            // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
-            const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
-            if (now.isAfter(endTime)) {
-                throw new HttpError('srv_shift_already_ended', 400);
-            }
-        }
-
-        if (!shift || !shift.isAvailable) {
-            throw new HttpError('srv_employee_not_working_today', 400);
-        }
-
-        if (shift.allowedOverTime && now.isBefore(dayjs(shift.start, TIME_FORMAT, true).subtract(shift.allowedOverTime, 'minutes'))) {
-            throw new HttpError('srv_shift_not_started', 400);
-        } else if (shift.allowedOverTime && now.isAfter(dayjs(shift.end, TIME_FORMAT, true).add(shift.allowedOverTime, 'minutes'))) {
-            throw new HttpError('srv_shift_already_ended', 400);
-        }
-
-        const workingHour = register.workingHours[isToday ? todayKey : yesterdayKey];
-
-        if (!workingHour.isAvailable || !utils.isBetweenTime({ time: now, start: workingHour.start, end: workingHour.end, isToday })) {
-            throw new HttpError('srv_workplace_closed', 400);
-        }
+        const { workingAt, shift, distanceInMeters, isToday } = resources;
 
         // demo registers
         // if (retail.tin === '12345678') {
@@ -287,33 +233,11 @@ const makeAttendance = async (req, res, next) => {
         //     }
         // }
 
-        const localDevices = await LocalDevice.find({ registerId }).exec();
+        const now = dayjs();
 
-        if (localDevices.length) {
-            // should have a local device id, return the list of local devices
-            if (!localDeviceId) {
-                return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: localDevices.map(d => d.uuid) });
-            }
-            if (!localDevices.find(d => d.uuid === localDeviceId)) {
-                throw new HttpError('srv_invalid_local_device', 400);
-            }
-        }
-        const localDevice = localDeviceId ? localDevices.find(d => d.uuid === localDeviceId) : null;
+        const { employee } = req;
 
-        const locationToUse = localDevice && localDevice.location ? {
-            latitude: localDevice.location.latitude,
-            longitude: localDevice.location.longitude,
-        } : {
-            latitude: register.location.coordinates[1],
-            longitude: register.location.coordinates[0],
-        };
-
-        const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
-        const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
-
-        if (distanceInMeters > allowedRadius) {
-            throw new HttpError('srv_outside_allowed_radius', 400);
-        }
+        const { end: shiftEndTime } = utils.getStartEndTime({ start: shift.start, end: shift.end, isToday });
 
         const dailyAttendance = await getDailyAttendance({ registerId });
 
@@ -355,6 +279,10 @@ const makeAttendance = async (req, res, next) => {
                 throw new HttpError('srv_pending_breaks', 400);
             }
 
+            if (now.isBefore(shiftEndTime) && !reason) {
+                throw new HttpError('srv_reason_for_early_check_out_required', 400);
+            }
+
             // checking out
             const checkOutLocation = { latitude, longitude, distance: distanceInMeters };
             attendance.checkOutTime = now.toDate();
@@ -363,6 +291,8 @@ const makeAttendance = async (req, res, next) => {
             attendance.start = shift.start;
             attendance.end = shift.end;
             attendance.isOverNight = shift.isOverNight;
+
+            attendance.reason = reason && typeof reason === 'string' ? reason.trim() : '';
 
             await attendance.save();
 

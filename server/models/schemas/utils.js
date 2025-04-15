@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const dayjs = require('dayjs');
 const utils = require('../../utils');
 
-function setIsOverNight(next) {
+const setIsOverNight = (next) => {
     const data = this instanceof mongoose.Query ? this.getUpdate() : this;
 
     if (data.start && data.end) {
@@ -15,7 +15,7 @@ function setIsOverNight(next) {
 };
 
 // Transform function to reshape `location` field
-function transformLocation(doc, ret) {
+const transformLocation = (doc, ret) => {
     if (ret.location && ret.location.type === 'Point') {
         ret.location = {
             latitude: ret.location.coordinates[1],
@@ -26,7 +26,7 @@ function transformLocation(doc, ret) {
     return ret;
 }
 
-function setUpdatedAt(next) {
+const setUpdatedAt = (next) => {
     this.updatedAt = dayjs().toDate();
     next();
 }

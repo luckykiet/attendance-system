@@ -347,12 +347,14 @@ export const getWorkingHoursText = ({
 export const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
   const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
   let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
-
+  let isOverNight = false;
   if (endTime.isBefore(startTime)) {
     endTime = endTime.add(1, 'day');
+    isOverNight = true;
   }
   return {
     startTime,
     endTime,
+    isOverNight
   }
 }

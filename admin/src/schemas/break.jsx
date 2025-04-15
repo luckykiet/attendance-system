@@ -46,6 +46,7 @@ export const BreakSchemaWithWorkingHours = BaseBreakSchema.extend({
             .refine((date) => dayjs(date, TIME_FORMAT, true).isValid(), { message: TIME_FORMAT }),
         end: z.string({ required_error: 'misc_required' })
             .refine((date) => dayjs(date, TIME_FORMAT, true).isValid(), { message: TIME_FORMAT }),
+        isOverNight: z.boolean(),
     }),
 }).superRefine(({ workingHours, ...brk }, ctx) => {
     const { isStartValid, isEndValid } = validateBreaksWithinWorkingHours(brk, workingHours);

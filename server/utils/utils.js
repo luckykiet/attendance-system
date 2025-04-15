@@ -3,10 +3,16 @@ const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const { CONFIG } = require("../configs")
 const HttpError = require("../constants/http-error")
-const { TIME_FORMAT } = require('../constants')
 const winston = require('winston')
 const path = require('path')
 const fs = require('fs')
+const Register = require("../models/Register");
+const Retail = require("../models/Retail");
+const WorkingAt = require("../models/WorkingAt");
+const LocalDevice = require('../models/LocalDevice');
+
+const geolib = require('geolib');
+const { DAYS_OF_WEEK, TIME_FORMAT } = require('../constants');
 
 const { createLoggerConfig } = require('./loggers')
 const dayjs = require("dayjs")
@@ -47,13 +53,127 @@ const getTranslations = async (lang) => {
 const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
     const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
     let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
-
+    let isOverNight = false;
     if (endTime.isBefore(startTime)) {
+        isOverNight = true;
         endTime = endTime.add(1, 'day');
     }
     return {
         startTime,
         endTime,
+        isOverNight,
+    }
+}
+
+const isBetweenTime = ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
+    let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
+
+    const { startTime: startMoment, endTime: endMoment } = getStartEndTime({ start, end, timeFormat, isToday });
+
+    return timeMoment.isBetween(startMoment, endMoment);
+};
+
+const checkEmployeeResources = async (req) => {
+    const { latitude, longitude, registerId, localDeviceId, shiftId } = req.body;
+
+    const register = await Register.findOne({ _id: registerId }).exec();
+
+    if (!register) {
+        throw new HttpError('srv_register_not_found', 400);
+    }
+
+    const retail = await Retail.findOne({ _id: register.retailId }).exec();
+
+    if (!retail) {
+        throw new HttpError('srv_retail_not_found', 400);
+    }
+
+    const { employee } = req
+
+    const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
+
+    if (!workingAt) {
+        throw new HttpError('srv_employee_not_employed', 400);
+    }
+    // check for overnight shifts
+    const now = dayjs();
+    const todayKey = DAYS_OF_WEEK[now.day()];
+    const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+
+    const yesterdayShifts = workingAt.shifts.get(yesterdayKey);
+    const todayShifts = workingAt.shifts.get(todayKey);
+
+    if ((!todayShifts && !yesterdayShifts) || (!todayShifts.length && !yesterdayShifts.length)) {
+        throw new HttpError('srv_employee_not_working_today', 400);
+    }
+    let isToday = true;
+    let shift = todayShifts.find(s => s._id.toString() === shiftId)
+    if (!shift) {
+        shift = yesterdayShifts.find(s => s._id.toString() === shiftId);
+        if (!shift) {
+            throw new HttpError('srv_shift_not_found', 400);
+        }
+        isToday = false;
+        // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
+        const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
+        if (now.isAfter(endTime)) {
+            throw new HttpError('srv_shift_already_ended', 400);
+        }
+    }
+
+    if (!shift || !shift.isAvailable) {
+        throw new HttpError('srv_employee_not_working_today', 400);
+    }
+
+    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday });
+    if (shift.allowedOverTime && now.isBefore(shiftStartTime.subtract(shift.allowedOverTime, 'minutes'))) {
+        throw new HttpError('srv_shift_not_started', 400);
+    } else if (shift.allowedOverTime && now.isAfter(shiftEndTime.add(shift.allowedOverTime, 'minutes'))) {
+        throw new HttpError('srv_shift_already_ended', 400);
+    }
+
+    const workingHour = register.workingHours[isToday ? todayKey : yesterdayKey];
+
+    if (!workingHour.isAvailable || !isBetweenTime({ time: now, start: workingHour.start, end: workingHour.end, isToday })) {
+        throw new HttpError('srv_workplace_closed', 400);
+    }
+
+    const localDevices = await LocalDevice.find({ registerId }).exec();
+
+    if (localDevices.length) {
+        // should have a local device id, return the list of local devices
+        if (!localDeviceId) {
+            return { localDevices }
+        }
+        if (!localDevices.find(d => d.uuid === localDeviceId)) {
+            throw new HttpError('srv_invalid_local_device', 400);
+        }
+    }
+    const localDevice = localDeviceId ? localDevices.find(d => d.uuid === localDeviceId) : null;
+
+    const locationToUse = localDevice && localDevice.location ? {
+        latitude: localDevice.location.latitude,
+        longitude: localDevice.location.longitude,
+    } : {
+        latitude: register.location.coordinates[1],
+        longitude: register.location.coordinates[0],
+    };
+
+    const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
+    const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
+
+    if (distanceInMeters > allowedRadius) {
+        throw new HttpError('srv_outside_allowed_radius', 400);
+    }
+    return {
+        register,
+        retail,
+        workingAt,
+        shift,
+        localDevice,
+        isToday,
+        distanceInMeters,
+        allowedRadius,
     }
 }
 
@@ -158,11 +278,7 @@ const utils = {
         };
     },
     isBetweenTime: ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
-        let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
-
-        const { startTime: startMoment, endTime: endMoment } = getStartEndTime({ start, end, timeFormat, isToday });
-
-        return timeMoment.isBetween(startMoment, endMoment);
+        return isBetweenTime({ time, start, end, isToday, timeFormat })
     },
     getStartEndTime: ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
         return getStartEndTime({ start, end, timeFormat, isToday })
@@ -177,6 +293,9 @@ const utils = {
 
 
         return !_.isEqual(tmpBody, payload)
+    },
+    checkEmployeeResources: (req) => {
+        return checkEmployeeResources(req)
     }
 }
 module.exports = utils

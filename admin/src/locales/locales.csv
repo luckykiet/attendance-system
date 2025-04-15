@@ -223,6 +223,8 @@ misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filling_in_the_address_fields	by filling in the address fields	bằng cách điền vào các trường địa chỉ	vyplněním polí adresy
 misc_filter	Filter	Lọc	Filtr
 misc_finish	finish	hoàn tất	ukončit
+misc_finish_pause	finish pause	kết thúc tạm dừng	ukončit přerušení
+misc_finish_pause 	finish pause	kết thúc tạm dừng	ukončit přerušení
 misc_finished	Finished	Xong	Dokončeno
 misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
@@ -395,6 +397,9 @@ misc_partner	partner	đối tác	partner
 misc_partner_of	partner of	đối tác của	partnerem od
 misc_partners	partners	đối tác	partneři
 misc_password	Password	Mật khẩu	Heslo
+misc_pause_not_found	pause not found	không tìm thấy tạm dừng ca	nenalezeno přerušení směny
+misc_pause_shift	pause shift	tạm dừng ca làm việc	pozastavit směnu
+misc_pauses	Pauses	Thời tạm ngưng	Čas přerušení
 misc_payment	Payment	Thanh toán	Platba
 misc_payment_method	payment method	phương thức thanh toán	platební metoda
 misc_payment_terminal	payment terminal	máy trả thẻ	platební terminál
@@ -442,6 +447,8 @@ misc_real_installed	real installed	số lượng đã lắp thực tế	reálný
 misc_real_returned	real returned	số lượng trả lại thực tế	reálný počet vrácených
 misc_real_submitted	real submitted	số lượng đã nhận thực tế	reálný počet zadaných
 misc_reason	Reason	Lý do	Důvod
+misc_reason_for_early_check_out	reason for early check out	lý do check out sớm	důvod pro brzké odhlášení
+misc_reason_for_pause	reason for pause	lý do tạm dừng	důvod přerušení
 misc_receiver	receiver	người nhận	příjemce
 misc_recommended	recommended	khuyến khích	doporučeno
 misc_reference	reference	kết nối	odkaz
@@ -471,6 +478,7 @@ misc_role	Role	Chức vụ	Role
 misc_row	row	hàng	řádek
 misc_rows_per_page	Rows per page	Hàng trên trang	Řádků na stránku
 misc_running_break	Running break	Thời gian nghỉ hiện tại	Probíhající přestávka
+misc_running_pause	Running pause	Thời gian tạm ngừng	Probíhající přerušení
 misc_same_store	same store	cùng một cửa hàng	stejný obchod
 misc_save	Save	Lưu	Uložit
 misc_save_and_back	Save and back	Lưu và trở lại	Uložit a zpět
@@ -494,6 +502,7 @@ misc_settings	Settings	Cài đặt	Nastavení
 misc_setup_urls	set up URLS	cài đặt URL	nastavit URL
 misc_shift	Shift	Ca	Směna
 misc_shift_details	Shift details	Chi tiết ca làm việc	Podrobnosti o směně
+misc_shift_pause_successfully	shift pause successfully	tạm dừng ca thành công	přerušení směny úspěšné
 misc_shift_time	Shift time	Giờ làm việc	Pracovní doba
 misc_shortcut	shortcut	viết tắt	zkratka
 misc_show	show	hiển thị	zobrazit
@@ -689,6 +698,7 @@ srv_biometric_disabled	Biometric permissions disabled	Quyền truy cập bảo m
 srv_biometric_permissions_disabled	Biometric permissions disabled	Quyền truy cập bảo mật trắc học bị vô hiệu	Oprávnění použití biometrie je zakázáno
 srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	Biometrická autentizace je povinná
 srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
+srv_break_already_finished	Break already finished	Thời gian nghỉ đã kết thúc	Přestávka již skončila
 srv_break_finished_successfully	break finished successfully	kết thúc nghỉ thành công	přestávka úspěšně ukončena
 srv_break_not_found	Break not found	Không tìm thấy thời gian nghỉ	žádná přestávka nenalezena
 srv_break_out_of_working_hours	break out of working hours	ngoài giờ làm việc	přestávka mimo pracovní dobu
@@ -893,6 +903,10 @@ srv_password_reset_failed	Password reset failed	Đặt lại mật khẩu không
 srv_password_reset_send_to_email	Password reset sent to email	Đặt lại mật khẩu gửi vào email	Obnovení hesla odesláno na email
 srv_passwords_changed	passwords changed	mật khẩu đã đổi	heslo změněno
 srv_passwords_not_match	Passwords do not match	Mật khẩu không khớp	Hesla se neshodují
+srv_pause_already_finished	pause already finished	tạm dừng đã kết thúc	pozastavení již skončilo
+srv_pause_finished_successfully	Pause finished successfully	kết thúc tạm dừng thành công	přerušení úspěšně ukončeno
+srv_pause_not_found	shift pause not found	không tìm thấy tạm dừng ca	nenalezeno přerušení směny
+srv_pause_started_successfully	Pause started successfully	bắt đầu tạm dừng thành công	přerušení úspěšně zahájeno
 srv_pending_breaks	You have pending breaks	bạn có đơn nghỉ đang chạy	máte probíhající přestávky
 srv_permission_denied	Permission denied	Từ chối quyền truy cập	Odmítnuto oprávnění
 srv_permission_required	Permission required	Quyền truy cập cần thiết	Požadováno oprávnění
@@ -925,6 +939,7 @@ srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chy
 srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy
 srv_signed_out	Signed out	Đã đăng xuất	Odhlášeno
 srv_some_break_is_pending	some break is pending	có đơn nghỉ đang chạy	nějaká přestávka je v běhu
+srv_some_pause_is_pending	some pause is pending	có một số ca tạm dừng đang hoạt động	nějaké přerušení již probíhá
 srv_something_wrong	Oops, something is wrong	Oops, trang bị lỗi	Oops, výskytla se chyba
 srv_start_can_not_older_than_end	start cannot be after end date	bắt đầu không thể sau ngày kết thúc	zahájení nemůže být pozdější než datum ukončení
 srv_start_day_can_not_after_end_day	Start day cannot be after end day	Ngày bắt đầu không thể sau ngày kết thúc	Den začátku nemůže být po dni ukončení

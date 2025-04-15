@@ -1,16 +1,10 @@
 const HttpError = require("../../constants/http-error");
-const Register = require("../../models/Register");
-const Retail = require("../../models/Retail");
-const WorkingAt = require("../../models/WorkingAt");
-const LocalDevice = require('../../models/LocalDevice');
-
-const geolib = require('geolib');
 
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const isBetween = require('dayjs/plugin/isBetween');
 
-const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
+const { DAYS_OF_WEEK } = require('../../constants');
 const utils = require('../../utils');
 const Attendance = require("../../models/Attendance");
 const mongoose = require("mongoose");
@@ -20,7 +14,8 @@ dayjs.extend(isBetween);
 
 const applySpecificBreak = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, localDeviceId, shiftId, attendanceId, _id, breakKey } = req.body;
+        const { latitude, longitude, registerId, shiftId, attendanceId, breakKey } = req.body;
+        const _id = req.body._id;
         const tokenPayload = req.tokenPayload;
 
         if (!longitude || !latitude || !registerId || !attendanceId || !shiftId || !breakKey || !tokenPayload) {
@@ -31,82 +26,17 @@ const applySpecificBreak = async (req, res, next) => {
             throw new HttpError('srv_invalid_request', 400);
         }
 
-        let register = await Register.findOne({ _id: registerId }).exec();
+        const resources = await utils.checkEmployeeResources(req);
 
-        if (!register) {
-            throw new HttpError('srv_register_not_found', 400);
+        if (!resources) {
+            throw new HttpError('srv_invalid_request', 400);
         }
 
-        const retail = await Retail.findOne({ _id: register.retailId }).exec();
-
-        if (!retail) {
-            throw new HttpError('srv_retail_not_found', 400);
+        if (resources.localDevices) {
+            return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: resources.localDevices.map(d => d.uuid) });
         }
 
-        const { employee } = req
-
-        const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
-
-        if (!workingAt) {
-            throw new HttpError('srv_employee_not_employed', 400);
-        }
-        // check for overnight shifts
-        const now = dayjs();
-        const todayKey = DAYS_OF_WEEK[now.day()];
-        const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-
-        const yesterdayShifts = workingAt.shifts.get(yesterdayKey);
-        const todayShifts = workingAt.shifts.get(todayKey);
-
-        if ((!todayShifts && !yesterdayShifts) || (!todayShifts.length && !yesterdayShifts.length)) {
-            throw new HttpError('srv_employee_not_working_today', 400);
-        }
-        let isToday = true;
-        let shift = todayShifts.find(s => s._id.toString() === shiftId)
-        if (!shift) {
-            shift = yesterdayShifts.find(s => s._id.toString() === shiftId);
-            if (!shift) {
-                throw new HttpError('srv_shift_not_found', 400);
-            }
-            isToday = false;
-            // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
-            const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
-            if (now.isAfter(endTime)) {
-                throw new HttpError('srv_shift_already_ended', 400);
-            }
-        }
-
-        if (!shift || !shift.isAvailable) {
-            throw new HttpError('srv_employee_not_working_today', 400);
-        }
-
-        const localDevices = await LocalDevice.find({ registerId }).exec();
-
-        if (localDevices.length) {
-            // should have a local device id, return the list of local devices
-            if (!localDeviceId) {
-                return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: localDevices.map(d => d.uuid) });
-            }
-            if (!localDevices.find(d => d.uuid === localDeviceId)) {
-                throw new HttpError('srv_invalid_local_device', 400);
-            }
-        }
-        const localDevice = localDeviceId ? localDevices.find(d => d.uuid === localDeviceId) : null;
-
-        const locationToUse = localDevice && localDevice.location ? {
-            latitude: localDevice.location.latitude,
-            longitude: localDevice.location.longitude,
-        } : {
-            latitude: register.location.coordinates[1],
-            longitude: register.location.coordinates[0],
-        };
-
-        const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
-        const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
-
-        if (distanceInMeters > allowedRadius) {
-            throw new HttpError('srv_outside_allowed_radius', 400);
-        }
+        const { workingAt, shift, register, isToday, distanceInMeters } = resources;
 
         const attendanceQuery = {
             _id: attendanceId,
@@ -124,6 +54,10 @@ const applySpecificBreak = async (req, res, next) => {
             throw new HttpError('srv_already_checked_out', 400);
         }
 
+        const now = dayjs();
+        const todayKey = DAYS_OF_WEEK[now.day()];
+        const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
+
         const breakTemplate = register.specificBreaks[isToday ? todayKey : yesterdayKey][breakKey];
 
         if (!breakTemplate || !breakTemplate.isAvailable) {
@@ -136,14 +70,36 @@ const applySpecificBreak = async (req, res, next) => {
             throw new HttpError('srv_outside_time', 400);
         }
 
-        const attendancePendingBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime && b._id.toString() !== _id);
+        let attendanceBreak = null;
+
+        if (_id) {
+            attendanceBreak = attendance.breaks.find((b) => b._id.equals(_id));
+            if (!attendanceBreak) {
+                throw new HttpError('srv_break_not_found', 400);
+            }
+
+            if (attendanceBreak.checkOutTime) {
+                throw new HttpError('srv_break_already_finished', 400);
+            }
+        }
+
+        const foundPendingPause = attendance.pauses.find((p) => p.checkInTime && !p.checkOutTime);
+
+        if (foundPendingPause) {
+            throw new HttpError('srv_some_pause_is_pending', 400);
+        }
+
+        const attendancePendingBreak = attendance.breaks.find((b) => {
+            if (attendanceBreak) {
+                return !b._id.equals(_id) && b.checkInTime && !b.checkOutTime;
+            }
+            return b.checkInTime && !b.checkOutTime;
+        });
 
         if (attendancePendingBreak) {
             throw new HttpError('srv_some_break_is_pending', 400);
         }
 
-        const attendanceBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime && b._id.toString() === _id);
-        
         if (!attendanceBreak) {
             const newBreak = {
                 _id: new mongoose.Types.ObjectId(),
@@ -178,7 +134,12 @@ const applySpecificBreak = async (req, res, next) => {
             latitude,
             longitude,
             distance: distanceInMeters,
-        };
+        }; 
+
+        const breakIndex = attendance.breaks.findIndex((b) => b._id.equals(attendanceBreak._id));
+        if (breakIndex !== -1) {
+            attendance.breaks[breakIndex] = { ...attendance.breaks[breakIndex].toObject(), ...attendanceBreak };
+        }
         await attendance.save();
         return res.status(200).json({ success: true, msg: 'srv_break_finished_successfully' });
     } catch (error) {

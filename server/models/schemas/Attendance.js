@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const { setUpdatedAt } = require('./utils');
 const CheckSchema = require('./Check');
 const AttendanceBreakSchema = require('./AttendanceBreak');
+const AttendancePauseSchema = require('./AttendancePause');
 
 const AttendanceSchema = new Schema(
   {
@@ -13,7 +14,8 @@ const AttendanceSchema = new Schema(
     checkInLocation: { type: CheckSchema, required: true },
     checkOutTime: { type: Date },
     checkOutLocation: { type: CheckSchema },
-
+    reason: { type: String, default: '' },
+    pauses: { type: [AttendancePauseSchema], default: [] },
     breaks: { type: [AttendanceBreakSchema], default: [] },
 
     shiftId: { type: Schema.Types.ObjectId, required: true },
@@ -28,9 +30,8 @@ const AttendanceSchema = new Schema(
 
 AttendanceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 // Unique on the combination of dailyAttendanceId, employeeId, and shiftId
-AttendanceSchema.index({ dailyAttendanceId: 1, employeeId: 1, shiftId: 1 }, { unique: true });
-AttendanceSchema.index({ registerId: 1 });
-AttendanceSchema.index({ employeeId: 1 });
+AttendanceSchema.index({ dailyAttendanceId: 1, workingAtId: 1, shiftId: 1 }, { unique: true });
+AttendanceSchema.index({ workingAtId: 1 });
 AttendanceSchema.index({ checkInTime: 1 });
 
 

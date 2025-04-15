@@ -22,7 +22,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { Attendance, DailyAttendance } from '@/types/attendance';
 import { MyWorkplace } from '@/types/workplaces';
 import { MyWorkingAt } from '@/types/working-at';
-import { calculateHoursFromMinutes, getStartEndTime } from '@/utils';
+import { calculateHoursFromMinutes, getAttendanceStatus, getStartEndTime } from '@/utils';
 import { TIME_FORMAT } from '@/constants/Days';
 import { PatternFormat } from 'react-number-format';
 import { Colors } from '@/constants/Colors';
@@ -142,6 +142,18 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
 
                         const workingHour = item.dailyAttendance?.workingHour ? getStartEndTime({ start: item.dailyAttendance.workingHour.start, end: item.dailyAttendance.workingHour.end }) : null;
 
+                        const status = getAttendanceStatus({
+                            checkInTime: item.checkInTime,
+                            checkOutTime: item.checkOutTime,
+                            shift: {
+                                start: item.dailyAttendance?.workingHour.start,
+                                end: item.dailyAttendance?.workingHour.end
+                            },
+                            t,
+                            noCapT: noCap,
+                            baseDay: dayjs(item.dailyAttendance?.date.toString(), 'YYYYMMDD'),
+                        })
+
                         return <View style={styles.attendanceItem}>
                             <ThemedText style={styles.attendanceText}>
                                 {`${t('misc_date')}: ${date ? date.format('DD/MM/YYYY') : '-'}`}
@@ -149,81 +161,101 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                             <ThemedText style={styles.attendanceText}>
                                 {workingHour ? `${t('misc_working_hour')}: ${workingHour.startTime.format(TIME_FORMAT) ?? '-'} - ${workingHour.endTime.format(TIME_FORMAT)}${workingHour.isOverNight ? ` (${t('misc_overnight')})` : ''}` : '-'}
                             </ThemedText>
-                            <ThemedText style={styles.attendanceText}>
+
+                            <ThemedText style={[styles.attendanceText, { color: status.checkInTime?.isSuccess ? Colors.success : Colors.error }]}>
                                 {`${t('misc_check_in')}: ${item.checkInTime ? dayjs(item.checkInTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
                             </ThemedText>
-                            <ThemedText style={styles.attendanceText}>
+
+                            {!_.isEmpty(status.checkInTime) && <ThemedText style={[styles.attendanceText, { color: status.checkInTime?.isSuccess ? Colors.success : Colors.error }]}>
+                                {status.checkInTime.message}
+                            </ThemedText>}
+
+
+                            <ThemedText style={[styles.attendanceText, { color: status.checkOutTime?.isSuccess ? Colors.success : Colors.error }]}>
                                 {`${t('misc_check_out')}: ${item.checkOutTime ? dayjs(item.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
                             </ThemedText>
-                            {item.register && (
-                                <>
-                                    <ThemedText style={styles.registerText}>
-                                        {`${t('misc_workplace')}: ${item.register.name}`}
-                                    </ThemedText>
-                                    <ThemedText style={styles.registerText}>
-                                        {`${item.register.address.street}`}
-                                    </ThemedText>
-                                    <ThemedText style={styles.registerText}>
-                                        <PatternFormat
-                                            value={item.register.address.zip}
-                                            displayType="text"
-                                            format="### ##"
-                                            renderText={(formattedValue) => (
-                                                <ThemedText style={styles.registerText}>{formattedValue}</ThemedText>
-                                            )}
-                                        /> {item.register.address.city}
-                                    </ThemedText>
-                                </>
-                            )}
-                            {item.breaks && item.breaks.length > 0 && (
-                                <>
-                                    <View style={styles.breakDivider} />
-                                    <ThemedText style={styles.attendanceBreakTitle}>
-                                        {`${t('misc_breaks')}:`}
-                                    </ThemedText>
 
-                                    {item.breaks.map((breakItem) => {
-                                        const realDuration = breakItem.checkInTime && breakItem.checkOutTime
-                                            ? dayjs(breakItem.checkOutTime).diff(dayjs(breakItem.checkInTime), 'minute')
-                                            : 0;
+                            {!_.isEmpty(status.checkOutTime) && <ThemedText style={[styles.attendanceText, { color: status.checkOutTime?.isSuccess ? Colors.success : Colors.error }]}>
+                                {status.checkOutTime.message}
+                            </ThemedText>}
 
-                                        const realDurationCalculated = realDuration > 0 ? calculateHoursFromMinutes(realDuration) : { hours: 0, minutes: 0 };
+                            <ThemedText style={[styles.attendanceText, { color: status.checkOutTime?.isSuccess ? Colors.success : Colors.error }]}>
+                                {`${t('misc_reason')}: ${item.reason || '-'}`}
+                            </ThemedText>
 
-                                        const isExceededTime = realDuration && breakItem.breakHours.duration && realDuration > breakItem.breakHours.duration;
+                            {
+                                item.register && (
+                                    <>
+                                        <ThemedText style={styles.registerText}>
+                                            {`${t('misc_workplace')}: ${item.register.name}`}
+                                        </ThemedText>
+                                        <ThemedText style={styles.registerText}>
+                                            {`${item.register.address.street}`}
+                                        </ThemedText>
+                                        <ThemedText style={styles.registerText}>
+                                            <PatternFormat
+                                                value={item.register.address.zip}
+                                                displayType="text"
+                                                format="### ##"
+                                                renderText={(formattedValue) => (
+                                                    <ThemedText style={styles.registerText}>{formattedValue}</ThemedText>
+                                                )}
+                                            /> {item.register.address.city}
+                                        </ThemedText>
+                                    </>
+                                )
+                            }
+                            {
+                                item.breaks && item.breaks.length > 0 && (
+                                    <>
+                                        <View style={styles.breakDivider} />
+                                        <ThemedText style={styles.attendanceBreakTitle}>
+                                            {`${t('misc_breaks')}:`}
+                                        </ThemedText>
 
-                                        return <Fragment key={breakItem._id}>
-                                            <ThemedText key={breakItem._id} style={styles.attendanceBreakNameText}>
-                                                {`${t('misc_break')}: ${t(breakItem.name)}`}
-                                            </ThemedText>
-                                            <ThemedText style={styles.attendanceText}>
-                                                {`${t('misc_check_in')}: ${breakItem.checkInTime ? dayjs(breakItem.checkInTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
-                                            </ThemedText>
-                                            <ThemedText style={styles.attendanceText}>
-                                                {`${t('misc_check_out')}: ${breakItem.checkOutTime ? dayjs(breakItem.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
-                                            </ThemedText>
-                                            {_.isNumber(realDuration) && realDuration > 0 && (() => {
-                                                const { hours, minutes } = realDurationCalculated;
+                                        {item.breaks.map((breakItem) => {
+                                            const realDuration = breakItem.checkInTime && breakItem.checkOutTime
+                                                ? dayjs(breakItem.checkOutTime).diff(dayjs(breakItem.checkInTime), 'minute')
+                                                : 0;
 
-                                                const durationStr =
-                                                    hours || minutes
-                                                        ? [
-                                                            hours > 0 ? `${hours} ${noCap('misc_hour_short')}` : '',
-                                                            minutes > 0 ? `${minutes} ${noCap('misc_min_short')}` : ''
-                                                        ].filter(Boolean).join(' ')
-                                                        : `0 ${noCap('misc_min_short')}`;
+                                            const realDurationCalculated = realDuration > 0 ? calculateHoursFromMinutes(realDuration) : { hours: 0, minutes: 0 };
 
-                                                const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+                                            const isExceededTime = realDuration && breakItem.breakHours.duration && realDuration > breakItem.breakHours.duration;
 
-                                                return (
-                                                    <ThemedText style={[styles.attendanceText, isExceededTime ? { color: Colors.error } : null]}>
-                                                        {`${t('misc_duration')}: ${durationStr}${exceededText}`}
-                                                    </ThemedText>
-                                                );
-                                            })()}
-                                        </Fragment>
-                                    })}
-                                </>
-                            )}
+                                            return <Fragment key={breakItem._id}>
+                                                <ThemedText key={breakItem._id} style={styles.attendanceBreakNameText}>
+                                                    {`${t('misc_break')}: ${t(breakItem.name)}`}
+                                                </ThemedText>
+                                                <ThemedText style={styles.attendanceText}>
+                                                    {`${t('misc_check_in')}: ${breakItem.checkInTime ? dayjs(breakItem.checkInTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
+                                                </ThemedText>
+                                                <ThemedText style={styles.attendanceText}>
+                                                    {`${t('misc_check_out')}: ${breakItem.checkOutTime ? dayjs(breakItem.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
+                                                </ThemedText>
+                                                {_.isNumber(realDuration) && realDuration > 0 && (() => {
+                                                    const { hours, minutes } = realDurationCalculated;
+
+                                                    const durationStr =
+                                                        hours || minutes
+                                                            ? [
+                                                                hours > 0 ? `${hours} ${noCap('misc_hour_short')}` : '',
+                                                                minutes > 0 ? `${minutes} ${noCap('misc_min_short')}` : ''
+                                                            ].filter(Boolean).join(' ')
+                                                            : `0 ${noCap('misc_min_short')}`;
+
+                                                    const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+
+                                                    return (
+                                                        <ThemedText style={[styles.attendanceText, isExceededTime ? { color: Colors.error } : null]}>
+                                                            {`${t('misc_duration')}: ${durationStr}${exceededText}`}
+                                                        </ThemedText>
+                                                    );
+                                                })()}
+                                            </Fragment>
+                                        })}
+                                    </>
+                                )
+                            }
                         </View>
                     }}
                     keyExtractor={(item) => item._id}
@@ -240,22 +272,24 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
 
             {isFetchingNextPage && <ThemedActivityIndicator size="small" />}
 
-            {showScrollArrow && (
-                <TouchableOpacity
-                    style={[
-                        styles.arrowContainer,
-                        { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' }
-                    ]}
-                    onPress={scrollToBottom}
-                >
-                    <MaterialIcons
-                        name="keyboard-arrow-down"
-                        size={24}
-                        color={colorScheme === 'light' ? 'black' : 'white'}
-                    />
-                </TouchableOpacity>
-            )}
-        </ThemedView>
+            {
+                showScrollArrow && (
+                    <TouchableOpacity
+                        style={[
+                            styles.arrowContainer,
+                            { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' }
+                        ]}
+                        onPress={scrollToBottom}
+                    >
+                        <MaterialIcons
+                            name="keyboard-arrow-down"
+                            size={24}
+                            color={colorScheme === 'light' ? 'black' : 'white'}
+                        />
+                    </TouchableOpacity>
+                )
+            }
+        </ThemedView >
     );
 };
 

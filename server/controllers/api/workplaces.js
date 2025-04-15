@@ -181,6 +181,7 @@ const getTodayWorkplaces = async (req, res, next) => {
             checkInTime: 1,
             checkOutTime: 1,
             breaks: 1,
+            pauses: 1,
             shiftId: 1,
         }).exec();
 
