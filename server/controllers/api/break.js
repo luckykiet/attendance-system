@@ -141,13 +141,13 @@ const applyBreak = async (req, res, next) => {
             }
         }
 
-        const attendanceBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime);
+        const attendancePendingBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime && b._id.toString() !== _id);
 
-        if (attendanceBreak && _id && !attendanceBreak._id.equals(_id)) {
+        if (attendancePendingBreak) {
             throw new HttpError('srv_some_break_is_pending', 400);
         }
 
-
+        const attendanceBreak = attendance.breaks.find((b) => b.checkInTime && !b.checkOutTime && b._id.toString() === _id);
 
         const newBreak = {
             _id: _id ? _id : new mongoose.Types.ObjectId(),

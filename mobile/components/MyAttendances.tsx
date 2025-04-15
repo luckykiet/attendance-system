@@ -193,7 +193,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
 
                                         return <Fragment key={breakItem._id}>
                                             <ThemedText key={breakItem._id} style={styles.attendanceBreakNameText}>
-                                                {`${t('misc_break')}: ${breakItem.name}`}
+                                                {`${t('misc_break')}: ${t(breakItem.name)}`}
                                             </ThemedText>
                                             <ThemedText style={styles.attendanceText}>
                                                 {`${t('misc_check_in')}: ${breakItem.checkInTime ? dayjs(breakItem.checkInTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}

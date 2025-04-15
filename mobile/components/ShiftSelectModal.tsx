@@ -467,9 +467,29 @@ const ShiftSelectModal = () => {
                                                     <ThemedText style={styles.breakTimeText}>
                                                         {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                     </ThemedText>}
-                                                {realDuration && realDuration > 0 && <ThemedText style={[styles.breakTimeText, isExceededTime ? { color: Colors.error } : {}]}>
-                                                    {t('misc_duration')}: {realDurationCalculated.hours > 0 ? `${realDurationCalculated.hours} ${noCapT('misc_hour_short')}` : ''}{realDurationCalculated.minutes > 0 ? ` ${realDurationCalculated.minutes} ${noCapT('misc_min_short')}` : ''} {isExceededTime ? `(${t('misc_exceeded_time')})` : ''}
-                                                </ThemedText>}
+                                                {_.isNumber(realDuration) && realDuration > 0 && (() => {
+                                                    const { hours, minutes } = realDurationCalculated;
+
+                                                    const durationStr = (hours || minutes)
+                                                        ? [
+                                                            hours > 0 ? `${hours} ${noCapT('misc_hour_short')}` : '',
+                                                            minutes > 0 ? `${minutes} ${noCapT('misc_min_short')}` : ''
+                                                        ].filter(Boolean).join(' ')
+                                                        : `0 ${noCapT('misc_min_short')}`;
+
+                                                    const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+
+                                                    return (
+                                                        <ThemedText
+                                                            style={[
+                                                                styles.breakTimeText,
+                                                                isExceededTime ? { color: Colors.error } : null
+                                                            ]}
+                                                        >
+                                                            {`${t('misc_duration')}: ${durationStr}${exceededText}`}
+                                                        </ThemedText>
+                                                    );
+                                                })()}
                                             </View>
                                             <TouchableOpacity
                                                 style={[

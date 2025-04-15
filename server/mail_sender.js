@@ -3,7 +3,7 @@ const DELAY_TIME = 5000
 const { minify } = require('html-minifier-terser')
 const { google } = require('googleapis')
 const { CONFIG } = require('./configs')
-
+const urlJoin = require('proper-url-join');
 const OAuth2 = google.auth.OAuth2
 
 const template = (title, body) => {
@@ -119,8 +119,8 @@ const mailResetPasswordBody = (title, username, link) => {
 };
 
 const mailQrCodeBody = ({ title, employee, retail, tokenId }) => {
-  const appLink = `${CONFIG.host}/redirect?tokenId=${tokenId}`;
-  const codeImageSource = `${CONFIG.host}/public/qrcode?text=${encodeURIComponent(appLink)}`;
+  const appLink = urlJoin(CONFIG.host, 'redirect') + `?tokenId=${tokenId}`;
+  const codeImageSource = urlJoin(CONFIG.host, 'public', 'qrcode') + `?text=${encodeURIComponent(appLink)}`;
   const content = `
   <div class="content">
         <h1>Hello ${employee.name},</h1>

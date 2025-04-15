@@ -8,7 +8,7 @@ const { SPECIFIC_BREAKS } = require('./specific-breaks');
 // Modifying environment variables
 const getConfig = () => {
     const hasDotAtTheEnd = (str) => str[str.length - 1] === '.';
-    const constructUrl = ({ protocol, subdomain, domain, port, isWww = false}) => `${protocol}${isWww ? 'www.' : ''}${subdomain ? hasDotAtTheEnd(subdomain) ? subdomain : `${subdomain}.` : ''}${domain}${port ? `:${port}` : ''}`;
+    const constructUrl = ({ protocol, subdomain, domain, port, isWww = false }) => `${protocol}${isWww ? 'www.' : ''}${subdomain ? hasDotAtTheEnd(subdomain) ? subdomain : `${subdomain}.` : ''}${domain}${port ? `:${port}` : ''}`;
     const config = CONFIG;
     config.isDev = process.env.NODE_ENV === 'development';
     config.isTest = process.env.NODE_ENV === 'test';
@@ -28,9 +28,9 @@ const getConfig = () => {
     config.appName = config.appName || 'ATTENDANCE SYSTEM';
     config.companyName = config.companyName || domain.toUpperCase();
     config.www = constructUrl({ protocol, subdomain, domain, port, isWww: true });
-    
+    config.host = config.proxyUrl ? config.proxyUrl : constructUrl({ protocol, subdomain, domain, port });
     if (config.isProd) {
-        config.url = constructUrl({ protocol, subdomain, domain, port });
+        config.url = config.proxyUrl ? config.proxyUrl : constructUrl({ protocol, subdomain, domain, port });
     } else {
         config.url = constructUrl({ protocol, subdomain: 'admin', domain, port: 5173 });
     }
