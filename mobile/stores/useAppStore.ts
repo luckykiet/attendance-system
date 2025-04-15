@@ -5,7 +5,7 @@ import * as Crypto from 'expo-crypto';
 import { RegistrationForm } from '@/types/registration';
 import { RegistrationIntentData } from '@/types/intents';
 import { Shift } from '@/types/shift';
-import { TodayWorkplace } from '@/types/workplaces';
+import { GetMyCompaniesResult, TodayWorkplace } from '@/types/workplaces';
 
 const UNIQUE_APP_ID_KEY = 'unique_app_id';
 const URLS_KEY = 'urls';
@@ -22,6 +22,8 @@ type AppState = {
         shift: Shift,
         workplace: TodayWorkplace
     } | null;
+    myWorkplaces: Record<string, GetMyCompaniesResult> | null;
+    setMyWorkplaces: (myWorkplaces: Record<string, GetMyCompaniesResult> | null) => void;
     setSelectedShift: (selectedShift: {
         shift: Shift,
         workplace: TodayWorkplace
@@ -47,7 +49,8 @@ const initStates = {
     isGettingLocation: false,
     registration: null as RegistrationForm | null,
     localDevices: [],
-    selectedShift: null
+    selectedShift: null,
+    myWorkplaces: null
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -112,4 +115,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
 
     refreshLocation: () => set({ location: null }),
+    
+    setMyWorkplaces: (myWorkplaces) => set({
+        myWorkplaces: myWorkplaces
+            ? myWorkplaces
+            : null
+    })
 }));

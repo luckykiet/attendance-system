@@ -40,7 +40,7 @@ const isShiftsEmpty = (shifts: Record<DayKey, Shift[]>): boolean => {
 
 const MyCompanies = () => {
   const { t } = useTranslation();
-  const { appId, urls, isGettingLocation, location } = useAppStore();
+  const { appId, urls, isGettingLocation, location, setMyWorkplaces, myWorkplaces } = useAppStore();
   const { getMyCompanies } = useCompaniesApi();
   const { cancelDevicePairing } = useEmployeeApi();
   const colorScheme = useColorScheme();
@@ -53,41 +53,24 @@ const MyCompanies = () => {
     queries: urls.map((url) => ({
       queryKey: ['myCompanies', appId, url],
       queryFn: () => getMyCompanies(url),
-      enabled: !!appId && urls.length > 0,
+      enabled: !!appId && urls.length > 0 && !!myWorkplaces,
     })),
     combine: (results) => {
-      const combinedData: CombinedRetail[] = results
-        .map((result) => result.data)
-        .filter((data): data is GetMyCompaniesResult => !!data)
-        .flatMap((data) => {
-          const { registers, workingAts, employees, domain, retails } = data;
-
-          if (!retails) return [];
-
-          return retails.map((retail) => {
-            const combinedRegisters: CombinedRegister[] = registers
-              .filter((reg) => reg.retailId === retail._id)
-              .map((register) => ({
-                ...register,
-                workingAt: workingAts.find((wa) => wa.registerId === register._id),
-                employee: employees.find((emp) => emp.retailId === retail._id),
-              }));
-
-            return {
-              ...retail,
-              registers: combinedRegisters,
-              domain,
-            };
-          });
-        });
+      const dataByDomain: Record<string, GetMyCompaniesResult> = {};
+      results.forEach((result, i) => {
+        const url = urls[i];
+        if (result.data) {
+          dataByDomain[url] = result.data;
+        }
+      });
 
       return {
         isLoading: results.some((r) => r.isLoading),
         isFetching: results.some((r) => r.isFetching),
-        data: combinedData,
+        data: dataByDomain,
         refetch: () => results.forEach((r) => r.refetch()),
       };
-    }
+    },
   });
 
   const cancelPairingMutation = useMutation<string, Error, CancelDevicePairingMutation>({
@@ -149,6 +132,32 @@ const MyCompanies = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const allSuccess = !queryResults.isFetching && !queryResults.isLoading;
+    if (allSuccess && queryResults.data) {
+      setMyWorkplaces(queryResults.data);
+    }
+  }, [queryResults.data, queryResults.isFetching, queryResults.isLoading]);
+
+  const combinedRetails: CombinedRetail[] = Object.entries(myWorkplaces || {}).flatMap(([domain, data]) => {
+    const { registers, workingAts, employees, retails } = data;
+    return retails.map(retail => {
+      const enrichedRegisters: CombinedRegister[] = registers
+        .filter(reg => reg.retailId === retail._id)
+        .map(register => ({
+          ...register,
+          workingAt: workingAts.find(wa => wa.registerId === register._id),
+          employee: employees.find(emp => emp.retailId === retail._id),
+        }));
+
+      return {
+        ...retail,
+        domain,
+        registers: enrichedRegisters,
+      };
+    });
+  });
+
   return (
     <ThemedView style={styles.nearbyContainer}>
       <ThemedView style={styles.titleContainer}>
@@ -158,15 +167,15 @@ const MyCompanies = () => {
         </TouchableOpacity>
       </ThemedView>
       {(queryResults.isLoading || queryResults.isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
-      {queryResults.data.length > 0 ? (
+      {myWorkplaces && Object.keys(myWorkplaces).length > 0 ? (
         <>
           <FlatList
             ref={scrollViewRef}
             style={styles.scrollView}
-            data={queryResults.data}
+            data={combinedRetails}
             keyExtractor={(retail) => retail._id}
             renderItem={({ item, index }: { item: CombinedRetail, index: number }) => {
-              const isLastItem = index === queryResults.data.length - 1;
+              const isLastItem = index === combinedRetails.length - 1;
               return (
                 <View key={item._id} style={styles.retailContainer}>
                   <View style={styles.retailHeader}>
@@ -287,7 +296,7 @@ const MyCompanies = () => {
                                   },
                                 ]}
                               >
-                                <ThemedText style={[styles.shiftDayLabel,  isToday && styles.today]}>
+                                <ThemedText style={[styles.shiftDayLabel, isToday && styles.today]}>
                                   {daysOfWeeksTranslations[dayKey]?.name ? t(daysOfWeeksTranslations[dayKey].name) : dayKey}
                                 </ThemedText>
                                 {sortedShifts.map((shift, index) => {
@@ -430,7 +439,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 6,
     borderWidth: 1,
-  }, 
+  },
   shiftDayLabel: {
     fontWeight: 'bold',
     marginBottom: 4,

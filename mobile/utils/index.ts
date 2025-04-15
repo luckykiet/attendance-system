@@ -370,13 +370,14 @@ export const checkBiometric = async (t: (key: string) => string): Promise<Biomet
     };
 };
 
-export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_FORMAT }: { start: string, end: string, isToday?: boolean, timeFormat?: string }): { startTime: Dayjs, endTime: Dayjs } => {
+export const getStartEndTime = ({ start, end, isToday = true, timeFormat = TIME_FORMAT }: { start: string, end: string, isToday?: boolean, timeFormat?: string }): { startTime: Dayjs, endTime: Dayjs, isOverNight: boolean } => {
     const startTime = isToday ? dayjs(start, timeFormat) : dayjs(start, timeFormat).subtract(1, 'day');
     let endTime = isToday ? dayjs(end, timeFormat) : dayjs(end, timeFormat).subtract(1, 'day');
-
+    let isOverNight = false;
     if (endTime.isBefore(startTime)) {
+        isOverNight = true;
         endTime = endTime.add(1, 'day');
     }
 
-    return { startTime, endTime };
+    return { startTime, endTime, isOverNight };
 }

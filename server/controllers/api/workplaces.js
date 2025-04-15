@@ -12,12 +12,21 @@ const geolib = require('geolib');
 
 dayjs.extend(customParseFormat);
 
-const getAvailableResourcesByDeviceId = async ({ deviceId, employeesSelect = {}, workingAtsSelect = {}, registersSelect = {}, retailsSelect = {} }) => {
+const getAvailableResourcesByDeviceId = async ({ deviceId, retailId, employeesSelect = {}, workingAtsSelect = {}, registersSelect = {}, retailsSelect = {} }) => {
     if (!deviceId) {
         return null;
     }
 
-    const employees = await Employee.find({ deviceId, isAvailable: true })
+    const employeeQuery = {
+        deviceId,
+        isAvailable: true
+    };
+
+    if (retailId) {
+        employeeQuery.retailId = retailId;
+    }
+
+    const employees = await Employee.find(employeeQuery)
         .select({
             retailId: 1,
             ...employeesSelect
@@ -55,8 +64,14 @@ const getAvailableResourcesByDeviceId = async ({ deviceId, employeesSelect = {},
     });
 
     const registerIds = workingAts.map(w => w.registerId);
-
-    const registers = await Register.find({ _id: { $in: registerIds }, isAvailable: true })
+    const registerQuery = {
+        _id: { $in: registerIds },
+        isAvailable: true
+    };
+    if (retailId) {
+        registerQuery.retailId = retailId;
+    }
+    const registers = await Register.find(registerQuery)
         .select({
             retailId: 1,
             ...registersSelect
@@ -155,7 +170,7 @@ const getTodayWorkplaces = async (req, res, next) => {
         }).filter(Boolean);
 
         const dailyAttendances = await DailyAttendance.find({
-            date: {$in: [parseInt(dateToUse.format('YYYYMMDD')), parseInt(dateToUse.subtract(1, 'day').format('YYYYMMDD'))]},
+            date: { $in: [parseInt(dateToUse.format('YYYYMMDD')), parseInt(dateToUse.subtract(1, 'day').format('YYYYMMDD'))] },
             registerId: { $in: filteredRegisterIds },
         }).exec();
 
@@ -168,7 +183,7 @@ const getTodayWorkplaces = async (req, res, next) => {
             breaks: 1,
             shiftId: 1,
         }).exec();
-        
+
         const nearbyRegisters = [];
 
         filteredRegisterIds.forEach(registerId => {
@@ -206,7 +221,7 @@ const getTodayWorkplaces = async (req, res, next) => {
                 ? a.distanceInMeters - b.distanceInMeters
                 : a.name.localeCompare(b.name)
         );
-        
+
         return res.status(200).json({ success: true, msg: leanNearbyRegisters });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_failed_to_get_workplaces', 500));
@@ -260,5 +275,6 @@ const getMyWorkingPlaces = async (req, res, next) => {
 
 module.exports = {
     getTodayWorkplaces,
-    getMyWorkingPlaces
+    getMyWorkingPlaces,
+    getAvailableResourcesByDeviceId
 };
