@@ -2,12 +2,34 @@ import React from 'react';
 import { MainScreenLayout } from '@/layouts/MainScreenLayout';
 import {
   StyleSheet,
-
+  ScrollView,
 } from 'react-native';
-import InitialInstruction from '@/components/InitialInstruction';
+
 import ThemedView from '@/components/theme/ThemedView';
 import ThemedText from '@/components/theme/ThemedText';
 import useTranslation from '@/hooks/useTranslation';
+import { InstructionChild } from '@/types/instruction';
+import { INSTRUCTION } from '@/constants/Instruction';
+
+const renderChildren = (children: InstructionChild[], level: number = 1) => {
+  const { t } = useTranslation();
+  return children.map((child, index) => {
+    const isObject = typeof child === 'object' && child !== null;
+
+    const bullet = level === 1 ? `${index + 1}. ` : '— ';
+    const key = `${level}-${index}`;
+
+    return (
+      <React.Fragment key={key}>
+        <ThemedText style={[styles.instructionText, { marginLeft: level * 10 }]}>
+          {bullet}{t(isObject ? child.text : child)}
+        </ThemedText>
+        {isObject && child.children && renderChildren(child.children, level + 1)}
+      </React.Fragment>
+    );
+  });
+};
+
 
 const InstructionPage: React.FC = () => {
   const { t } = useTranslation();
@@ -19,7 +41,18 @@ const InstructionPage: React.FC = () => {
           {t('misc_instructions')}
         </ThemedText>
       </ThemedView>
-      <InitialInstruction />
+      <ThemedView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {INSTRUCTION.map((section, idx) => (
+            <React.Fragment key={idx}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                {t(section.title)}
+              </ThemedText>
+              {renderChildren(section.children)}
+            </React.Fragment>
+          ))}
+        </ScrollView>
+      </ThemedView>
     </MainScreenLayout>
   );
 };
@@ -31,6 +64,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 25,
     marginTop: 15,
+  },
+  container: {
+    flex: 1,
+    paddingBottom: 20,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 40,
+    gap: 15,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  instructionText: {
+    fontSize: 16,
+    lineHeight: 24,
   },
 });
 

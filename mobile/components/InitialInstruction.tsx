@@ -33,14 +33,10 @@ const InitialInstruction: React.FC = () => {
     return (
         <ThemedView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                {INSTRUCTION.map((section, idx) => (
-                    <React.Fragment key={idx}>
-                        <ThemedText type="subtitle" style={styles.sectionTitle}>
-                            {t(section.title)}
-                        </ThemedText>
-                        {renderChildren(section.children)}
-                    </React.Fragment>
-                ))}
+                <ThemedText type="subtitle" style={styles.sectionTitle}>
+                    {t(INSTRUCTION[0].title)}
+                </ThemedText>
+                {renderChildren(INSTRUCTION[0].children)}
             </ScrollView>
         </ThemedView>
     );

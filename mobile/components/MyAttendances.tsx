@@ -159,7 +159,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                                 {`${t('misc_date')}: ${date ? date.format('DD/MM/YYYY') : '-'}`}
                             </ThemedText>
                             <ThemedText style={styles.attendanceText}>
-                                {workingHour ? `${t('misc_working_hour')}: ${workingHour.startTime.format(TIME_FORMAT) ?? '-'} - ${workingHour.endTime.format(TIME_FORMAT)}${workingHour.isOverNight ? ` (${t('misc_overnight')})` : ''}` : '-'}
+                                {workingHour ? `${t('misc_working_hour')}: ${workingHour.startTime.format(TIME_FORMAT) ?? '-'} - ${workingHour.endTime.format(TIME_FORMAT)}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}` : '-'}
                             </ThemedText>
 
                             <ThemedText style={[styles.attendanceText, { color: status.checkInTime?.isSuccess ? Colors.success : Colors.error }]}>

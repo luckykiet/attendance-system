@@ -15,8 +15,6 @@ import useTranslation from '@/hooks/useTranslation';
 import { Colors } from '@/constants/Colors';
 import ThemedView from '@/components/theme/ThemedView';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
-
-import _ from 'lodash';
 import { calculateHoursFromMinutes, calculateKilometersFromMeters, getShiftHoursText, getStartEndTime, getWorkingHoursText } from '@/utils';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { PatternFormat } from 'react-number-format';
@@ -183,8 +181,6 @@ const TodayCompanies = () => {
               renderItem={({ item: workplace, index }) => {
                 const { kilometers, meters } = workplace.distanceInMeters ? calculateKilometersFromMeters(workplace.distanceInMeters) : { kilometers: 0, meters: 0 };
                 const { kilometers: kmLeft, meters: mLeft } = workplace.distanceLeft ? calculateKilometersFromMeters(workplace.distanceLeft) : { kilometers: 0, meters: 0 };
-                const { hours: checkOutH, minutes: checkOutM } = workplace.checkOutTimeStatus ? calculateHoursFromMinutes(workplace.checkOutTimeStatus) : { hours: 0, minutes: 0 };
-                const { hours: checkInH, minutes: checkInM } = workplace.checkInTimeStatus ? calculateHoursFromMinutes(workplace.checkInTimeStatus) : { hours: 0, minutes: 0 };
 
                 return <View key={index} style={styles.companyItem}>
                   {!workplace.isToday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
@@ -231,22 +227,7 @@ const TodayCompanies = () => {
                   <ThemedText style={styles.companyDetail}>
                     {t('misc_my_working_hours')}:
                   </ThemedText>
-                  {!_.isEmpty(workplace.checkInTime) && dayjs(workplace.checkInTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_in')}: {dayjs(workplace.checkInTime).format('HH:mm:ss')} -&nbsp;
-                    <ThemedText style={[
-                      styles.companyDetail,
-                      isNaN(workplace.checkInTimeStatus) ? { color: Colors.success } : { color: Colors.error },
-                    ]}>
-                      {isNaN(workplace.checkInTimeStatus) ? t(workplace.checkInTimeStatus) : `${checkInH > 0 ? `${checkInH} ${nonCap('misc_hour_short')} ` : ''}${checkInM} ${nonCap('misc_min_short')} ${nonCap('misc_late')}`}
-                    </ThemedText>
-                  </ThemedText>}
-                  {!_.isEmpty(workplace.checkOutTime) && dayjs(workplace.checkOutTime).isValid() && <ThemedText style={styles.companyDetail}>{t('misc_check_out')}: {dayjs(workplace.checkOutTime).format('HH:mm:ss')} -&nbsp;
-                    <ThemedText style={[
-                      styles.companyDetail,
-                      isNaN(workplace.checkOutTimeStatus) ? { color: Colors.success } : { color: Colors.error },
-                    ]}>
-                      {isNaN(workplace.checkOutTimeStatus) ? t(workplace.checkOutTimeStatus) : `${checkOutH > 0 ? `${checkOutH} ${nonCap('misc_hour_short')} ` : ''}${checkOutM} ${nonCap('misc_min_short')} ${nonCap('misc_early')}`}
-                    </ThemedText>
-                  </ThemedText>}
+                
                   {workplace.shifts
                     .sort((a: Shift, b: Shift) => dayjs(a.start, TIME_FORMAT).diff(dayjs(b.start, TIME_FORMAT)))
                     .map((shift: Shift, index: number) => {
