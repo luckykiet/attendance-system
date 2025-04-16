@@ -26,12 +26,13 @@ export type ReasonData = z.infer<typeof FormSchema>;
 type Props = {
     title?: string;
     diff?: number;
+    reason?: string;
     visible: boolean;
     onCancel: () => void;
     onConfirm: null | ((data: ReasonData) => void);
 };
 
-const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_check_out', diff = 0, visible, onCancel, onConfirm }) => {
+const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_check_out', diff = 0, visible, reason = '', onCancel, onConfirm }) => {
     const { t } = useTranslation();
     const { t: noCap } = useTranslation({ capitalize: false });
     const colorScheme = useColorScheme();
@@ -58,9 +59,9 @@ const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_che
 
     useEffect(() => {
         if (visible) {
-            reset({ reason: '' });
+            reset({ reason: reason ? reason : '' });
         }
-    }, [visible, reset]);
+    }, [visible, reason, reset]);
 
     return (
         <Modal visible={visible} transparent animationType="fade">

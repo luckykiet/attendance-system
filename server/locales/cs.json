@@ -943,6 +943,7 @@
   "srv_please_sign_document": "Podepište dokument",
   "srv_please_try_again": "Zkuste to znovu",
   "srv_provider_not_selected": "provider is not selected",
+  "srv_reason_for_early_check_out_required": "budete muset uvést důvod pro odhlášení",
   "srv_reference_exists": "Reference existuje",
   "srv_reference_not_found": "Reference nenalezena",
   "srv_register_creation_failed": "Vytvoření pracoviště selhalo",

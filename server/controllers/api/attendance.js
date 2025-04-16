@@ -237,7 +237,14 @@ const makeAttendance = async (req, res, next) => {
 
         const { employee } = req;
 
-        const { end: shiftEndTime } = utils.getStartEndTime({ start: shift.start, end: shift.end, isToday });
+        const shiftTime = utils.getStartEndTime({ start: shift.start, end: shift.end, isToday });
+
+        if (!shiftTime) {
+            throw new HttpError('srv_invalid_shift', 400);
+        }
+
+        const { endTime: shiftEndTime } = shiftTime;
+     
 
         const dailyAttendance = await getDailyAttendance({ registerId });
 
@@ -253,7 +260,7 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_workplace_closed_today', 400);
         }
         const attendanceQuery = {
-            dailyAttendanceId: dailyAttendance._id,
+            // dailyAttendanceId: dailyAttendance._id,
             workingAtId: workingAt._id,
             shiftId: shift._id,
         };
@@ -278,7 +285,7 @@ const makeAttendance = async (req, res, next) => {
             if (foundPendingBreak) {
                 throw new HttpError('srv_pending_breaks', 400);
             }
-            
+
             if (now.isBefore(shiftEndTime) && !reason) {
                 throw new HttpError('srv_reason_for_early_check_out_required', 400);
             }

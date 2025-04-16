@@ -17,6 +17,7 @@ export type AttendanceMutation = {
     latitude: number,
     localDeviceId?: string
     reason?: string,
+    name?: string,
 };
 
 export type Attendance = {

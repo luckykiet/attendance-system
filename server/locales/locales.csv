@@ -944,6 +944,7 @@ srv_plan_not_found	Plan not found	Không tìm thấy kế hoạch	Plán nenaleze
 srv_please_sign_document	Please sign the document	Hãy ký đơn	Podepište dokument
 srv_please_try_again	Please try again	Hãy thử lại	Zkuste to znovu
 srv_provider_not_selected	provider is not selected	nhà phát hành không được chọn	provider is not selected
+srv_reason_for_early_check_out_required	reason for early check out required	cần phải ghi lý do check out sớm	budete muset uvést důvod pro odhlášení
 srv_reference_exists	Reference exists	Tham chiếu đã tồn tại	Reference existuje
 srv_reference_not_found	Reference not found	Không tìm thấy tham chiếu	Reference nenalezena
 srv_register_creation_failed	Workplace creation failed	Tạo nơi làm việc thất bại	Vytvoření pracoviště selhalo

@@ -943,6 +943,7 @@
   "srv_please_sign_document": "Please sign the document",
   "srv_please_try_again": "Please try again",
   "srv_provider_not_selected": "provider is not selected",
+  "srv_reason_for_early_check_out_required": "reason for early check out required",
   "srv_reference_exists": "Reference exists",
   "srv_reference_not_found": "Reference not found",
   "srv_register_creation_failed": "Workplace creation failed",

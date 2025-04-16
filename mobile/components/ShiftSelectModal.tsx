@@ -33,10 +33,10 @@ const ShiftSelectModal = () => {
     const { applySpecificBreak } = useSpecificBreakApi();
     const { applyBreak } = useBreakApi();
     const { applyPause } = usePauseApi();
-    const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | null>(null);
+    const [pendingAttendance, setPendingAttendance] = useState<AttendanceMutation | AttendancePauseMutation | null>(null);
     const [showReasonModal, setShowReasonModal] = useState(false);
     const [checkoutForm, setCheckoutForm] = useState<AttendanceMutation | null>(null);
-    const [isSubmittingAttendance, setIsSubmittingAttendance] = useState(false);
+    const [isSubmittingType, setIsSubmittingType] = useState<'attendance' | 'specific-break' | 'break' | 'pause' | null>(null);
 
     const [diff, setDiff] = useState<number>(0);
     const [reasonModalTitle, setReasonModalTitle] = useState<string>('misc_reason_for_early_check_out');
@@ -223,7 +223,7 @@ const ShiftSelectModal = () => {
                 setDiff(difference);
                 setCheckoutForm(form);
                 setShowReasonModal(true);
-                setIsSubmittingAttendance(false)
+                setIsSubmittingType('pause');
                 return;
             }
 
@@ -244,14 +244,15 @@ const ShiftSelectModal = () => {
                         text: t('misc_confirm'),
                         onPress: async () => {
                             setPendingAttendance(form);
+                            setIsSubmittingType('pause');
                             submitPauseMutation.mutate(form);
                         },
                     },
                 ],
                 { cancelable: true }
             );
-
         }
+
     };
 
     const handleCheckIn = async () => {
@@ -337,7 +338,7 @@ const ShiftSelectModal = () => {
                 setDiff(difference);
                 setCheckoutForm(form);
                 setShowReasonModal(true);
-                setIsSubmittingAttendance(true);
+                setIsSubmittingType('attendance');
                 return;
             }
 
@@ -358,6 +359,7 @@ const ShiftSelectModal = () => {
                             const form: AttendanceMutation = { registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
 
                             setPendingAttendance(form);
+                            setIsSubmittingType('attendance');
                             makeAttendanceMutation.mutate(form);
                         },
                     },
@@ -450,6 +452,7 @@ const ShiftSelectModal = () => {
                             const form: SpecificBreakMutation = { _id, breakKey, registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
 
                             setPendingAttendance(form);
+                            setIsSubmittingType('specific-break');
                             applySpecificBreakMutation.mutate(form);
                         },
                     },
@@ -546,7 +549,7 @@ const ShiftSelectModal = () => {
                                 return;
                             }
                             const form: BreakMutation = { _id, registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, breakId, name };
-
+                            setIsSubmittingType('break');
                             setPendingAttendance(form);
                             applyBreakMutation.mutate(form);
                         },
@@ -559,7 +562,19 @@ const ShiftSelectModal = () => {
 
     const handleScanResult = (result: boolean, foundDevices: string[]) => {
         if (result && pendingAttendance) {
-            makeAttendanceMutation.mutate({ ...pendingAttendance, localDeviceId: foundDevices[0] });
+            if (isSubmittingType === 'attendance') {
+                const body = { ...pendingAttendance, localDeviceId: foundDevices[0] } as AttendanceMutation;
+                makeAttendanceMutation.mutate(body);
+            } else if (isSubmittingType === 'specific-break') {
+                const body = { ...pendingAttendance, localDeviceId: foundDevices[0] } as SpecificBreakMutation;
+                applySpecificBreakMutation.mutate(body);
+            } else if (isSubmittingType === 'break') {
+                const body = { ...pendingAttendance, localDeviceId: foundDevices[0] } as BreakMutation;
+                applyBreakMutation.mutate(body);
+            } else {
+                const body = { ...pendingAttendance, localDeviceId: foundDevices[0] } as AttendancePauseMutation;
+                submitPauseMutation.mutate(body);
+            }
         }
     };
 
@@ -918,14 +933,12 @@ const ShiftSelectModal = () => {
                             setCheckoutForm(null);
                         }}
                         onConfirm={(data: ReasonData) => {
-                            if (isSubmittingAttendance) {
+                            if (isSubmittingType === 'attendance') {
                                 if (checkoutForm) {
                                     const formWithReason = { ...checkoutForm, ...data };
                                     setPendingAttendance(formWithReason);
                                     makeAttendanceMutation.mutate(formWithReason);
                                 }
-                                setShowReasonModal(false);
-                                setCheckoutForm(null);
                             } else {
                                 if (checkoutForm) {
                                     const formWithReason = { ...checkoutForm, name: data.reason };
