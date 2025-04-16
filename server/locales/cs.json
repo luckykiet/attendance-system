@@ -836,6 +836,7 @@
   "srv_invalid_shift": "neplatná směna",
   "srv_invalid_street": "Neplatná ulice",
   "srv_invalid_terminal_type": "neplatný typ platebního terminálu",
+  "srv_invalid_time": "Neplatný čas",
   "srv_invalid_time_format": "Neplatný formát času",
   "srv_invalid_tin": "neplatné IČO",
   "srv_invalid_token": "Neplatný token nebo váš požadavek vypršel",

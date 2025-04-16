@@ -837,6 +837,7 @@ srv_invalid_settings	Invalid settings	Cài đặt không hợp lệ	Neplatná na
 srv_invalid_shift	invalid shift	ca làm việc không hợp lệ	neplatná směna
 srv_invalid_street	Invalid street	Đường không hợp lệ	Neplatná ulice
 srv_invalid_terminal_type	invalid terminal type	loại máy trả thẻ không hợp lệ	neplatný typ platebního terminálu
+srv_invalid_time	Invalid time	Thời gian không hợp lệ	Neplatný čas
 srv_invalid_time_format	Invalid time format	Định dạng thời gian không hợp lệ	Neplatný formát času
 srv_invalid_tin	invalid TIN	IČO không hợp lệ	neplatné IČO
 srv_invalid_token	Invalid token or link expired	Mã token không hợp lệ hoặc đã hết hạn	Neplatný token nebo váš požadavek vypršel

@@ -9,12 +9,14 @@ import dayjs, { Dayjs } from 'dayjs';
 import { WorkingHour } from '@/types/working-hour';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Shift } from '@/types/shift';
 import { Attendance } from '@/types/attendance';
 import { Platform } from 'react-native';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
+dayjs.extend(isSameOrBefore);
 
 export const isAndroid = /^android$/i.test(Platform.OS);
 export const isIOS = /^ios$/i.test(Platform.OS);
@@ -168,17 +170,23 @@ export const getWorkingHoursText = ({
     status: string;
     message: string;
     isToday: boolean;
-} => {
+} | null => {
     const now = dayjs();
 
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: workingHour.start, end: workingHour.end, isToday });
+    const workingHourTime = getStartEndTime({ start: workingHour.start, end: workingHour.end, isToday });
+
+    if (!workingHourTime) {
+        return null
+    }
+
+    const { startTime: openTime, endTime: closeTime, isOverNight } = workingHourTime;
 
     const warningTime = openTime.subtract(1, 'hour');
 
     const inBeforeOneHourTime = now.isBefore(openTime) && now.isAfter(warningTime);
-    const inShiftTime = now.isBetween(openTime, closeTime, null, '[)');
+    const inShiftTime = now.isBetween(openTime, closeTime);
 
-    const timeText = `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+    const timeText = `${openTime.format(TIME_FORMAT)} - ${closeTime.format(TIME_FORMAT)}${isOverNight ? ` (${t('misc_over_night')})` : ''}`;
 
     return {
         message: timeText,
@@ -202,11 +210,20 @@ export const getShiftHoursText = ({
     message: string;
     duration: number;
     isCheckedIn: boolean;
-} => {
-    const currentTime = dayjs();
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday });
+} | null => {
+    if (!shift.start || !shift.end) {
+        return null
+    }
+    const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday });
 
-    const timeText = `${shift.start} - ${shift.end}${shift.isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+    if (!shiftTime) {
+        return null
+    }
+
+    const { startTime: openTime, endTime: closeTime, isOverNight } = shiftTime;
+    const currentTime = dayjs();
+
+    const timeText = `${openTime.format(TIME_FORMAT)} - ${closeTime.format(TIME_FORMAT)}${isOverNight ? ` (${t('misc_over_night')})` : ''}`;
 
     const isInShiftTime = currentTime.isBetween(openTime, closeTime);
     const isCheckedIn = !!attendance?.checkInTime && dayjs(attendance.checkInTime).isValid();
@@ -252,21 +269,47 @@ export const isBreakWithinShift = (
         breakEnd,
         shiftStart,
         shiftEnd,
-        isToday,
+        timeFormat = TIME_FORMAT,
     }: {
         breakStart: string;
         breakEnd: string;
         shiftStart: string;
         shiftEnd: string;
-        isToday: boolean;
+        timeFormat?: string;
     }
 ): boolean => {
-    const { startTime: breakStartTime, endTime: breakEndTime } = getStartEndTime({ start: breakStart, end: breakEnd, isToday });
-    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shiftStart, end: shiftEnd, isToday });
 
-    return breakStartTime.isBefore(shiftEndTime) && breakEndTime.isAfter(shiftStartTime);
+    const baseDay = dayjs();
+
+    const shiftTime = getStartEndTime({
+        start: shiftStart,
+        end: shiftEnd,
+        timeFormat,
+        baseDay,
+    });
+
+    if (!shiftTime) return false;
+
+    const { startTime: sStart, endTime: sEnd, isOverNight: shiftIsOvernight } = shiftTime;
+
+    const breakTime = getStartEndTime({
+        start: breakStart,
+        end: breakEnd,
+        timeFormat,
+        baseDay,
+    });
+
+    if (!breakTime) return false;
+
+    let { startTime: bStart, endTime: bEnd } = breakTime;
+
+    if (shiftIsOvernight && bEnd.isBefore(sStart)) {
+        bStart = bStart.add(1, 'day');
+        bEnd = bEnd.add(1, 'day');
+    }
+
+    return bStart.isBefore(sEnd) && bEnd.isAfter(sStart);
 };
-
 
 type AttendanceStatus = {
     checkInTime: {
@@ -297,26 +340,29 @@ export const getAttendanceStatus = ({
     baseDay?: Dayjs;
 }): AttendanceStatus => {
     const result: AttendanceStatus = { checkInTime: null, checkOutTime: null };
-    if (!checkInTime && !checkOutTime) {
+
+    if ((!shift.start || !shift.end) || (!checkInTime && !checkOutTime)) {
         return result;
     }
 
-    if (!shift.start || !shift.end) {
-        return result;
-    }
-
-    const { startTime: openTime, endTime: closeTime } = getStartEndTime({
+    const shiftTime = getStartEndTime({
         start: shift.start,
         end: shift.end,
         isToday,
         baseDay,
     });
 
+    if (!shiftTime) {
+        return result;
+    }
+
+    const { startTime: openTime, endTime: closeTime } = shiftTime;
+
     const checkIn = dayjs(checkInTime);
     const checkOut = dayjs(checkOutTime);
 
     if (checkIn.isValid()) {
-        if (checkIn.isBefore(openTime) || checkIn.isSame(openTime)) {
+        if (checkIn.isSameOrBefore(openTime)) {
             result.checkInTime = {
                 message: t("misc_checked_in_on_time"),
                 isSuccess: true,
@@ -338,7 +384,7 @@ export const getAttendanceStatus = ({
                 isSuccess: true,
             };
         } else {
-            const earlyDiff = closeTime.diff(checkOut, 'minute'); // <-- fix: was reversed
+            const earlyDiff = closeTime.diff(checkOut, 'minute');
             const { hours, minutes } = calculateHoursFromMinutes(earlyDiff);
             result.checkOutTime = {
                 message: `${t("misc_early")} ${hours > 0 ? `${hours} ${noCapT("misc_hour_short")}` : ''}${minutes > 0 ? ` ${minutes} ${noCapT("misc_min_short")}` : ''}`,
@@ -413,11 +459,15 @@ export const getStartEndTime = ({
     isToday?: boolean;
     timeFormat?: string;
     baseDay?: Dayjs;
-}): { startTime: Dayjs; endTime: Dayjs; isOverNight: boolean } => {
+}): { startTime: Dayjs; endTime: Dayjs; isOverNight: boolean } | null => {
     const base = isToday ? dayjs(baseDay) : dayjs(baseDay).subtract(1, 'day');
 
-    const startParsed = dayjs(start, timeFormat);
-    const endParsed = dayjs(end, timeFormat);
+    const startParsed = dayjs(start, timeFormat, true);
+    const endParsed = dayjs(end, timeFormat, true);
+
+    if (!startParsed.isValid() || !endParsed.isValid() || startParsed.isSame(endParsed)) {
+        return null;
+    }
 
     const startTime = base
         .hour(startParsed.hour())
@@ -430,11 +480,6 @@ export const getStartEndTime = ({
         .minute(endParsed.minute())
         .second(0)
         .millisecond(0);
-
-    if (!isToday) {
-        startTime.subtract(1, 'day');
-        endTime = endTime.subtract(1, 'day');
-    }
 
     let isOverNight = false;
     if (endTime.isBefore(startTime)) {

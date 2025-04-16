@@ -63,7 +63,12 @@ const TodayCompanies = () => {
         const hasTodayShift = todayShifts.length > 0;
 
         const activeYesterdayShifts = yesterdayShifts.filter((shift) => {
-          const { startTime: start, endTime: end } = getStartEndTime({ start: shift.start, end: shift.end, isToday: false });
+          const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: false });
+
+          if (!shiftTime) {
+            return null;
+          }
+          const { startTime: start, endTime: end } = shiftTime
 
           const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
 
@@ -78,11 +83,17 @@ const TodayCompanies = () => {
         const entries = [];
 
         if (activeYesterdayShifts.length > 0) {
-          const { status, message } = getWorkingHoursText({
+          const workingHoursText = getWorkingHoursText({
             workingHour: yesterdayWorkingHours,
             isToday: false,
             t,
           });
+
+          if (!workingHoursText) {
+            return null;
+          }
+
+          const { status, message } = workingHoursText;
 
           entries.push({
             ...workplace,
@@ -97,11 +108,17 @@ const TodayCompanies = () => {
 
         // Add today's shift
         if (hasTodayShift) {
-          const { status, message } = getWorkingHoursText({
+          const workingHourText = getWorkingHoursText({
             workingHour: todayWorkingHours,
             isToday: true,
             t,
           });
+
+          if (!workingHourText) {
+            return null;
+          }
+
+          const { status, message } = workingHourText
 
           entries.push({
             ...workplace,
@@ -168,7 +185,7 @@ const TodayCompanies = () => {
                 const { kilometers: kmLeft, meters: mLeft } = workplace.distanceLeft ? calculateKilometersFromMeters(workplace.distanceLeft) : { kilometers: 0, meters: 0 };
                 const { hours: checkOutH, minutes: checkOutM } = workplace.checkOutTimeStatus ? calculateHoursFromMinutes(workplace.checkOutTimeStatus) : { hours: 0, minutes: 0 };
                 const { hours: checkInH, minutes: checkInM } = workplace.checkInTimeStatus ? calculateHoursFromMinutes(workplace.checkInTimeStatus) : { hours: 0, minutes: 0 };
-                
+
                 return <View key={index} style={styles.companyItem}>
                   {!workplace.isToday ? <ThemedText style={styles.companyDayText}>{t(daysOfWeeksTranslations[yesterdayKey].name)} - {now.subtract(1, 'day').format('DD.MM.')}</ThemedText> : <ThemedText style={styles.companyDayText}>{t('misc_today')} - {now.format('DD.MM.')}</ThemedText>}
                   <ThemedText style={styles.companyText}>{workplace.name}</ThemedText>
@@ -234,10 +251,17 @@ const TodayCompanies = () => {
                     .sort((a: Shift, b: Shift) => dayjs(a.start, TIME_FORMAT).diff(dayjs(b.start, TIME_FORMAT)))
                     .map((shift: Shift, index: number) => {
                       const attendanceOfShift = workplace.attendances.find((attendance: Attendance) => attendance.shiftId === shift._id);
-                      const { status, message, duration, isCheckedIn } = getShiftHoursText({ shift, attendance: attendanceOfShift, isToday: workplace.isToday, t });
-
+                      const shiftHoursText = getShiftHoursText({ shift, attendance: attendanceOfShift, isToday: workplace.isToday, t });
+                      if (!shiftHoursText) {
+                        return null;
+                      }
+                      const { status, message, duration, isCheckedIn } = shiftHoursText;
                       const { hours, minutes } = calculateHoursFromMinutes(Math.abs(duration));
-                      const { endTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                      const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                      if (!shiftTime) {
+                        return null;
+                      }
+                      const { endTime } = shiftTime
                       const isShiftEnded = endTime && now.isAfter(endTime.add(shift.allowedOverTime || 5, 'minute'));
                       const isShiftEndedWithoutCheckOut = isShiftEnded && !attendanceOfShift?.checkOutTime;
                       const finalStatus = isShiftEndedWithoutCheckOut ? 'out_of_time' : status;

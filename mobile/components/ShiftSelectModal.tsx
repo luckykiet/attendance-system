@@ -136,8 +136,6 @@ const ShiftSelectModal = () => {
         noCapT,
     }) : null;
 
-    const { startTime: shiftStartTime, endTime: shiftEndTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
-
     const handleSubmitPause = async ({ _id }: { _id?: string }) => {
         if (selectedShift) {
             const { _id: registerId, retailId, domain, attendances } = workplace;
@@ -213,7 +211,12 @@ const ShiftSelectModal = () => {
             };
 
             if (!_id) {
-                const { endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+                if (!shiftTime) {
+                    Alert.alert(t('misc_error'), t('srv_invalid_time'));
+                    return;
+                }
+                const { endTime: closeTime } = shiftTime
                 const difference = closeTime.diff(currentTime, 'minute');
 
                 setReasonModalTitle('misc_reason_for_pause');
@@ -263,7 +266,12 @@ const ShiftSelectModal = () => {
             }
 
             const currentTime = dayjs();
-            const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+            const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+            if (!shiftTime) {
+                Alert.alert(t('misc_error'), t('srv_invalid_time'));
+                return;
+            }
+            const { startTime: openTime, endTime: closeTime } = shiftTime
 
             let diff = 0;
             let text = `${t('misc_cannot_revert_action')}!`;
@@ -560,7 +568,7 @@ const ShiftSelectModal = () => {
     const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
 
     const statusInfo = selectedShift.shift
-        ? getShiftHoursText({ shift: selectedShift.shift, t, isToday: workplace.isToday })
+        ? getShiftHoursText({ shift: selectedShift.shift, t, isToday: workplace.isToday }) || { status: '', message: '' }
         : { status: '', message: '' };
 
     const specificBreaks = selectedShift.workplace.specificBreaks?.[!workplace.isToday ? yesterdayKey : todayKey];
@@ -570,6 +578,12 @@ const ShiftSelectModal = () => {
     const runningBreak = attendance?.breaks.find(b => b.checkInTime && !b.checkOutTime);
     const lastestPause = attendance?.pauses?.find(p => p.checkInTime && !p.checkOutTime);
 
+    const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: workplace.isToday });
+
+    if (!shiftTime) {
+        return null;
+    }
+    const { startTime: shiftStartTime, endTime: shiftEndTime } = shiftTime
     return (
         <Modal
             visible={!!selectedShift}
@@ -600,8 +614,11 @@ const ShiftSelectModal = () => {
                             }).map((type, idx, arr) => {
                                 const brk = specificBreaks[type];
                                 const maxDurationText = getDiffDurationText(brk.duration, noCapT);
-                                const { startTime, endTime } = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
+                                const brkTime = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
 
+                                if (!brkTime) return null;
+
+                                const { startTime, endTime } = brkTime;
                                 const attendanceBreak = attendance?.breaks.find(b => b.type === type);
 
                                 const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
@@ -679,13 +696,19 @@ const ShiftSelectModal = () => {
                         )}
 
                         <ThemedText style={styles.groupHeader}>{t('misc_generic_breaks')}</ThemedText>
-                        {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end, isToday: workplace.isToday })) ? (
+                        {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end })) ? (
                             breaks
-                                .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end, isToday: workplace.isToday }))
+                                .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
                                 .map((b: Breaks, idx: number, arr) => {
 
                                     const maxDurationText = getDiffDurationText(b.duration, noCapT);
-                                    const { startTime, endTime } = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
+                                    const brkTime = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
+
+                                    if (!brkTime) {
+                                        return null
+                                    }
+
+                                    const { startTime, endTime } = brkTime;
                                     const attendanceBreak = attendance?.breaks.find(brk => brk.breakId && b._id === brk.breakId);
 
                                     const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);

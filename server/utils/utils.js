@@ -50,21 +50,6 @@ const getTranslations = async (lang) => {
     }
 }
 
-const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
-    const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
-    let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
-    let isOverNight = false;
-    if (endTime.isBefore(startTime)) {
-        isOverNight = true;
-        endTime = endTime.add(1, 'day');
-    }
-    return {
-        startTime,
-        endTime,
-        isOverNight,
-    }
-}
-
 const isBetweenTime = ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
     let timeMoment = !dayjs.isDayjs(time) ? dayjs(time, timeFormat) : time;
 
@@ -177,6 +162,82 @@ const checkEmployeeResources = async (req) => {
     }
 }
 
+const getStartEndTime = ({
+    start,
+    end,
+    timeFormat = TIME_FORMAT,
+    baseDay = dayjs(),
+    isToday = true,
+}) => {
+    const base = isToday ? dayjs(baseDay) : dayjs(baseDay).subtract(1, 'day');
+
+    const startParsed = dayjs(start, timeFormat, true);
+    const endParsed = dayjs(end, timeFormat, true);
+
+    if (!startParsed.isValid() || !endParsed.isValid() || startParsed.isSame(endParsed)) {
+        return null;
+    }
+
+    const startTime = base
+        .hour(startParsed.hour())
+        .minute(startParsed.minute())
+        .second(0)
+        .millisecond(0);
+
+    let endTime = base
+        .hour(endParsed.hour())
+        .minute(endParsed.minute())
+        .second(0)
+        .millisecond(0);
+
+    let isOverNight = false;
+    if (endTime.isBefore(startTime)) {
+        isOverNight = true;
+        endTime = endTime.add(1, 'day');
+    }
+
+    return { startTime, endTime, isOverNight };
+};
+
+const isBreakWithinShift = ({
+    breakStart,
+    breakEnd,
+    shiftStart,
+    shiftEnd,
+    timeFormat = TIME_FORMAT,
+}) => {
+    const baseDay = dayjs();
+
+    const shiftTime = getStartEndTime({
+        start: shiftStart,
+        end: shiftEnd,
+        timeFormat,
+        baseDay,
+    });
+
+    if (!shiftTime) return false;
+
+    const { startTime: sStart, endTime: sEnd, isOverNight: shiftIsOvernight } = shiftTime;
+
+    const breakTime = getStartEndTime({
+        start: breakStart,
+        end: breakEnd,
+        timeFormat,
+        baseDay,
+    });
+
+    if (!breakTime) return false;
+
+    let { startTime: bStart, endTime: bEnd } = breakTime;
+
+    if (shiftIsOvernight && bEnd.isBefore(sStart)) {
+        bStart = bStart.add(1, 'day');
+        bEnd = bEnd.add(1, 'day');
+    }
+
+    return bStart.isBefore(sEnd) && bEnd.isAfter(sStart);
+};
+
 const utils = {
     fetchAresWithTin: async (tin) => {
         const aresLoggers = winston.loggers.get('ares')
@@ -280,8 +341,8 @@ const utils = {
     isBetweenTime: ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
         return isBetweenTime({ time, start, end, isToday, timeFormat })
     },
-    getStartEndTime: ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
-        return getStartEndTime({ start, end, timeFormat, isToday })
+    getStartEndTime: ({ start, end, baseDay, timeFormat = TIME_FORMAT, isToday = true }) => {
+        return getStartEndTime({ start, end, baseDay, timeFormat, isToday })
     },
     confirmTokenPayload: (payload) => {
         if (!payload) {
@@ -296,6 +357,9 @@ const utils = {
     },
     checkEmployeeResources: (req) => {
         return checkEmployeeResources(req)
+    },
+    isBreakWithinShift: ({ breakStart, breakEnd, shiftStart, shiftEnd, timeFormat = TIME_FORMAT }) => {
+        return isBreakWithinShift({ breakStart, breakEnd, shiftStart, shiftEnd, timeFormat })
     }
 }
 module.exports = utils

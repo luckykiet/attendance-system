@@ -329,32 +329,96 @@ export const getWorkingHoursText = ({
   isToday,
   t,
 }) => {
-  if (!workingHour.isAvailable) {
-    return { status: 'closed', message: 'misc_closed' };
+  const now = dayjs();
+
+  const workingHourTime = getStartEndTime({ start: workingHour.start, end: workingHour.end, isToday });
+
+  if (!workingHourTime) {
+    return null
   }
 
-  const currentTime = dayjs();
+  const { startTime: openTime, endTime: closeTime, isOverNight } = workingHourTime;
 
-  const { startTime: openTime, endTime: closeTime } = getStartEndTime({ start: workingHour.start, end: workingHour.end, timeFormat: TIME_FORMAT, isToday });
+  const warningTime = openTime.subtract(1, 'hour');
 
-  if (currentTime.isBetween(openTime, closeTime)) {
-    return { status: 'open', message: `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
-  }
+  const inBeforeOneHourTime = now.isBefore(openTime) && now.isAfter(warningTime);
+  const inShiftTime = now.isBetween(openTime, closeTime);
 
-  return { status: 'out_of_time', message: `${workingHour.start} - ${workingHour.end}${workingHour.isOverNight ? ` (${t('misc_over_night')})` : ''}` };
+  const timeText = `${openTime.format(TIME_FORMAT)} - ${closeTime.format(TIME_FORMAT)}${isOverNight ? ` (${t('misc_over_night')})` : ''}`;
+
+  return {
+    message: timeText,
+    status: inShiftTime ? 'open' : inBeforeOneHourTime ? 'warning' : 'out_of_time',
+    isToday,
+  };
 };
 
-export const getStartEndTime = ({ start, end, timeFormat = TIME_FORMAT, isToday = true }) => {
-  const startTime = isToday ? dayjs(start, timeFormat, true) : dayjs(start, timeFormat, true).subtract(1, 'day');
-  let endTime = isToday ? dayjs(end, timeFormat, true) : dayjs(end, timeFormat, true).subtract(1, 'day');
+export const isBreakWithinShift = ({
+  breakStart,
+  breakEnd,
+  shiftStart,
+  shiftEnd,
+  timeFormat = TIME_FORMAT,
+}) => {
+  const baseDay = dayjs();
+
+  const shiftTime = getStartEndTime({
+    start: shiftStart,
+    end: shiftEnd,
+    timeFormat,
+    baseDay,
+  });
+
+  if (!shiftTime) return false;
+
+  const { startTime: sStart, endTime: sEnd, isOverNight: shiftIsOvernight } = shiftTime;
+
+  const breakTime = getStartEndTime({
+    start: breakStart,
+    end: breakEnd,
+    timeFormat,
+    baseDay,
+  });
+
+  if (!breakTime) return false;
+
+  let { startTime: bStart, endTime: bEnd } = breakTime;
+
+  if (shiftIsOvernight && bEnd.isBefore(sStart)) {
+    bStart = bStart.add(1, 'day');
+    bEnd = bEnd.add(1, 'day');
+  }
+
+  return bStart.isBefore(sEnd) && bEnd.isAfter(sStart);
+};
+
+export const getStartEndTime = ({ start, end, baseDay = dayjs(), timeFormat = TIME_FORMAT, isToday = true }) => {
+  const base = isToday ? dayjs(baseDay) : dayjs(baseDay).subtract(1, 'day');
+
+  const startParsed = dayjs(start, timeFormat, true);
+  const endParsed = dayjs(end, timeFormat, true);
+
+  if (!startParsed.isValid() || !endParsed.isValid() || startParsed.isSame(endParsed)) {
+    return null;
+  }
+
+  const startTime = base
+    .hour(startParsed.hour())
+    .minute(startParsed.minute())
+    .second(0)
+    .millisecond(0);
+
+  let endTime = base
+    .hour(endParsed.hour())
+    .minute(endParsed.minute())
+    .second(0)
+    .millisecond(0);
+
   let isOverNight = false;
   if (endTime.isBefore(startTime)) {
-    endTime = endTime.add(1, 'day');
     isOverNight = true;
+    endTime = endTime.add(1, 'day');
   }
-  return {
-    startTime,
-    endTime,
-    isOverNight
-  }
+
+  return { startTime, endTime, isOverNight };
 }

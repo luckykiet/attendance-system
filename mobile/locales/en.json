@@ -836,6 +836,7 @@
   "srv_invalid_shift": "invalid shift",
   "srv_invalid_street": "Invalid street",
   "srv_invalid_terminal_type": "invalid terminal type",
+  "srv_invalid_time": "Invalid time",
   "srv_invalid_time_format": "Invalid time format",
   "srv_invalid_tin": "invalid TIN",
   "srv_invalid_token": "Invalid token or link expired",

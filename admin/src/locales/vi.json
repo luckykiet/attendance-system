@@ -836,6 +836,7 @@
   "srv_invalid_shift": "ca làm việc không hợp lệ",
   "srv_invalid_street": "Đường không hợp lệ",
   "srv_invalid_terminal_type": "loại máy trả thẻ không hợp lệ",
+  "srv_invalid_time": "Thời gian không hợp lệ",
   "srv_invalid_time_format": "Định dạng thời gian không hợp lệ",
   "srv_invalid_tin": "IČO không hợp lệ",
   "srv_invalid_token": "Mã token không hợp lệ hoặc đã hết hạn",
