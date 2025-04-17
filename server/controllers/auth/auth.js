@@ -9,7 +9,10 @@ const jwt = require('jsonwebtoken');
 const mailSender = require('../../mail_sender');
 const { CONFIG } = require('../../configs');
 const urlJoin = require('proper-url-join');
-const { loggers } = utils
+
+const signupLogger = utils.getLogger('signup');
+const authLogger = utils.getLogger('auth');
+const passwordResetLogger = utils.getLogger('passwordreset');
 
 const signup = async (req, res, next) => {
     let newRetailId = null;
@@ -19,7 +22,7 @@ const signup = async (req, res, next) => {
         const { password, confirmPassword, recaptcha, ...logData } = req.body;
         const { username, email, name, tin, vin, address } = logData;
 
-        loggers.signup.info(`Signup attempt`, logData);
+        signupLogger.info(`Signup attempt`, logData);
 
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
 
@@ -55,10 +58,10 @@ const signup = async (req, res, next) => {
                         zip: aresData.address.zip,
                     };
                 } else {
-                    loggers.signup.info(`No ARES data found`);
+                    signupLogger.info(`No ARES data found`);
                 }
             } catch (error) {
-                loggers.signup.error(`Error fetching ARES data: ${error.message}`);
+                signupLogger.error(`Error fetching ARES data: ${error.message}`);
             }
         }
 
@@ -84,8 +87,8 @@ const signup = async (req, res, next) => {
         await newUser.save();
         newUserId = newUser._id;
 
-        loggers.signup.info(`User created`, { userId: newUserId });
-        loggers.signup.info(`Retail created`, { retailId: newRetailId });
+        signupLogger.info(`User created`, { userId: newUserId });
+        signupLogger.info(`Retail created`, { retailId: newRetailId });
 
         req.body.password = Buffer.from(password).toString('base64');
         passport.authenticate('local', (err, user, options) => {
@@ -101,7 +104,7 @@ const signup = async (req, res, next) => {
                 if (error) {
                     return next(new HttpError('srv_failed_to_login', 500, 'Failed to login', 'signup'));
                 }
-                loggers.signup.info(`Logged in`, { username: user.username });
+                signupLogger.info(`Logged in`, { username: user.username });
                 return res.json(req.user);
             });
         })(req, res, next);
@@ -109,14 +112,14 @@ const signup = async (req, res, next) => {
         try {
             if (newRetailId) {
                 await Retail.findByIdAndDelete(newRetailId);
-                loggers.signup.info(`Rolled back retail creation`, { retailId: newRetailId });
+                signupLogger.info(`Rolled back retail creation`, { retailId: newRetailId });
             }
             if (newUserId) {
                 await User.findByIdAndDelete(newUserId);
-                loggers.signup.info(`Rolled back user creation`, { userId: newUserId });
+                signupLogger.info(`Rolled back user creation`, { userId: newUserId });
             }
         } catch (rollbackError) {
-            loggers.signup.error(`Rollback failed: ${rollbackError.message}`);
+            signupLogger.error(`Rollback failed: ${rollbackError.message}`);
         }
 
         return next(utils.parseExpressErrors(error, 'srv_signup_failed', 500));
@@ -137,7 +140,7 @@ const login = (req, res, next) => {
             if (error) {
                 return next(new HttpError('srv_failed_to_login', 500, 'Failed to login', 'auth'));
             }
-            loggers.auth.info(`Logged in`, { username: user.username });
+            authLogger.info(`Logged in`, { username: user.username });
             return res.json(req.user);
         });
     })(req, res, next);
@@ -145,21 +148,21 @@ const login = (req, res, next) => {
 
 const signout = (req, res, next) => {
     if (!req.user) {
-        loggers.auth.info(`Sign out attempt without user`);
+        authLogger.info(`Sign out attempt without user`);
         return res.status(200).json({
             success: true,
             msg: `srv_signed_out`,
         });
     }
-    loggers.auth.info(`Signing out`, { username: req.user.username });
+    authLogger.info(`Signing out`, { username: req.user.username });
     req.logout((err) => {
         if (err) {
-            loggers.auth.error(`Sign out failed: ${err.message}`);
+            authLogger.error(`Sign out failed: ${err.message}`);
             return next(err);
         }
 
         req.session.destroy(() => {
-            loggers.auth.info(`Signed out`);
+            authLogger.info(`Signed out`);
             return res.status(200).json({
                 success: true,
                 msg: `srv_signed_out`,
@@ -177,7 +180,7 @@ const passwordResetTokenVerifyMiddleware = async (req, res, next) => {
             throw new HttpError('srv_token_not_provided', 400, 'Token not provided', 'passwordreset');
         }
 
-        loggers.passwordreset.info('Verifying password reset token', { token });
+        passwordResetLogger.info('Verifying password reset token', { token });
 
         try {
             const decoded = jwt.verify(token, CONFIG.jwtSecret);
@@ -193,7 +196,7 @@ const passwordResetTokenVerifyMiddleware = async (req, res, next) => {
             throw new HttpError('srv_token_expired', 400, 'Token expired', 'passwordreset');
         }
 
-        loggers.passwordreset.info('Token verified');
+        passwordResetLogger.info('Token verified');
         next();
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_token_expired', 500));
@@ -203,12 +206,12 @@ const passwordResetTokenVerifyMiddleware = async (req, res, next) => {
 const sendRequestRenewPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
-        loggers.auth.info(`Password reset request`, { email });
+        authLogger.info(`Password reset request`, { email });
 
         const user = await User.findOne({ email });
 
         if (!user) {
-            loggers.auth.info(`User not found`);
+            authLogger.info(`User not found`);
             return res.status(200).json({ success: true, msg: 'srv_password_reset_send_to_email' });
         }
 
@@ -224,7 +227,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
             );
         }
 
-        loggers.auth.info(`Password reset email sent`, { token });
+        authLogger.info(`Password reset email sent`, { token });
 
         return res.status(200).json({
             success: true,
@@ -240,7 +243,7 @@ const updatePassword = async (req, res, next) => {
         const email = req.email;
         const body = req.body;
 
-        loggers.auth.info(`Password update attempt`, { email });
+        authLogger.info(`Password update attempt`, { email });
 
         if (!body || !body.newPassword || !body.confirmNewPassword) {
             throw new HttpError('srv_invalid_request', 400, 'Invalid request', 'passwordreset');
@@ -260,7 +263,7 @@ const updatePassword = async (req, res, next) => {
         user.tokens = [];
         await user.save();
 
-        loggers.auth.info(`Password updated`);
+        authLogger.info(`Password updated`);
 
         return res.status(200).json({
             success: true,

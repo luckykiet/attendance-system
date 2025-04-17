@@ -68,10 +68,12 @@ const applyBreak = async (req, res, next) => {
         }
 
         if (breakTemplate) {
-            const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
-
-            if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
-                throw new HttpError('srv_outside_time', 400);
+            const breakTemplateTime = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
+            if (breakTemplateTime) {
+                const { startTime: breakStartTime, endTime: breakEndTime } = breakTemplateTime;
+                if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+                    throw new HttpError('srv_outside_time', 400);
+                }
             }
         }
 

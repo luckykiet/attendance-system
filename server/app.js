@@ -13,6 +13,9 @@ const bodyParser = require('body-parser')
 const Database = require('./db')
 const { generateDemoData } = require('./demo')
 const { CONFIG } = require('./configs')
+const { finalizeDailyAttendanceAggregation } = require('./utils')
+const dayjs = require('dayjs')
+dayjs.extend(require('dayjs/plugin/customParseFormat'))
 
 if (!CONFIG.isTest) {
   Database.getInstance()
@@ -91,6 +94,17 @@ if (process.env.NODE_ENV !== 'test') {
   cron.schedule('0 * * * *', () => {
     console.log('Running hourly demo data generation...');
     generateDemoData();
+  });
+
+  cron.schedule('0 2 * * *', async () => {
+    const date = dayjs().subtract(1, 'day').format('YYYYMMDD');
+    console.log(`[CRON] Finalizing DailyAttendance for ${date}`);
+    try {
+      await finalizeDailyAttendanceAggregation(date);
+      console.log('[CRON] Finalization successful');
+    } catch (e) {
+      console.error('[CRON] Finalization failed:', e.message);
+    }
   });
 }
 

@@ -95,6 +95,7 @@ misc_cafe	café	quán nước	kavárna
 misc_camera_to_do_registration	use camera to scan registration QR Code	dùng camera để scan mã QR đăng ký	používejte kameru pro skenování registračního QR kódu
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_cancel_device_pairing	cancel device pairing	hủy ghép nối thiết bị	zrušit párování zařízení
+misc_cancel_pairing_succeed	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cancel_pairing_succeed 	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
@@ -747,8 +748,10 @@ srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčk
 srv_created	created	đã được tạo	vytvořeno
 srv_daily_attendance_not_found	daily attendance not found	Không tìm thấy dữ liệu điểm danh	Denní docházka nenalezena
 srv_device_already_registered	device already registered	thiết bị đã được đăng ký	zařízení je již registrováno
+srv_missing_aggregation	missing aggregation	thiếu tổng hợp	chybí agregace
 srv_device_not_found	device not found	không tìm thấy thiết bị	zařízení nenalezeno
 srv_device_pairing_cancellation_failed	device pairing cancellation failed	đã hủy ghép nối thiết bị thất bại	zrušení párování zařízení selhalo
+srv_missing_attendance	missing attendance	thiếu dữ liệu điểm danh	není k dispozici docházka
 srv_device_unregistered	Device unregistered	Thiết bị đã hủy đăng ký	Zařízení odregistrováno
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
@@ -756,6 +759,7 @@ srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
 srv_email_exists	E-mail exists	E-mail tồn tại	E-mail existuje
 srv_email_required	Email is required	Email là bắt buộc	E-mail je povinný
+srv_employee_deleted	Employee deleted	Nhân viên đã bị xóa	Zaměstnanec smazán
 srv_employee_device_pairing_canceled	employee device pairing canceled	đã hủy ghép nối thiết bị nhân viên	zrušeno párování zařízení zaměstnance
 srv_employee_exists	employee exists	nhân viên đã tồn tại	zaměstnanec již existuje
 srv_employee_not_employed	you are not employed for this workplace	bạn không được chỉ định làm việc tại đây	nejste zaměstnán na tomto pracovišti

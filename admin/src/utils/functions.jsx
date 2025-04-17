@@ -294,13 +294,17 @@ export const clearAllQueries = (queryClient) => {
 }
 
 export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat = TIME_FORMAT) => {
-  const { startTime: workStart, endTime: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
-
-  const { startTime: breakStart, endTime: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
+  const isInsideWorkingHours = isBreakWithinShift({
+    breakStart: brk.start,
+    breakEnd: brk.end,
+    shiftStart: workingHours.start,
+    shiftEnd: workingHours.end,
+    timeFormat,
+  });
 
   return {
-    isStartValid: breakStart.isSameOrAfter(workStart),
-    isEndValid: breakEnd.isSameOrBefore(workEnd),
+    isStartValid: isInsideWorkingHours,
+    isEndValid: isInsideWorkingHours,
   };
 };
 
@@ -421,4 +425,12 @@ export const getStartEndTime = ({ start, end, baseDay = dayjs(), timeFormat = TI
   }
 
   return { startTime, endTime, isOverNight };
+}
+
+export const isOverNight = ({ start, end, timeFormat = TIME_FORMAT }) => {
+  if (!start || !end) return false;
+  const startTime = dayjs(start, timeFormat, true);
+  const endTime = dayjs(end, timeFormat, true);
+  if (!startTime.isValid() || !endTime.isValid()) return false;
+  return endTime.isBefore(startTime);
 }

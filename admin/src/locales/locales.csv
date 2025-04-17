@@ -95,6 +95,7 @@ misc_cafe	café	quán nước	kavárna
 misc_camera_to_do_registration	use camera to scan registration QR Code	dùng camera để scan mã QR đăng ký	používejte kameru pro skenování registračního QR kódu
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_cancel_device_pairing	cancel device pairing	hủy ghép nối thiết bị	zrušit párování zařízení
+misc_cancel_pairing_succeed	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cancel_pairing_succeed 	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
@@ -756,6 +757,7 @@ srv_draft_saved	Draft saved	Bản nháp đã được lưu	Koncept uložen
 srv_duplicate	already exists	đã tồn tại	již existuje
 srv_email_exists	E-mail exists	E-mail tồn tại	E-mail existuje
 srv_email_required	Email is required	Email là bắt buộc	E-mail je povinný
+srv_employee_deleted	Employee deleted	Nhân viên đã bị xóa	Zaměstnanec smazán
 srv_employee_device_pairing_canceled	employee device pairing canceled	đã hủy ghép nối thiết bị nhân viên	zrušeno párování zařízení zaměstnance
 srv_employee_exists	employee exists	nhân viên đã tồn tại	zaměstnanec již existuje
 srv_employee_not_employed	you are not employed for this workplace	bạn không được chỉ định làm việc tại đây	nejste zaměstnán na tomto pracovišti

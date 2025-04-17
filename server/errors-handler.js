@@ -1,11 +1,12 @@
 const fs = require('fs');
 const HttpError = require('./constants/http-error');
-const { loggers } = require('./utils');
+const { getLogger } = require('./utils');
 
 const errorLogger = (err, req, res, next) => {
   console.log(err)
   if (err instanceof HttpError) {
-    loggers[err.logger].error(err.logMessage || err.message, {
+    const logger = getLogger(err.logger);
+    logger.error(err.logMessage || err.message, {
       route: req.originalUrl,
       method: req.method,
       code: err.code,

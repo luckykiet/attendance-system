@@ -60,7 +60,9 @@ const DayField = ({ day }) => {
                 onClick={() => {
                     const start = watch(`workingHours.${day}.start`);
                     const end = watch(`workingHours.${day}.end`);
-                    const { startTime, endTime, isOverNight } = getStartEndTime({ start, end });
+                    const workingHourTime = getStartEndTime({ start, end });
+                    if (!workingHourTime) return;
+                    const { startTime, endTime, isOverNight } = workingHourTime;
                     append({ start: startTime.format(TIME_FORMAT) || '11:00', end: endTime.format(TIME_FORMAT) || '13:00', name: 'Break', duration: 60, isOverNight })
                 }}
             >

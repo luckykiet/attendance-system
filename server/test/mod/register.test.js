@@ -183,7 +183,7 @@ describe(`POST ${routePrefix}`, () => {
         // Case 1: duration too low (< 15)
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload1.specificBreaks.mon.lunch.isAvailable = true;
-        payload1.specificBreaks.mon.lunch.duration = 5;
+        payload1.specificBreaks.mon.lunch.duration = 1;
 
         const res1 = await request
             .post(`${routePrefix}`)
@@ -273,9 +273,14 @@ describe(`POST ${routePrefix}`, () => {
 
         // Case 7: out of working hours
         const payload7 = JSON.parse(JSON.stringify(validRegisterPayload));
+
+        payload7.workingHours.mon.start = '23:48';
         payload7.workingHours.mon.end = '23:49';
-        payload7.specificBreaks.mon.dinner.end = '23:50';
+        payload7.specificBreaks.mon.dinner.start = '23:49';
+        payload7.specificBreaks.mon.dinner.end = '23:51';
         payload7.specificBreaks.mon.dinner.isAvailable = true;
+        payload7.specificBreaks.mon.breakfast.isAvailable = false;
+        payload7.specificBreaks.mon.lunch.isAvailable = false;
 
         const res7 = await request
             .post(`${routePrefix}`)
@@ -284,7 +289,7 @@ describe(`POST ${routePrefix}`, () => {
 
         expect(res7.status).toBe(400);
         expect(res7.body.msg.errors).toContainEqual({
-            'specificBreaks.mon.dinner.end': 'srv_invalid_break_range'
+            'specificBreaks.mon.dinner.start': 'srv_invalid_break_range'
         });
 
         // Case 8: duration too low (< 85)
@@ -555,7 +560,7 @@ describe(`PUT ${routePrefix}`, () => {
         const payload1 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload1._id = createdId;
         payload1.specificBreaks.mon.lunch.isAvailable = true;
-        payload1.specificBreaks.mon.lunch.duration = 5;
+        payload1.specificBreaks.mon.lunch.duration = 1;
 
         const res1 = await request
             .put(`${routePrefix}`)
@@ -653,8 +658,12 @@ describe(`PUT ${routePrefix}`, () => {
         // Case 7: out of working hours
         const payload7 = JSON.parse(JSON.stringify(validRegisterPayload));
         payload7._id = createdId;
+        payload7.workingHours.mon.start = '23:48';
         payload7.workingHours.mon.end = '23:49';
-        payload7.specificBreaks.mon.dinner.end = '23:50';
+        payload7.specificBreaks.mon.breakfast.isAvailable = false;
+        payload7.specificBreaks.mon.lunch.isAvailable = false;
+        payload7.specificBreaks.mon.dinner.start = '23:50';
+        payload7.specificBreaks.mon.dinner.end = '23:51';
         payload7.specificBreaks.mon.dinner.isAvailable = true;
 
         const res7 = await request
@@ -664,7 +673,7 @@ describe(`PUT ${routePrefix}`, () => {
 
         expect(res7.status).toBe(400);
         expect(res7.body.msg.errors).toContainEqual({
-            'specificBreaks.mon.dinner.end': 'srv_invalid_break_range'
+            'specificBreaks.mon.dinner.start': 'srv_invalid_break_range'
         });
 
         // Case 8: duration too low (< 85)

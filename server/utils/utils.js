@@ -16,6 +16,8 @@ const { DAYS_OF_WEEK, TIME_FORMAT } = require('../constants');
 
 const { createLoggerConfig } = require('./loggers')
 const dayjs = require("dayjs")
+const DailyAttendance = require("../models/DailyAttendance")
+const Attendance = require("../models/Attendance")
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
 dayjs.extend(require('dayjs/plugin/isSameOrAfter'))
@@ -238,6 +240,68 @@ const isBreakWithinShift = ({
     return bStart.isBefore(sEnd) && bEnd.isAfter(sStart);
 };
 
+const finalizeDailyAttendanceAggregation = async (date) => {
+    const dayjs = require('dayjs');
+    const targetDate = dayjs(date, 'YYYYMMDD');
+    if (!targetDate.isValid()) throw new Error('Invalid date');
+
+    const numericDate = parseInt(targetDate.format('YYYYMMDD'));
+    const allDailyAttendances = await DailyAttendance.find({ date: numericDate });
+
+    for (const daily of allDailyAttendances) {
+        const attendanceDocs = await Attendance.find({ dailyAttendanceId: daily._id });
+
+        const missingCheckIn = [];
+        const missingCheckOut = [];
+        const workingHoursByEmployee = {};
+
+        for (const expected of daily.expectedEmployees || []) {
+            const eid = expected.employeeId.toString();
+            const attendance = attendanceDocs.find(a =>
+                a.employeeId.toString() === eid &&
+                a.shiftId.toString() === expected.shiftId.toString()
+            );
+
+            if (!attendance) {
+                missingCheckIn.push(expected.employeeId);
+            } else {
+                if (!attendance.checkOutTime) {
+                    missingCheckOut.push(expected.employeeId);
+                } else {
+                    const start = dayjs(attendance.checkInTime);
+                    const end = dayjs(attendance.checkOutTime);
+
+                    let totalBreaks = 0;
+                    let totalPauses = 0;
+
+                    (attendance.breaks || []).forEach(b => {
+                        if (b.start && b.end) {
+                            totalBreaks += dayjs(b.end).diff(dayjs(b.start), 'minute');
+                        }
+                    });
+
+                    (attendance.pauses || []).forEach(p => {
+                        if (p.start && p.end) {
+                            totalPauses += dayjs(p.end).diff(dayjs(p.start), 'minute');
+                        }
+                    });
+
+                    const worked = end.diff(start, 'minute') - totalBreaks - totalPauses;
+                    workingHoursByEmployee[eid] = worked;
+                }
+            }
+        }
+
+        daily.missingCheckIn = missingCheckIn;
+        daily.missingCheckOut = missingCheckOut;
+        daily.workingHoursByEmployee = workingHoursByEmployee;
+
+        await daily.save();
+    }
+
+    return { success: true, updated: allDailyAttendances.length };
+};
+
 const utils = {
     fetchAresWithTin: async (tin) => {
         const aresLoggers = winston.loggers.get('ares')
@@ -309,17 +373,20 @@ const utils = {
         return CONFIG.googleMapsApiKeys[domain] || '';
     },
     _loggers: null,
-    get loggers() {
-        if (!this._loggers) {
-            const files = ['http', 'auth', 'signup', 'passwordreset', 'ares'];
-            this._loggers = {};
 
-            files.forEach(file => {
-                createLoggerConfig({ name: file });
-                this._loggers[file] = winston.loggers.get(file);
-            });
+    getLogger(filePath) {
+        const baseName = path.basename(filePath, '.js').toLowerCase();
+
+        if (!this._loggers) {
+            this._loggers = {};
         }
-        return this._loggers;
+
+        if (!this._loggers[baseName]) {
+            createLoggerConfig({ name: baseName });
+            this._loggers[baseName] = winston.loggers.get(baseName);
+        }
+
+        return this._loggers[baseName];
     },
     getTranslations,
     isValidTime(time, timeFormat = TIME_FORMAT) {
@@ -329,13 +396,16 @@ const utils = {
         return isOverNight(start, end, timeFormat)
     },
     validateBreaksWithinWorkingHours: (brk, workingHours, timeFormat = TIME_FORMAT) => {
-        const { startTime: workStart, endTime: workEnd } = getStartEndTime({ start: workingHours.start, end: workingHours.end, timeFormat });
-
-        const { startTime: breakStart, endTime: breakEnd } = getStartEndTime({ start: brk.start, end: brk.end, timeFormat });
-
+        const isInsideWorkingHours = isBreakWithinShift({
+            breakStart: brk.start,
+            breakEnd: brk.end,
+            shiftStart: workingHours.start,
+            shiftEnd: workingHours.end,
+            timeFormat,
+        });
         return {
-            isStartValid: breakStart.isSameOrAfter(workStart),
-            isEndValid: breakEnd.isSameOrBefore(workEnd),
+            isStartValid: isInsideWorkingHours,
+            isEndValid: isInsideWorkingHours,
         };
     },
     isBetweenTime: ({ time, start, end, isToday = true, timeFormat = TIME_FORMAT }) => {
@@ -360,6 +430,9 @@ const utils = {
     },
     isBreakWithinShift: ({ breakStart, breakEnd, shiftStart, shiftEnd, timeFormat = TIME_FORMAT }) => {
         return isBreakWithinShift({ breakStart, breakEnd, shiftStart, shiftEnd, timeFormat })
-    }
+    },
+    finalizeDailyAttendanceAggregation: (date) => {
+        return finalizeDailyAttendanceAggregation(date)
+    },
 }
 module.exports = utils

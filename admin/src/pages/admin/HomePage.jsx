@@ -106,8 +106,11 @@ export default function HomePage() {
                   {registers.map((register) => {
                     const yesterdayWorkingHours = register.workingHours[yesterdayKey];
 
-                    const { startTime: start, endTime: end } = getStartEndTime({ start: yesterdayWorkingHours.start, end: yesterdayWorkingHours.end, isToday: false });
+                    const yesterdayWorkingHour = getStartEndTime({ start: yesterdayWorkingHours.start, end: yesterdayWorkingHours.end, isToday: false });
 
+                    if (!yesterdayWorkingHour) return null;
+
+                    const { startTime: start, endTime: end } = yesterdayWorkingHour;
                     const isToday = !now.isBetween(start, end);
                     const todayWorkingHours = register.workingHours[todayKey];
 
@@ -144,7 +147,7 @@ export default function HomePage() {
                                 color: status === 'open' ? 'success.main' : 'error.main',
                               }}
                             >
-                               {t(daysOfWeeksTranslations[isToday ? todayKey : yesterdayKey].name)}: {t(message)}
+                              {t(daysOfWeeksTranslations[isToday ? todayKey : yesterdayKey].name)}: {t(message)}
                             </Typography>}
                             {!register.isAvailable && <Typography
                               variant="body2"

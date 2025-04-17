@@ -64,11 +64,15 @@ const applySpecificBreak = async (req, res, next) => {
             throw new HttpError('srv_break_not_found', 400);
         }
 
-        const { startTime: breakStartTime, endTime: breakEndTime } = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
+        const breakTemplateTime = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
 
-        if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
-            throw new HttpError('srv_outside_time', 400);
+        if (breakTemplateTime) {
+            const { startTime: breakStartTime, endTime: breakEndTime } = breakTemplateTime;
+            if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+                throw new HttpError('srv_outside_time', 400);
+            }
         }
+
 
         let attendanceBreak = null;
 
@@ -134,7 +138,7 @@ const applySpecificBreak = async (req, res, next) => {
             latitude,
             longitude,
             distance: distanceInMeters,
-        }; 
+        };
 
         const breakIndex = attendance.breaks.findIndex((b) => b._id.equals(attendanceBreak._id));
         if (breakIndex !== -1) {

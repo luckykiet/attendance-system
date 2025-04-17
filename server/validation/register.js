@@ -22,11 +22,11 @@ const validateSpecificBreaks = () => {
                 }),
 
             body(`specificBreaks.${day}.${type}.duration`)
-                .notEmpty().withMessage('misc_required')
-                .isInt({ min: 15, max: 1440 }).withMessage('srv_invalid_duration'),
+                .notEmpty().withMessage('misc_required').bail()
+                .isInt({ min: 15, max: 1440 }).withMessage('srv_invalid_duration').bail(),
 
             body(`specificBreaks.${day}.${type}.isOverNight`)
-                .isBoolean().withMessage('misc_required')
+                .isBoolean().withMessage('misc_required').bail()
                 .custom((value, { req }) => {
                     const start = req.body.specificBreaks?.[day]?.[type]?.start;
                     const end = req.body.specificBreaks?.[day]?.[type]?.end;
@@ -69,7 +69,7 @@ const validateBreaks = () => {
     return DAYS_OF_WEEK.flatMap((day) => [
         body(`breaks.${day}`)
             .isArray()
-            .withMessage('misc_required')
+            .withMessage('misc_required').bail()
             .custom((breaks, { req }) => {
                 const workingHour = req.body.workingHours?.[day];
                 if (!workingHour) return true;

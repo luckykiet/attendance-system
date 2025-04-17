@@ -25,7 +25,7 @@ import useTranslation from '@/hooks/useTranslation';
 import CustomPopover from '@/components/CustomPopover';
 import PropTypes from 'prop-types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { daysOfWeeksTranslations, generateDefaultSpecificBreak, hourToMinutes, minutesToHour, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, generateDefaultSpecificBreak, hourToMinutes, isOverNight, minutesToHour, TIME_FORMAT } from '@/utils';
 import { useEffect } from 'react';
 import _ from 'lodash';
 import FeedbackMessage from '../FeedbackMessage';
@@ -76,6 +76,15 @@ export const DialogSpecificBreak = ({
         }
     }, [field, mainForm, reset, workingHours]);
 
+    const start = watch('start');
+    const end = watch('end');
+
+    useEffect(() => {
+        if (start && end) {
+            const newIsOverNight = isOverNight({ start, end });
+            setValue('isOverNight', newIsOverNight, { shouldValidate: true, shouldDirty: true });
+        }
+    }, [end, setValue, start])
 
     const onSubmit = (data) => {
         onSave(data);
@@ -114,10 +123,6 @@ export const DialogSpecificBreak = ({
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                                     onChange={(date) => {
                                                         const formattedDate = date.format(TIME_FORMAT);
-                                                        const endTime = dayjs(watch(`end`), TIME_FORMAT);
-                                                        const isOverNight = date.isAfter(endTime);
-
-                                                        setValue(`isOverNight`, isOverNight);
                                                         field.onChange(formattedDate);
                                                     }}
                                                     label={t('msg_from')}
@@ -143,10 +148,6 @@ export const DialogSpecificBreak = ({
                                                     value={field.value ? dayjs(field.value, TIME_FORMAT) : null}
                                                     onChange={(date) => {
                                                         const formattedDate = date.format(TIME_FORMAT);
-                                                        const startTime = dayjs(watch(`end`), TIME_FORMAT);
-                                                        const isOverNight = startTime.isAfter(date);
-
-                                                        setValue(`isOverNight`, isOverNight);
                                                         field.onChange(formattedDate);
                                                     }}
                                                     label={t('msg_to')}

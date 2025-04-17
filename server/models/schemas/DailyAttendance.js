@@ -1,28 +1,47 @@
 const mongoose = require('mongoose');
-const WorkingHourSchema = require('./WorkingHour');
-const { setUpdatedAt } = require('./utils');
 const Schema = mongoose.Schema;
+const { setUpdatedAt } = require('./utils');
+const WorkingHourSchema = require('./WorkingHour');
 
 const DailyAttendanceSchema = new Schema(
-    {
-        date: { type: Number, required: true }, // Date in YYYYMMDD
-        workingHour: { type: WorkingHourSchema, required: true },
-        registerId: { type: Schema.Types.ObjectId, required: true },
-        employeeIds: { type: [Schema.Types.ObjectId], default: [], required: true }, // Array of employee IDs expected to work on this day
-        checkIns: { type: [Schema.Types.ObjectId], default: [] },
-        checkOuts: { type: [Schema.Types.ObjectId], default: [] },
-        checkInsLate: { type: [Schema.Types.ObjectId], default: [] }, // Array of Attendance IDs who checked in late
-        checkInsLateByEmployee: { type: [Schema.Types.ObjectId], default: [] }, // Array of Employee IDs who checked in late
-        checkOutsEarly: { type: [Schema.Types.ObjectId], default: [] }, // Array of Attendance IDs who checked out early
-        checkOutsEarlyByEmployee: { type: [Schema.Types.ObjectId], default: [] }, // Array of Employee IDs who checked out early
+  {
+    date: { type: Number, required: true }, // Format: YYYYMMDD
+    registerId: { type: Schema.Types.ObjectId, required: true },
+    workingHour: { type: WorkingHourSchema, required: true }, // optional: register-wide working hour config
+
+    // Expected employees for this day, by WorkingAt & shift
+    expectedEmployees: [{
+      employeeId: { type: Schema.Types.ObjectId, required: true },
+      shiftId: { type: Schema.Types.ObjectId, required: true },
+      shiftStart: { type: String, required: true }, // "08:00"
+      shiftEnd: { type: String, required: true },   // "16:00"
+      isOverNight: { type: Boolean, default: false }
+    }],
+
+    // Actual attendances (linked to Attendance model)
+    attendanceIds: [{ type: Schema.Types.ObjectId, ref: 'Attendance' }],
+
+    // Aggregated evaluation
+    checkedInOnTime: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    checkedInLate: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    missingCheckIn: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+
+    checkedOutOnTime: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    checkedOutEarly: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    missingCheckOut: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+
+    workingHoursByEmployee: {
+      type: Map,
+      of: Number // minutes worked
     },
-    {
-        timestamps: true,
-    }
+  },
+  {
+    timestamps: true,
+  }
 );
 
 DailyAttendanceSchema.index({ date: 1, registerId: 1 }, { unique: true });
 
 DailyAttendanceSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], setUpdatedAt);
 
-module.exports = DailyAttendanceSchema
+module.exports = DailyAttendanceSchema;

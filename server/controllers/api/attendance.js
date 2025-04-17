@@ -8,7 +8,7 @@ const HttpError = require("../../constants/http-error");
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const isBetween = require('dayjs/plugin/isBetween');
-const { DAYS_OF_WEEK } = require('../../constants');
+const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
 const _ = require('lodash');
 const { DAY_KEYS } = require('../../configs');
 
@@ -20,65 +20,91 @@ const getDailyAttendance = async ({ date = null, registerId }) => {
         if (!registerId) {
             throw 'srv_register_not_found';
         }
-        const register = await Register.findOne({ _id: registerId }).exec();
 
+        const register = await Register.findOne({ _id: registerId }).exec();
         if (!register) {
             throw 'srv_register_not_found';
         }
 
-        const dateToUse = date ? dayjs(date, 'YYYYMMDD', true) : dayjs();
-
+        const dateToUse = date ? dayjs(date.toString(), 'YYYYMMDD', true) : dayjs();
         if (date && !dateToUse.isValid()) {
             throw 'srv_invalid_date';
         }
 
-        let dailyAttendance = await DailyAttendance.findOne({ date: parseInt(dateToUse.format('YYYYMMDD')), registerId }).exec();
+        const numericDate = parseInt(dateToUse.format('YYYYMMDD'));
+        let dailyAttendance = await DailyAttendance.findOne({ date: numericDate, registerId }).exec();
 
         const dayIndex = dateToUse.day();
         const dayKey = DAYS_OF_WEEK[dayIndex];
-        const hours = register.workingHours[dayKey];
+        const workingHours = register.workingHours?.[dayKey] || null;
+
         if (!dailyAttendance) {
-            dailyAttendance = await new DailyAttendance({
-                date: parseInt(dateToUse.format('YYYYMMDD')),
-                workingHour: hours,
+            dailyAttendance = new DailyAttendance({
+                date: numericDate,
                 registerId,
-                employeeIds: [],
-                checkIns: [],
-                checkOuts: [],
-                checkInsLate: [],
-                checkOutsEarly: [],
-            }).save();
+                workingHour: workingHours,
+                expectedEmployees: [],
+                attendanceIds: [],
+                checkedInOnTime: [],
+                checkedInLate: [],
+                checkedOutOnTime: [],
+                checkedOutEarly: [],
+                missingCheckOut: [],
+                workingHoursByEmployee: {},
+            });
         } else {
-            // update the working hours
-            dailyAttendance.workingHour = hours;
+            dailyAttendance.workingHour = workingHours;
         }
-        // get all employees working at the register
+
         const orConditions = DAY_KEYS.map((day) => ({
             [`shifts.${day}.0`]: { $exists: true }
         }));
         const employeesWorkingAts = await WorkingAt.find({
             registerId,
-            $or: orConditions
-        }).select('employeeId').exec();
+            $or: orConditions,
+        }).select('employeeId shifts').exec();
 
-        // update the employeeIds in the daily attendance
-        dailyAttendance.employeeIds = employeesWorkingAts.map(w => w.employeeId);
+        const expectedEmployees = [];
+
+        for (const workingAt of employeesWorkingAts) {
+            const employeeId = workingAt.employeeId;
+            const shiftsToday = workingAt.shifts.get(dayKey) || [];
+            for (const shift of shiftsToday) {
+                if (shift.isAvailable) {
+                    expectedEmployees.push({
+                        employeeId,
+                        shiftId: shift._id,
+                        shiftStart: shift.start,
+                        shiftEnd: shift.end,
+                        isOverNight: shift.isOverNight || false,
+                    });
+                }
+            }
+        }
+
+        dailyAttendance.expectedEmployees = expectedEmployees;
+
         await dailyAttendance.save();
         return dailyAttendance;
     } catch (error) {
-        console.log(error)
+        console.error(error);
         return typeof error === 'string' ? error : 'srv_failed_to_get_daily_attendance';
     }
 };
 
-// date Date() format
-const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendanceId }) => {
+// const aggregation = {
+//      attendanceId
+//     checkInTime: date or null,
+//     checkOutTime: date or null,
+// }
+const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAttendanceId }) => {
     try {
         if (!dailyAttendanceId) {
             throw 'srv_daily_attendance_not_found';
         }
-        if (!date) {
-            throw 'srv_missing_date';
+
+        if (!aggregation) {
+            throw 'srv_missing_aggregation';
         }
 
         const dailyAttendance = await DailyAttendance.findOne({ _id: dailyAttendanceId }).exec();
@@ -87,51 +113,106 @@ const updateDailyAttendance = async ({ type, date, attendanceId, dailyAttendance
             throw 'srv_daily_attendance_not_found';
         }
 
-        const dateToUse = dayjs(date);
-
-        if (!dateToUse.isValid() || parseInt(dateToUse.format('YYYYMMDD')) !== dailyAttendance.date) {
-            throw 'srv_invalid_date';
-        }
-
-        if (!type) {
-            throw 'srv_missing_type';
-        }
-
-        if (!['checkIn', 'checkOut'].includes(type)) {
-            throw 'srv_invalid_type';
+        if (!attendanceId || !aggregation) {
+            throw 'srv_missing_attendance';
         }
 
         const attendance = await Attendance.findOne({ _id: attendanceId }).exec();
+
         if (!attendance) {
             throw 'srv_attendance_not_found';
         }
-        const workingAt = await WorkingAt.findOne({ employeeId: attendance.employeeId, registerId: dailyAttendance.registerId }).exec();
+
+        const workingAt = await WorkingAt.findOne({ _id: attendance.workingAtId }).exec();
+
         if (!workingAt) {
             throw 'srv_employee_not_working_here';
         }
 
-        const dayIndex = dateToUse.day();
-        const dayKey = DAYS_OF_WEEK[dayIndex];
         // get individual check in/out times
-        if (type === 'checkIn') {
-            dailyAttendance.checkIns.push(attendanceId);
-            const employeeCheckInTime = dayjs(workingAt.workingHours[dayKey].start, 'HH:mm', true);
-            if (dateToUse.isAfter(employeeCheckInTime)) {
-                dailyAttendance.checkInsLate.push(attendanceId);
-                dailyAttendance.checkInsLateByEmployee.push(attendance.employeeId);
+        dailyAttendance.attendanceIds = _.uniq([...dailyAttendance.attendanceIds.map(id => id.toString()), attendance._id.toString()]);
+        const now = dayjs();
+
+        const employeeId = workingAt.employeeId;
+        if (aggregation.checkOutTime) {
+            const expected = dailyAttendance.expectedEmployees.find(e =>
+                employeeId.equals(e.employeeId) && attendance.shiftId.equals(e.shiftId)
+            );
+
+            if (expected) {
+                const shiftEnd = dayjs(expected.shiftEnd, TIME_FORMAT);
+                if (now.isBefore(shiftEnd)) {
+                    dailyAttendance.checkedOutEarly = _.uniq([...dailyAttendance.checkedOutEarly, workingAt.employeeId]);
+                } else {
+                    dailyAttendance.checkedOutOnTime = _.uniq([...dailyAttendance.checkedOutOnTime, workingAt.employeeId]);
+                }
             }
-        } else {
-            dailyAttendance.checkOuts.push(attendanceId);
-            const employeeCheckOutTime = dayjs(workingAt.workingHours[dayKey].end, 'HH:mm', true);
-            if (dateToUse.isBefore(employeeCheckOutTime)) {
-                dailyAttendance.checkOutsEarly.push(attendanceId);
-                dailyAttendance.checkOutsEarlyByEmployee.push(attendance.employeeId);
+
+            // Calculate worked minutes
+            const checkIn = dayjs(attendance.checkInTime);
+            const checkOut = dayjs(attendance.checkOutTime);
+            let totalExceededBreaks = 0;
+            let totalPauses = 0;
+
+            // only calculate exceeded breaks duration
+            // if employee did not check out, break will be ended at shift end
+            let needUpdate = false
+            const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: dayjs(dailyAttendance.date.toString(), 'YYYYMMDD') });
+
+            if (!attendanceTime) {
+                throw 'srv_invalid_shift';
+            }
+
+            attendance.breaks?.forEach(b => {
+                const breakDuration = b.breakHours?.duration || 0;
+                if (breakDuration) {
+                    if (!b.checkOutTime) {
+                        const { endTime: shiftEndTime } = attendanceTime;
+                        needUpdate = true
+                        b.checkOutTime = shiftEndTime.toDate();
+                    }
+                    const realDuration = dayjs(b.checkOutTime).diff(dayjs(b.checkInTime), 'minute');
+                    totalExceededBreaks += realDuration > 0 && realDuration > breakDuration ? realDuration - breakDuration : 0;
+                }
+            });
+
+            attendance.pauses?.forEach(p => {
+                if (!p.checkOutTime) {
+                    const { endTime: shiftEndTime } = attendanceTime;
+                    needUpdate = true
+                    p.checkOutTime = shiftEndTime.toDate();
+                }
+                const realDuration = dayjs(p.checkOutTime).diff(dayjs(p.checkInTime), 'minute');
+                totalPauses += realDuration > 0 ? realDuration : 0;
+            });
+
+            if (needUpdate) {
+                await attendance.save();
+            }
+
+            const totalWorked = checkOut.diff(checkIn, 'minute') - totalExceededBreaks - totalPauses;
+            dailyAttendance.workingHoursByEmployee.set(employeeId.toString(), totalWorked);
+        }
+        else if (aggregation.checkInTime) {
+            const expected = dailyAttendance.expectedEmployees.find(e =>
+                employeeId.equals(e.employeeId) && attendance.shiftId.equals(e.shiftId)
+            );
+
+            if (expected) {
+                const shiftStart = dayjs(expected.shiftStart, TIME_FORMAT);
+                if (now.isAfter(shiftStart)) {
+                    dailyAttendance.checkedInLate = _.uniq([...dailyAttendance.checkedInLate, workingAt.employeeId]);
+                } else {
+                    dailyAttendance.checkedInOnTime = _.uniq([...dailyAttendance.checkedInOnTime, workingAt.employeeId]);
+                }
             }
         }
+
         await dailyAttendance.save();
         return dailyAttendance;
     }
     catch (error) {
+        console.log(error)
         return typeof error === 'string' ? error : 'srv_failed_update_daily_attendance';
     }
 }
@@ -244,15 +325,14 @@ const makeAttendance = async (req, res, next) => {
         }
 
         const { endTime: shiftEndTime } = shiftTime;
-     
 
-        const dailyAttendance = await getDailyAttendance({ registerId });
+        const dailyAttendance = await getDailyAttendance({ date: now.format('YYYYMMDD'), registerId });
 
         if (typeof dailyAttendance === 'string') {
             throw new HttpError(dailyAttendance, 400);
         }
 
-        if (dailyAttendance.employeeIds.indexOf(employee._id) === -1) {
+        if (dailyAttendance.expectedEmployees.findIndex(e => e.employeeId.toString() === employee._id.toString() && shift._id.equals(e.shiftId)) === -1) {
             throw new HttpError('srv_you_not_working_today', 400);
         }
 
@@ -260,7 +340,7 @@ const makeAttendance = async (req, res, next) => {
             throw new HttpError('srv_workplace_closed_today', 400);
         }
         const attendanceQuery = {
-            // dailyAttendanceId: dailyAttendance._id,
+            dailyAttendanceId: dailyAttendance._id,
             workingAtId: workingAt._id,
             shiftId: shift._id,
         };
@@ -304,7 +384,13 @@ const makeAttendance = async (req, res, next) => {
             await attendance.save();
 
             try {
-                const update = await updateDailyAttendance({ type: 'checkOut', date: now.toDate(), attendanceId: attendance._id, dailyAttendanceId: dailyAttendance._id });
+                const update = await updateDailyAttendance({
+                    aggregation: {
+                        checkOutTime: attendance.checkOutTime,
+                    },
+                    attendanceId: attendance._id,
+                    dailyAttendanceId: dailyAttendance._id
+                });
                 if (typeof update === 'string') {
                     throw update;
                 }
@@ -338,7 +424,15 @@ const makeAttendance = async (req, res, next) => {
         await newAttendance.save();
 
         try {
-            const update = await updateDailyAttendance({ type: 'checkIn', date: now.toDate(), attendanceId: newAttendance._id, dailyAttendanceId: dailyAttendance._id });
+            const update = await updateDailyAttendance({
+                aggregation: {
+
+                    checkInTime,
+                },
+                attendanceId: newAttendance._id,
+                dailyAttendanceId: dailyAttendance._id
+            });
+
             if (typeof update === 'string') {
                 throw update;
             }
