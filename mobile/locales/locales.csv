@@ -748,10 +748,8 @@ srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčk
 srv_created	created	đã được tạo	vytvořeno
 srv_daily_attendance_not_found	daily attendance not found	Không tìm thấy dữ liệu điểm danh	Denní docházka nenalezena
 srv_device_already_registered	device already registered	thiết bị đã được đăng ký	zařízení je již registrováno
-srv_missing_aggregation	missing aggregation	thiếu tổng hợp	chybí agregace
 srv_device_not_found	device not found	không tìm thấy thiết bị	zařízení nenalezeno
 srv_device_pairing_cancellation_failed	device pairing cancellation failed	đã hủy ghép nối thiết bị thất bại	zrušení párování zařízení selhalo
-srv_missing_attendance	missing attendance	thiếu dữ liệu điểm danh	není k dispozici docházka
 srv_device_unregistered	Device unregistered	Thiết bị đã hủy đăng ký	Zařízení odregistrováno
 srv_documents_generate_failed	Generate documents failed	Tạo đơn thất bại	Generování dokumentů selhalo
 srv_documents_generated	Documents generated	Đơn đã tạo	Documenty byly vygenerovány
@@ -881,6 +879,7 @@ srv_invalid_zip	Invalid ZIP code	Mã bưu điện không hợp lệ	Neplatný PS
 srv_is_confirmed	Is confirmed	Đã xác nhận	Je potvrzeno
 srv_items_empty	items are empty	mục trống	položky jsou prázdné
 srv_leads_imported	Leads imported	Khách hàng tiềm năng đã được nhập	Zákazníci importováni
+srv_local_device_deleted	local device deleted	thiết bị cục bộ đã bị xóa	odstraněno místní zařízení
 srv_location_not_found	Location not found	Không tìm thấy vị trí	lokace nenalezena
 srv_location_required_to_make_attendance	location is required to make attendance	vị trí là bắt buộc để điểm danh	lokace je povinná pro zaznamenání docházky
 srv_location_required_to_submit_break	location is required to submit tje break	địa điểm cần thiết để gửi đơn nghỉ	požadováno místo pro odeslání přestávky
@@ -894,6 +893,8 @@ srv_merchant_deleted	Merchant deleted	Thương gia đã bị xóa	Obchodník sma
 srv_merchant_not_found	Merchant not found	Không tìm thấy thương gia	Obchodník nenalezen
 srv_message_sent	Message sent	Tin nhắn đã gửi	Zpráva odeslána
 srv_missing	missing	thiếu	nenalezeno
+srv_missing_aggregation	missing aggregation	thiếu tổng hợp	chybí agregace
+srv_missing_attendance	missing attendance	thiếu dữ liệu điểm danh	není k dispozici docházka
 srv_missing_date	missing date	thiếu ngày	chybí datum
 srv_missing_form	missing form	thiếu đơn	chybí formulář
 srv_missing_from_system	missing from system	không tìm thấy trong hệ thống	nenalezeno v systému

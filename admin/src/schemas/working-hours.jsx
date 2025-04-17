@@ -25,7 +25,7 @@ const WorkingHourSchema = BaseWorkingHourSchema.superRefine(({ start, end, isOve
     const startTime = dayjs(start, TIME_FORMAT, true);
     const endTime = dayjs(end, TIME_FORMAT, true);
 
-    if (!startTime.isValid() || !endTime.isValid()) return;
+    if (!startTime.isValid() || !endTime.isValid() || startTime.isSame(endTime)) return;
 
     if (startTime.isSame(endTime)) {
         ctx.addIssue({

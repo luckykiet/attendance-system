@@ -21,7 +21,7 @@ const SpecificBreakSchema = BaseSpecificBreakSchema.superRefine(({ start, end, i
     const startTime = dayjs(start, TIME_FORMAT, true);
     const endTime = dayjs(end, TIME_FORMAT, true);
 
-    if (!startTime.isValid() || !endTime.isValid()) {
+    if (!startTime.isValid() || !endTime.isValid() || startTime.isSame(endTime)) {
         return;
     }
 

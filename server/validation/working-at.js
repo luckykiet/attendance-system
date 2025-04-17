@@ -5,7 +5,7 @@ const { isValidTime, isOverNight } = require('../utils');
 const validateShifts = () => {
     return DAY_KEYS.flatMap((day) => [
         body(`shifts.${day}`)
-            .isArray().withMessage('srv_invalid_shift_array'),
+            .isArray().withMessage('srv_invalid_shift_array').bail(),
 
         body(`shifts.${day}.*.start`)
             .notEmpty().withMessage('misc_required')
