@@ -1,4 +1,4 @@
 {
   "upgrade": true,
-  "reject": ["nanoid", "connect-mongodb-session"]
+  "reject": ["nanoid", "connect-mongodb-session", "mongoose"]
 }
