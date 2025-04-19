@@ -63,7 +63,7 @@ const applySpecificBreak = async (req, res, next) => {
         const now = dayjs();
         const todayKey = DAYS_OF_WEEK[now.day()];
         const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-console.log(register.specificBreaks, isToday ? todayKey : yesterdayKey, breakKey);
+        
         const breakTemplate = register.specificBreaks[isToday ? todayKey : yesterdayKey][breakKey];
 
         if (!breakTemplate || !breakTemplate.isAvailable) {

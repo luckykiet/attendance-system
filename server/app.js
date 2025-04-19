@@ -15,6 +15,7 @@ const { generateDemoData } = require('./demo')
 const { CONFIG } = require('./configs')
 const { finalizeDailyAttendanceAggregation } = require('./utils')
 const dayjs = require('dayjs')
+const DailyAttendance = require('./models/DailyAttendance')
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 
 if (!CONFIG.isTest) {
@@ -97,13 +98,18 @@ if (process.env.NODE_ENV !== 'test') {
   });
 
   cron.schedule('0 2 * * *', async () => {
-    const date = dayjs().subtract(1, 'day').format('YYYYMMDD');
-    console.log(`[CRON] Finalizing DailyAttendance for ${date}`);
-    try {
-      await finalizeDailyAttendanceAggregation(date);
-      console.log('[CRON] Finalization successful');
-    } catch (e) {
-      console.error('[CRON] Finalization failed:', e.message);
+    const dailyAttendances = await DailyAttendance.find({ confirmed: false });
+    if (dailyAttendances.length > 0) {
+      dailyAttendances.forEach(async (daily) => {
+        const { date } = daily;
+        console.log(`[CRON] Finalizing DailyAttendance for ${date}`);
+        try {
+          await finalizeDailyAttendanceAggregation(date);
+          console.log('[CRON] Finalization successful');
+        } catch (e) {
+          console.error('[CRON] Finalization failed:', e.message);
+        }
+      })
     }
   });
 }

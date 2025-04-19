@@ -33,6 +33,22 @@ const defaultSpecificBreaks = {
     },
 }
 
+const defaultBreak = {
+    start: '00:00',
+    end: '23:59',
+    name: 'Walking break',
+    duration: 30,
+    isOverNight: false,
+}
+
+const defaultShift = {
+    start: '00:00',
+    end: '23:59',
+    allowedOverTime: 1440, // in minutes
+    isOverNight: false,
+    isAvailable: true,
+}
+
 const defaultWorkingHours = { start: '00:00', end: '23:59', isOverNight: false, isAvailable: true };
 
 const demoAccount = {
@@ -60,13 +76,13 @@ const demoAccount = {
             allowedRadius: 100,
         },
         breaks: {
-            mon: [],
-            tue: [],
-            wed: [],
-            thu: [],
-            fri: [],
-            sat: [],
-            sun: [],
+            mon: [defaultBreak],
+            tue: [defaultBreak],
+            wed: [defaultBreak],
+            thu: [defaultBreak],
+            fri: [defaultBreak],
+            sat: [defaultBreak],
+            sun: [defaultBreak],
         },
         specificBreaks: {
             mon: defaultSpecificBreaks,
@@ -157,7 +173,22 @@ const generateDemoData = async () => {
         const promises = Object.keys(demoAccount.employees).map(async key => {
             const employee = await Employee.findOneAndUpdate({ retailId: retail._id, email: demoAccount.employees[key].email }, { ...demoAccount.employees[key], retailId: retail._id, }, { upsert: true, new: true })
             await Promise.all(registers.map(async register => {
-                return await WorkingAt.findOneAndUpdate({ registerId: register._id, employeeId: employee._id }, { registerId: register._id, employeeId: employee._id, workingHours: register.workingHours, isAvailable: true }, { upsert: true, new: true })
+                return await WorkingAt.findOneAndUpdate({ registerId: register._id, employeeId: employee._id },
+                    {
+                        registerId: register._id,
+                        employeeId: employee._id,
+                        workingHours: register.workingHours,
+                        shifts: {
+                            mon: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            tue: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            wed: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            thu: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            fri: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            sat: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift],
+                            sun: [{ ...defaultShift, start: '00:00', end: '08:00' }, { ...defaultShift, start: '08:00', end: '16:00' }, { ...defaultShift, start: '16:00', end: '23:59' }, defaultShift]
+                        },
+                        isAvailable: true
+                    }, { upsert: true, new: true })
             }))
             await Registration.findOneAndUpdate({ retailId: retail._id, employeeId: employee._id }, { tokenId: demoAccount.employees[key].registrationToken, retailId: retail._id, employeeId: employee._id, isDemo: true }, { upsert: true, new: true })
             await Attendance.deleteMany({ employeeId: employee._id })

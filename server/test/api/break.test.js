@@ -146,7 +146,7 @@ describe('POST /api/break', () => {
             }
         }));
 
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, date: parseInt(fixedNow.format('YYYYMMDD')) });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, date: parseInt(fixedNow.format('YYYYMMDD')), isCreating: true });
 
         attendance = await new Attendance({
             dailyAttendanceId: dailyAttendance._id,

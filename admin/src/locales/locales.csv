@@ -207,6 +207,7 @@ misc_expected	expected	mong muốn	očekávaný
 misc_expected_end_time	Expected end time	Thời gian kết thúc dự kiến	Předpokládaný čas ukončení
 misc_expiration_date	expiration date	ngày hết hạn	den expirace
 misc_export	export	export	exportovat
+misc_export_csv	export csv	xuất dữ liệu CSV	exportovat CSV
 misc_exposure_date	exposure date	ngày hiệu lực	den vystavení
 misc_extend	extend	gia hạn	prodloužit
 misc_extend_pos	extend POS	mở rộng POS	rozšířit POS
@@ -397,6 +398,8 @@ misc_non_taxpayer	non taxpayer	người không trả thuế	neplátce DPH
 misc_not_checked_in	Not checked in	Chưa check in	Příchod nezadáno
 misc_not_checked_out	Not checked out	Chưa check out	Odchod nezadáno
 misc_not_included	not included	không được bao gồm	nezahrnuto
+misc_not_provided_check_in	Not provided check in	Không có check in	není poskytnuto přihlášení
+misc_not_provided_check_out	Not provided check out	Không có check out	není poskytnuto odhlášení
 misc_not_started	not started	chưa bắt đầu	nezačalo
 misc_notes	Notes	Ghi chú	Poznámky
 misc_notification	Notification	Thông báo	Notifikace
@@ -528,6 +531,7 @@ misc_shift	Shift	Ca	Směna
 misc_shift_details	Shift details	Chi tiết ca làm việc	Podrobnosti o směně
 misc_shift_pause_successfully	shift pause successfully	tạm dừng ca thành công	přerušení směny úspěšné
 misc_shift_time	Shift time	Giờ làm việc	Pracovní doba
+misc_shifts	Shifts	Ca	Směny
 misc_shortcut	shortcut	viết tắt	zkratka
 misc_show	show	hiển thị	zobrazit
 misc_show_on_website	show on website	hiển thị trên trang web	zobrazit na webovou stránku
@@ -601,6 +605,7 @@ misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
 misc_total_price	total price	tiền tổng	celková částka
+misc_total_shifts	Total shifts	Tổng ca làm việc	Totální směny
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce
 misc_transfer_fee	transfer fees	phí chuyển khoản	poplatky za převod
@@ -643,6 +648,7 @@ misc_website	website	trang web	webová stránka
 misc_working_at	working at	làm việc tại	pracuje v
 misc_working_employees	working employees	nhân viện làm việc	pracující zaměstnanci
 misc_working_hour	working hour	thời gian làm việc	pracovní doba
+misc_working_hour_of_the_workplace	working hour of the workplace	Giờ làm việc của nơi làm việc	Pracovní doba pracoviště
 misc_working_hours	working hours	thời gian làm việc	pracovní doba
 misc_workplace	workplace	nơi làm việc	pracoviště
 misc_workplace_breaks	Workplace breaks	Thời gian nghỉ của nơi làm việc	Přestávky pracoviště
@@ -943,6 +949,7 @@ srv_pause_finished_successfully	Pause finished successfully	kết thúc tạm d�
 srv_pause_not_found	shift pause not found	không tìm thấy tạm dừng ca	nenalezeno přerušení směny
 srv_pause_started_successfully	Pause started successfully	bắt đầu tạm dừng thành công	přerušení úspěšně zahájeno
 srv_pending_breaks	You have pending breaks	bạn có đơn nghỉ đang chạy	máte probíhající přestávky
+srv_pending_pauses	pending pauses	các ca tạm dừng đang chờ xử lý	čekající přestávky
 srv_permission_denied	Permission denied	Từ chối quyền truy cập	Odmítnuto oprávnění
 srv_permission_required	Permission required	Quyền truy cập cần thiết	Požadováno oprávnění
 srv_pick_software	pick a software	hãy chọn phần mềm	vyberte software
@@ -970,6 +977,7 @@ srv_scan_failed	scan failed	Lỗi quét	Chyba skenování
 srv_server_error	chyba serveru	lỗi serveru	chyba serveru
 srv_set_quantity	set quantity	hãy điền số lượng	zadejte množství
 srv_shift_already_ended	Shift already ended	Đã kết thúc ca làm việc	Směna již skončila
+srv_shift_not_found	Shift not found	không tìm thấy ca làm việc	nenalezena směna
 srv_shift_not_started	Shift not started	Chưa bắt đầu ca làm việc	Směna ještě nezačala
 srv_signature_save_failed	failed to save signatures	lỗi khi lưu chữ ký	chyba při ukládání podpisu
 srv_signature_saved	signatures saved	đã lưu chữ ký	podpisy uloženy

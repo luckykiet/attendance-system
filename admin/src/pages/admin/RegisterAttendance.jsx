@@ -14,6 +14,7 @@ import FeedbackMessage from '@/components/FeedbackMessage';
 import LoadingCircle from '@/components/LoadingCircle';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { fetchRegister } from '@/api/register';
+import { CSVLink } from 'react-csv';
 
 dayjs.extend(customParseFormat);
 
@@ -59,6 +60,25 @@ const RegisterAttendance = () => {
 
     const { data, isLoading, isFetching, error, refetch } = attendanceQuery;
 
+    const csvData = data?.attendance?.expectedShifts.map((shift) => {
+        const employee = data.employees.find(emp => emp._id === shift.employeeId);
+        const matchingAttendance = data.attendances.find(att => att.shiftId === shift.shiftId);
+
+        const isCheckInLate = matchingAttendance ? !!data.attendance.checkedInLateByEmployee[shift.employeeId] : false;
+        const isCheckOutEarly = matchingAttendance ? !!data.attendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+
+        return {
+            shiftStart: shift.start || '',
+            shiftEnd: shift.end || '',
+            employee: employee ? employee.name : '',
+            email: employee ? employee.email : '',
+            checkInTime: matchingAttendance?.checkInTime ? dayjs(matchingAttendance.checkInTime).format('DD/MM/YYYY HH:mm:ss'): '',
+            isCheckInLate: isCheckInLate ? 'Yes' : 'No',
+            checkOutTime: matchingAttendance?.checkOutTime ? dayjs(matchingAttendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '',
+            isCheckOutEarly: isCheckOutEarly ? 'Yes' : 'No',
+        };
+    }) || [];
+
     useEffect(() => {
         if (date) {
             refetch();
@@ -70,7 +90,7 @@ const RegisterAttendance = () => {
             setPostMsg(error.message);
         }
     }, [error]);
-
+    
     return (
         <Container maxWidth="lg" sx={{ mb: 4, pt: 6 }}>
             <Stack spacing={4}>
@@ -119,84 +139,146 @@ const RegisterAttendance = () => {
                             </Grid>
                             <Grid size={{ xs: 12 }}>
                                 {isLoading || isFetching ? <LoadingCircle /> :
-                                    data ? (
-                                        <Stack spacing={2}>
+                                    data ? (() => {
+                                        const { attendance } = data;
+                                        const employeeIds = new Set(attendance.expectedShifts.map(shift => shift.employeeId));
+                                        const totalCheckedIn = (parseInt(attendance.checkedInOnTime || 0)) + (parseInt(attendance.checkedInLate || 0));
+                                        const totalCheckedOut = (parseInt(attendance.checkedOutOnTime || 0)) + (parseInt(attendance.checkedOutEarly || 0));
+                                        return <Stack spacing={2}>
                                             <Stack spacing={2} direction={'row'}>
-                                                <Typography variant="h6">{t('misc_working_hour')}:</Typography>
-                                                <Typography variant="h6">{data.attendance.workingHour.isAvailable ? `${data.attendance.workingHour.start} - ${data.attendance.workingHour.end}` : t('misc_closed')}</Typography>
+                                                <Typography variant="h6">{t('misc_working_hour_of_the_workplace')}:</Typography>
+                                                <Typography variant="h6">
+                                                    {attendance.workingHour.isAvailable ? `${attendance.workingHour.start} - ${attendance.workingHour.end}` : t('misc_closed')}
+                                                </Typography>
+                                            </Stack>
+                                            <Stack spacing={2} direction={'row'}>
+                                                <Typography variant="h6">{t('misc_total_shifts')}:</Typography>
+                                                <Typography variant="h6">{attendance.expectedShifts.length || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_working_employees')}:</Typography>
-                                                <Typography variant="h6">{data.employees.length || 0}</Typography>
+                                                <Typography variant="h6">{employeeIds.size || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_checked_in')}:</Typography>
-                                                <Typography variant="h6">{data.attendance.checkIns?.length || 0}</Typography>
+                                                <Typography variant="h6">{totalCheckedIn}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_checked_out')}:</Typography>
-                                                <Typography variant="h6">{data.attendance.checkOuts?.length || 0}</Typography>
-                                            </Stack>
-                                            <Stack spacing={2} direction={'row'}>
-                                                <Typography color='error' variant="h6">{t('misc_missing')}:</Typography>
-                                                <Typography color='error' variant="h6">{(data.attendance.employeeIds?.length - data.attendance.checkIns?.length) || 0}</Typography>
+                                                <Typography variant="h6">{totalCheckedOut}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_checked_in_late')}:</Typography>
-                                                <Typography color='error' variant="h6">{data.attendance.checkInsLate?.length || 0}</Typography>
+                                                <Typography color='error' variant="h6">{attendance.checkedInLate || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_checked_out_early')}:</Typography>
-                                                <Typography color='error' variant="h6">{data.attendance.checkOutsEarly?.length || 0}</Typography>
+                                                <Typography color='error' variant="h6">{attendance.checkedOutEarly || 0}</Typography>
+                                            </Stack>
+
+                                            <Divider />
+
+                                            <Stack spacing={2} direction={'row'}>
+                                                <Typography color='error' variant="h6">{t('misc_not_provided_check_in')}:</Typography>
+                                                <Typography color='error' variant="h6">{attendance.expectedShifts.length - totalCheckedIn}</Typography>
+                                            </Stack>
+                                            <Stack spacing={2} direction={'row'}>
+                                                <Typography color='error' variant="h6">{t('misc_not_provided_check_out')}:</Typography>
+                                                <Typography color='error' variant="h6">{attendance.expectedShifts.length - totalCheckedOut}</Typography>
                                             </Stack>
                                             <Divider />
                                             <Grid container spacing={2}>
                                                 <Grid size={{ xs: 12 }}>
                                                     <Stack spacing={2}>
-                                                        <Typography variant="h6">{t('misc_checked_in_late_by_employee')}: {data.attendance.checkInsLateByEmployee?.length || 0}</Typography>
-                                                    </Stack>
-                                                </Grid>
-                                                <Grid size={{ xs: 12 }}>
-                                                    <Stack spacing={2}>
-                                                        <Typography variant="h6">{t('misc_checked_out_early_by_employee')}: {data.attendance.checkOutsEarlyByEmployee?.length || 0}</Typography>
-                                                    </Stack>
-                                                </Grid>
-                                                <Grid size={{ xs: 12 }}>
-                                                    <Divider />
-                                                </Grid>
-                                                <Grid size={{ xs: 12 }}>
-                                                    <Typography variant="h6" gutterBottom>{t('misc_attendances')}</Typography>
-                                                    <TableContainer component={Paper}>
-                                                        <Table>
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell>{t('misc_full_name')}</TableCell>
-                                                                    <TableCell>{t('misc_working_hour')}</TableCell>
-                                                                    <TableCell>{t('misc_check_in')}</TableCell>
-                                                                    <TableCell>{t('misc_check_out')}</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {data.employees.length > 0 ? data.employees.map((employee) => {
-                                                                    const attendance = data.attendances.find((att) => att.employeeId === employee._id);
-                                                                    const isCheckInLate = attendance ? data.attendance.checkInsLate?.includes(attendance._id) : '';
-                                                                    const isCheckOutEarly = attendance ? data.attendance.checkOutsEarly?.includes(attendance._id) : '';
-                                                                    return (
-                                                                        <TableRow key={employee._id}>
-                                                                            <TableCell><Link component={RouterLink} target='_blank' to={`/employee/${employee._id}`} variant='h6'>{employee ? employee.name : attendance?.employeeId}</Link></TableCell>
-                                                                            <TableCell><Typography variant='h6'>{attendance?.workingHour && attendance?.workingHour.isAvailable ? `${attendance.workingHour.start} - ${attendance.workingHour.end}` : '-'}</Typography></TableCell>
-                                                                            <TableCell><Typography variant='h6' color={isCheckInLate || !attendance?.checkInTime ? 'error' : 'success'}>{attendance?.checkInTime ? dayjs(attendance.checkInTime).format('HH:mm:ss') : '-'}{isCheckInLate && ` - ${t('misc_late')}`}</Typography></TableCell>
-                                                                            <TableCell><Typography variant='h6' color={isCheckOutEarly || !attendance?.checkOutTime ? 'error' : 'success'}>{attendance?.checkOutTime ? dayjs(attendance.checkOutTime).format('HH:mm:ss') : '-'}{isCheckOutEarly && ` - ${t('misc_early')}`}</Typography></TableCell>
+                                                        <Stack spacing={2} direction={'row'} justifyContent={'space-between'}>
+                                                            <Typography variant="h6">{t('misc_attendances')}</Typography>
+                                                            {csvData.length && <Stack direction="row" justifyContent="flex-end" mb={2}>
+                                                                <CSVLink
+                                                                    data={csvData}
+                                                                    filename={`attendance-${dayjs(date).format('YYYYMMDD')}.csv`}
+                                                                    target="_blank"
+                                                                    style={{ textDecoration: 'none' }}
+                                                                >
+                                                                    <Typography variant="button" sx={{ backgroundColor: 'primary.main', color: 'white', p: 1, borderRadius: 1 }}>
+                                                                        {t('misc_export_csv')}
+                                                                    </Typography>
+                                                                </CSVLink>
+                                                            </Stack>}
+                                                        </Stack>
+                                                        <TableContainer component={Paper}>
+                                                            <Table>
+                                                                <TableHead>
+                                                                    <TableRow>
+                                                                        <TableCell>{t('misc_full_name')}</TableCell>
+                                                                        <TableCell>{t('misc_working_hour')}</TableCell>
+                                                                        <TableCell>{t('misc_check_in')}</TableCell>
+                                                                        <TableCell>{t('misc_check_out')}</TableCell>
+                                                                    </TableRow>
+                                                                </TableHead>
+                                                                <TableBody>
+                                                                    {data.attendance.expectedShifts.length > 0 ? [...data.attendance.expectedShifts].filter(shift => {
+                                                                        const employee = data.employees.find(emp => emp._id === shift.employeeId);
+                                                                        return employee && employeeIds.has(shift.employeeId);
+                                                                    })
+                                                                        .sort((a, b) => {
+                                                                            if (a.employeeId < b.employeeId) return -1;
+                                                                            if (a.employeeId > b.employeeId) return 1;
+                                                                            return a.start.localeCompare(b.start);
+                                                                        })
+                                                                        .map((shift) => {
+                                                                            const employee = data.employees.find(emp => emp._id === shift.employeeId);
+                                                                            const matchingAttendance = data.attendances.find(att => att.shiftId === shift.shiftId);
+
+                                                                            const isCheckInLate = matchingAttendance ? !!data.attendance.checkedInLateByEmployee[shift.employeeId] : false;
+                                                                            const isCheckOutEarly = matchingAttendance ? !!data.attendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+
+                                                                            return (
+                                                                                <TableRow key={shift._id}>
+                                                                                    <TableCell>
+                                                                                        {employee ? (
+                                                                                            <Link component={RouterLink} target="_blank" to={`/employee/${employee._id}`} variant='h6'>
+                                                                                                {employee.name}
+                                                                                            </Link>
+                                                                                        ) : (
+                                                                                            '-'
+                                                                                        )}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6'>
+                                                                                            {shift.start} - {shift.end}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6' color={isCheckInLate ? 'error' : 'success'}>
+                                                                                            {matchingAttendance?.checkInTime ? dayjs(matchingAttendance.checkInTime).format('HH:mm:ss') : '-'}
+                                                                                            {isCheckInLate && ` - ${t('misc_late')}`}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6' color={isCheckOutEarly ? 'error' : 'success'}>
+                                                                                            {matchingAttendance?.checkOutTime ? dayjs(matchingAttendance.checkOutTime).format('HH:mm:ss') : '-'}
+                                                                                            {isCheckOutEarly && ` - ${t('misc_early')}`}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                </TableRow>
+                                                                            );
+                                                                        }) : (
+                                                                        <TableRow>
+                                                                            <TableCell colSpan={4} align="center">
+                                                                                {t('srv_attendance_not_found')}
+                                                                            </TableCell>
                                                                         </TableRow>
-                                                                    );
-                                                                }) : <TableRow><TableCell colSpan={3} align='center'>{t('srv_attendance_not_found')}</TableCell></TableRow>}
-                                                            </TableBody>
-                                                        </Table>
-                                                    </TableContainer>
+                                                                    )}
+                                                                </TableBody>
+                                                            </Table>
+                                                        </TableContainer>
+                                                    </Stack>
                                                 </Grid>
                                             </Grid>
                                         </Stack>
-                                    ) : <Typography>{t('srv_attendance_not_found')}</Typography>
+                                    })() : (
+                                        <Typography>{t('srv_attendance_not_found')}</Typography>
+                                    )
                                 }
                             </Grid>
 

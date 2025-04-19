@@ -766,7 +766,7 @@ describe('Attendance Tests', () => {
                 userId: user._id,
             }));
 
-            await getDailyAttendance({ registerId: register._id });
+            await getDailyAttendance({ registerId: register._id, isCreating: true });
 
             for (let i = 0; i < 15; i++) {
                 await new Attendance({
@@ -813,8 +813,6 @@ describe('Attendance Tests', () => {
 });
 
 describe('DailyAttendance Aggregation Tests', () => {
-    let retail, register, user, employee;
-
     beforeEach(async () => {
         // eslint-disable-next-line no-undef
         jest.useFakeTimers({ doNotFake: ["nextTick", "setImmediate"] });
@@ -840,76 +838,75 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should create daily attendance with expected employees', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
 
         expect(dailyAttendance).toBeDefined();
-        expect(dailyAttendance.expectedEmployees.length).toBeGreaterThan(0);
-        expect(dailyAttendance.expectedEmployees[0].employeeId.toString()).toBe(employee._id.toString());
+        expect(dailyAttendance.expectedShifts.length).toBeGreaterThan(0);
+        expect(dailyAttendance.expectedShifts[0].employeeId.toString()).toBe(employee._id.toString());
     });
 
-    test('should correctly move employee to checkedInOnTime', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
-        expect(dailyAttendance.checkedInOnTime).toHaveLength(0);
+    test('should correctly increment checkedInOnTime for employee', async () => {
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
 
-        // Simulate a check-in
-        dailyAttendance.checkedInOnTime.push(employee._id);
+        expect(dailyAttendance.checkedInOnTime).toBe(0);
+
+        dailyAttendance.checkedInOnTime += 1;
+        dailyAttendance.checkedInOnTimeByEmployee.set(employee._id.toString(), 1);
         await dailyAttendance.save();
 
         const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        expect(refreshed.checkedInOnTime.map(String)).toContain(employee._id.toString());
+        expect(refreshed.checkedInOnTime).toBe(1);
+        expect(refreshed.checkedInOnTimeByEmployee[employee._id.toString()]).toBe(1);
     });
 
-    test('should correctly move employee to checkedInLate', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
+    test('should correctly increment checkedInLate for employee', async () => {
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
 
-        // Simulate a late check-in
-        dailyAttendance.checkedInLate.push(employee._id);
+        dailyAttendance.checkedInLate += 1;
+        dailyAttendance.checkedInLateByEmployee.set(employee._id.toString(), 1);
         await dailyAttendance.save();
 
         const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        expect(refreshed.checkedInLate.map(String)).toContain(employee._id.toString());
+        expect(refreshed.checkedInLate).toBe(1);
+        expect(refreshed.checkedInLateByEmployee[employee._id.toString()]).toBe(1);
     });
 
-    test('should correctly move employee to checkedOutEarly', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
+    test('should correctly increment checkedOutEarly for employee', async () => {
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
 
-        // Simulate early check-out
-        dailyAttendance.checkedOutEarly.push(employee._id);
+        dailyAttendance.checkedOutEarly += 1;
+        dailyAttendance.checkedOutEarlyByEmployee.set(employee._id.toString(), 1);
         await dailyAttendance.save();
 
         const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        expect(refreshed.checkedOutEarly.map(String)).toContain(employee._id.toString());
-    });
-
-    test('should correctly move employee to missingCheckOut', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
-
-        // Simulate missing check-out
-        dailyAttendance.missingCheckOut.push(employee._id);
-        await dailyAttendance.save();
-
-        const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
-
-        expect(refreshed.missingCheckOut.map(String)).toContain(employee._id.toString());
+        expect(refreshed.checkedOutEarly).toBe(1);
+        expect(refreshed.checkedOutEarlyByEmployee[employee._id.toString()]).toBe(1);
     });
 
     test('should correctly track workingHoursByEmployee', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
-
-        dailyAttendance.workingHoursByEmployee.set(employee._id.toString(), 300); // 300 minutes = 5 hours
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const shiftId = ObjectId.createFromHexString(workingAt.shifts.get(DAYS_OF_WEEK[fixedDay])[0]._id.toString())
+        const employeeId = ObjectId.createFromHexString(employee._id.toString());
+        dailyAttendance.workingHoursByEmployee.push({
+            employeeId,
+            shiftId,
+            minutes: 300,
+        }); // 300 minutes = 5 hours
         await dailyAttendance.save();
 
         const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        expect(refreshed.workingHoursByEmployee[employee._id.toString()]).toBe(300);
+        expect(refreshed.workingHoursByEmployee.find((e) => e.employeeId.equals(employeeId) && e.shiftId.equals(shiftId)).minutes).toBe(300);
     });
 });
 
 describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
     let retail, register, user, employee, workingAt, shift, todayKey;
+
+    const getEmployeeCount = (map, employeeId) => (map?.[employeeId] || 0);
 
     beforeEach(async () => {
         // eslint-disable-next-line no-undef
@@ -989,7 +986,7 @@ describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
         expect(checkInRes.status).toBe(200);
 
         const dailyAttendance = await DailyAttendance.findOne({ registerId: register._id }).lean();
-        expect(dailyAttendance.checkedInOnTime.map(String)).toContain(employee._id.toString());
+        expect(getEmployeeCount(dailyAttendance.checkedInOnTimeByEmployee, employee._id.toString())).toBe(1);
 
         const todayAttendances = await Attendance.find({ dailyAttendanceId: dailyAttendance._id });
         expect(todayAttendances).toHaveLength(1);
@@ -1001,18 +998,18 @@ describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
         expect(checkOutRes.status).toBe(200);
 
         const updatedDaily = await DailyAttendance.findById(dailyAttendance._id).lean();
-        expect(updatedDaily.checkedOutOnTime.map(String)).toContain(employee._id.toString());
+        expect(getEmployeeCount(updatedDaily.checkedOutOnTimeByEmployee, employee._id.toString())).toBe(1);
     });
 
     test('should mark check-in late if after shift start', async () => {
         // eslint-disable-next-line no-undef
-        jest.setSystemTime(fixedNow.add(2, 'hours').toDate()); // Shift started already
+        jest.setSystemTime(fixedNow.add(2, 'hours').toDate()); // Shift already started
 
         const checkInRes = await checkIn({ shift });
         expect(checkInRes.status).toBe(200);
 
         const dailyAttendance = await DailyAttendance.findOne({ registerId: register._id }).lean();
-        expect(dailyAttendance.checkedInLate.map(String)).toContain(employee._id.toString());
+        expect(getEmployeeCount(dailyAttendance.checkedInLateByEmployee, employee._id.toString())).toBe(1);
     });
 
     test('should mark check-out early if before shift end', async () => {
@@ -1029,13 +1026,14 @@ describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
         expect(checkOutRes.status).toBe(200);
 
         const updatedDaily = await DailyAttendance.findById(dailyAttendance._id).lean();
-        expect(updatedDaily.checkedOutEarly.map(String)).toContain(employee._id.toString());
+        expect(getEmployeeCount(updatedDaily.checkedOutEarlyByEmployee, employee._id.toString())).toBe(1);
     });
 
     test('should calculate working hours correctly', async () => {
         const startTime = fixedNow.hour(7).minute(55);
         // eslint-disable-next-line no-undef
         jest.setSystemTime(startTime.toDate());
+
         const checkInRes = await checkIn({ shift });
         expect(checkInRes.status).toBe(200);
 
@@ -1050,7 +1048,11 @@ describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
 
         const updatedDaily = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        const minutes = updatedDaily.workingHoursByEmployee[employee._id.toString()];
-        expect(minutes).toBeGreaterThan(0);
+        const workingHoursEntry = updatedDaily.workingHoursByEmployee.find(e =>
+            e.employeeId.toString() === employee._id.toString() &&
+            e.shiftId.toString() === shift._id.toString()
+        );
+        expect(workingHoursEntry).toBeDefined();
+        expect(workingHoursEntry.minutes).toBeGreaterThan(0);
     });
 });

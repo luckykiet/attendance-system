@@ -11,7 +11,6 @@ import {
     AccordionSummary,
     Divider,
     FormControl,
-    FormLabel,
     Button,
     FormControlLabel,
     FormGroup,
@@ -22,7 +21,7 @@ import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-for
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { DAYS_OF_WEEK, daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, TIME_FORMAT } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -412,7 +411,8 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                 <Grid size={{ xs: 12, sm: 6 }}>
                                                                     {attendance.checkInTime ?
                                                                         <Stack spacing={1}>
-                                                                            <Controller
+                                                                            <Typography>{t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}</Typography>
+                                                                            {/* <Controller
                                                                                 name="checkInTime"
                                                                                 control={dateForm.control}
                                                                                 render={({ field, fieldState }) => {
@@ -446,7 +446,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         </Stack>
                                                                                     </FormControl>
                                                                                 }}
-                                                                            />
+                                                                            /> */}
                                                                             {attendance.checkInLocation.latitude && <Typography variant='body1'>{t('misc_latitude')}: {attendance.checkInLocation.latitude}</Typography>}
                                                                             {attendance.checkInLocation.longitude && <Typography variant='body1'>{t('misc_longitude')}: {attendance.checkInLocation.longitude}</Typography>}
                                                                             {attendance.checkInLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkInLocation.distance)}m</Typography>}
@@ -456,7 +456,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                 <Grid size={{ xs: 12, sm: 6 }}>
                                                                     {attendance.checkOutTime ?
                                                                         <Stack spacing={1}>
-                                                                            <Controller
+                                                                            {/* <Controller
                                                                                 name="checkOutTime"
                                                                                 control={dateForm.control}
                                                                                 render={({ field, fieldState }) => {
@@ -494,18 +494,19 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         </Stack>
                                                                                     </FormControl>
                                                                                 }}
-                                                                            />
+                                                                            /> */}
+                                                                            <Typography>{t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}</Typography>
                                                                             {attendance.checkOutLocation.latitude && <Typography variant='body1'>{t('misc_latitude')}: {attendance.checkOutLocation.latitude}</Typography>}
                                                                             {attendance.checkOutLocation.longitude && <Typography variant='body1'>{t('misc_longitude')}: {attendance.checkOutLocation.longitude}</Typography>}
                                                                             {attendance.checkOutLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkOutLocation.distance)}m</Typography>}
                                                                         </Stack>
                                                                         : <Typography>{t('misc_check_out')}: -</Typography>}
                                                                 </Grid>
-                                                                <Grid size={{ xs: 12, sm: 6 }}>
+                                                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                                                     <Button sx={{ minWidth: '200px' }} variant="contained" color={"success"} type="submit" loading={saveAttendanceMutation.isPending}>
                                                                         {t('misc_save')}
                                                                     </Button>
-                                                                </Grid>
+                                                                </Grid> */}
                                                                 <Grid size={{ xs: 12 }}>
                                                                     {postAttendanceMsg && <FeedbackMessage message={postAttendanceMsg} />}
                                                                 </Grid>

@@ -7,33 +7,43 @@ const DailyAttendanceSchema = new Schema(
   {
     date: { type: Number, required: true }, // Format: YYYYMMDD
     registerId: { type: Schema.Types.ObjectId, required: true },
-    workingHour: { type: WorkingHourSchema, required: true }, // optional: register-wide working hour config
+    workingHour: { type: WorkingHourSchema, required: true },
 
-    // Expected employees for this day, by WorkingAt & shift
-    expectedEmployees: [{
-      employeeId: { type: Schema.Types.ObjectId, required: true },
-      shiftId: { type: Schema.Types.ObjectId, required: true },
-      shiftStart: { type: String, required: true }, // "08:00"
-      shiftEnd: { type: String, required: true },   // "16:00"
-      isOverNight: { type: Boolean, default: false }
-    }],
+    expectedShifts: [
+      {
+        employeeId: { type: Schema.Types.ObjectId, required: true },
+        shiftId: { type: Schema.Types.ObjectId, required: true },
+        start: { type: String, required: true },
+        end: { type: String, required: true },
+        isOverNight: { type: Boolean, default: false },
+        allowedOvertime: { type: Number, default: 0 }, // in minutes
+      }
+    ],
 
-    // Actual attendances (linked to Attendance model)
     attendanceIds: [{ type: Schema.Types.ObjectId }],
 
-    // Aggregated evaluation
-    checkedInOnTime: [{ type: Schema.Types.ObjectId }],
-    checkedInLate: [{ type: Schema.Types.ObjectId }],
-    missingCheckIn: [{ type: Schema.Types.ObjectId }],
+    checkedInOnTime: { type: Number, default: 0 },
+    checkedInLate: { type: Number, default: 0 },
+    checkedOutOnTime: { type: Number, default: 0 },
+    checkedOutEarly: { type: Number, default: 0 },
 
-    checkedOutOnTime: [{ type: Schema.Types.ObjectId }],
-    checkedOutEarly: [{ type: Schema.Types.ObjectId }],
-    missingCheckOut: [{ type: Schema.Types.ObjectId }],
+    checkedInOnTimeByEmployee: { type: Map, of: Number },
+    checkedInLateByEmployee: { type: Map, of: Number },
+    checkedOutOnTimeByEmployee: { type: Map, of: Number },
+    checkedOutEarlyByEmployee: { type: Map, of: Number },
 
-    workingHoursByEmployee: {
-      type: Map,
-      of: Number // minutes worked
-    },
+    missingEmployeeIds: [{ type: Schema.Types.ObjectId }],
+    missingEmployees: { type: Number, default: 0 },
+
+    workingHoursByEmployee: [
+      {
+        employeeId: { type: Schema.Types.ObjectId, required: true },
+        shiftId: { type: Schema.Types.ObjectId, required: true },
+        minutes: { type: Number, required: true },
+      }
+    ],
+
+    confirmed: { type: Boolean, default: false }, 
   },
   {
     timestamps: true,

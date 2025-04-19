@@ -20,4 +20,5 @@ module.exports = function (app, apiPrefix) {
     app.use(apiPrefix + '/users', require('./users'));
     app.use(apiPrefix + '/local-device', require('./local-device'));
     app.use(apiPrefix + '/local-devices', require('./local-devices'));
+    app.use(apiPrefix + '/aggregation', require('./aggregation'));
 };

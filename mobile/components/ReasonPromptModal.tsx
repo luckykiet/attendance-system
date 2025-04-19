@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: '100%',
         marginBottom: 16,
+        backgroundColor: 'transparent',
     },
     label: {
         fontSize: 16,
