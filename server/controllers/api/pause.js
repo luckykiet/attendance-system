@@ -7,6 +7,7 @@ const isBetween = require('dayjs/plugin/isBetween');
 const utils = require('../../utils');
 const Attendance = require("../../models/Attendance");
 const mongoose = require("mongoose");
+const _ = require('lodash');
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -21,10 +22,15 @@ const applyPause = async (req, res, next) => {
             throw new HttpError('srv_invalid_request', 400);
         }
 
-        if (!utils.confirmTokenPayload(tokenPayload)) {
+        const tmpBody = JSON.parse(JSON.stringify(req.body));
+        delete tmpBody.token;
+        delete tokenPayload.timestamp;
+        delete tokenPayload.iat;
+        
+        if (!_.isEqual(tmpBody, tokenPayload)) {
             throw new HttpError('srv_invalid_request', 400);
         }
-
+        
         const resources = await utils.checkEmployeeResources(req);
 
         if (!resources) {

@@ -711,6 +711,7 @@ srv_already_confirmed	Already confirmed	Đã xác nhận	Již potvrzeno
 srv_already_sent	Already sent	Đã gửi	
 srv_ares_failed	ARES failed	ARES không thành công	ARES selhalo
 srv_assigned_form_not_found	Assigned form not found	Không tìm thấy biểu mẫu được chỉ định	Přidělený formulář nenalezen
+srv_attendance_already_exists	Attendance already exists	Dữ liệu điểm danh đã tồn tại	Dohled již existuje
 srv_attendance_not_found	attendance not found	Không tìm thấy dữ liệu điểm danh	Docházka nenalezena
 srv_authentication_failed	authentication failed	xác thực không thành công	autentizace selhala
 srv_authentication_required	authentication required	cChứng thực cần thiết	požadována autentizace
@@ -728,6 +729,7 @@ srv_biometric_required	Biometric required	Mở khoá trắc học cần thiết	
 srv_bluetooth_permission_not_granted	Bluetooth permission not granted	quyền sử dụng Bluetooth không được cấp	povolení k použití Bluetooth nebylo uděleno
 srv_break_already_finished	Break already finished	Thời gian nghỉ đã kết thúc	Přestávka již skončila
 srv_break_finished_successfully	break finished successfully	kết thúc nghỉ thành công	přestávka úspěšně ukončena
+srv_break_id_required	Break ID is required	ID nghỉ là bắt buộc	ID přestávky je povinný
 srv_break_not_found	Break not found	Không tìm thấy thời gian nghỉ	žádná přestávka nenalezena
 srv_break_out_of_working_hours	break out of working hours	ngoài giờ làm việc	přestávka mimo pracovní dobu
 srv_break_started_successfully	break started successfully	bắt đầu nghỉ thành công	přestávka úspěšně zahájena

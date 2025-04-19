@@ -19,16 +19,16 @@ const DailyAttendanceSchema = new Schema(
     }],
 
     // Actual attendances (linked to Attendance model)
-    attendanceIds: [{ type: Schema.Types.ObjectId, ref: 'Attendance' }],
+    attendanceIds: [{ type: Schema.Types.ObjectId }],
 
     // Aggregated evaluation
-    checkedInOnTime: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
-    checkedInLate: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
-    missingCheckIn: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    checkedInOnTime: [{ type: Schema.Types.ObjectId }],
+    checkedInLate: [{ type: Schema.Types.ObjectId }],
+    missingCheckIn: [{ type: Schema.Types.ObjectId }],
 
-    checkedOutOnTime: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
-    checkedOutEarly: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
-    missingCheckOut: [{ type: Schema.Types.ObjectId, ref: 'Employee' }],
+    checkedOutOnTime: [{ type: Schema.Types.ObjectId }],
+    checkedOutEarly: [{ type: Schema.Types.ObjectId }],
+    missingCheckOut: [{ type: Schema.Types.ObjectId }],
 
     workingHoursByEmployee: {
       type: Map,

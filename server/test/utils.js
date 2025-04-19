@@ -1,6 +1,7 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
 const { customAlphabet } = require('nanoid');
 
 const { ObjectId } = mongoose.Types;
@@ -252,8 +253,104 @@ const createRegister = async (request) => {
     return { cookie, createdId };
 }
 
+async function createTestRetail(overrides = {}) {
+    const retail = {
+        name: 'Test Retail',
+        tin: Math.floor(Math.random() * 1e8).toString().padStart(8, '0'), // random tin
+        address: {
+            street: 'Test Street',
+            city: 'Test City',
+            zip: '12345',
+        },
+        ...overrides,
+    };
+    return retail;
+}
+
+async function createTestUser({ retailId }, overrides = {}) {
+    const user = {
+        email: `testuser${Math.floor(Math.random() * 10000)}@example.com`,
+        username: `testuser${Math.floor(Math.random() * 10000)}`,
+        name: 'Test User',
+        password: 'password',
+        role: 'Admin',
+        retailId,
+        isAvailable: true,
+        ...overrides,
+    };
+    return user;
+}
+
+async function createTestRegister({ retailId }, overrides = {}) {
+    const payload = {
+        ...validRegisterPayload,
+        retailId,
+        location: {
+            type: 'Point',
+            coordinates: [1.0, 1.0], // Add dummy coordinates for test
+        },
+        ...overrides,
+    };
+
+    return payload;
+}
+
+async function createTestEmployee({ retailId, publicKey, deviceId }, overrides = {}) {
+    const employee = {
+        email: `testemployee${Math.floor(Math.random() * 10000)}@example.com`,
+        username: `testemployee${Math.floor(Math.random() * 10000)}`,
+        name: 'Test Employee',
+        deviceId: deviceId ? deviceId : `device${Math.floor(Math.random() * 10000)}`,
+        publicKey: publicKey ? publicKey : `publicKey${Math.floor(Math.random() * 10000)}`,
+        retailId,
+        ...overrides,
+    }
+    return employee;
+}
+
+async function createTestWorkingAt({ employeeId, registerId, userId }, overrides = {}) {
+    const defaultShift = {
+        start: '08:00',
+        end: '17:00',
+        allowedOverTime: 20,
+        isOverNight: false,
+        isAvailable: true,
+    };
+
+    const workingAt = {
+        employeeId,
+        registerId,
+        userId,
+        position: 'Test Position',
+        isAvailable: true,
+        shifts: {
+            mon: [{ ...defaultShift }],
+            tue: [{ ...defaultShift }],
+            wed: [{ ...defaultShift }],
+            thu: [{ ...defaultShift }],
+            fri: [{ ...defaultShift }],
+            sat: [{ ...defaultShift }],
+            sun: [{ ...defaultShift }],
+        },
+        ...overrides,
+    }
+
+    return workingAt;
+}
+
+const createAndSave = async (Model, factoryFn) => {
+    const doc = new Model(await factoryFn);
+    return await doc.save();
+};
+
 module.exports = {
     login,
     createRegister,
     validRegisterPayload,
+    createTestRetail,
+    createTestUser,
+    createTestRegister,
+    createTestEmployee,
+    createTestWorkingAt,
+    createAndSave,
 };

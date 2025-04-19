@@ -9,6 +9,7 @@ const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { DAYS_OF_WEEK } = require('../../constants');
 const geolib = require('geolib');
+const HttpError = require('../../constants/http-error');
 
 dayjs.extend(customParseFormat);
 
@@ -117,7 +118,12 @@ const getAvailableResourcesByDeviceId = async ({ deviceId, retailId, employeesSe
 
 const getTodayWorkplaces = async (req, res, next) => {
     try {
-        const { longitude, latitude, date } = req.body;
+        if (!req.body) {
+            throw new HttpError('srv_invalid_request', 400);
+        }
+        const date = req.body.date;
+        const latitude = req.body.latitude;
+        const longitude = req.body.longitude;
         const hasLocation = !!(longitude && latitude);
 
         const { workingAts, registers } = await getAvailableResourcesByDeviceId({

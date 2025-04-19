@@ -63,6 +63,10 @@ const isBetweenTime = ({ time, start, end, isToday = true, timeFormat = TIME_FOR
 const checkEmployeeResources = async (req) => {
     const { latitude, longitude, registerId, localDeviceId, shiftId } = req.body;
 
+    if (!shiftId) {
+        throw new HttpError('srv_invalid_request', 400);
+    }
+
     const register = await Register.findOne({ _id: registerId }).exec();
 
     if (!register) {
@@ -103,6 +107,7 @@ const checkEmployeeResources = async (req) => {
         isToday = false;
         // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
         const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
+        console.log(now.format(), endTime.format());
         if (now.isAfter(endTime)) {
             throw new HttpError('srv_shift_already_ended', 400);
         }
@@ -413,17 +418,6 @@ const utils = {
     },
     getStartEndTime: ({ start, end, baseDay, timeFormat = TIME_FORMAT, isToday = true }) => {
         return getStartEndTime({ start, end, baseDay, timeFormat, isToday })
-    },
-    confirmTokenPayload: (payload) => {
-        if (!payload) {
-            return false
-        }
-        const tmpBody = JSON.parse(JSON.stringify(payload));
-        delete tmpBody.token;
-        delete payload.timestamp;
-
-
-        return !_.isEqual(tmpBody, payload)
     },
     checkEmployeeResources: (req) => {
         return checkEmployeeResources(req)

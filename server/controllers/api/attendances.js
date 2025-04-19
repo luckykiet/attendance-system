@@ -7,12 +7,21 @@ const { getAvailableResourcesByDeviceId } = require('./workplaces');
 const getAttendances = async (req, res, next) => {
     try {
         const { limit = 10, skip = 0 } = req.query;
-        const { workingAts, registers, retails } = await getAvailableResourcesByDeviceId({
+        const resources = await getAvailableResourcesByDeviceId({
             deviceId: req.deviceId,
             employeesSelect: { _id: 1 },
             workingAtsSelect: { registerId: 1, employeeId: 1 },
             registersSelect: { name: 1, address: 1 },
         });
+
+        if (!resources) {
+            return res.status(400).json({
+                success: false,
+                msg: 'srv_invalid_request'
+            });
+        }
+
+        const { workingAts, registers, retails } = resources;
 
         const workingAtIds = workingAts.map(wa => wa._id);
 

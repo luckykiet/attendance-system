@@ -220,6 +220,7 @@ const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAt
 const makeAttendance = async (req, res, next) => {
     try {
         const { latitude, longitude, registerId, attendanceId, reason } = req.body;
+
         const tokenPayload = req.tokenPayload;
         if (!longitude || !latitude || !registerId || !tokenPayload) {
             throw new HttpError('srv_invalid_request', 400);
@@ -227,10 +228,12 @@ const makeAttendance = async (req, res, next) => {
         const tmpBody = JSON.parse(JSON.stringify(req.body));
         delete tmpBody.token;
         delete tokenPayload.timestamp;
+        delete tokenPayload.iat;
 
         if (!_.isEqual(tmpBody, tokenPayload)) {
             throw new HttpError('srv_invalid_request', 400);
         }
+        
         const resources = await utils.checkEmployeeResources(req);
 
         if (!resources) {
@@ -315,6 +318,7 @@ const makeAttendance = async (req, res, next) => {
         // }
 
         const now = dayjs();
+        const yesterday = now.subtract(1, 'day');
 
         const { employee } = req;
 
@@ -326,7 +330,7 @@ const makeAttendance = async (req, res, next) => {
 
         const { endTime: shiftEndTime } = shiftTime;
 
-        const dailyAttendance = await getDailyAttendance({ date: now.format('YYYYMMDD'), registerId });
+        const dailyAttendance = await getDailyAttendance({ date: isToday ? now.format('YYYYMMDD') : yesterday.format('YYYYMMDD'), registerId });
 
         if (typeof dailyAttendance === 'string') {
             throw new HttpError(dailyAttendance, 400);
@@ -346,12 +350,18 @@ const makeAttendance = async (req, res, next) => {
         };
 
         if (attendanceId) {
+            // is identifying check out
             attendanceQuery._id = attendanceId;
         }
 
         const attendance = await Attendance.findOne(attendanceQuery).exec();
 
+        if (attendance && !attendanceId) {
+            throw new HttpError('srv_attendance_already_exists', 400);
+        }
+
         if (attendance) {
+            
             if (!attendance.shiftId.equals(shift._id)) {
                 throw new HttpError('srv_invalid_shift', 400);
             }

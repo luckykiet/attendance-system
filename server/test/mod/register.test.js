@@ -21,7 +21,6 @@ afterAll(async () => {
     await db.closeDatabase();
 });
 
-
 describe(`unauthorized access`, () => {
     test('should prevent any access', async () => {
         const response1 = await request.get(`${routePrefix}`);

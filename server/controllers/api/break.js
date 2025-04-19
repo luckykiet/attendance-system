@@ -8,6 +8,7 @@ const utils = require('../../utils');
 const Attendance = require("../../models/Attendance");
 const mongoose = require("mongoose");
 const { DAYS_OF_WEEK } = require("../../constants");
+const _ = require('lodash');
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -15,13 +16,19 @@ dayjs.extend(isBetween);
 const applyBreak = async (req, res, next) => {
     try {
         const { latitude, longitude, registerId, shiftId, attendanceId, _id, name, breakId } = req.body;
+
         const tokenPayload = req.tokenPayload;
 
         if (!longitude || !latitude || !registerId || !attendanceId || !shiftId || !name || !tokenPayload) {
             throw new HttpError('srv_invalid_request', 400);
         }
 
-        if (!utils.confirmTokenPayload(tokenPayload)) {
+        const tmpBody = JSON.parse(JSON.stringify(req.body));
+        delete tmpBody.token;
+        delete tokenPayload.timestamp;
+        delete tokenPayload.iat;
+
+        if (!_.isEqual(tmpBody, tokenPayload)) {
             throw new HttpError('srv_invalid_request', 400);
         }
 
@@ -57,23 +64,21 @@ const applyBreak = async (req, res, next) => {
         const todayKey = DAYS_OF_WEEK[now.day()];
         const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
 
-        let breakTemplate = null;
-
-        if (breakId) {
-            breakTemplate = register.breaks[isToday ? todayKey : yesterdayKey].find((b) => b._id.toString() === breakId);
-
-            if (!breakTemplate) {
-                throw new HttpError('srv_break_not_found', 400);
-            }
+        if (!breakId) {
+            throw new HttpError('srv_break_id_required', 400);
         }
 
-        if (breakTemplate) {
-            const breakTemplateTime = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
-            if (breakTemplateTime) {
-                const { startTime: breakStartTime, endTime: breakEndTime } = breakTemplateTime;
-                if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
-                    throw new HttpError('srv_outside_time', 400);
-                }
+        const breakTemplate = register.breaks[isToday ? todayKey : yesterdayKey].find((b) => b._id.toString() === breakId);
+
+        if (!breakTemplate) {
+            throw new HttpError('srv_break_not_found', 400);
+        }
+        
+        const breakTemplateTime = utils.getStartEndTime({ start: breakTemplate.start, end: breakTemplate.end, isToday });
+        if (breakTemplateTime) {
+            const { startTime: breakStartTime, endTime: breakEndTime } = breakTemplateTime;
+            if (!attendance && !now.isBetween(breakStartTime, breakEndTime, null, '[]')) {
+                throw new HttpError('srv_outside_time', 400);
             }
         }
 
