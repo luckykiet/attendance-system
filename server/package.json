@@ -28,7 +28,7 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "compression": "^1.8.0",
-    "connect-mongodb-session": "^5.0.0",
+    "connect-mongodb-session": "4.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
