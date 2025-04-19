@@ -42,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "locale": "^0.1.0",
     "lodash": "^4.17.21",
+    "mongodb": "^6.15.0",
     "mongoose": "8.0.0",
     "morgan": "^1.10.0",
     "nanoid": "3.3.6",
