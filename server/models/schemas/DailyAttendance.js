@@ -32,8 +32,10 @@ const DailyAttendanceSchema = new Schema(
     checkedOutOnTimeByEmployee: { type: Map, of: Number },
     checkedOutEarlyByEmployee: { type: Map, of: Number },
 
-    missingEmployeeIds: [{ type: Schema.Types.ObjectId }],
-    missingEmployees: { type: Number, default: 0 },
+    missingEmployees: [{
+      employeeId: { type: Schema.Types.ObjectId, required: true },
+      shiftId: { type: Schema.Types.ObjectId, required: true },
+    }],
 
     workingHoursByEmployee: [
       {

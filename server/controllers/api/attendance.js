@@ -57,8 +57,7 @@ const getDailyAttendance = async ({ date = null, registerId, isCreating = false 
                 checkedInLateByEmployee: {},
                 checkedOutOnTimeByEmployee: {},
                 checkedOutEarlyByEmployee: {},
-                missingEmployeeIds: [],
-                missingEmployees: 0,
+                missingEmployees: [],
                 workingHoursByEmployee: [],
                 confirmed: false,
             };

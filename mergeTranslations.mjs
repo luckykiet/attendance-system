@@ -21,7 +21,7 @@ const readCsvFile = async (path) => {
                 .filter((line) => !!line.trim())
                 .forEach((line) => {
                     const fields = line.split(delimiter);
-                    const key = fields[0];
+                    const key = fields[0].trim();
                     const texts = fields.slice(1);
                     const locales = {};
                     headers.slice(1).forEach((locale, index) => {

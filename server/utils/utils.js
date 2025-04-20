@@ -19,6 +19,7 @@ const dayjs = require("dayjs")
 const DailyAttendance = require("../models/DailyAttendance")
 const Attendance = require("../models/Attendance")
 const mongoose = require("mongoose")
+const { DATE_FORMAT } = require("../constants/days")
 
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
@@ -256,11 +257,11 @@ const finalizeDailyAttendanceAggregation = async (date) => {
     try {
         logger.info(`Finalizing daily attendance aggregation for date: ${date}`);
         const now = dayjs();
-        const targetDate = dayjs(date, 'YYYYMMDD', true);
+        const targetDate = dayjs(date.toString(), DATE_FORMAT, true);
         if (!targetDate.isValid()) throw new Error('Invalid date');
         if (targetDate.isAfter(now.startOf('day'))) throw new Error('Date cannot be in the future');
 
-        const numericDate = parseInt(targetDate.format('YYYYMMDD'));
+        const numericDate = parseInt(targetDate.format(DATE_FORMAT));
         const allDailyAttendances = await DailyAttendance.find({ date: numericDate });
 
         for (const daily of allDailyAttendances) {
@@ -270,15 +271,18 @@ const finalizeDailyAttendanceAggregation = async (date) => {
             }
 
             const attendanceDocs = await Attendance.find({ dailyAttendanceId: daily._id }).exec();
-            if (!daily.missingEmployeeIds) daily.missingEmployeeIds = [];
-            if (typeof daily.missingEmployees !== 'number') daily.missingEmployees = 0;
+            if (!daily.missingEmployees) daily.missingEmployees = [];
 
             for (const expected of daily.expectedShifts || []) {
                 const attendance = attendanceDocs.find(a => a.shiftId.equals(expected.shiftId));
 
                 if (!attendance) {
-                    daily.missingEmployeeIds.push(expected.employeeId);
-                    daily.missingEmployees += 1;
+                    const foundMissing = daily.missingEmployees.find(e => e.employeeId.equals(expected.employeeId) && e.shiftId.equals(expected.shiftId));
+                    if (foundMissing) continue;
+                    daily.missingEmployees.push({
+                        employeeId: expected.employeeId,
+                        shiftId: expected.shiftId,
+                    });
                     continue;
                 }
 
@@ -348,6 +352,7 @@ const finalizeDailyAttendanceAggregation = async (date) => {
                     });
                 }
             }
+            daily.confirmed = true;
             await daily.save();
         }
 

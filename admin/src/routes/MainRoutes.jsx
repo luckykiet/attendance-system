@@ -9,6 +9,7 @@ const UsersPage = Loadable(lazy(() => import('@/pages/admin/UsersPage')))
 const EmployeesPage = Loadable(lazy(() => import('@/pages/admin/EmployeesPage')))
 const EmployeePage = Loadable(lazy(() => import('@/pages/admin/EmployeePage')))
 const RegisterPage = Loadable(lazy(() => import('@/pages/admin/RegisterPage')))
+const RegisterDashboardPage = Loadable(lazy(() => import('@/pages/admin/RegisterDashboardPage')))
 const RegisterAttendancePage = Loadable(lazy(() => import('@/pages/admin/RegisterAttendance')))
 const RetailPage = Loadable(lazy(() => import('@/pages/admin/RetailPage')))
 const ErrorPage = Loadable(lazy(() => import('@/pages/ErrorPage')))
@@ -64,6 +65,10 @@ const MainRoutes = {
         {
           path: 'register/:registerId',
           element: <RegisterPage />,
+        },
+        {
+          path: 'register/dashboard/:registerId',
+          element: <RegisterDashboardPage />,
         },
         {
           path: 'retail',

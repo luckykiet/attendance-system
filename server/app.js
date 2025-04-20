@@ -87,9 +87,26 @@ require('./routes/auth')(app, '/auth')
 require('./routes/api')(app, '/api')
 require('./routes/mod')(app, '/mod')
 
+const runFinalizeDailyAttendanceAggregation = async () => {
+  const dailyAttendances = await DailyAttendance.find({ confirmed: false });
+  if (dailyAttendances.length > 0) {
+    dailyAttendances.forEach(async (daily) => {
+      const { date } = daily;
+      console.log(`[CRON] Finalizing DailyAttendance for ${date}`);
+      try {
+        await finalizeDailyAttendanceAggregation(date);
+        console.log('[CRON] Finalization successful');
+      } catch (e) {
+        console.error('[CRON] Finalization failed:', e.message);
+      }
+    })
+  }
+}
+
 // Run demo data generation
 generateDemoData()
 
+runFinalizeDailyAttendanceAggregation();
 if (process.env.NODE_ENV !== 'test') {
   // Schedule cron job to rerun `generateDemoData` after 1 hour
   cron.schedule('0 * * * *', () => {
@@ -97,21 +114,7 @@ if (process.env.NODE_ENV !== 'test') {
     generateDemoData();
   });
 
-  cron.schedule('0 2 * * *', async () => {
-    const dailyAttendances = await DailyAttendance.find({ confirmed: false });
-    if (dailyAttendances.length > 0) {
-      dailyAttendances.forEach(async (daily) => {
-        const { date } = daily;
-        console.log(`[CRON] Finalizing DailyAttendance for ${date}`);
-        try {
-          await finalizeDailyAttendanceAggregation(date);
-          console.log('[CRON] Finalization successful');
-        } catch (e) {
-          console.error('[CRON] Finalization failed:', e.message);
-        }
-      })
-    }
-  });
+  cron.schedule('0 2 * * *', runFinalizeDailyAttendanceAggregation);
 }
 
 // Error handler

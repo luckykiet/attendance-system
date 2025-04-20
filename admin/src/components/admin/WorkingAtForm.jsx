@@ -21,7 +21,7 @@ import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-for
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, getStartEndTime, TIME_FORMAT } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -408,6 +408,25 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                     <FormProvider {...dateForm}>
                                                         <form onSubmit={dateForm.handleSubmit(onAttendanceSubmit)}>
                                                             <Grid container spacing={2}>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Stack spacing={1}>
+                                                                        <Typography variant='h6'>{t('misc_shift')}</Typography>
+                                                                        {(() => {
+                                                                            const shiftTime = getStartEndTime({ start: attendance.start, end: attendance.end });
+                                                                            if (!shiftTime) return null;
+                                                                            const { startTime, endTime, isOverNight } = shiftTime;
+                                                                            return (
+                                                                                <Stack direction={'row'} spacing={2}>
+                                                                                    <Typography variant='body1'>{startTime.format(TIME_FORMAT)} - {endTime.format(TIME_FORMAT)}{isOverNight ? `(${t('misc_over_night')})` : ''}</Typography>
+                                                                                    <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(attendance.start, attendance.end)}</Typography>
+                                                                                </Stack>
+                                                                            )
+                                                                        })()}
+                                                                    </Stack>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Divider />
+                                                                </Grid>
                                                                 <Grid size={{ xs: 12, sm: 6 }}>
                                                                     {attendance.checkInTime ?
                                                                         <Stack spacing={1}>
@@ -499,6 +518,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             {attendance.checkOutLocation.latitude && <Typography variant='body1'>{t('misc_latitude')}: {attendance.checkOutLocation.latitude}</Typography>}
                                                                             {attendance.checkOutLocation.longitude && <Typography variant='body1'>{t('misc_longitude')}: {attendance.checkOutLocation.longitude}</Typography>}
                                                                             {attendance.checkOutLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkOutLocation.distance)}m</Typography>}
+                                                                            {attendance.reason && <Typography variant='body1'>{t('misc_reason')}: {attendance.reason}</Typography>}
                                                                         </Stack>
                                                                         : <Typography>{t('misc_check_out')}: -</Typography>}
                                                                 </Grid>
@@ -507,6 +527,57 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                         {t('misc_save')}
                                                                     </Button>
                                                                 </Grid> */}
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Divider />
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Typography variant='h6'>{t('misc_pauses')}</Typography>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    {attendance.pauses && attendance.pauses.length > 0 ? attendance.pauses.map((pause, index) => {
+                                                                        const startTime = dayjs(pause.checkInTime);
+                                                                        const endTime = dayjs(pause.checkOutTime);
+                                                                        return (
+                                                                            <Grid container spacing={2} key={index}>
+                                                                                <Grid size={{ xs: 12, sm: 6 }}>
+                                                                                    <Stack spacing={1}>
+                                                                                        <Typography variant='body1'>{t('misc_start_time')}: {pause.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_end_time')}: {pause.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>
+                                                                                    </Stack>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        );
+                                                                    }) : <Typography variant='body1' textAlign={'center'}>{t('misc_no_pauses')}</Typography>}
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Divider />
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    <Typography variant='h6'>{t('misc_breaks')}</Typography>
+                                                                </Grid>
+                                                                <Grid size={{ xs: 12 }}>
+                                                                    {attendance.breaks && attendance.breaks.length > 0 ? attendance.breaks.map((brk, index) => {
+                                                                        const breakTime = getStartEndTime({ start: brk.breakHours.start, end: brk.breakHours.end });
+                                                                        if (!breakTime) return null;
+                                                                        const startTime = dayjs(brk.checkInTime);
+                                                                        const endTime = dayjs(brk.checkOutTime);
+
+                                                                        return (
+                                                                            <Grid container spacing={2} key={index}>
+                                                                                <Grid size={{ xs: 12, sm: 6 }}>
+                                                                                    <Stack spacing={1}>
+                                                                                        <Typography variant='body1'>{t('misc_break')}: {t(brk.name)}</Typography>
+                                                                                        <Typography variant='body1'>{breakTime.startTime.format(TIME_FORMAT)} - {breakTime.endTime.format(TIME_FORMAT)}{breakTime.isOverNight ? t('misc_over_night') : ''}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_check_in')}: {brk.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_check_out')}: {brk.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>
+                                                                                    </Stack>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        );
+                                                                    }) : <Typography variant='body1' textAlign={'center'}>{t('misc_no_breaks')}</Typography>}
+                                                                </Grid>
                                                                 <Grid size={{ xs: 12 }}>
                                                                     {postAttendanceMsg && <FeedbackMessage message={postAttendanceMsg} />}
                                                                 </Grid>

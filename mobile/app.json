@@ -15,6 +15,7 @@
     "newArchEnabled": true,
     "supportsTablet": true,
     "ios": {
+      "buildNumber": "201",
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "cover",
@@ -40,6 +41,7 @@
       }
     },
     "android": {
+      "versionCode": 201,
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "cover",

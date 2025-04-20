@@ -309,8 +309,8 @@ export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat =
 };
 
 export const getDurationLabel = (start, end, timeFormat = TIME_FORMAT) => {
-  const startTime = dayjs(start, timeFormat);
-  const endTime = dayjs(end, timeFormat);
+  const startTime = dayjs.isDayjs(start) ? start : dayjs(start, timeFormat);
+  const endTime = dayjs.isDayjs(end) ? end : dayjs(end, timeFormat);
 
   if (startTime.isValid() && endTime.isValid()) {
     const diff =

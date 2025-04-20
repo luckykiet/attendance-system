@@ -18,6 +18,8 @@ misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
 misc_account_number	Account number	Số tài khoản	Číslo účtu
 misc_active	active	trực tiếp	aktivní
+misc_actual_shift_amount	Actual shift amount	Số ca thực tế	Současný počet směn
+misc_actual_working_time	actual working time	thời gian làm việc thực tế	aktuální pracovní doba
 misc_actual_workplace	actual workplace	nơi việc hiện tại	aktuální pracoviště
 misc_add	Add	Tạo	Přidat
 misc_add_faq	Add faq	Thêm FAQ	Přidat FAQ
@@ -34,7 +36,7 @@ misc_add_workplace	add workplace	thêm nơi làm việc mới	přidat nové prac
 misc_addition_mail_sent	email addition sent	đã gửi email thêm chi tiết	email s dodatekem odeslán
 misc_address	Address	Địa chỉ	Adresa
 misc_address_instruction_1	You will need to get the coordinates of the workplace in 2 ways	Bạn cần lấy toạ độ của nơi làm việc theo 2 cách	Musíte získat souřadnice pracoviště 2 způsoby
-misc_aggregation 	Aggregation	Tổng hợp	Agregace
+misc_aggregation	Aggregation	Tổng hợp	Agregace
 misc_align_camera_to_qr_code	align camera to QR code	di chuyển camera đến mã QR	zaměřte kameru na QR kód
 misc_all	all	tất cả	všechny
 misc_allow_camera_permission_to_do_registration	allow camera access to scan registration QR Code	hãy cho phép truy cập camera để scan mã QR đăng ký	povolte přístup ke kameře pro skenování registračního QR kódu
@@ -96,7 +98,6 @@ misc_camera_to_do_registration	use camera to scan registration QR Code	dùng cam
 misc_cancel	Cancel	Huỷ	Zrušit
 misc_cancel_device_pairing	cancel device pairing	hủy ghép nối thiết bị	zrušit párování zařízení
 misc_cancel_pairing_succeed	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
-misc_cancel_pairing_succeed 	cancel pairing succeed	hủy ghép nối thành công	zrušení párování úspěšně
 misc_cannot_revert_action	you cannot revert this action	bạn không thể hoàn trả thao tác này	nemůžete vrátit tuto akci
 misc_changes	changes	thay đổi	změny
 misc_check	check	kiểm tra	kontrola
@@ -126,6 +127,7 @@ misc_closed	closed	đã đóng	zavřeno
 misc_commercial_activity	commercial activity	hoạt động thương mại	obchodní činnost
 misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
+misc_comparison_actual_expected	comparison actual expected	so sánh thực tế và mong muốn	porovnání skutečného a očekávaného
 misc_confirm	Confirm	Xác nhận	Potvrdit
 misc_confirm_cancel_device_pairing	Confirm cancel device pairing	Xác nhận hủy kết nối thiết bị	Potvrdit zrušení párování zařízení
 misc_confirm_check_in	confirm check in	xác nhận check in	potvrdit příchod
@@ -196,6 +198,7 @@ misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
 misc_enable	enable	bật	povolit
 misc_enable_in_settings	enable in settings	bật trong cài đặt	povolit v nastavení
+misc_end_time	end time	thời gian kết thúc	čas ukončení
 misc_enter_token	Enter token	Nhập mã	Nastavit token
 misc_enter_url	Enter URL	Nhập URL	Nastavit URL
 misc_error	chyba	lỗi	chyba
@@ -205,6 +208,8 @@ misc_examples	examples	ví dụ	příklady
 misc_exceeded_time	exceeded time	vượt quá thời gian	překročen čas
 misc_expected	expected	mong muốn	očekávaný
 misc_expected_end_time	Expected end time	Thời gian kết thúc dự kiến	Předpokládaný čas ukončení
+misc_expected_shift_amount	Expected shift amount	Số ca dự kiến	Předpokládaný počet směn
+misc_expected_working_time	expected working time	thời gian làm việc dự kiến	požadovaná pracovní doba
 misc_expiration_date	expiration date	ngày hết hạn	den expirace
 misc_export	export	export	exportovat
 misc_export_csv	export csv	xuất dữ liệu CSV	exportovat CSV
@@ -221,12 +226,13 @@ misc_faqs	frequently asked questions	các câu hỏi thường gặp	často klad
 misc_fetch_ares	Fetch from ARES	Tải từ ARES	Načíst z ARES
 misc_fetch_coordinates	fetch coordinates	lấy toạ độ	získat souřadnice
 misc_fetched_successfully	fetched successfully	lấy dữ liệu thành công	získání dat úspěšné
+misc_field	Field	Các trường	Pole
+misc_fields	Field	Các trường	Pole
 misc_fill_pdf	Fill PDF	Điền PDF	Vyplnit PDF
 misc_filling_in_the_address_fields	by filling in the address fields	bằng cách điền vào các trường địa chỉ	vyplněním polí adresy
 misc_filter	Filter	Lọc	Filtr
 misc_finish	finish	hoàn tất	ukončit
 misc_finish_pause	finish pause	kết thúc tạm dừng	ukončit přerušení
-misc_finish_pause 	finish pause	kết thúc tạm dừng	ukončit přerušení
 misc_finished	Finished	Xong	Dokončeno
 misc_first_name	first name	tên	jméno
 misc_forgotten_password	Forgot password	Quên mật khẩu	Zapomenuté heslo
@@ -328,6 +334,8 @@ misc_min_short	min.	phút	min.
 misc_mins	minutes	phút	minuty
 misc_minutes	Minutes	Phút	Minuty
 misc_missing	missing	thiếu	chybí
+misc_missing_check_in	Missing check in	Thiếu check in	Chybí příchod
+misc_missing_check_out	Missing check out	Thiếu check out	Chybí odchod
 misc_model	model	model	model
 misc_modified	modifed	đã thay đổi	modifikováno
 misc_month	month	tháng	měsíc
@@ -378,6 +386,7 @@ misc_new_password	New password	Mật khẩu mới	Nové heslo
 misc_new_payment_terminal	New payment terminal	Máy trả thẻ mới	Nový platební terminál
 misc_new_store	new store	cửa hàng mới	nová provozovna
 misc_new_user	new user	người dùng mới	nový uživatel
+misc_next_month	next month	tháng sau	další měsíc
 misc_no	no	không	ne
 misc_no_attendance	no attendance	không có dữ liệu điểm danh	není žádná docházka
 misc_no_breaks	No breaks	Không có giờ nghỉ	žádné přestávky
@@ -387,6 +396,7 @@ misc_no_document	no document	không có tài liệu	žádný dokument
 misc_no_document_uploaded	no document uploaded	không có tài liệu nào được tải lên	žádný dokument nebyl nahrán
 misc_no_local_device	no local devices	không có thiết bị cục bộ	není žádné lokální zařízení
 misc_no_nearby_workplace	no nearby workplace found	không có chỗ làm việc gần đây	není nalezeno žádné blízké pracoviště
+misc_no_pauses	No pauses	Không có thời gian nghỉ	žádné přerušení
 misc_no_shifts	no shifts	không có ca làm việc	žádné směny
 misc_no_store	No store	Không có cửa hàng	Žádná provozovna
 misc_no_terminal	no terminals	không có máy	žádný terminál
@@ -432,6 +442,7 @@ misc_plans	plans	gói	plány
 misc_portal	Portal	Portal	Portál
 misc_position	position	vị trí	pozice
 misc_postal_code	Postal code	Mã bưu điện	PSČ
+misc_prev_month	previous month	tháng trước	minulý měsíc
 misc_previous_month	previous month	tháng trước	minulý měsíc
 misc_price	price	giá	cena
 misc_private_key	Private key	Khóa riêng	Soukromý klíč
@@ -545,6 +556,7 @@ misc_software_name	Software name	Tên phần mềm	Název softwaru
 misc_sort_by	Sort by	Xếp theo	Seřadit podle
 misc_specific_breaks	Specific breaks	Thời gian nghỉ cụ thể	Specifické přestávky
 misc_start_in	start in	bắt đầu sau	bude zahájeno za
+misc_start_time	start time	thời gian bắt đầu	čas zahájení
 misc_starts_in	starts in	bắt đầu sau	bude zahájeno za
 misc_status	Status	Tình trạng	Stav
 misc_status_updated	status updated	trạng thái đã được cập nhập	status aktualizován
@@ -604,8 +616,12 @@ misc_today	today	hôm nay	dnes
 misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
+misc_total_attendances	Total attendances	Tổng số điểm danh	Celkový počet docházek
+misc_total_days	Total days	Tổng số ngày	Celkový počet dní
+misc_total_expected_shifts	Total expected shifts	Tổng số ca làm việc mong đợi	Celkový počet očekávaných směn
 misc_total_price	total price	tiền tổng	celková částka
 misc_total_shifts	Total shifts	Tổng ca làm việc	Totální směny
+misc_total_working_minutes	Total working minutes	Tổng số phút làm việc	Celkový počet pracovních minut
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce
 misc_transfer_fee	transfer fees	phí chuyển khoản	poplatky za převod
@@ -642,6 +658,7 @@ misc_user_support	user support	hỗ trợ khách hàng	uživatelská podpora
 misc_username	Username	Tên đăng nhập	Přihlašovací jméno
 misc_users	Users	Người dùng	Uživatele
 misc_valid	valid	hợp lệ	validní
+misc_value	value	giá trị	hodnota
 misc_vin	VIN	DIČ	DIČ
 misc_want_to_continue	do you want to continue	bạn có muốn tiếp tục không	chcete pokračovat
 misc_website	website	trang web	webová stránka
@@ -650,6 +667,7 @@ misc_working_employees	working employees	nhân viện làm việc	pracující za
 misc_working_hour	working hour	thời gian làm việc	pracovní doba
 misc_working_hour_of_the_workplace	working hour of the workplace	Giờ làm việc của nơi làm việc	Pracovní doba pracoviště
 misc_working_hours	working hours	thời gian làm việc	pracovní doba
+misc_working_hours_by_employee	working hours by employee	Giờ làm việc theo nhân viên	počet odpracovaných hodin zaměstnanců
 misc_workplace	workplace	nơi làm việc	pracoviště
 misc_workplace_breaks	Workplace breaks	Thời gian nghỉ của nơi làm việc	Přestávky pracoviště
 misc_workplace_custom_breaks	Custom breaks	Thời gian nghỉ tùy chỉnh	Vlastní přestávky
@@ -755,6 +773,7 @@ srv_confirm_password_required	Confirm password is required	Xác nhận mật kh�
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
 srv_created	created	đã được tạo	vytvořeno
 srv_daily_attendance_not_found	daily attendance not found	Không tìm thấy dữ liệu điểm danh	Denní docházka nenalezena
+srv_date_can_not_be_in_future	date can not be in future	Ngày không thể ở tương lai	datum nemůže být v budoucnosti
 srv_device_already_registered	device already registered	thiết bị đã được đăng ký	zařízení je již registrováno
 srv_device_not_found	device not found	không tìm thấy thiết bị	zařízení nenalezeno
 srv_device_pairing_cancellation_failed	device pairing cancellation failed	đã hủy ghép nối thiết bị thất bại	zrušení párování zařízení selhalo
@@ -775,8 +794,9 @@ srv_employee_not_working_today	employee is not working today	nhân viên không 
 srv_empty_name	Empty name	Tên trống	Prázdné jméno
 srv_empty_purchaser	Empty purchaser	Người mua trống	Prázdný kupující
 srv_empty_supplier	Empty supplier	Nhà cung cấp trống	Prázdný dodavatel
+srv_end_time_before_start_time	end time is before start time	Thời gian kết thúc trước thời gian bắt đầu	čas ukončení před časem zahájení
 srv_error	chyba serveru	lỗi serveru	chyba serveru
-srv_error_fetching_address 	error fetching address	lỗi tìm địa chỉ	chyba při získávání adresy
+srv_error_fetching_address	error fetching address	lỗi tìm địa chỉ	chyba při získávání adresy
 srv_error_fetching_coordinates	error fetching coordinates	lỗi tìm tọa độ	chyba při získávání souřadnic
 srv_exposure_is_after_expiration	Exposure date is after expiration date	Ngày hiệu lực sau ngày hết hạn	Datum vystavení je po datumu expirace
 srv_failed_api_request	Failed API request	API request failed	API požadavek selhal

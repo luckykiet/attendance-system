@@ -166,3 +166,21 @@ export const REGEX = {
 }
 
 export const TIME_FORMAT = 'HH:mm';
+export const DATE_FORMAT = 'YYYYMMDD';
+
+export const defaultAggregation = {
+  totalDays: 0,
+  totalExpectedShifts: 0,
+  totalAttendances: 0,
+
+  checkedInOnTime: 0,
+  checkedInLate: 0,
+  missingCheckIn: 0,
+
+  checkedOutOnTime: 0,
+  checkedOutEarly: 0,
+  missingCheckOut: 0,
+
+  totalWorkingMinutes: 0,
+  workingHoursByEmployee: new Map(),
+};

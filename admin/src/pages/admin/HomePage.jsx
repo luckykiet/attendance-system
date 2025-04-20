@@ -170,6 +170,9 @@ export default function HomePage() {
                             <Button onClick={() => navigate(`/attendance/${register._id}`)} variant='contained'>
                               {t('misc_attendances')}
                             </Button>
+                            <Button onClick={() => navigate(`/register/dashboard/${register._id}`)} color='warning' variant='contained'>
+                              {t('misc_dashboard')}
+                            </Button>
                           </CardActions>
                         </Card>
                       </Grid>
