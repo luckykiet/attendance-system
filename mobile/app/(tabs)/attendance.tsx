@@ -12,6 +12,7 @@ import { MyRetail } from '@/types/retail';
 import { useQueries } from '@tanstack/react-query';
 import { useCompaniesApi } from '@/api/useCompaniesApi';
 import { GetMyCompaniesResult } from '@/types/workplaces';
+import _ from 'lodash';
 
 interface Route {
   key: string;
@@ -86,15 +87,24 @@ const AttendanceScreen: React.FC = () => {
 
   useEffect(() => {
     const allSuccess = !queryResults.isFetching && !queryResults.isLoading;
-    if (allSuccess && queryResults.data) {
-      setMyWorkplaces(queryResults.data);
+    if (allSuccess) {
+      setMyWorkplaces(!_.isEmpty(queryResults.data) ? queryResults.data : null);
     }
   }, [queryResults.data, queryResults.isFetching, queryResults.isLoading]);
+
+  useEffect(() => {
+    queryResults.refetch();
+  }, [myWorkplaces]);
+
+  const combinedRetails: MyRetail[] = Object.entries(myWorkplaces || {}).flatMap(([, data]) => {
+    const { retails } = data
+    return retails
+  });
 
   return (
     <MainScreenLayout>
       <ThemedView style={styles.container}>
-        {myWorkplaces && Object.keys(myWorkplaces).length > 0 ? (
+        {combinedRetails.length > 0 ? (
           <TabView
             navigationState={{ index, routes }}
             renderScene={renderScene}

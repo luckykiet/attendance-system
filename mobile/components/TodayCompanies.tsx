@@ -227,7 +227,7 @@ const TodayCompanies = () => {
                   <ThemedText style={styles.companyDetail}>
                     {t('misc_my_working_hours')}:
                   </ThemedText>
-                
+
                   {workplace.shifts
                     .sort((a: Shift, b: Shift) => dayjs(a.start, TIME_FORMAT).diff(dayjs(b.start, TIME_FORMAT)))
                     .map((shift: Shift, index: number) => {

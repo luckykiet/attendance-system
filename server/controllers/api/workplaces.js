@@ -126,7 +126,7 @@ const getTodayWorkplaces = async (req, res, next) => {
         const longitude = req.body.longitude;
         const hasLocation = !!(longitude && latitude);
 
-        const { workingAts, registers } = await getAvailableResourcesByDeviceId({
+        const resources = await getAvailableResourcesByDeviceId({
             deviceId: req.deviceId,
             employeesSelect: {
                 name: 1,
@@ -151,6 +151,12 @@ const getTodayWorkplaces = async (req, res, next) => {
                 location: 1,
             }
         });
+
+        if (!resources) {
+            return res.status(200).json({ success: true, msg: { workingAts: [], registers: [], employees: [], retails: [] } });
+        }
+
+        const { workingAts, registers } = resources;
 
         const dateToUse = date ? dayjs(date) : dayjs();
         const dayKey = DAYS_OF_WEEK[dateToUse.day()];
@@ -239,7 +245,7 @@ const getMyWorkingPlaces = async (req, res, next) => {
     try {
         const defaultResponse = { success: true, msg: { workingAts: [], registers: [], employees: [], retails: [] } };
 
-        const { employees, workingAts, registers, retails } = await getAvailableResourcesByDeviceId({
+        const resources = await getAvailableResourcesByDeviceId({
             deviceId: req.deviceId,
             employeesSelect: {
                 name: 1,
@@ -261,6 +267,12 @@ const getMyWorkingPlaces = async (req, res, next) => {
                 vin: 1,
             },
         });
+
+        if (!resources) {
+            return res.status(200).json(defaultResponse);
+        }
+
+        const { employees, workingAts, registers, retails } = resources;
 
         if (!employees || !workingAts || !registers || !retails) {
             return res.status(200).json(defaultResponse);

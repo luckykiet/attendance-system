@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { useMutation, useQueries } from '@tanstack/react-query';
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
@@ -19,6 +19,7 @@ import { useEmployeeApi } from '@/api/useEmployeeApi';
 import * as SecureStore from 'expo-secure-store';
 import { Shift } from '@/types/shift';
 import { PatternFormat } from 'react-number-format';
+import _ from 'lodash';
 
 dayjs.extend(customParseFormat);
 
@@ -39,6 +40,7 @@ const isShiftsEmpty = (shifts: Record<DayKey, Shift[]>): boolean => {
 };
 
 const MyCompanies = () => {
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { appId, urls, isGettingLocation, location, setMyWorkplaces, myWorkplaces } = useAppStore();
   const { getMyCompanies } = useCompaniesApi();
@@ -63,7 +65,6 @@ const MyCompanies = () => {
           dataByDomain[url] = result.data;
         }
       });
-
       return {
         isLoading: results.some((r) => r.isLoading),
         isFetching: results.some((r) => r.isFetching),
@@ -78,6 +79,8 @@ const MyCompanies = () => {
     onSuccess: (data) => {
       Alert.alert(t('misc_cancel_pairing_succeed'), t(data))
       queryResults.refetch();
+      queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+      queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
     },
     onError: (error) => Alert.alert(t('misc_device_pairing_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_cancel_pairing')),
   });
@@ -134,8 +137,8 @@ const MyCompanies = () => {
 
   useEffect(() => {
     const allSuccess = !queryResults.isFetching && !queryResults.isLoading;
-    if (allSuccess && queryResults.data) {
-      setMyWorkplaces(queryResults.data);
+    if (allSuccess) {
+      setMyWorkplaces(!_.isEmpty(queryResults.data) ? queryResults.data : null);
     }
   }, [queryResults.data, queryResults.isFetching, queryResults.isLoading]);
 
@@ -167,7 +170,7 @@ const MyCompanies = () => {
         </TouchableOpacity>
       </ThemedView>
       {(queryResults.isLoading || queryResults.isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
-      {myWorkplaces && Object.keys(myWorkplaces).length > 0 ? (
+      {combinedRetails.length > 0 ? (
         <>
           <FlatList
             ref={scrollViewRef}

@@ -62,13 +62,22 @@ const getAttendancesByRetail = async (req, res, next) => {
             });
         }
 
-        const { workingAts, registers, retails, employees } = await getAvailableResourcesByDeviceId({
+        const resources = await getAvailableResourcesByDeviceId({
             deviceId: req.deviceId,
             retailId,
             employeesSelect: { _id: 1, name: 1, email: 1, phone: 1 },
             workingAtsSelect: { registerId: 1, employeeId: 1, position: 1, shifts: 1 },
             registersSelect: { name: 1, address: 1 },
         });
+
+        if (!resources) {
+            return res.status(400).json({
+                success: false,
+                msg: 'srv_invalid_request'
+            });
+        }
+
+        const { workingAts, registers, retails, employees } = resources;
 
         const workingAtIds = workingAts.map(wa => wa._id);
 

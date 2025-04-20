@@ -48,7 +48,8 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_shift_pause_successfully'), t(data.msg))
                     setPendingAttendance(null);
                     setSelectedShift(null);
@@ -68,7 +69,8 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_attendance_success'), t(data.msg))
                     setPendingAttendance(null);
                     setSelectedShift(null);
@@ -88,7 +90,8 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_break_submitted'), t(data.msg))
                     setPendingAttendance(null);
                     setSelectedShift(null);
@@ -108,7 +111,8 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.invalidateQueries({ queryKey: ['todayWorkplaces'] });
+                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(t('misc_break_submitted'), t(data.msg))
                     setPendingAttendance(null);
                     setSelectedShift(null);
