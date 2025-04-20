@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import * as DeepLinking from 'expo-linking';
 import { useQuery } from '@tanstack/react-query';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
 import { useNavigation } from 'expo-router';
 import { useAppStore } from '@/stores/useAppStore';
@@ -20,7 +20,7 @@ type RegistrationForm = {
 export default function useIntentListener() {
     const { t } = useTranslation();
     const url = DeepLinking.useLinkingURL();
-    
+
     const navigation = useNavigation();
     const { setRegistration } = useAppStore();
     const { getRegistration } = useRegistrationApi();

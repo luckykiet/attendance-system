@@ -22,6 +22,8 @@ type AppState = {
         shift: Shift,
         workplace: TodayWorkplace
     } | null;
+    theme: 'light' | 'dark';
+    setTheme: (theme: 'light' | 'dark') => void;
     myWorkplaces: Record<string, GetMyCompaniesResult> | null;
     setMyWorkplaces: (myWorkplaces: Record<string, GetMyCompaniesResult> | null) => void;
     setSelectedShift: (selectedShift: {
@@ -50,7 +52,8 @@ const initStates = {
     registration: null as RegistrationForm | null,
     localDevices: [],
     selectedShift: null,
-    myWorkplaces: null
+    myWorkplaces: null,
+    theme: 'light' as 'light' | 'dark',
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -115,10 +118,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
 
     refreshLocation: () => set({ location: null }),
-    
+
     setMyWorkplaces: (myWorkplaces) => set({
         myWorkplaces: myWorkplaces
             ? myWorkplaces
             : null
-    })
+    }),
+
+    setTheme: (theme) => {
+        set({ theme });
+        AsyncStorage.setItem('theme', theme);
+    },
 }));

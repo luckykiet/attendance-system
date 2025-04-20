@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, Appearance, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAppStore } from '@/stores/useAppStore';
 
 export const ThemeSwitcher: React.FC = () => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const { theme, setTheme } = useAppStore();
     const colorScheme = useColorScheme();
+    const isDarkMode = theme === 'dark';
+    
     useEffect(() => {
         const loadTheme = async () => {
             const savedTheme = await AsyncStorage.getItem('theme');
             if (savedTheme) {
                 Appearance.setColorScheme(savedTheme === 'dark' ? 'dark' : 'light');
-                setIsDarkMode(savedTheme === 'dark');
+                setTheme(savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : 'light');
             } else {
-                setIsDarkMode(colorScheme === 'dark');
+                setTheme(colorScheme === 'dark' || colorScheme === 'light' ? colorScheme : 'light');
             }
         };
 
@@ -22,7 +25,7 @@ export const ThemeSwitcher: React.FC = () => {
 
     const toggleTheme = async () => {
         const newTheme = isDarkMode ? 'light' : 'dark';
-        setIsDarkMode(!isDarkMode);
+        setTheme(newTheme);
 
         if (Platform.OS !== 'web') {
             Appearance.setColorScheme(newTheme);

@@ -1,8 +1,8 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 import '@/i18n';
@@ -26,11 +26,15 @@ const queryClient = new QueryClient({
   },
 });
 
-import { checkReinstallation } from '@/utils';
+import { checkReinstallation, isAndroid } from '@/utils';
 import VersionCheck from '@/components/VersionCheck';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
+import AppDarkTheme from '@/theme/appDarkTheme';
+import AppLightTheme from '@/theme/appLightTheme';
 
 export default function RootLayout() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const { theme, setTheme } = useAppStore()
   const [loaded] = useFonts({
     SpaceMono,
   });
@@ -69,14 +73,17 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme === 'dark' ? AppDarkTheme : AppLightTheme}>
       <QueryClientProvider client={queryClient}>
-        <AppLock>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(hidden)/registration" options={{ headerShown: false }} />
-          </Stack>
-        </AppLock>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <AppLock>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(hidden)/registration" options={{ headerShown: false }} />
+            </Stack>
+          </AppLock>
+          <StatusBar style={'auto'} translucent={isAndroid} />
+        </GestureHandlerRootView>
         <VersionCheck />
       </QueryClientProvider>
     </ThemeProvider>
