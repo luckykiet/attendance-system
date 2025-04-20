@@ -150,13 +150,16 @@ const deleteEmployee = async (req, res, next) => {
 
 const cancelDevicePairing = async (req, res, next) => {
     try {
-        const updatedEmployee = await Employee.findOneAndUpdate({ _id: req.params.id, retailId: req.user.retailId }, { $set: { deviceId: '', registrationToken: '', publicKey: '' } }, { new: true });
+        const registration = await Registration.findOne({ employeeId: req.params.id, retailId: req.user.retailId });
+        const updateQuery = { deviceId: '', publicKey: '' }
 
-        if (!updatedEmployee) {
-            throw new HttpError('srv_employee_not_found', 404);
+        if (registration && !registration.isDemo) {
+            updateQuery.registrationToken = '';
+            await Registration.deleteOne({ employeeId: req.params._id, retailId: req.user.retailId });
         }
 
-        await Registration.deleteOne({ employeeId: req.params.id, retailId: req.user.retailId });
+        await Employee.findOneAndUpdate({ _id: req.params.id, retailId: req.user.retailId }, { $set: updateQuery });
+
         return res.status(200).json({ success: true, msg: 'srv_employee_device_pairing_canceled' });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_device_pairing_cancellation_failed', 400));
