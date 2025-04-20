@@ -242,7 +242,8 @@ const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAt
 
 const makeAttendance = async (req, res, next) => {
     try {
-        const { latitude, longitude, registerId, attendanceId, reason } = req.body;
+        const { latitude, longitude, registerId, attendanceId, reason, shiftId } = req.body;
+
         const { employee } = req;
         const tokenPayload = req.tokenPayload;
         if (!longitude || !latitude || !registerId || !tokenPayload) {
@@ -265,14 +266,23 @@ const makeAttendance = async (req, res, next) => {
         if (!tmpRetail) {
             throw new HttpError('srv_retail_not_found', 400);
         }
-        const isDemo = tmpRetail.name === demoAccount.retail.tin;
+        const isDemo = tmpRetail.tin === demoAccount.retail.tin;
         // demo registers
         if (isDemo) {
             const demoNames = demoAccount.registers.map(r => r.name);
             // update demo register location to user's location
-            await Register.updateMany({ retailId: retail._id, name: { $in: demoNames } }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
+            await Register.updateMany({ retailId: tmpRetail._id, name: { $in: demoNames } }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
 
             const register = await Register.findOne({ _id: registerId }).exec();
+
+            const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
+
+            if (!workingAt) {
+                throw new HttpError('srv_employee_not_employed', 400);
+            }
+
+            const now = dayjs();
+            const todayKey = DAYS_OF_WEEK[now.day()];
 
             if (register.name === 'Demo always success') {
                 const dailyAttendance = await getDailyAttendance({ registerId, isCreating: true });
@@ -281,9 +291,7 @@ const makeAttendance = async (req, res, next) => {
                     throw new HttpError(dailyAttendance, 400);
                 }
 
-                const now = dayjs();
-
-                let attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, employeeId: employee._id, }).exec();
+                let attendance = await Attendance.findOne({ dailyAttendanceId: dailyAttendance._id, workingAtId: workingAt._id, }).exec();
 
                 // reset attendance for demo purposes
                 if (attendance && attendance.checkOutTime) {
@@ -329,7 +337,7 @@ const makeAttendance = async (req, res, next) => {
                     }
                     return res.status(200).json({ success: true, msg: 'srv_checked_out_successfully' });
                 }
-
+                const shift = workingAt.shifts.get(todayKey).find((s) => s._id.equals(shiftId)) || null;
                 // checking in
                 const checkInLocation = { latitude, longitude, distance: distanceInMeters };
                 const checkInTime = now.toDate();
@@ -339,7 +347,7 @@ const makeAttendance = async (req, res, next) => {
                     employeeId: employee._id,
                     checkInTime,
                     checkInLocation,
-                    shiftId: shift._id,
+                    shiftId,
                     start: shift.start,
                     end: shift.end,
                     isOverNight: shift.isOverNight,
@@ -377,7 +385,7 @@ const makeAttendance = async (req, res, next) => {
             return res.status(200).json({ success: true, msg: 'srv_local_device_required', localDevices: resources.localDevices.map(d => d.uuid) });
         }
 
-        const { workingAt, shift, retail, distanceInMeters, isToday } = resources;
+        const { workingAt, shift, distanceInMeters, isToday } = resources;
 
         const now = dayjs();
         const yesterday = now.subtract(1, 'day');
