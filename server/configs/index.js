@@ -23,6 +23,10 @@ const getConfig = () => {
         config.jwtSecret = 'dev_secret';
     }
 
+    if (config.isProd) {
+        config.port = '';
+    }
+
     const { protocol, subdomain, domain, port } = config;
 
     config.appName = config.appName || 'ATTENDANCE SYSTEM';
