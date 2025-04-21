@@ -490,6 +490,7 @@
   "misc_registration_instructions_2": "Můžete se také zaregistrovat ručně zadáním adresy serveru a tokenu od svého zaměstnavatele.",
   "misc_registration_instructions_3": "Po ověření registrace budete přesměrováni na registrační formulář, kde můžete vyplnit své osobní údaje.",
   "misc_registration_instructions_4": "Po vyplnění formuláře bude vaše zařízení registrováno.",
+  "misc_registration_successful": "Potvrzení registrace",
   "misc_registration_token": "registrační token",
   "misc_remove": "odstranit",
   "misc_remove_item": "Odstranit položku",

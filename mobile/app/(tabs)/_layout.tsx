@@ -3,14 +3,12 @@ import { Tabs } from 'expo-router';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import useIntentListener from '@/hooks/useIntentListener';
 import { useAppStore } from '@/stores/useAppStore';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { urls } = useAppStore();
   const isNotSet = urls.length === 0;
-  useIntentListener();
   
   return (
     <Tabs

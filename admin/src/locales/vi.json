@@ -490,6 +490,7 @@
   "misc_registration_instructions_2": "Một cách khác là đăng ký thủ công bằng cách nhập URL máy chủ và mã token từ nhà tuyển dụng.",
   "misc_registration_instructions_3": "Sau khi xác minh đăng ký, bạn sẽ được chuyển đến mẫu đăng ký, nơi bạn có thể điền thông tin cá nhân của mình.",
   "misc_registration_instructions_4": "Sau khi điền vào mẫu, thiết bị của bạn sẽ được đăng ký.",
+  "misc_registration_successful": "Đăng ký thành công",
   "misc_registration_token": "mã đăng ký",
   "misc_remove": "xoá",
   "misc_remove_item": "Xoá mục",

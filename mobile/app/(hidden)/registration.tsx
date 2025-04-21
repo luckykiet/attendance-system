@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppStore } from '@/stores/useAppStore';
 import { MainScreenLayout } from '@/layouts/MainScreenLayout';
 import useTranslation from '@/hooks/useTranslation';
@@ -18,6 +18,7 @@ import * as Crypto from 'expo-crypto';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
 import { RegistrationSubmitForm } from '@/types/registration';
 import { useNavigation } from 'expo-router';
+import useIntentListener from '@/hooks/useIntentListener';
 
 const RegistrationSchema = z.object({
     name: z.string().min(1, 'misc_required'),
@@ -28,11 +29,13 @@ const RegistrationSchema = z.object({
 type RegistrationFormValues = z.infer<typeof RegistrationSchema>;
 
 const RegistrationScreen: React.FC = () => {
+    const queryClient = useQueryClient();
     const { t } = useTranslation();
-    const { registration, appId, addUrl, setRegistration } = useAppStore();
+    const { registration, appId, addUrl, setRegistration, setIntent } = useAppStore();
     const [postMsg, setPostMsg] = useState<string | Error>('');
     const { submitRegistration } = useRegistrationApi();
     const navigation = useNavigation();
+    useIntentListener();
 
     const { control, handleSubmit, reset } = useForm<RegistrationFormValues>({
         resolver: zodResolver(RegistrationSchema),
@@ -49,8 +52,20 @@ const RegistrationScreen: React.FC = () => {
             if (registration?.domain) {
                 addUrl(registration.domain);
             }
-            setRegistration(null);
-            navigation.navigate("(tabs)" as never);
+
+            Alert.alert(
+                t('misc_registration'),
+                t('misc_registration_successful'),
+                [
+                    {
+                        text: t('misc_close'),
+                        onPress: () => {
+                            handleClose();
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
         },
         onError: (error) => {
             setPostMsg(error instanceof Error ? error.message : new Error(error));
@@ -99,104 +114,117 @@ const RegistrationScreen: React.FC = () => {
         }
     }, [registration]);
 
-    if (!registration) {
-        return (
-            <View style={styles.container}>
-                <ThemedText style={styles.message}>{t('srv_no_data')}</ThemedText>
-            </View>
-        );
-    }
+    const handleClose = () => {
+        setPostMsg('');
+        setRegistration(null);
+        navigation.navigate("(tabs)" as never);
+        setIntent(null);
+        queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'registrationForm' });
+        queryClient.removeQueries({ queryKey: ['registrationForm'] });
+    };
 
     return (
         <MainScreenLayout>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <ThemedView style={styles.container}>
-                        <ThemedText style={styles.title}>{t('misc_registration')}</ThemedText>
-                        {registration.retail && (
-                            <ThemedView style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_workplace')}:</ThemedText>
-                                <ThemedText style={styles.workplaceName}>{registration.retail.name}</ThemedText>
-                                <ThemedText>{registration.retail.address?.street}</ThemedText>
-                                <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>
-                            </ThemedView>
-                        )}
-                        <ThemedView style={styles.inputContainer}>
-                            <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
-                            <Controller
-                                control={control}
-                                name="name"
-                                render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                    <>
-                                        <ThemedTextInput
-                                            style={[styles.input, fieldState.invalid && styles.inputError]}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value}
-                                            placeholder="Jan Novak"
-                                        />
-                                        {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
-                                    </>
-                                )}
-                            />
-                        </ThemedView>
+                        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+                            <ThemedText style={styles.closeButtonText}>×</ThemedText>
+                        </TouchableOpacity>
 
-                        <ThemedView style={styles.inputContainer}>
-                            <ThemedText style={styles.label}>{t('misc_email')}</ThemedText>
-                            <Controller
-                                control={control}
-                                name="email"
-                                render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                    <>
-                                        <ThemedTextInput
-                                            style={[styles.input, fieldState.invalid && styles.inputError]}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value}
-                                            placeholder={t('misc_email')}
-                                            keyboardType="email-address"
-                                        />
-                                         {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
-                                    </>
+                        <ThemedText style={styles.title}>{t('misc_registration')}</ThemedText>
+                        {!registration ?
+                            <ThemedView style={styles.container}>
+                                <ThemedText style={styles.message}>{t('srv_no_data')}</ThemedText>
+                            </ThemedView>
+                            :
+                            <>
+                                {registration.retail && (
+                                    <ThemedView style={styles.inputContainer}>
+                                        <ThemedText style={styles.label}>{t('misc_workplace')}:</ThemedText>
+                                        <ThemedText style={styles.workplaceName}>{registration.retail.name}</ThemedText>
+                                        <ThemedText>{registration.retail.address?.street}</ThemedText>
+                                        <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>
+                                    </ThemedView>
                                 )}
-                            />
-                        </ThemedView>
-                        <ThemedView style={styles.inputContainer}>
-                            <ThemedText style={styles.label}>{t('misc_telephone')}</ThemedText>
-                            <Controller
-                                control={control}
-                                name="phone"
-                                render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                    <>
-                                        <ThemedTextInput
-                                            style={[styles.input, fieldState.invalid && styles.inputError]}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value}
-                                            placeholder={'+420 123 456 789'}
-                                            keyboardType="phone-pad"
-                                        />
-                                         {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
-                                    </>
+                                <ThemedView style={styles.inputContainer}>
+                                    <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
+                                    <Controller
+                                        control={control}
+                                        name="name"
+                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                            <>
+                                                <ThemedTextInput
+                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
+                                                    onBlur={onBlur}
+                                                    onChangeText={onChange}
+                                                    value={value}
+                                                    placeholder="Jan Novak"
+                                                />
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                            </>
+                                        )}
+                                    />
+                                </ThemedView>
+
+                                <ThemedView style={styles.inputContainer}>
+                                    <ThemedText style={styles.label}>{t('misc_email')}</ThemedText>
+                                    <Controller
+                                        control={control}
+                                        name="email"
+                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                            <>
+                                                <ThemedTextInput
+                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
+                                                    onBlur={onBlur}
+                                                    onChangeText={onChange}
+                                                    value={value}
+                                                    placeholder={t('misc_email')}
+                                                    keyboardType="email-address"
+                                                />
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                            </>
+                                        )}
+                                    />
+                                </ThemedView>
+                                <ThemedView style={styles.inputContainer}>
+                                    <ThemedText style={styles.label}>{t('misc_telephone')}</ThemedText>
+                                    <Controller
+                                        control={control}
+                                        name="phone"
+                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                            <>
+                                                <ThemedTextInput
+                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
+                                                    onBlur={onBlur}
+                                                    onChangeText={onChange}
+                                                    value={value}
+                                                    placeholder={'+420 123 456 789'}
+                                                    keyboardType="phone-pad"
+                                                />
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                            </>
+                                        )}
+                                    />
+                                </ThemedView>
+                                <ThemedView style={styles.inputContainer}>
+                                    <ThemedText style={styles.label}>{t('misc_device_id')}</ThemedText>
+                                    <ThemedText style={styles.label}>{appId}</ThemedText>
+                                </ThemedView>
+                                {mutation.isPending ? (
+                                    <ThemedActivityIndicator />
+                                ) : (
+                                    <TouchableOpacity
+                                        onPress={handleSubmit(onSubmit)}
+                                        disabled={mutation.isPending || mutation.isSuccess}
+                                        style={styles.setupButton}
+                                    >
+                                        <ThemedText type="link" style={styles.setupButtonText}>{t('misc_save')}</ThemedText>
+                                    </TouchableOpacity>
                                 )}
-                            />
-                        </ThemedView>
-                        <ThemedView style={styles.inputContainer}>
-                            <ThemedText style={styles.label}>{t('misc_device_id')}</ThemedText>
-                            <ThemedText style={styles.label}>{appId}</ThemedText>
-                        </ThemedView>
-                        {mutation.isPending ? (
-                            <ThemedActivityIndicator />
-                        ) : (
-                            <TouchableOpacity
-                                onPress={handleSubmit(onSubmit)}
-                                disabled={mutation.isPending || mutation.isSuccess}
-                                style={styles.setupButton}
-                            >
-                                <ThemedText type="link" style={styles.setupButtonText}>{t('misc_save')}</ThemedText>
-                            </TouchableOpacity>
-                        )}
-                        {postMsg && <FeedbackMessage message={postMsg} />}
+                                {postMsg && <FeedbackMessage message={postMsg} />}
+                            </>
+                        }
                     </ThemedView>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -268,6 +296,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         textAlign: 'center',
+    }, closeButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        zIndex: 10,
+        padding: 8,
+    },
+    closeButtonText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#000',
     },
 });
 

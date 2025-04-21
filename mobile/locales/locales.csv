@@ -491,6 +491,7 @@ misc_registration_instructions_1	the fastest way to register is by scanning the 
 misc_registration_instructions_2	You can also register manually by entering the server url and the token from your employer.	Một cách khác là đăng ký thủ công bằng cách nhập URL máy chủ và mã token từ nhà tuyển dụng.	Můžete se také zaregistrovat ručně zadáním adresy serveru a tokenu od svého zaměstnavatele.
 misc_registration_instructions_3	after registration verified, you will be navigated to registration form, where you can fill in your personal information.	Sau khi xác minh đăng ký, bạn sẽ được chuyển đến mẫu đăng ký, nơi bạn có thể điền thông tin cá nhân của mình.	Po ověření registrace budete přesměrováni na registrační formulář, kde můžete vyplnit své osobní údaje.
 misc_registration_instructions_4	after filling in the form, your device will be registered.	Sau khi điền vào mẫu, thiết bị của bạn sẽ được đăng ký.	Po vyplnění formuláře bude vaše zařízení registrováno.
+misc_registration_successful	Registration successful	Đăng ký thành công	Potvrzení registrace
 misc_registration_token	Registration token	mã đăng ký	registrační token
 misc_remove	remove	xoá	odstranit
 misc_remove_item	Remove item	Xoá mục	Odstranit položku

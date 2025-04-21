@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import * as DeepLinking from 'expo-linking';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
 import { useNavigation } from 'expo-router';
@@ -19,22 +19,15 @@ type RegistrationForm = {
 
 export default function useIntentListener() {
     const { t } = useTranslation();
-    const url = DeepLinking.useLinkingURL();
-
+    const queryClient = useQueryClient();
     const navigation = useNavigation();
     const { setRegistration } = useAppStore();
     const { getRegistration } = useRegistrationApi();
     const [intentData, setIntentData] = useState<IntentData>({});
-    const [fetchedUrl, setFetchedUrl] = useState<string>('');
-    useEffect(() => {
-        if (url) {
-            setFetchedUrl(url);
-        }
-    }, [url]);
 
     useEffect(() => {
-        if (fetchedUrl) {
-            const parsedUrl = DeepLinking.parse(fetchedUrl);
+        const handleUrl = (event: { url: string }) => {
+            const parsedUrl = DeepLinking.parse(event.url);
             const { queryParams } = parsedUrl;
 
             const domain = Array.isArray(queryParams?.domain) ? queryParams.domain[0] : queryParams?.domain;
@@ -44,8 +37,18 @@ export default function useIntentListener() {
                 domain: domain || undefined,
                 tokenId: tokenId || undefined,
             });
-        }
-    }, [fetchedUrl]);
+        };
+
+        Linking.getInitialURL().then((url) => {
+            if (url) handleUrl({ url });
+        });
+
+        const subscription = Linking.addEventListener('url', handleUrl);
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
 
     const registrationFormQuery = useQuery<RegistrationForm, Error>({
         queryKey: ['registrationForm', intentData],
@@ -67,7 +70,8 @@ export default function useIntentListener() {
             });
             navigation.navigate("(hidden)/registration" as never);
             setIntentData({});
-            setFetchedUrl('');
+            queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'registrationForm' });
+            queryClient.removeQueries({ queryKey: ['registrationForm'] });
         }
 
         if (isError) {
@@ -76,7 +80,9 @@ export default function useIntentListener() {
                 t(typeof error === "string" ? error : error.message || "misc_error"),
                 [{ text: "OK" }]
             );
-            setFetchedUrl('');
+            setIntentData({});
+            queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'registrationForm' });
+            queryClient.removeQueries({ queryKey: ['registrationForm'] });
         }
     }, [registrationForm, isError, error, intentData, setRegistration, navigation]);
 

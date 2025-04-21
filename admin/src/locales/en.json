@@ -490,6 +490,7 @@
   "misc_registration_instructions_2": "You can also register manually by entering the server url and the token from your employer.",
   "misc_registration_instructions_3": "after registration verified, you will be navigated to registration form, where you can fill in your personal information.",
   "misc_registration_instructions_4": "after filling in the form, your device will be registered.",
+  "misc_registration_successful": "Registration successful",
   "misc_registration_token": "Registration token",
   "misc_remove": "remove",
   "misc_remove_item": "Remove item",
