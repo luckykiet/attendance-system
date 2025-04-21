@@ -9,8 +9,15 @@ import '@/i18n';
 import SpaceMono from '@/assets/fonts/SpaceMono-Regular.ttf';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAppStore } from '@/stores/useAppStore';
-import { Appearance } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 import AppLock from '@/layouts/AppLock';
+import { checkReinstallation, isAndroid } from '@/utils';
+import VersionCheck from '@/components/VersionCheck';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
+import AppDarkTheme from '@/theme/appDarkTheme';
+import AppLightTheme from '@/theme/appLightTheme';
+import * as Notifications from 'expo-notifications';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,12 +33,24 @@ const queryClient = new QueryClient({
   },
 });
 
-import { checkReinstallation, isAndroid } from '@/utils';
-import VersionCheck from '@/components/VersionCheck';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
-import AppDarkTheme from '@/theme/appDarkTheme';
-import AppLightTheme from '@/theme/appLightTheme';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+const registerForNotifications = async () => {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'A channel is needed for the permissions prompt to appear',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+}
 
 export default function RootLayout() {
   const { theme, setTheme } = useAppStore()
@@ -57,9 +76,17 @@ export default function RootLayout() {
     const initializeApp = async () => {
       await checkReinstallation();
       await loadInitialSettings();
+      await registerForNotifications();
     };
 
     initializeApp();
+  }, []);
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      await Notifications.requestPermissionsAsync();
+    };
+    requestPermissions();
   }, []);
 
   useEffect(() => {

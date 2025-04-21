@@ -16,7 +16,8 @@
     "build-ios": "npx eas build --platform ios",
     "build-web": "npx expo build:web",
     "build-dev-ios": "npx eas build --platform ios --profile development",
-    "build-dev-android": "npx eas build --platform android --profile development"
+    "build-dev-android": "npx eas build --platform android --profile development",
+    "prebuild": "npx expo prebuild --clean"
   },
   "jest": {
     "preset": "jest-expo"
@@ -42,6 +43,7 @@
     "expo-localization": "^16.0.1",
     "expo-location": "~18.0.10",
     "expo-modules-core": "2.2.3",
+    "expo-notifications": "~0.29.14",
     "expo-router": "~4.0.20",
     "expo-secure-store": "~14.0.1",
     "expo-splash-screen": "~0.29.22",

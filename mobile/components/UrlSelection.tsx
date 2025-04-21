@@ -1,11 +1,13 @@
 
-import { View, FlatList, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { FlatList, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ThemedTextInput from '@/components/theme/ThemedTextInput';
+import ThemedView from '@/components/theme/ThemedView';
 import { useAppStore } from '@/stores/useAppStore';
 import useTranslation from '@/hooks/useTranslation';
+import ThemedText from './theme/ThemedText';
 
 const schema = z.object({
     url: z.string().regex(
@@ -30,8 +32,8 @@ const URLSelection: React.FC = () => {
 
     const handleDeleteUrl = async (url: string) => {
         Alert.alert(
-            t('misc_confirm_delete'), 
-            t('misc_you_will_not_see_workplace_until_add_again'), 
+            t('misc_confirm_delete'),
+            t('misc_you_will_not_see_workplace_until_add_again'),
             [
                 { text: t('misc_cancel'), style: 'cancel' },
                 {
@@ -44,7 +46,7 @@ const URLSelection: React.FC = () => {
             { cancelable: true }
         );
     };
-    
+
     const onSubmit: SubmitHandler<FormData> = (data) => {
         let formattedUrl = data.url.toLowerCase().trim();
         formattedUrl = formattedUrl.endsWith('/') ? formattedUrl.slice(0, -1) : formattedUrl;
@@ -56,18 +58,18 @@ const URLSelection: React.FC = () => {
     };
 
     const renderItem = ({ item }: { item: string }) => (
-        <View style={styles.itemContainer}>
+        <ThemedView style={styles.itemContainer}>
             <TouchableOpacity style={styles.item} onPress={() => setValue('url', item)}>
-                <Text style={styles.itemText}>{item}</Text>
+                <ThemedText style={styles.itemText}>{item}</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteUrl(item)}>
-                <Text style={styles.deleteButtonText}>{t('misc_delete')}</Text>
+                <ThemedText style={styles.deleteButtonText}>{t('misc_delete')}</ThemedText>
             </TouchableOpacity>
-        </View>
+        </ThemedView>
     );
 
     return (
-        <View style={styles.container}>
+        <ThemedView style={styles.container}>
             <Controller
                 control={control}
                 name="url"
@@ -97,7 +99,7 @@ const URLSelection: React.FC = () => {
                     style={styles.list}
                 />
             )}
-        </View>
+        </ThemedView>
     );
 };
 
@@ -116,12 +118,12 @@ const styles = StyleSheet.create({
     },
     list: {
         marginTop: 20,
+        minHeight: 70,
     },
     itemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#e0e0e0',
         borderRadius: 5,
         marginVertical: 5,
         paddingHorizontal: 10,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, useColorScheme } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,6 +35,7 @@ const RegistrationScreen: React.FC = () => {
     const [postMsg, setPostMsg] = useState<string | Error>('');
     const { submitRegistration } = useRegistrationApi();
     const navigation = useNavigation();
+    const colorScheme = useColorScheme();
     useIntentListener();
 
     const { control, handleSubmit, reset } = useForm<RegistrationFormValues>({
@@ -129,15 +130,18 @@ const RegistrationScreen: React.FC = () => {
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <ThemedView style={styles.container}>
                         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-                            <ThemedText style={styles.closeButtonText}>×</ThemedText>
+                            <ThemedText style={[styles.closeButtonText, { color: colorScheme === 'dark' ? '#fff' : '#000' }]}>
+                                ×
+                            </ThemedText>
                         </TouchableOpacity>
 
                         <ThemedText style={styles.title}>{t('misc_registration')}</ThemedText>
-                        {!registration ?
+
+                        {!registration ? (
                             <ThemedView style={styles.container}>
                                 <ThemedText style={styles.message}>{t('srv_no_data')}</ThemedText>
                             </ThemedView>
-                            :
+                        ) : (
                             <>
                                 {registration.retail && (
                                     <ThemedView style={styles.inputContainer}>
@@ -147,6 +151,7 @@ const RegistrationScreen: React.FC = () => {
                                         <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>
                                     </ThemedView>
                                 )}
+
                                 <ThemedView style={styles.inputContainer}>
                                     <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
                                     <Controller
@@ -161,7 +166,9 @@ const RegistrationScreen: React.FC = () => {
                                                     value={value}
                                                     placeholder="Jan Novak"
                                                 />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
+                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
+                                                )}
                                             </>
                                         )}
                                     />
@@ -182,11 +189,14 @@ const RegistrationScreen: React.FC = () => {
                                                     placeholder={t('misc_email')}
                                                     keyboardType="email-address"
                                                 />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
+                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
+                                                )}
                                             </>
                                         )}
                                     />
                                 </ThemedView>
+
                                 <ThemedView style={styles.inputContainer}>
                                     <ThemedText style={styles.label}>{t('misc_telephone')}</ThemedText>
                                     <Controller
@@ -202,15 +212,19 @@ const RegistrationScreen: React.FC = () => {
                                                     placeholder={'+420 123 456 789'}
                                                     keyboardType="phone-pad"
                                                 />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
+                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
+                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
+                                                )}
                                             </>
                                         )}
                                     />
                                 </ThemedView>
+
                                 <ThemedView style={styles.inputContainer}>
                                     <ThemedText style={styles.label}>{t('misc_device_id')}</ThemedText>
                                     <ThemedText style={styles.label}>{appId}</ThemedText>
                                 </ThemedView>
+
                                 {mutation.isPending ? (
                                     <ThemedActivityIndicator />
                                 ) : (
@@ -222,9 +236,10 @@ const RegistrationScreen: React.FC = () => {
                                         <ThemedText type="link" style={styles.setupButtonText}>{t('misc_save')}</ThemedText>
                                     </TouchableOpacity>
                                 )}
+
                                 {postMsg && <FeedbackMessage message={postMsg} />}
                             </>
-                        }
+                        )}
                     </ThemedView>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -274,11 +289,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 4,
     },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: 'blue',
-    },
     message: {
         fontSize: 16,
         color: 'gray',
@@ -296,7 +306,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         textAlign: 'center',
-    }, closeButton: {
+    },
+    closeButton: {
         position: 'absolute',
         top: 16,
         right: 16,
@@ -306,7 +317,6 @@ const styles = StyleSheet.create({
     closeButtonText: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#000',
     },
 });
 

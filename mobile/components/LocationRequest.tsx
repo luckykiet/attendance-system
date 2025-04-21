@@ -82,7 +82,6 @@ export const LocationRequest = () => {
 const styles = StyleSheet.create({
     locationContainer: {
         alignItems: 'center',
-        marginVertical: 10,
     },
     permissionButton: {
         alignSelf: 'center',

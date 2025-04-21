@@ -22,6 +22,9 @@ import { Shift } from '@/types/shift';
 import { TodayWorkplace } from '@/types/workplaces';
 import ShiftSelectModal from './ShiftSelectModal';
 import { Attendance } from '@/types/attendance';
+import { useNotificationScheduler } from '@/hooks/useNotificationScheduler';
+import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
+import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
 
 dayjs.extend(isBetween);
 dayjs.extend(utc);
@@ -39,7 +42,7 @@ const TodayCompanies = () => {
   const now = dayjs();
   const todayKey = DAYS_OF_WEEK[now.day()];
   const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-
+  const { scheduleNotificationIfNeeded } = useNotificationScheduler();
   const queryResults = useQueries({
     queries: urls.map((url) => ({
       queryKey: ['todayWorkplaces', location, appId, url],
@@ -104,7 +107,6 @@ const TodayCompanies = () => {
           });
         }
 
-        // Add today's shift
         if (hasTodayShift) {
           const workingHourText = getWorkingHoursText({
             workingHour: todayWorkingHours,
@@ -131,7 +133,7 @@ const TodayCompanies = () => {
 
         return entries;
       });
-
+      cancelAllScheduledNotificationsAsync();
       return {
         isLoading: results.some((result) => result.isLoading),
         isFetching: results.some((result) => result.isFetching),
@@ -161,6 +163,88 @@ const TodayCompanies = () => {
       queryResults.refetch();
     }
   }, [location]);
+
+  const pendingShifts = queryResults.data.flatMap((workplace) => {
+    if (!workplace) return [];
+    return workplace.shifts.filter((shift) => {
+      const attendance = workplace.attendances.find((a) => a.shiftId === shift._id);
+      if (!attendance) return false;
+
+      if (attendance.checkOutTime) return false;
+
+      const shiftTime = getStartEndTime({ start: shift.start, end: shift.end });
+      if (!shiftTime) return false;
+
+      const { endTime: end } = shiftTime;
+
+      const endTime = end.add(shift.allowedOverTime || 5, 'minute');
+      const isShiftEnded = endTime && now.isAfter(endTime);
+
+      if (isShiftEnded) {
+        return false;
+      }
+
+      const pendingBreak = attendance.breaks.find((brk) => brk.checkInTime && !brk.checkOutTime);
+      if (pendingBreak) {
+        return true;
+      }
+
+      const pendingPause = attendance.pauses.find((pause) => pause.checkInTime && !pause.checkOutTime);
+      if (pendingPause) {
+        return true;
+      }
+
+      return attendance && attendance.checkInTime;
+    }).map((shift) => ({
+      shift,
+      workplace,
+    }))
+  });
+
+  useEffect(() => {
+    pendingShifts.forEach(({ shift, workplace }) => {
+      const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: true });
+      if (!shiftTime) return;
+
+      const { endTime: end } = shiftTime;
+      let endTime = end.clone();
+
+      const attendance = workplace.attendances.find((a) => a.shiftId === shift._id);
+      if (!attendance) return;
+
+      let title = `${t('misc_shift_ending_soon_at')} ${workplace.name}`;
+      let body = `${t('misc_do_not_forget_check_out_before')} ${endTime.format('HH:mm')}.`;
+
+      const pendingBreak = attendance.breaks.find((brk) => brk.checkInTime && !brk.checkOutTime);
+
+      if (pendingBreak) {
+        endTime = dayjs(pendingBreak.checkInTime).add(pendingBreak.breakHours.duration, 'minute');
+        const specificBreakType = SPECIFIC_BREAKS.find((specificBreak) => specificBreak === pendingBreak.type);
+        if (specificBreakType) {
+          title = `${t('misc_break_ending_soon_for')} ${t(specificBreakTranslations[specificBreakType].name)} - ${workplace.name}`;
+        } else {
+          title = `${t('misc_break_ending_soon_for')} ${t(pendingBreak.name)} - ${workplace.name}`;
+        }
+        body = `${t('misc_do_not_forget_finish_before')} ${endTime.format('HH:mm')}.`;
+      }
+
+      const pendingPause = attendance.pauses.find((pause) => pause.checkInTime && !pause.checkOutTime);
+
+      if (pendingPause) {
+        endTime = dayjs(pendingPause.checkInTime).add(60, 'minutes');
+        title = `${t('misc_pending_pause')}: ${pendingPause.name} - ${workplace.name}`;
+        body = `${t('misc_do_not_forget_finish_it')}!`;
+      }
+
+      scheduleNotificationIfNeeded({
+        id: shift._id,
+        title,
+        body,
+        scheduledTime: endTime,
+        warningBeforeMinutes: 10,
+      });
+    });
+  }, [pendingShifts]);
 
   return (
     <ThemedView style={styles.nearbyContainer}>
@@ -339,7 +423,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   scrollView: {
-    marginVertical: 10,
+    marginVertical: 5,
   },
   arrowContainer: {
     position: 'absolute',

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export const MainScreenLayout = ({ children }: { children: ReactNode }) => {
 
     return (
-        <SafeAreaView style={[styles.safeArea]}>
+        <SafeAreaView style={[styles.safeArea]} edges={['right', 'left', 'top']} >
             <ThemedView style={styles.container}>
                 {children}
             </ThemedView>
@@ -22,6 +22,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 10,
-        paddingBottom: 20,
     }
 });

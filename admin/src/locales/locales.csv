@@ -84,7 +84,9 @@ misc_bills	bills	hoá đơn	faktury
 misc_birth_number	birth number	số sinh	rodné číslo
 misc_bluetooth_permission_required	Bluetooth permission required to scan for local attendance devices	cần quyền sử dụng Bluetooth để quét thiết bị điểm danh	musíte povolit použití Bluetooth pro skenování lokální zařízení docházky
 misc_break	break time	thời gian nghỉ	přestávka
+misc_break_ending_soon_for	Break ending soon for	Thời gian nghỉ sắp kết thúc cho	Přestávka brzy končí pro
 misc_break_not_available	Break not available	Không có đơn nghỉ	žádná přestávka
+misc_break_overdue	breaks overdue	tạm nghỉ quá hạn	přerušení překročeno
 misc_break_submission_failed	break submission failed	gửi\ đơn nghỉ thất bại	žádost o přestávku selhala
 misc_break_submitted	break submitted	đã gửi đơn nghỉ	žádost o přestávku odeslána
 misc_breakfast	Breakfast	Bữa sáng	Snídaně
@@ -180,6 +182,9 @@ misc_dinner	Dinner	Bữa tối	Večeře
 misc_disable	disable	tắt	zakázat
 misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
+misc_do_not_forget_check_out_before	Do not forget to check out before	Đừng quên check out trước	Nezapomeňte odhlásit před
+misc_do_not_forget_finish_before	Do not forget to finish before	Đừng quên kết thúc trước	Nezapomeňte dokončit před
+misc_do_not_forget_finish_it_before_shift_end	Do not forget to finish it before shift end	Đừng quên kết thúc trước khi ca làm việc kết thúc	nezapomeňte to dokončit před koncem směny
 misc_documents	documents	tài liệu	dokumenty
 misc_domain	domain	tên miền	doména
 misc_download	download	tải về	stáhnout
@@ -198,6 +203,8 @@ misc_employee	employee	nhân viên	zaměstnanec
 misc_employees	employees	nhân viên	zaměstnanci
 misc_enable	enable	bật	povolit
 misc_enable_in_settings	enable in settings	bật trong cài đặt	povolit v nastavení
+misc_enable_notification_to_receive_shift_reminders	enable notification to receive shift reminders	bật thông báo để nhận nhắc nhở ca làm việc	povolte oznámení pro připomenutí směny
+misc_enable_notifications	enable notifications	bật thông báo	povolit oznámení
 misc_end_time	end time	thời gian kết thúc	čas ukončení
 misc_enter_token	Enter token	Nhập mã	Nastavit token
 misc_enter_url	Enter URL	Nhập URL	Nastavit URL
@@ -435,6 +442,7 @@ misc_payment_terminal_deleted	Payment terminal deleted	Máy trả thẻ đã xo�
 misc_payment_terminal_updated	Payment terminal updated	Máy trả thẻ đã cập nhập	Platební terminál aktualizován
 misc_payment_terminals	payment terminals	máy trả thẻ	platební terminály
 misc_pending	pending	chờ xử lý	čeká na vyřízení
+misc_pending_pause	pending pause	tạm dừng ca đang chạy	probíhající přerušení směny
 misc_permission_denied	permission denied	quyền truy cập bị từ chối	přístup odepřen
 misc_photo	photo	ảnh	fotka
 misc_plan	plan	gói	plán
@@ -541,6 +549,7 @@ misc_settings_instructions_4	You can enable biometric authentication.	Bạn có 
 misc_setup_urls	set up URLS	cài đặt URL	nastavit URL
 misc_shift	Shift	Ca	Směna
 misc_shift_details	Shift details	Chi tiết ca làm việc	Podrobnosti o směně
+misc_shift_ending_soon_at	shift ending soon at	ca làm việc sắp kết thúc tại	směna končí brzy v
 misc_shift_pause_successfully	shift pause successfully	tạm dừng ca thành công	přerušení směny úspěšné
 misc_shift_time	Shift time	Giờ làm việc	Pracovní doba
 misc_shifts	Shifts	Ca	Směny
