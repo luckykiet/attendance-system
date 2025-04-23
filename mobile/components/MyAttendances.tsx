@@ -22,7 +22,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { Attendance, DailyAttendance } from '@/types/attendance';
 import { MyWorkplace } from '@/types/workplaces';
 import { MyWorkingAt } from '@/types/working-at';
-import { calculateHoursFromMinutes, getAttendanceStatus, getStartEndTime } from '@/utils';
+import { getAttendanceStatus, getDiffDurationText, getStartEndTime } from '@/utils';
 import { TIME_FORMAT } from '@/constants/Days';
 import { PatternFormat } from 'react-number-format';
 import { Colors } from '@/constants/Colors';
@@ -218,8 +218,6 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                                                 ? dayjs(breakItem.checkOutTime).diff(dayjs(breakItem.checkInTime), 'minute')
                                                 : 0;
 
-                                            const realDurationCalculated = realDuration > 0 ? calculateHoursFromMinutes(realDuration) : { hours: 0, minutes: 0 };
-
                                             const isExceededTime = realDuration && breakItem.breakHours.duration && realDuration > breakItem.breakHours.duration;
 
                                             return <Fragment key={breakItem._id}>
@@ -233,18 +231,8 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                                                     {`${t('misc_check_out')}: ${breakItem.checkOutTime ? dayjs(breakItem.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '-'}`}
                                                 </ThemedText>
                                                 {_.isNumber(realDuration) && realDuration > 0 && (() => {
-                                                    const { hours, minutes } = realDurationCalculated;
-
-                                                    const durationStr =
-                                                        hours || minutes
-                                                            ? [
-                                                                hours > 0 ? `${hours} ${noCap('misc_hour_short')}` : '',
-                                                                minutes > 0 ? `${minutes} ${noCap('misc_min_short')}` : ''
-                                                            ].filter(Boolean).join(' ')
-                                                            : `0 ${noCap('misc_min_short')}`;
-
+                                                    const durationStr = getDiffDurationText(realDuration, noCap);
                                                     const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
-
                                                     return (
                                                         <ThemedText style={[styles.attendanceText, isExceededTime ? { color: Colors.error } : null]}>
                                                             {`${t('misc_duration')}: ${durationStr}${exceededText}`}
@@ -267,6 +255,13 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
             ) : (
                 <ThemedView style={styles.noDataContainer}>
                     <ThemedText>{t('misc_no_attendance')}</ThemedText>
+                    <TouchableOpacity onPress={() => refetch()} style={styles.refreshButton}>
+                        <MaterialIcons
+                            name="refresh"
+                            size={24}
+                            color={colorScheme === 'light' ? 'black' : 'white'}
+                        />
+                    </TouchableOpacity>
                 </ThemedView>
             )}
 
@@ -340,7 +335,8 @@ const styles = StyleSheet.create({
     noDataContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 12,
     },
     arrowContainer: {
         position: 'absolute',

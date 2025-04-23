@@ -78,9 +78,14 @@ export const calculateKilometersFromMeters = (pureMeters: number) => {
 };
 
 export const getDiffDurationText = (diffInMinutes: number, t: (key: string) => string) => {
+    if (diffInMinutes < 1) {
+        return `>1 ${t('misc_min_short')}`;
+    }
+
     const { hours, minutes } = calculateHoursFromMinutes(diffInMinutes);
-    return `${hours > 0 ? `${hours} ${t('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${t('misc_min_short')}` : ''}`;
-}
+    return `${hours > 0 ? `${hours} ${t('misc_hour_short')}` : ''}${minutes > 0 ? ` ${minutes} ${t('misc_min_short')}` : ''}`.trim();
+};
+
 
 export const authenticate = async (t: (text: string) => string) => {
     try {

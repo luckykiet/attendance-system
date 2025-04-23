@@ -25,6 +25,7 @@ import { Attendance } from '@/types/attendance';
 import { useNotificationScheduler } from '@/hooks/useNotificationScheduler';
 import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
 import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
+import ScrollToBottomButton from './ScrollToBottomButton';
 
 dayjs.extend(isBetween);
 dayjs.extend(utc);
@@ -98,7 +99,23 @@ const TodayCompanies = () => {
 
           entries.push({
             ...workplace,
-            shifts: activeYesterdayShifts,
+            shifts: activeYesterdayShifts.map((shift) => {
+              const attendance = workplace.attendances.find((a) => a.shiftId === shift._id);
+
+              let pendingStatus: 'none' | 'pause' | 'break' | 'attendance' = 'none';
+
+              if (attendance) {
+                if (attendance.breaks?.some(b => b.checkInTime && !b.checkOutTime)) {
+                  pendingStatus = 'break';
+                } else if (attendance.pauses?.some(p => p.checkInTime && !p.checkOutTime)) {
+                  pendingStatus = 'pause';
+                } else if (attendance.checkInTime && !attendance.checkOutTime) {
+                  pendingStatus = 'attendance';
+                }
+              }
+
+              return { ...shift, pendingStatus };
+            }),
             isToday: false,
             distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
             distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
@@ -122,7 +139,23 @@ const TodayCompanies = () => {
 
           entries.push({
             ...workplace,
-            shifts: todayShifts,
+            shifts: todayShifts.map((shift) => {
+              const attendance = workplace.attendances.find((a) => a.shiftId === shift._id);
+
+              let pendingStatus: 'none' | 'pause' | 'break' | 'attendance' = 'none';
+
+              if (attendance) {
+                if (attendance.breaks?.some(b => b.checkInTime && !b.checkOutTime)) {
+                  pendingStatus = 'break';
+                } else if (attendance.pauses?.some(p => p.checkInTime && !p.checkOutTime)) {
+                  pendingStatus = 'pause';
+                } else if (attendance.checkInTime && !attendance.checkOutTime) {
+                  pendingStatus = 'attendance';
+                }
+              }
+
+              return { ...shift, pendingStatus };
+            }),
             isToday: true,
             distanceInMeters: workplace.distanceInMeters ? Math.round(workplace.distanceInMeters) : null,
             distanceLeft: workplace.distanceInMeters ? Math.round(workplace.location.allowedRadius - workplace.distanceInMeters) : null,
@@ -349,6 +382,23 @@ const TodayCompanies = () => {
                             {t('misc_shift')} {index + 1}: {message}
                           </ThemedText>
 
+                          {shift.pendingStatus !== 'none' && (
+                            <MaterialIcons
+                              name={
+                                shift.pendingStatus === 'pause' ? 'pause-circle-outline'
+                                  : shift.pendingStatus === 'break' ? 'free-breakfast'
+                                    : 'schedule'
+                              }
+                              size={18}
+                              color={
+                                shift.pendingStatus === 'pause' ? Colors.warning
+                                  : shift.pendingStatus === 'break' ? Colors.info
+                                    : Colors.primary
+                              }
+                              style={{ position: 'absolute', top: 6, right: 6 }}
+                            />
+                          )}
+
                           {attendanceOfShift?.checkOutTime ? (
                             <ThemedText style={[styles.shiftDuration, styles.finishedText]}>
                               {t('misc_finished')}: {dayjs(attendanceOfShift.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
@@ -386,11 +436,7 @@ const TodayCompanies = () => {
               onScroll={handleScroll}
               scrollEventThrottle={16}
             />
-            {showScrollArrow && (
-              <TouchableOpacity style={[styles.arrowContainer, { backgroundColor: colorScheme === 'dark' ? '#979998' : '#e3e6e4' },]} onPress={scrollToBottom}>
-                <MaterialIcons name="keyboard-arrow-down" size={24} color={colorScheme === 'light' ? "black" : "white"} />
-              </TouchableOpacity>
-            )}
+            {showScrollArrow && <ScrollToBottomButton onPress={scrollToBottom} />}
           </>
         ) : (
           <ThemedView>

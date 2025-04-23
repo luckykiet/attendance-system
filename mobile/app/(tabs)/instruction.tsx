@@ -2,7 +2,6 @@ import React from 'react';
 import { MainScreenLayout } from '@/layouts/MainScreenLayout';
 import {
   StyleSheet,
-  ScrollView,
 } from 'react-native';
 
 import ThemedView from '@/components/theme/ThemedView';
@@ -10,6 +9,7 @@ import ThemedText from '@/components/theme/ThemedText';
 import useTranslation from '@/hooks/useTranslation';
 import { InstructionChild } from '@/types/instruction';
 import { INSTRUCTION } from '@/constants/Instruction';
+import ScrollToBottomWrapper from '@/components/ScrollViewWrapper';
 
 const renderChildren = (children: InstructionChild[], level: number = 1) => {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ const InstructionPage: React.FC = () => {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.container}>
-        <ScrollView
+        <ScrollToBottomWrapper
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}>
@@ -54,7 +54,7 @@ const InstructionPage: React.FC = () => {
               {renderChildren(section.children)}
             </React.Fragment>
           ))}
-        </ScrollView>
+        </ScrollToBottomWrapper>
       </ThemedView>
     </MainScreenLayout>
   );

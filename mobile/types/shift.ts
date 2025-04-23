@@ -5,4 +5,5 @@ export type Shift = {
     isOverNight: boolean;
     isAvailable: boolean;
     allowedOverTime: number;
+    pendingStatus?: 'none' | 'pause' | 'break' | 'attendance';
 }

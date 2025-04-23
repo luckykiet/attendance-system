@@ -208,7 +208,7 @@ misc_enable_notifications	enable notifications	bật thông báo	povolit oznáme
 misc_end_time	end time	thời gian kết thúc	čas ukončení
 misc_enter_token	Enter token	Nhập mã	Nastavit token
 misc_enter_url	Enter URL	Nhập URL	Nastavit URL
-misc_error	chyba	lỗi	chyba
+misc_error	error	lỗi	chyba
 misc_estimated_revenue	Estimated revenue	Doanh số dự kiến	Předpokládaná tržba
 misc_example	example	ví dụ	příklad
 misc_examples	examples	ví dụ	příklady

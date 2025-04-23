@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 import { DAYS_OF_WEEK, daysOfWeeksTranslations, TIME_FORMAT } from '@/constants/Days';
 import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
 import { BreakMutation, Breaks } from '@/types/breaks';
-import { ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { AttendanceMutation } from '@/types/attendance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,6 +23,7 @@ import ReasonPromptModal, { ReasonData } from './ReasonPromptModal';
 import { AttendancePauseMutation } from '@/types/pause';
 import { usePauseApi } from '@/api/usePauseApi';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import ScrollViewWrapper from './ScrollViewWrapper';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
@@ -63,9 +63,20 @@ const ShiftSelectModal = () => {
                 } else {
                     queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
                     queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(t('misc_shift_pause_successfully'), t(data.msg))
-                    setPendingAttendance(null);
-                    setSelectedShift(null);
+                    Alert.alert(
+                        t('misc_shift_pause_successfully'),
+                        t(data.msg),
+                        [
+                            {
+                                text: t('misc_close'),
+                                onPress: () => {
+                                    setPendingAttendance(null);
+                                    setSelectedShift(null);
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
                 }
             },
             onError: (error) => {
@@ -84,9 +95,20 @@ const ShiftSelectModal = () => {
                 } else {
                     queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
                     queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(t('misc_attendance_success'), t(data.msg))
-                    setPendingAttendance(null);
-                    setSelectedShift(null);
+                    Alert.alert(
+                        t('misc_attendance_success'),
+                        t(data.msg),
+                        [
+                            {
+                                text: t('misc_close'),
+                                onPress: () => {
+                                    setPendingAttendance(null);
+                                    setSelectedShift(null);
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
                 }
             },
             onError: (error) => {
@@ -105,9 +127,20 @@ const ShiftSelectModal = () => {
                 } else {
                     queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
                     queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(t('misc_break_submitted'), t(data.msg))
-                    setPendingAttendance(null);
-                    setSelectedShift(null);
+                    Alert.alert(
+                        t('misc_break_submitted'),
+                        t(data.msg),
+                        [
+                            {
+                                text: t('misc_close'),
+                                onPress: () => {
+                                    setPendingAttendance(null);
+                                    setSelectedShift(null);
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
                 }
             },
             onError: (error) => {
@@ -126,9 +159,20 @@ const ShiftSelectModal = () => {
                 } else {
                     queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
                     queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(t('misc_break_submitted'), t(data.msg))
-                    setPendingAttendance(null);
-                    setSelectedShift(null);
+                    Alert.alert(
+                        t('misc_break_submitted'),
+                        t(data.msg),
+                        [
+                            {
+                                text: t('misc_close'),
+                                onPress: () => {
+                                    setPendingAttendance(null);
+                                    setSelectedShift(null);
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
                 }
             },
             onError: (error) => {
@@ -626,7 +670,7 @@ const ShiftSelectModal = () => {
             <ThemedView style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
                     <BLEScanModal onResult={handleScanResult} />
-                    <ScrollView
+                    <ScrollViewWrapper
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContent}>
@@ -931,7 +975,7 @@ const ShiftSelectModal = () => {
                                         </TouchableOpacity>
                                     </View>
                                 </>}
-                    </ScrollView>
+                    </ScrollViewWrapper>
 
                     <View style={styles.fixedFooter}>
                         <TouchableOpacity
