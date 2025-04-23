@@ -137,6 +137,8 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                 <FlatList<AttendanceWithRegister>
                     ref={scrollViewRef}
                     data={attendances}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => {
                         const date = item.dailyAttendance?.date ? dayjs(item.dailyAttendance?.date.toString(), 'YYYYMMDD') : null;
 

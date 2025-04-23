@@ -177,6 +177,8 @@ const MyCompanies = () => {
             style={styles.scrollView}
             data={combinedRetails}
             keyExtractor={(retail) => retail._id}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }: { item: CombinedRetail, index: number }) => {
               const isLastItem = index === combinedRetails.length - 1;
               return (
