@@ -42,7 +42,10 @@ const InstructionPage: React.FC = () => {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}>
           {INSTRUCTION.map((section, idx) => (
             <React.Fragment key={idx}>
               <ThemedText type="subtitle" style={styles.sectionTitle}>

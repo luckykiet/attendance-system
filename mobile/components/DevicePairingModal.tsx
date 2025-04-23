@@ -105,7 +105,11 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
                 <View style={styles.centered}>
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContainer}
+                    >
                         <ThemedView
                             style={[
                                 styles.modalContent,
@@ -116,57 +120,39 @@ const DevicePairingModal = ({ isOpen, setIsOpen }: DevicePairingModalProps) => {
                                 {t('misc_device_registration')}
                             </ThemedText>
 
-                            <View style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_domain')}</ThemedText>
-                                <Controller
-                                    control={control}
-                                    name="domain"
-                                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                        <>
-                                            <ThemedTextInput
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                                value={value}
-                                                placeholder={`${t('misc_enter_url')}...`}
-                                                autoCapitalize="none"
-                                                autoCorrect={false}
-                                                style={styles.input}
-                                            />
-                                            {fieldState.invalid && fieldState.error?.message && (
-                                                <ThemedText style={styles.errorText}>
-                                                    {t(fieldState.error?.message)}
-                                                </ThemedText>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            </View>
-
-                            <View style={styles.inputContainer}>
-                                <ThemedText style={styles.label}>{t('misc_token')}</ThemedText>
-                                <Controller
-                                    control={control}
-                                    name="tokenId"
-                                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                        <>
-                                            <ThemedTextInput
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                                value={value}
-                                                placeholder={`${t('misc_enter_token')}...`}
-                                                autoCapitalize="none"
-                                                autoCorrect={false}
-                                                style={styles.input}
-                                            />
-                                            {fieldState.invalid && fieldState.error?.message && (
-                                                <ThemedText style={styles.errorText}>
-                                                    {t(fieldState.error?.message)}
-                                                </ThemedText>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            </View>
+                            <Controller
+                                control={control}
+                                name="domain"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                    <ThemedTextInput
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        placeholder={`${t('misc_enter_url')}...`}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                        containerStyle={{ marginBottom: 20 }}
+                                        label={t('misc_domain')}
+                                    />
+                                )}
+                            />
+                            <Controller
+                                control={control}
+                                name="tokenId"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                    <ThemedTextInput
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        placeholder={`${t('misc_enter_token')}...`}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                        label={t('misc_token')}
+                                    />
+                                )}
+                            />
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
@@ -238,12 +224,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 4,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 8,
-        borderRadius: 4,
     },
     buttonRow: {
         flexDirection: 'row',

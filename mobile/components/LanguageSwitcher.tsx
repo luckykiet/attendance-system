@@ -27,6 +27,7 @@ export function LanguageSwitcher() {
         <View style={styles.container}>
             <ScrollView
                 horizontal
+                showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.flagsContainer}
             >

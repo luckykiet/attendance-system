@@ -12,7 +12,6 @@ import ThemedText from '@/components/theme/ThemedText';
 import ThemedTextInput from '@/components/theme/ThemedTextInput';
 import ThemedActivityIndicator from '@/components/theme/ThemedActivityIndicator';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import _ from 'lodash';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { useRegistrationApi } from '@/api/useRegistrationApi';
@@ -23,7 +22,7 @@ import useIntentListener from '@/hooks/useIntentListener';
 const RegistrationSchema = z.object({
     name: z.string().min(1, 'misc_required'),
     email: z.string().email('srv_invalid_email'),
-    phone: z.string().min(7, 'srv_invalid_phone').optional().or(z.literal('')),
+    phone: z.string().min(7, 'srv_invalid_phone').optional(),
 });
 
 type RegistrationFormValues = z.infer<typeof RegistrationSchema>;
@@ -127,7 +126,11 @@ const RegistrationScreen: React.FC = () => {
     return (
         <MainScreenLayout>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContainer}
+                >
                     <ThemedView style={styles.container}>
                         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                             <ThemedText style={[styles.closeButtonText, { color: colorScheme === 'dark' ? '#fff' : '#000' }]}>
@@ -151,74 +154,58 @@ const RegistrationScreen: React.FC = () => {
                                         <ThemedText>{registration.retail.address?.zip}, {registration.retail.address?.city}</ThemedText>
                                     </ThemedView>
                                 )}
+                                <Controller
+                                    control={control}
+                                    name="name"
+                                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                        <ThemedTextInput
+                                            style={[fieldState.invalid && styles.inputError]}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            placeholder="Jan Novak"
+                                            label={t('misc_full_name')}
+                                            containerStyle={{ marginBottom: 20 }}
+                                            error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                        />
+                                    )}
+                                />
 
-                                <ThemedView style={styles.inputContainer}>
-                                    <ThemedText style={styles.label}>{t('misc_full_name')}</ThemedText>
-                                    <Controller
-                                        control={control}
-                                        name="name"
-                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                            <>
-                                                <ThemedTextInput
-                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
-                                                    onBlur={onBlur}
-                                                    onChangeText={onChange}
-                                                    value={value}
-                                                    placeholder="Jan Novak"
-                                                />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
-                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
-                                                )}
-                                            </>
-                                        )}
-                                    />
-                                </ThemedView>
+                                <Controller
+                                    control={control}
+                                    name="email"
+                                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                        <ThemedTextInput
+                                            style={[fieldState.invalid && styles.inputError]}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            placeholder={t('misc_email')}
+                                            label={t('misc_email')}
+                                            keyboardType="email-address"
+                                            containerStyle={{ marginBottom: 20 }}
+                                            error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                        />
+                                    )}
+                                />
 
-                                <ThemedView style={styles.inputContainer}>
-                                    <ThemedText style={styles.label}>{t('misc_email')}</ThemedText>
-                                    <Controller
-                                        control={control}
-                                        name="email"
-                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                            <>
-                                                <ThemedTextInput
-                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
-                                                    onBlur={onBlur}
-                                                    onChangeText={onChange}
-                                                    value={value}
-                                                    placeholder={t('misc_email')}
-                                                    keyboardType="email-address"
-                                                />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
-                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
-                                                )}
-                                            </>
-                                        )}
-                                    />
-                                </ThemedView>
-
-                                <ThemedView style={styles.inputContainer}>
-                                    <ThemedText style={styles.label}>{t('misc_telephone')}</ThemedText>
-                                    <Controller
-                                        control={control}
-                                        name="phone"
-                                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                            <>
-                                                <ThemedTextInput
-                                                    style={[styles.input, fieldState.invalid && styles.inputError]}
-                                                    onBlur={onBlur}
-                                                    onChangeText={onChange}
-                                                    value={value}
-                                                    placeholder={'+420 123 456 789'}
-                                                    keyboardType="phone-pad"
-                                                />
-                                                {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && (
-                                                    <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>
-                                                )}
-                                            </>
-                                        )}
-                                    />
-                                </ThemedView>
+                                <Controller
+                                    control={control}
+                                    name="phone"
+                                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                        <ThemedTextInput
+                                            style={[fieldState.invalid && styles.inputError]}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            placeholder={'+420 123 456 789'}
+                                            keyboardType="phone-pad"
+                                            label={t('misc_telephone')}
+                                            containerStyle={{ marginBottom: 20 }}
+                                            error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                        />
+                                    )}
+                                />
 
                                 <ThemedView style={styles.inputContainer}>
                                     <ThemedText style={styles.label}>{t('misc_device_id')}</ThemedText>
@@ -250,73 +237,72 @@ const RegistrationScreen: React.FC = () => {
 const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 10,
     },
     container: {
         flex: 1,
-        padding: 16,
-        justifyContent: 'center',
+        width: '100%',
         alignItems: 'center',
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        fontWeight: '700',
+        marginBottom: 24,
+        marginTop: 16,
+        paddingHorizontal: 16,
+        textAlign: 'center',
     },
     workplaceName: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '600',
     },
     inputContainer: {
         width: '100%',
-        marginBottom: 16,
+        marginBottom: 20,
     },
     label: {
-        fontSize: 16,
-        marginBottom: 4,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 8,
-        borderRadius: 4,
+        fontSize: 15,
+        fontWeight: '500',
+        marginBottom: 6,
     },
     inputError: {
-        borderColor: 'red',
+        borderColor: '#e63946',
     },
     errorText: {
-        color: 'red',
-        fontSize: 14,
+        color: '#e63946',
+        fontSize: 13,
         marginTop: 4,
     },
     message: {
         fontSize: 16,
         color: 'gray',
+        textAlign: 'center',
+        marginVertical: 20,
     },
     setupButton: {
+        marginTop: 20,
         alignSelf: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        backgroundColor: '#457b9d',
-        borderRadius: 5,
-        marginBottom: 15,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        backgroundColor: '#1d3557',
+        borderRadius: 8,
     },
     setupButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: '600',
-        textAlign: 'center',
     },
     closeButton: {
         position: 'absolute',
         top: 16,
         right: 16,
         zIndex: 10,
-        padding: 8,
     },
     closeButtonText: {
         fontSize: 28,
-        fontWeight: 'bold',
+        fontWeight: '600',
+        padding: 4,
     },
 });
 

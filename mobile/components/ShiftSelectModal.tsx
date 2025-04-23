@@ -23,6 +23,7 @@ import { useBreakApi } from '@/api/useBreakApi';
 import ReasonPromptModal, { ReasonData } from './ReasonPromptModal';
 import { AttendancePauseMutation } from '@/types/pause';
 import { usePauseApi } from '@/api/usePauseApi';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
@@ -40,6 +41,18 @@ const ShiftSelectModal = () => {
 
     const [diff, setDiff] = useState<number>(0);
     const [reasonModalTitle, setReasonModalTitle] = useState<string>('misc_reason_for_early_check_out');
+    const backgroundColor = useThemeColor({}, 'background');
+    const borderColor = useThemeColor({}, 'border');
+    const mutedText = useThemeColor({ light: '#555', dark: '#aaa' }, 'text');
+    const cardColor = useThemeColor({ light: '#f8f9fa', dark: '#1e1e1e' }, 'background');
+    const themeColors = {
+        backgroundColor,
+        borderColor,
+        mutedText,
+        cardColor,
+    };
+
+    const styles = getStyles(themeColors);
 
     const submitPauseMutation = useMutation(
         {
@@ -613,7 +626,10 @@ const ShiftSelectModal = () => {
             <ThemedView style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
                     <BLEScanModal onResult={handleScanResult} />
-                    <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}>
                         <ThemedText style={styles.modalTitle}>{t('misc_shift_details')}</ThemedText>
                         <ThemedText>
                             {t('misc_workplace')}: {workplace.name ?? '-'}
@@ -630,7 +646,7 @@ const ShiftSelectModal = () => {
                             SPECIFIC_BREAKS.filter((type) => {
                                 const brk = specificBreaks[type];
                                 return brk && brk.isAvailable
-                            }).map((type, idx, arr) => {
+                            }).map((type) => {
                                 const brk = specificBreaks[type];
                                 const maxDurationText = getDiffDurationText(brk.duration, noCapT);
                                 const brkTime = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
@@ -706,7 +722,6 @@ const ShiftSelectModal = () => {
                                                 ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
                                             </TouchableOpacity>
                                         </View>
-                                        {idx < arr.length - 1 && <View style={styles.breakDivider} />}
                                     </Fragment>
                                 );
                             })
@@ -718,7 +733,7 @@ const ShiftSelectModal = () => {
                         {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end })) ? (
                             breaks
                                 .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
-                                .map((b: Breaks, idx: number, arr) => {
+                                .map((b: Breaks) => {
 
                                     const maxDurationText = getDiffDurationText(b.duration, noCapT);
                                     const brkTime = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
@@ -792,7 +807,6 @@ const ShiftSelectModal = () => {
                                                     ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
                                                 </TouchableOpacity>
                                             </View>
-                                            {idx < arr.length - 1 && <View style={styles.breakDivider} />}
                                         </Fragment>
                                     );
                                 })
@@ -802,7 +816,7 @@ const ShiftSelectModal = () => {
 
                         {!_.isEmpty(attendance?.pauses ?? []) && (attendance?.pauses?.length ?? 0) > 0 && <>
                             <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
-                            {attendance?.pauses.map((p, idx, arr) => {
+                            {attendance?.pauses.map((p) => {
                                 const isPending = p.checkInTime && !p.checkOutTime;
                                 return (
                                     <Fragment key={p._id}>
@@ -826,7 +840,6 @@ const ShiftSelectModal = () => {
                                                 <ThemedText style={[styles.breakButtonText]}>{t('misc_finish')}</ThemedText>
                                             </TouchableOpacity>}
                                         </View>
-                                        {idx < arr.length - 1 && <View style={styles.breakDivider} />}
                                     </Fragment>
                                 );
                             })}
@@ -961,19 +974,56 @@ const ShiftSelectModal = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (themeColor: {
+    backgroundColor: string;
+    borderColor: string;
+    mutedText: string;
+    cardColor: string;
+}) => StyleSheet.create({
     modalOverlay: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.6)',
     },
-
     modalContent: {
         flex: 1,
-        borderRadius: 10,
+        borderRadius: 16,
         padding: 20,
         width: '90%',
         maxHeight: '90%',
+        backgroundColor: themeColor.cardColor,
+        elevation: 5,
+    },
+    breakRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: themeColor.borderColor,
+        backgroundColor: themeColor.cardColor,
+    },
+    breakTimeText: {
+        fontSize: 12,
+        marginLeft: 10,
+        fontStyle: 'italic',
+        color: themeColor.mutedText,
+    },
+    breakDurationText: {
+        fontSize: 13,
+        color: themeColor.mutedText,
+        marginTop: 2,
+        marginLeft: 10,
+    },
+    fixedFooter: {
+        borderTopWidth: 1,
+        borderTopColor: themeColor.borderColor,
+        paddingTop: 12,
+        paddingBottom: 10,
+        marginTop: 20,
     },
     modalTitle: {
         fontSize: 18,
@@ -997,25 +1047,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     groupHeader: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginTop: 20,
-        marginBottom: 8,
+        fontSize: 18,
+        fontWeight: '700',
+        marginTop: 24,
+        marginBottom: 12,
+        color: Colors.primary,
     },
     breakText: {
         fontSize: 14,
         marginLeft: 10,
-    },
-    breakTimeText: {
-        fontSize: 12,
-        marginLeft: 10,
-        fontStyle: 'italic',
-    },
-    breakRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 6,
     },
     breakButton: {
         backgroundColor: Colors.primary,
@@ -1032,20 +1072,10 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         marginRight: 10,
     },
-    breakDurationText: {
-        fontSize: 13,
-        color: '#888',
-        marginTop: 2,
-        marginLeft: 10,
-    },
     scrollContent: {
         paddingBottom: 20,
-    },
-    fixedFooter: {
-        borderTopWidth: 1,
-        borderTopColor: '#ccc',
         paddingTop: 10,
-        marginTop: 10,
+        gap: 16,
     },
     attendanceInfo: {
         flexShrink: 1,
@@ -1073,11 +1103,6 @@ const styles = StyleSheet.create({
     buttonTextPending: {
         color: 'white',
     },
-    breakDivider: {
-        height: 1,
-        backgroundColor: '#ccc',
-        marginVertical: 8,
-    }
 });
 
 export default ShiftSelectModal;

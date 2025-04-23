@@ -32,7 +32,11 @@ const InitialInstruction: React.FC = () => {
 
     return (
         <ThemedView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
                 <ThemedText type="subtitle" style={styles.sectionTitle}>
                     {t(INSTRUCTION[0].title)}
                 </ThemedText>

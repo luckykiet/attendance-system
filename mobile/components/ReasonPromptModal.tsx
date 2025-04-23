@@ -71,26 +71,23 @@ const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_che
                     {_.isNumber(diff) && diff > 0 && <ThemedText style={styles.subtitle}>
                         {t('misc_until_the_end')}: {durationText}
                     </ThemedText>}
-                    <ThemedView style={styles.inputContainer}>
-                        <ThemedText style={styles.label}>{t('misc_reason')}</ThemedText>
-                        <Controller
-                            control={control}
-                            name="reason"
-                            render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                                <>
-                                    <ThemedTextInput
-                                        style={[styles.input, fieldState.invalid && styles.inputError]}
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        placeholderTextColor={isDarkMode ? '#aaa' : '#666'}
-                                        multiline
-                                    />
-                                    {fieldState.invalid && !_.isEmpty(fieldState.error?.message) && <ThemedText style={styles.errorText}>{t(fieldState.error?.message || '')}</ThemedText>}
-                                </>
-                            )}
-                        />
-                    </ThemedView>
+                    <Controller
+                        control={control}
+                        name="reason"
+                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                            <ThemedTextInput
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                placeholderTextColor={isDarkMode ? '#aaa' : '#666'}
+                                multiline
+                                numberOfLines={4}
+                                error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                containerStyle={styles.inputContainer}
+                                label={t('misc_reason')}
+                            />
+                        )}
+                    />
                     <View style={styles.actions}>
                         <TouchableOpacity style={[styles.button, styles.cancel]} onPress={onCancel}>
                             <ThemedText style={styles.buttonText}>{t('misc_cancel')}</ThemedText>
@@ -141,13 +138,6 @@ const styles = StyleSheet.create({
     },
     inputError: {
         borderColor: 'red',
-    },
-    input: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
-        minHeight: 80,
-        textAlignVertical: 'top',
     },
     actions: {
         flexDirection: 'row',

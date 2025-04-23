@@ -73,20 +73,19 @@ const URLSelection: React.FC = () => {
             <Controller
                 control={control}
                 name="url"
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, onBlur, value }, fieldState }) => (
                     <ThemedTextInput
-                        style={[styles.input, errors.url ? styles.inputError : null]}
                         placeholder="https://example.com; http://192.168.0.14:8080"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
                         autoCapitalize="none"
-                        lightColor="#fff"
-                        darkColor="#444"
+                        autoCorrect={false}
+                        label={t('misc_domain')}
+                        error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
                     />
                 )}
             />
-            {errors.url?.message && <Text style={styles.error}>{t(errors.url.message)}</Text>}
             <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
                 <Text style={styles.buttonText}>{t('misc_add_url')}</Text>
             </TouchableOpacity>
@@ -108,13 +107,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         padding: 20,
-    },
-    input: {
-        borderColor: '#ccc',
-        marginBottom: 10,
-    },
-    inputError: {
-        borderColor: '#e63946',
     },
     list: {
         marginTop: 20,
