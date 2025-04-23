@@ -1,6 +1,9 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import dayjs, { Dayjs } from 'dayjs';
+
+const STORAGE_KEY = 'scheduledNotificationIds';
 
 type NotificationSchedulerOptions = {
   id: string;
@@ -12,8 +15,36 @@ type NotificationSchedulerOptions = {
   channelId?: string;
 };
 
-export function useNotificationScheduler() {
+export const useNotificationScheduler = () => {
   const notifiedIds = useRef<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadScheduledIds = async () => {
+      try {
+        const json = await AsyncStorage.getItem(STORAGE_KEY);
+        if (json) {
+          const ids: string[] = JSON.parse(json);
+          notifiedIds.current = new Set(ids);
+        }
+      } catch (error) {
+        console.error('Failed to load scheduled notification IDs:', error);
+      } finally {
+        setLoaded(true);
+      }
+    };
+
+    loadScheduledIds();
+  }, []);
+
+  const saveScheduledId = async (id: string) => {
+    notifiedIds.current.add(id);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([...notifiedIds.current]));
+    } catch (error) {
+      console.error('Failed to save scheduled notification ID:', error);
+    }
+  };
 
   const scheduleNotificationIfNeeded = async ({
     id,
@@ -24,7 +55,8 @@ export function useNotificationScheduler() {
     warningBeforeMinutes = 10,
     channelId = 'default',
   }: NotificationSchedulerOptions) => {
-    if (notifiedIds.current.has(id)) return; // already scheduled
+    if (!loaded) return; // wait for storage to load
+    if (notifiedIds.current.has(id)) return;
 
     const fireTime = scheduledTime.subtract(warningBeforeMinutes, 'minute');
     const secondsUntilNotification = fireTime.diff(now, 'second');
@@ -37,17 +69,22 @@ export function useNotificationScheduler() {
     } else {
       await Notifications.scheduleNotificationAsync({
         content: { title, body, sound: 'default' },
-        trigger: { seconds: secondsUntilNotification, type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, channelId},
+        trigger: {
+          seconds: secondsUntilNotification,
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          channelId,
+        },
       });
     }
 
-    notifiedIds.current.add(id);
+    await saveScheduledId(id);
   };
 
   const cancelScheduledNotification = async (id: string) => {
     try {
       await Notifications.cancelScheduledNotificationAsync(id);
       notifiedIds.current.delete(id);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([...notifiedIds.current]));
     } catch (error) {
       console.error('Failed to cancel notification:', error);
     }
@@ -57,10 +94,39 @@ export function useNotificationScheduler() {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
       notifiedIds.current.clear();
+      await AsyncStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error('Failed to cancel all notifications:', error);
     }
   };
 
-  return { scheduleNotificationIfNeeded, cancelScheduledNotification, cancelAllScheduledNotifications };
-}
+  const cancelNotificationsByPrefix = async (prefix: string) => {
+    try {
+      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!json) return;
+      const allIds: string[] = JSON.parse(json);
+      const matchingIds = allIds.filter(id => id.startsWith(prefix));
+
+      for (const id of matchingIds) {
+        try {
+          await Notifications.cancelScheduledNotificationAsync(id);
+          notifiedIds.current.delete(id);
+        } catch (err) {
+          console.warn(`Failed to cancel notification with id ${id}`, err);
+        }
+      }
+
+      const remainingIds = [...notifiedIds.current];
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(remainingIds));
+    } catch (error) {
+      console.error(`Failed to cancel notifications with prefix "${prefix}":`, error);
+    }
+  };
+
+  return {
+    scheduleNotificationIfNeeded,
+    cancelScheduledNotification,
+    cancelAllScheduledNotifications,
+    cancelNotificationsByPrefix
+  };
+};

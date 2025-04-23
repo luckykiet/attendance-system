@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DAYS_OF_WEEK, TIME_FORMAT } from '@/constants/Days';
+import { DayKey, DAYS_OF_WEEK, TIME_FORMAT } from '@/constants/Days';
 import JWT from 'expo-jwt';
 import { SupportedAlgorithms } from 'expo-jwt/dist/types/algorithms';
 import dayjs, { Dayjs } from 'dayjs';
@@ -493,4 +493,24 @@ export const getStartEndTime = ({
     }
 
     return { startTime, endTime, isOverNight };
+};
+
+export const getNextWeekdayDate = (dayName: DayKey, fromDate = dayjs()) => {
+    const dayIndex = shiftsMap[dayName];
+    const todayIndex = fromDate.day();
+
+    let daysUntil = (dayIndex - todayIndex + 7) % 7;
+    if (daysUntil === 0) daysUntil = 7;
+
+    return fromDate.add(daysUntil, 'day');
+}
+
+const shiftsMap: Record<DayKey, number> = {
+    sun: 0,
+    mon: 1,
+    tue: 2,
+    wed: 3,
+    thu: 4,
+    fri: 5,
+    sat: 6,
 };

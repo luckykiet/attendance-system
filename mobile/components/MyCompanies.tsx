@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import { useAppStore } from '@/stores/useAppStore';
-import { useCompaniesApi } from '@/api/useCompaniesApi';
 import ThemedText from '@/components/theme/ThemedText';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
@@ -19,8 +18,6 @@ import { useEmployeeApi } from '@/api/useEmployeeApi';
 import * as SecureStore from 'expo-secure-store';
 import { Shift } from '@/types/shift';
 import { PatternFormat } from 'react-number-format';
-import _ from 'lodash';
-
 dayjs.extend(customParseFormat);
 
 type CombinedRegister = GetMyCompaniesResult['registers'][number] & {
@@ -42,8 +39,7 @@ const isShiftsEmpty = (shifts: Record<DayKey, Shift[]>): boolean => {
 const MyCompanies = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { appId, urls, isGettingLocation, location, setMyWorkplaces, myWorkplaces } = useAppStore();
-  const { getMyCompanies } = useCompaniesApi();
+  const { isGettingLocation, myWorkplaces, setMyWorkplaces } = useAppStore();
   const { cancelDevicePairing } = useEmployeeApi();
   const colorScheme = useColorScheme();
   const scrollViewRef = useRef<FlatList>(null);
@@ -51,36 +47,17 @@ const MyCompanies = () => {
   const todayIndex = dayjs().day();
   const todayKey = DAYS_OF_WEEK[todayIndex];
 
-  const queryResults = useQueries({
-    queries: urls.map((url) => ({
-      queryKey: ['myCompanies', appId, url],
-      queryFn: () => getMyCompanies(url),
-      enabled: !!appId && urls.length > 0 && !!myWorkplaces,
-    })),
-    combine: (results) => {
-      const dataByDomain: Record<string, GetMyCompaniesResult> = {};
-      results.forEach((result, i) => {
-        const url = urls[i];
-        if (result.data) {
-          dataByDomain[url] = result.data;
-        }
-      });
-      return {
-        isLoading: results.some((r) => r.isLoading),
-        isFetching: results.some((r) => r.isFetching),
-        data: dataByDomain,
-        refetch: () => results.forEach((r) => r.refetch()),
-      };
-    },
-  });
+  const refreshWorkplaces = async () => {
+    setMyWorkplaces(null);
+  }
 
   const cancelPairingMutation = useMutation<string, Error, CancelDevicePairingMutation>({
     mutationFn: (formData) => cancelDevicePairing(formData),
     onSuccess: (data) => {
       Alert.alert(t('misc_cancel_pairing_succeed'), t(data))
-      queryResults.refetch();
       queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
       queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
+      queryClient.removeQueries({ queryKey: ['myCompanies'] });
     },
     onError: (error) => Alert.alert(t('misc_device_pairing_failed'), t(typeof error === 'string' ? error : 'srv_failed_to_cancel_pairing')),
   });
@@ -129,19 +106,6 @@ const MyCompanies = () => {
     );
   }
 
-  useEffect(() => {
-    if (location) {
-      queryResults.refetch();
-    }
-  }, [location]);
-
-  useEffect(() => {
-    const allSuccess = !queryResults.isFetching && !queryResults.isLoading;
-    if (allSuccess) {
-      setMyWorkplaces(!_.isEmpty(queryResults.data) ? queryResults.data : null);
-    }
-  }, [queryResults.data, queryResults.isFetching, queryResults.isLoading]);
-
   const combinedRetails: CombinedRetail[] = Object.entries(myWorkplaces || {}).flatMap(([domain, data]) => {
     const { registers, workingAts, employees, retails } = data;
     return retails.map(retail => {
@@ -165,11 +129,11 @@ const MyCompanies = () => {
     <ThemedView style={styles.nearbyContainer}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="subtitle" style={styles.nearbyLabel}>{t('misc_workplaces')}:</ThemedText>
-        <TouchableOpacity onPress={() => queryResults.refetch()} style={styles.refreshButton}>
+        <TouchableOpacity onPress={refreshWorkplaces} style={styles.refreshButton}>
           <MaterialIcons name="refresh" size={24} color={colorScheme === 'light' ? "black" : "white"} />
         </TouchableOpacity>
       </ThemedView>
-      {(queryResults.isLoading || queryResults.isFetching || isGettingLocation) && <ThemedActivityIndicator size={'large'} />}
+      {isGettingLocation && <ThemedActivityIndicator size={'large'} />}
       {combinedRetails.length > 0 ? (
         <>
           <FlatList

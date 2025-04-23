@@ -24,7 +24,7 @@ import ShiftSelectModal from './ShiftSelectModal';
 import { Attendance } from '@/types/attendance';
 import { useNotificationScheduler } from '@/hooks/useNotificationScheduler';
 import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
-import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
+
 import ScrollToBottomButton from './ScrollToBottomButton';
 
 dayjs.extend(isBetween);
@@ -43,7 +43,9 @@ const TodayCompanies = () => {
   const now = dayjs();
   const todayKey = DAYS_OF_WEEK[now.day()];
   const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-  const { scheduleNotificationIfNeeded } = useNotificationScheduler();
+  const { scheduleNotificationIfNeeded, cancelNotificationsByPrefix } = useNotificationScheduler();
+
+  const schedulePrefix = `pending-shift`;
   const queryResults = useQueries({
     queries: urls.map((url) => ({
       queryKey: ['todayWorkplaces', location, appId, url],
@@ -166,7 +168,7 @@ const TodayCompanies = () => {
 
         return entries;
       });
-      cancelAllScheduledNotificationsAsync();
+      cancelNotificationsByPrefix(schedulePrefix);
       return {
         isLoading: results.some((result) => result.isLoading),
         isFetching: results.some((result) => result.isFetching),
@@ -270,7 +272,7 @@ const TodayCompanies = () => {
       }
 
       scheduleNotificationIfNeeded({
-        id: shift._id,
+        id: `${schedulePrefix}-${shift._id}`,
         title,
         body,
         scheduledTime: endTime,

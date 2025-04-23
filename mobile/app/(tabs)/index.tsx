@@ -11,11 +11,13 @@ import { Link } from 'expo-router';
 import { LocationRequest } from '@/components/LocationRequest';
 import TodayCompanies from '@/components/TodayCompanies';
 import InitialInstruction from '@/components/InitialInstruction';
+import useGetWorkplacesByDomain from '@/hooks/useGetWorkplacesByDomain';
 
 const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
   const { urls } = useAppStore();
   const appName = Constants.expoConfig?.name || 'ATTENDANCE SYSTEM';
+  useGetWorkplacesByDomain();
 
   return (
     <MainScreenLayout>

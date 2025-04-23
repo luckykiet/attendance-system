@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useAppStore } from '@/stores/useAppStore';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { MainScreenLayout } from '@/layouts/MainScreenLayout';
@@ -9,10 +9,7 @@ import MyAttendances from '@/components/MyAttendances';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import useTranslation from '@/hooks/useTranslation';
 import { MyRetail } from '@/types/retail';
-import { useQueries } from '@tanstack/react-query';
-import { useCompaniesApi } from '@/api/useCompaniesApi';
-import { GetMyCompaniesResult } from '@/types/workplaces';
-import _ from 'lodash';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface Route {
   key: string;
@@ -21,35 +18,10 @@ interface Route {
 
 const AttendanceScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { myWorkplaces, urls, appId, setMyWorkplaces } = useAppStore();
+  const { myWorkplaces, setMyWorkplaces } = useAppStore();
   const colorScheme = useColorScheme();
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState<Route[]>([]);
-  const { getMyCompanies } = useCompaniesApi();
-
-  const queryResults = useQueries({
-    queries: urls.map((url) => ({
-      queryKey: ['myCompanies', appId, url],
-      queryFn: () => getMyCompanies(url),
-      enabled: !!appId && urls.length > 0 && !!myWorkplaces,
-    })),
-    combine: (results) => {
-      const dataByDomain: Record<string, GetMyCompaniesResult> = {};
-      results.forEach((result, i) => {
-        const url = urls[i];
-        if (result.data) {
-          dataByDomain[url] = result.data;
-        }
-      });
-
-      return {
-        isLoading: results.some((r) => r.isLoading),
-        isFetching: results.some((r) => r.isFetching),
-        data: dataByDomain,
-        refetch: () => results.forEach((r) => r.refetch()),
-      };
-    },
-  });
 
   useEffect(() => {
     const workplaces = myWorkplaces ?? {};
@@ -70,7 +42,6 @@ const AttendanceScreen: React.FC = () => {
     }
   }, [myWorkplaces]);
 
-
   const renderScene = useCallback(
     ({ route }: { route: Route }) => {
       if (!myWorkplaces) return null;
@@ -85,21 +56,14 @@ const AttendanceScreen: React.FC = () => {
     [myWorkplaces]
   );
 
-  useEffect(() => {
-    const allSuccess = !queryResults.isFetching && !queryResults.isLoading;
-    if (allSuccess) {
-      setMyWorkplaces(!_.isEmpty(queryResults.data) ? queryResults.data : null);
-    }
-  }, [queryResults.data, queryResults.isFetching, queryResults.isLoading]);
-
-  useEffect(() => {
-    queryResults.refetch();
-  }, [myWorkplaces]);
-
   const combinedRetails: MyRetail[] = Object.entries(myWorkplaces || {}).flatMap(([, data]) => {
     const { retails } = data
     return retails
   });
+
+  const handleRefresh = () => {
+    setMyWorkplaces(null);
+  }
 
   return (
     <MainScreenLayout>
@@ -127,6 +91,13 @@ const AttendanceScreen: React.FC = () => {
         ) : (
           <ThemedView style={styles.noDataContainer}>
             <ThemedText>{t('misc_no_attendance')}</ThemedText>
+            <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+              <MaterialIcons
+                name="refresh"
+                size={24}
+                color={colorScheme === 'light' ? 'black' : 'white'}
+              />
+            </TouchableOpacity>
           </ThemedView>
         )}
       </ThemedView>
@@ -141,6 +112,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 20,
     height: '100%',
+  },
+  refreshButton: {
+    padding: 8
   },
   tabBar: {
     height: 50,
@@ -179,7 +153,8 @@ const styles = StyleSheet.create({
   noDataContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    gap: 12,
   },
 });
 

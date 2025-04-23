@@ -648,6 +648,7 @@ misc_unsent	unsent	chưa gửi	neposláno
 misc_unsigned_documents	unsigned documents	tài liệu chưa ký	nepodepsané dokumenty
 misc_until_the_end	Until the end	Đến cuối cùng	Do konce
 misc_untitled	untitled	chưa điền	nezadáno
+misc_upcoming_shift_at	upcoming shift at	ca làm việc sắp tới tại	nadcházející směna v(e)
 misc_update	Update	Cập nhập	Aktualizovat
 misc_update_available_text	Update available!	Đã có bản cập nhật mới!	Dostupná aktualizace!
 misc_update_now	Update now	Cập nhập ngay	Celková aktualizace
@@ -692,6 +693,7 @@ misc_yes	yes	có	ano
 misc_you_have_no_shift_assigned	you have no shift assigned	bạn chưa được phân ca	ještě nemáte přidělený směn
 misc_you_must_register_device	you must register your device	bạn phải đăng ký thiết bị này	musíte registrovat toto zařízení
 misc_you_will_not_see_workplace_until_add_again	you will not see the workplaces until you add URL again	bạn sẽ không nhìn thấy nơi làm việc cho đến khi bạn thêm lại URL	neuvidíte pracoviště, dokud znovu nepřidáte URL
+misc_your_shift_start_at	Your shift start at	Ca làm việc của bạn bắt đầu vào lúc	Vaše směna začíná v(e)
 msg_accept_agreements	Accept agreements	Đồng ý với điều khoản sử dụng	Souhlasíte s podmínky
 msg_actual_phase	Actual phase	Quá trình hiện tại	Aktuální fáze
 msg_added	Added	Đã thêm	Přidáno

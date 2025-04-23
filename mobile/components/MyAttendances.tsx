@@ -257,13 +257,6 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
             ) : (
                 <ThemedView style={styles.noDataContainer}>
                     <ThemedText>{t('misc_no_attendance')}</ThemedText>
-                    <TouchableOpacity onPress={() => refetch()} style={styles.refreshButton}>
-                        <MaterialIcons
-                            name="refresh"
-                            size={24}
-                            color={colorScheme === 'light' ? 'black' : 'white'}
-                        />
-                    </TouchableOpacity>
                 </ThemedView>
             )}
 
