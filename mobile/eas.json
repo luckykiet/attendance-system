@@ -1,30 +1,31 @@
 {
-    "cli": {
-        "version": ">= 13.2.3",
-        "appVersionSource": "remote"
+  "cli": {
+    "version": ">= 13.2.3",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "apk": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "apk"
     },
-    "build": {
-        "apk": {
-            "android": {
-                "buildType": "apk"
-            },
-            "channel": "apk"
-        },
-        "development": {
-            "developmentClient": true,
-            "distribution": "internal",
-            "channel": "development"
-        },
-        "preview": {
-            "distribution": "internal",
-            "channel": "main"
-        },
-        "production": {
-            "channel": "main",
-            "autoIncrement": true
-        }
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
     },
-    "submit": {
-        "production": {}
+    "preview": {
+      "distribution": "internal",
+      "channel": "main"
+    },
+    "production": {
+      "channel": "main",
+      "autoIncrement": true
     }
+  },
+  "submit": {
+    "production": {}
+  }
 }
