@@ -515,9 +515,9 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                 }}
                                                                             /> */}
                                                                             <Typography>{t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}</Typography>
-                                                                            {attendance.checkOutLocation.latitude && <Typography variant='body1'>{t('misc_latitude')}: {attendance.checkOutLocation.latitude}</Typography>}
-                                                                            {attendance.checkOutLocation.longitude && <Typography variant='body1'>{t('misc_longitude')}: {attendance.checkOutLocation.longitude}</Typography>}
-                                                                            {attendance.checkOutLocation.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkOutLocation.distance)}m</Typography>}
+                                                                            {attendance.checkOutLocation?.latitude && <Typography variant='body1'>{t('misc_latitude')}: {attendance.checkOutLocation.latitude}</Typography>}
+                                                                            {attendance.checkOutLocation?.longitude && <Typography variant='body1'>{t('misc_longitude')}: {attendance.checkOutLocation.longitude}</Typography>}
+                                                                            {attendance.checkOutLocation?.distance && <Typography variant='body1'>{t('misc_distance')}: {Math.floor(attendance.checkOutLocation.distance)}m</Typography>}
                                                                             {attendance.reason && <Typography variant='body1'>{t('misc_reason')}: {attendance.reason}</Typography>}
                                                                         </Stack>
                                                                         : <Typography>{t('misc_check_out')}: -</Typography>}
