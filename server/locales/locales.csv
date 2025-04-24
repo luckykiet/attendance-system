@@ -292,6 +292,7 @@ misc_import	import	import	import
 misc_import_leads	import leads	tải lên leads	nahrát leady
 misc_imported	imported	đã import	importováno
 misc_imported_list	imported list	danh sách nhập	importovaný seznam
+misc_info	information	thông tin	informace
 misc_initial_instruction_1	You will need to register this device through your employer using QR Code or manually.	Bạn cần đăng ký thiết bị này thông qua nhà tuyển dụng bằng mã QR hoặc thủ công.	Budete muset zaregistrovat toto zařízení prostřednictvím svého zaměstnavatele pomocí QR kódu nebo ručně.
 misc_initial_instruction_2	Please scan the QR code received from the employer.	Vui lòng quét mã QR nhận được từ nhà tuyển dụng.	Prosím, naskenujte QR kód přijatý od zaměstnavatele.
 misc_initial_instruction_3	If you failed to scan the QR code, you can enter the server url of the provider.	Trong trường hợp không quét được mã QR, bạn có thể nhập URL máy chủ của nhà phát hành.	Pokud se vám nepodaří naskenovat QR kód, můžete zadat adresu serveru poskytovatele.

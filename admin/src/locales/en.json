@@ -291,6 +291,7 @@
   "misc_import_leads": "import leads",
   "misc_imported": "imported",
   "misc_imported_list": "imported list",
+  "misc_info": "information",
   "misc_initial_instruction_1": "You will need to register this device through your employer using QR Code or manually.",
   "misc_initial_instruction_2": "Please scan the QR code received from the employer.",
   "misc_initial_instruction_3": "If you failed to scan the QR code, you can enter the server url of the provider.",

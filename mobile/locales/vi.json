@@ -291,6 +291,7 @@
   "misc_import_leads": "tải lên leads",
   "misc_imported": "đã import",
   "misc_imported_list": "danh sách nhập",
+  "misc_info": "thông tin",
   "misc_initial_instruction_1": "Bạn cần đăng ký thiết bị này thông qua nhà tuyển dụng bằng mã QR hoặc thủ công.",
   "misc_initial_instruction_2": "Vui lòng quét mã QR nhận được từ nhà tuyển dụng.",
   "misc_initial_instruction_3": "Trong trường hợp không quét được mã QR, bạn có thể nhập URL máy chủ của nhà phát hành.",

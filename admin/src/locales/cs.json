@@ -291,6 +291,7 @@
   "misc_import_leads": "nahrát leady",
   "misc_imported": "importováno",
   "misc_imported_list": "importovaný seznam",
+  "misc_info": "informace",
   "misc_initial_instruction_1": "Budete muset zaregistrovat toto zařízení prostřednictvím svého zaměstnavatele pomocí QR kódu nebo ručně.",
   "misc_initial_instruction_2": "Prosím, naskenujte QR kód přijatý od zaměstnavatele.",
   "misc_initial_instruction_3": "Pokud se vám nepodaří naskenovat QR kód, můžete zadat adresu serveru poskytovatele.",

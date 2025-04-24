@@ -16,6 +16,7 @@
     "supportsTablet": true,
     "ios": {
       "buildNumber": "201",
+      "appStoreUrl": "https://apps.apple.com/app/gokasa-workforce/id6738621542",
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "cover",
@@ -53,6 +54,7 @@
         }
       },
       "package": "cz.ethereal.gokasaworkforce",
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce",
       "permissions": [
         "CAMERA",
         "android.permission.CAMERA",
