@@ -2,7 +2,7 @@
   "expo": {
     "name": "GOKASA Workforce",
     "slug": "gokasa-workforce",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -42,7 +42,7 @@
       }
     },
     "android": {
-      "versionCode": 201,
+      "versionCode": 205,
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "cover",
