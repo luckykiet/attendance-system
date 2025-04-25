@@ -184,6 +184,7 @@ misc_distance	distance	khoảng cách	vzdálenost
 misc_distance_left	distance left	khoảng cách còn lại	zbývající vzdálenost
 misc_do_not_forget_check_out_before	Do not forget to check out before	Đừng quên check out trước	Nezapomeňte odhlásit před
 misc_do_not_forget_finish_before	Do not forget to finish before	Đừng quên kết thúc trước	Nezapomeňte dokončit před
+misc_do_not_forget_finish_it	Do not forget to finish it	Đừng quên kết thúc nó	Nezapomeňte to dokončit
 misc_do_not_forget_finish_it_before_shift_end	Do not forget to finish it before shift end	Đừng quên kết thúc trước khi ca làm việc kết thúc	nezapomeňte to dokončit před koncem směny
 misc_documents	documents	tài liệu	dokumenty
 misc_domain	domain	tên miền	doména

@@ -26,7 +26,7 @@ __metadata:
   resolution: "attendance-system@workspace:."
   dependencies:
     concurrently: "npm:^9.1.2"
-    npm-check-updates: "npm:^17.1.16"
+    npm-check-updates: "npm:^18.0.1"
   languageName: unknown
   linkType: soft
 
@@ -127,13 +127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-check-updates@npm:^17.1.16":
-  version: 17.1.16
-  resolution: "npm-check-updates@npm:17.1.16"
+"npm-check-updates@npm:^18.0.1":
+  version: 18.0.1
+  resolution: "npm-check-updates@npm:18.0.1"
   bin:
     ncu: build/cli.js
     npm-check-updates: build/cli.js
-  checksum: 10c0/443ca7a96a991b7c60fcc90913a685bee5c2365086773c3a0efe584b081459f46760454a4d3459627e42498120cdbd5fcc5857b0f3970c70e2a4e67adf706a77
+  checksum: 10c0/0f4f8c26e8a51a413ee724fe76f0860bd360e0c096a52e928916ef6fe3ff0c2ea0f346ca8d291a43f46a269d05450e2a879fed8aa11871f73970d5f9dfdd162a
   languageName: node
   linkType: hard
 
