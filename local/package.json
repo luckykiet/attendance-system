@@ -8,7 +8,7 @@
     "kill": "pm2 delete beacon-server || true"
   },
   "dependencies": {
-    "@stoprocent/bleno": "^0.8.1",
+    "@stoprocent/bleno": "^0.11.3",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
     "detect-port": "^1.6.1",
