@@ -699,6 +699,7 @@ const ShiftSelectModal = () => {
                                 <ThemedText style={{ color: Colors.warning }}>{t('misc_earliest_check_in_time')}: {shiftStartTime.subtract(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
                                 <ThemedText style={{ color: Colors.warning }}>{t('misc_latest_check_out_time')}: {shiftEndTime.add(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
                                 <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
+                                <ThemedText style={styles.groupSubtitle}>{t('misc_working_time_will_be_reduced_if_exceed_allowed_duration')}.</ThemedText>
                                 {specificBreaks && SPECIFIC_BREAKS.some(type =>
                                     specificBreaks[type]?.isAvailable
                                 ) ? (
@@ -782,6 +783,7 @@ const ShiftSelectModal = () => {
                                 )}
 
                                 <ThemedText style={styles.groupHeader}>{t('misc_generic_breaks')}</ThemedText>
+                                <ThemedText style={styles.groupSubtitle}>{t('misc_working_time_will_be_reduced_if_exceed_allowed_duration')}.</ThemedText>
                                 {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end })) ? (
                                     breaks
                                         .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
@@ -863,6 +865,8 @@ const ShiftSelectModal = () => {
 
                                 {!_.isEmpty(attendance?.pauses ?? []) && (attendance?.pauses?.length ?? 0) > 0 && <>
                                     <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
+                                    <ThemedText style={styles.groupSubtitle}>{t('misc_working_time_will_be_reduced')}.</ThemedText>
+
                                     {attendance?.pauses.map((p) => {
                                         const isPending = p.checkInTime && !p.checkOutTime;
                                         const realDuration = p.checkInTime && p.checkOutTime ? dayjs(p.checkOutTime).diff(p.checkInTime, 'minutes') : null;
@@ -1107,8 +1111,12 @@ const getStyles = (themeColor: {
         fontSize: 18,
         fontWeight: '700',
         marginTop: 24,
-        marginBottom: 12,
         color: Colors.primary,
+    },
+    groupSubtitle:{
+        fontSize: 14,
+        marginBottom: 10,
+        fontStyle: 'italic',
     },
     breakText: {
         fontSize: 14,

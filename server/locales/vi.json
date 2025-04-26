@@ -686,6 +686,8 @@
   "misc_working_hour_of_the_workplace": "Giờ làm việc của nơi làm việc",
   "misc_working_hours": "thời gian làm việc",
   "misc_working_hours_by_employee": "Giờ làm việc theo nhân viên",
+  "misc_working_time_will_be_reduced": "thời gian làm việc sẽ bị giảm",
+  "misc_working_time_will_be_reduced_if_exceed_allowed_duration": "thời gian làm việc sẽ bị giảm nếu vượt quá thời gian cho phép",
   "misc_workplace": "nơi làm việc",
   "misc_workplace_breaks": "Thời gian nghỉ của nơi làm việc",
   "misc_workplace_custom_breaks": "Thời gian nghỉ tùy chỉnh",

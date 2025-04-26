@@ -687,6 +687,8 @@ misc_working_hour	working hour	thời gian làm việc	pracovní doba
 misc_working_hour_of_the_workplace	working hour of the workplace	Giờ làm việc của nơi làm việc	Pracovní doba pracoviště
 misc_working_hours	working hours	thời gian làm việc	pracovní doba
 misc_working_hours_by_employee	working hours by employee	Giờ làm việc theo nhân viên	počet odpracovaných hodin zaměstnanců
+misc_working_time_will_be_reduced	working time will be reduced	thời gian làm việc sẽ bị giảm	počet odpracovaných hodin bude zkrácen
+misc_working_time_will_be_reduced_if_exceed_allowed_duration	working time will be reduced if exceed allowed duration	thời gian làm việc sẽ bị giảm nếu vượt quá thời gian cho phép	počet odpracovaných hodin bude zkrácen, pokud překročí povolenou dobu
 misc_workplace	workplace	nơi làm việc	pracoviště
 misc_workplace_breaks	Workplace breaks	Thời gian nghỉ của nơi làm việc	Přestávky pracoviště
 misc_workplace_custom_breaks	Custom breaks	Thời gian nghỉ tùy chỉnh	Vlastní přestávky
