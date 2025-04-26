@@ -50,6 +50,8 @@ misc_api_documentation	API Documentation	API Documentation	API Dokumentace
 misc_app_id	App ID	ID ứng dụng	ID aplikace
 misc_app_id_copied	App ID has been copied	đã sao chép ID của ứng dụng	kopírováno ID aplikace
 misc_apply	apply	áp dụng	použít
+misc_apply_address	Apply address	Áp dụng địa chỉ	Aplikovat adresu
+misc_apply_coordinates	Apply coordinates	Áp dụng tọa độ	Aplikovat souřadnice
 misc_apply_for_all_days	apply for all days	áp dụng cho tất cả các ngày	použít pro všechny dny
 misc_approved	approved	đã duyệt	schváleno
 misc_assigned	assigned	đã giao	přiděleno
@@ -233,6 +235,8 @@ misc_faq_updated	FAQ updated	FAQ đã cập nhập	FAQ aktualizováno
 misc_faqs	frequently asked questions	các câu hỏi thường gặp	často kladené otázky
 misc_fetch_ares	Fetch from ARES	Tải từ ARES	Načíst z ARES
 misc_fetch_coordinates	fetch coordinates	lấy toạ độ	získat souřadnice
+misc_fetched_address	fetched address	địa chỉ đã lấy	načtená adresa
+misc_fetched_coordinates	fetched coordinates	tọa độ đã lấy	načtené souřadnice
 misc_fetched_successfully	fetched successfully	lấy dữ liệu thành công	získání dat úspěšné
 misc_field	Field	Các trường	Pole
 misc_fields	Field	Các trường	Pole
@@ -750,6 +754,8 @@ msg_update_successfully	Update successfully	Cập nhập thành công	Úspěšn�
 msg_vin_required_for_taxpayer	VIN is required for taxpayer	Số thuế VIN là bắt buộc cho người trả thuế	DIČ je povinné pro plátce DPH
 msg_welcome	Welcome to	Chào mừng bạn đến	Vítáme Vás v
 msg_you_can_not_revert	Once changed, you can not revert	Một khi đã đổi, bạn không thể chuyển lại	Jakmile přepnete, nemůžete znovu přepnout
+srv_address_applied	address applied	địa chỉ đã được áp dụng	adresa byla použita
+srv_address_fetched	Address fetched	Đã lấy địa chỉ	Adresa je načtena
 srv_address_required	Address is required	Địa chỉ là bắt buộc	Pole adresa je povinné
 srv_address_updated	Address updated	Địa chỉ đã được cập nhật	Adresa aktualizována
 srv_already_checked_out	already checked out	bạn đã check out	odchod byl již zaznamenán
@@ -793,6 +799,8 @@ srv_config_not_found	Config not found	Cài đặt không tìm thấy	Konfigurace
 srv_config_updated	Config updated	Cài đặt đã được cập nhập	Konfigurace aktualizována
 srv_confirm_password_required	Confirm password is required	Xác nhận mật khẩu là bắt buộc	Potvrzení hesla je povinné
 srv_control_typed_field	check fields	kiểm tra ô điền	zkontrolujte políčka
+srv_coordinates_applied	Coordinates applied	Tọa độ đã được áp dụng	Souřadnice byly použity
+srv_coordinates_fetched	Coordinates fetched	Đã lấy tọa độ	Souřadnice jsou načteny
 srv_created	created	đã được tạo	vytvořeno
 srv_daily_attendance_not_found	daily attendance not found	Không tìm thấy dữ liệu điểm danh	Denní docházka nenalezena
 srv_date_can_not_be_in_future	date can not be in future	Ngày không thể ở tương lai	datum nemůže být v budoucnosti
@@ -930,6 +938,7 @@ srv_is_confirmed	Is confirmed	Đã xác nhận	Je potvrzeno
 srv_items_empty	items are empty	mục trống	položky jsou prázdné
 srv_leads_imported	Leads imported	Khách hàng tiềm năng đã được nhập	Zákazníci importováni
 srv_local_device_deleted	local device deleted	thiết bị cục bộ đã bị xóa	odstraněno místní zařízení
+srv_location_fetched	Location fetched	Đã lấy vị trí	Poloha je načtena
 srv_location_not_found	Location not found	Không tìm thấy vị trí	lokace nenalezena
 srv_location_required_to_make_attendance	location is required to make attendance	vị trí là bắt buộc để điểm danh	lokace je povinná pro zaznamenání docházky
 srv_location_required_to_submit_break	location is required to submit tje break	địa điểm cần thiết để gửi đơn nghỉ	požadováno místo pro odeslání přestávky

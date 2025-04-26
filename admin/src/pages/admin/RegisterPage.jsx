@@ -281,10 +281,6 @@ export default function RegisterPage() {
                                 )}
                             />
                         </Grid>
-                        <Grid size={{ xs: 12 }}>
-                            <LocationPicker />
-                        </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
                             <Controller
                                 name="location.latitude"
@@ -338,6 +334,9 @@ export default function RegisterPage() {
                                     />
                                 )}
                             />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <LocationPicker />
                         </Grid>
                         <Grid size={{ xs: 12 }}>
                             <Divider />
