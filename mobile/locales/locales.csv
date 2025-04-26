@@ -113,7 +113,7 @@ misc_check_out	check-out	check-out	odchod
 misc_check_out_time	checked out at	đã check out lúc	odcházen v
 misc_check_signed_documents	check signed documents	kiểm tra đơn đã ký	kontrola podepsaných dokumentů
 misc_check_unsigned_documents	check unsigned documents	kiểm tra đơn chưa ký	kontrola nepodepsaných dokumentů
-misc_checked_in	checked in	đã check-in	provedl příchod
+misc_checked_in	checked in	đã check-in	příchod zaveden
 misc_checked_in_late	checked in late	đã check-in trễ	zavedení příchodu pozdě
 misc_checked_in_late_by_employee	checked in late by employee	đã check-in trễ bởi nhân viên	zavedení příchodu pozdě podle zaměstnance
 misc_checked_in_on_time	checked in on time	check in đúng giờ	příchod včas
@@ -641,7 +641,7 @@ misc_total_attendances	Total attendances	Tổng số điểm danh	Celkový poče
 misc_total_days	Total days	Tổng số ngày	Celkový počet dní
 misc_total_expected_shifts	Total expected shifts	Tổng số ca làm việc mong đợi	Celkový počet očekávaných směn
 misc_total_price	total price	tiền tổng	celková částka
-misc_total_shifts	Total shifts	Tổng ca làm việc	Totální směny
+misc_total_shifts	Total shifts	Tổng ca làm việc	Celkový počet směn
 misc_total_working_minutes	Total working minutes	Tổng số phút làm việc	Celkový počet pracovních minut
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce

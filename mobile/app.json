@@ -2,7 +2,7 @@
   "expo": {
     "name": "GOKASA Workforce",
     "slug": "gokasa-workforce",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "Attendance system for employees",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,7 @@
     "newArchEnabled": true,
     "supportsTablet": true,
     "ios": {
-      "buildNumber": "201",
+      "buildNumber": "205",
       "appStoreUrl": "https://apps.apple.com/app/gokasa-workforce/id6738621542",
       "splash": {
         "image": "./assets/images/splash.png",
