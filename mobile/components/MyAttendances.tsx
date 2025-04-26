@@ -234,7 +234,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                                                 </ThemedText>
                                                 {_.isNumber(realDuration) && realDuration > 0 && (() => {
                                                     const durationStr = getDiffDurationText(realDuration, noCap);
-                                                    const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+                                                    const exceededText = isExceededTime ? ` (+${getDiffDurationText(realDuration - breakItem.breakHours.duration, noCap)})` : '';
                                                     return (
                                                         <ThemedText style={[styles.attendanceText, isExceededTime ? { color: Colors.error } : null]}>
                                                             {`${t('misc_duration')}: ${durationStr}${exceededText}`}

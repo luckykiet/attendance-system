@@ -745,7 +745,7 @@ const ShiftSelectModal = () => {
                                                             </ThemedText>}
                                                         {_.isNumber(realDuration) && (() => {
                                                             const durationText = getDiffDurationText(realDuration, noCapT);
-                                                            const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+                                                            const exceededText = isExceededTime ? ` (+${getDiffDurationText(realDuration - brk.duration, noCapT)})` : '';
 
                                                             return (
                                                                 <ThemedText
@@ -826,7 +826,7 @@ const ShiftSelectModal = () => {
                                                                 </ThemedText>}
                                                             {_.isNumber(realDuration) && (() => {
                                                                 const durationText = getDiffDurationText(realDuration, noCapT);
-                                                                const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+                                                                const exceededText = isExceededTime ? ` (+${getDiffDurationText(realDuration - b.duration, noCapT)})` : '';
 
                                                                 return (
                                                                     <ThemedText
@@ -1113,7 +1113,7 @@ const getStyles = (themeColor: {
         marginTop: 24,
         color: Colors.primary,
     },
-    groupSubtitle:{
+    groupSubtitle: {
         fontSize: 14,
         marginBottom: 10,
         fontStyle: 'italic',
