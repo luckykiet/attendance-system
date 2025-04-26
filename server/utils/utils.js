@@ -480,7 +480,6 @@ const updateEmployeeDailyAttendance = async ({ employeeId, isDeleting = false, d
                     return hasAttendance || isStillInWorkingAt;
                 });
 
-
                 await daily.save();
                 logger.info(`Updated daily attendance for registerId ${registerId}`);
             } catch (err) {

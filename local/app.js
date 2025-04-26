@@ -289,6 +289,6 @@ app.post("/unregister", async (req, res) => {
     }
 })();
 
-app.use('*', (req, res) => {
+app.use('*public', (req, res) => {
     res.redirect('/');
 });

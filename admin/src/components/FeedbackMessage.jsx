@@ -1,16 +1,17 @@
-import { Typography } from '@mui/material'
+import { Link, Stack, Typography } from '@mui/material'
 import useTranslation from '@/hooks/useTranslation'
 import PropTypes from 'prop-types'
 
 const FeedbackMessage = ({ message }) => {
     const { t } = useTranslation()
-
+    let parsedInput = null
     const parseMessage = (input) => {
         if (!input) return null
 
         try {
             const parsed = JSON.parse(input)
             if (typeof parsed === 'string') {
+                parsedInput = parsed
                 return t(parsed)
             }
             const parsedArray = Array.isArray(parsed) ? parsed : Array.isArray(parsed.errors) ? parsed.errors : null;
@@ -26,7 +27,7 @@ const FeedbackMessage = ({ message }) => {
         } catch {
             // Not a JSON string, fallback
         }
-
+        parsedInput = input
         return t(input)
     }
 
@@ -41,13 +42,26 @@ const FeedbackMessage = ({ message }) => {
     }
 
     return (
-        <Typography
-            variant="body1"
-            textAlign="center"
-            color={color}
-        >
-            {content}
-        </Typography>
+        <Stack spacing={2} alignContent={'center'} alignItems="center">
+            <Typography
+                variant="body1"
+                textAlign="center"
+                color={color}
+            >
+                {content}
+            </Typography>
+            {parsedInput === 'srv_invalid_recaptcha_request' && (
+                <Link
+                    component="button"
+                    variant="body1"
+                    onClick={() => window.location.reload()}
+                    gutterBottom
+                >
+                    {t('misc_please_reload_page')}
+                </Link>
+            )}
+
+        </Stack>
     )
 }
 
