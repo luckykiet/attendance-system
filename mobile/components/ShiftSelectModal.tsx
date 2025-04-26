@@ -29,7 +29,7 @@ const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
     const { t } = useTranslation();
     const { t: noCapT } = useTranslation({ capitalize: false });
-    const { selectedShift, setSelectedShift, location, setLocalDevices } = useAppStore();
+    const { selectedShift, setSelectedShift, location, setLocalDevices, isShiftModalOpen, setIsShiftModalOpen } = useAppStore();
     const { logAttendance } = useAttendanceApi();
     const { applySpecificBreak } = useSpecificBreakApi();
     const { applyBreak } = useBreakApi();
@@ -71,7 +71,7 @@ const ShiftSelectModal = () => {
                                 text: t('misc_close'),
                                 onPress: () => {
                                     setPendingAttendance(null);
-                                    setSelectedShift(null);
+                                    handleClose();
                                 },
                             },
                         ],
@@ -103,7 +103,7 @@ const ShiftSelectModal = () => {
                                 text: t('misc_close'),
                                 onPress: () => {
                                     setPendingAttendance(null);
-                                    setSelectedShift(null);
+                                    handleClose();
                                 },
                             },
                         ],
@@ -135,7 +135,7 @@ const ShiftSelectModal = () => {
                                 text: t('misc_close'),
                                 onPress: () => {
                                     setPendingAttendance(null);
-                                    setSelectedShift(null);
+                                    handleClose();
                                 },
                             },
                         ],
@@ -167,7 +167,7 @@ const ShiftSelectModal = () => {
                                 text: t('misc_close'),
                                 onPress: () => {
                                     setPendingAttendance(null);
-                                    setSelectedShift(null);
+                                    handleClose();
                                 },
                             },
                         ],
@@ -196,6 +196,11 @@ const ShiftSelectModal = () => {
         t,
         noCapT,
     }) : null;
+
+    const handleClose = () => {
+        setIsShiftModalOpen(false);
+        setSelectedShift(null);
+    }
 
     const handleSubmitPause = async ({ _id }: { _id?: string }) => {
         if (selectedShift) {
@@ -303,7 +308,7 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: async () => {
+                        onPress: () => {
                             setPendingAttendance(form);
                             setIsSubmittingType('pause');
                             submitPauseMutation.mutate(form);
@@ -313,7 +318,6 @@ const ShiftSelectModal = () => {
                 { cancelable: true }
             );
         }
-
     };
 
     const handleCheckIn = async () => {
@@ -416,7 +420,7 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: async () => {
+                        onPress: () => {
                             const form: AttendanceMutation = { registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
 
                             setPendingAttendance(form);
@@ -490,6 +494,12 @@ const ShiftSelectModal = () => {
                 }
             }
 
+            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+            if (!deviceKey) {
+                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                return;
+            }
+
             Alert.alert(
                 t('misc_submit_break'),
                 text,
@@ -500,12 +510,8 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: async () => {
-                            const deviceKey = await SecureStore.getItemAsync('deviceKey');
-                            if (!deviceKey) {
-                                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
-                                return;
-                            }
+                        onPress: () => {
+
                             if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
                                 Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
                                 return;
@@ -589,6 +595,12 @@ const ShiftSelectModal = () => {
                 }
             }
 
+            const deviceKey = await SecureStore.getItemAsync('deviceKey');
+            if (!deviceKey) {
+                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
+                return;
+            }
+
             Alert.alert(
                 t('misc_submit_break'),
                 text,
@@ -599,12 +611,7 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: async () => {
-                            const deviceKey = await SecureStore.getItemAsync('deviceKey');
-                            if (!deviceKey) {
-                                Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
-                                return;
-                            }
+                        onPress: () => {
                             if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
                                 Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
                                 return;
@@ -662,10 +669,10 @@ const ShiftSelectModal = () => {
     const { startTime: shiftStartTime, endTime: shiftEndTime } = shiftTime
     return (
         <Modal
-            visible={!!selectedShift}
+            visible={isShiftModalOpen}
             animationType="slide"
             transparent
-            onRequestClose={() => setSelectedShift(null)}
+            onRequestClose={handleClose}
         >
             <ThemedView style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
@@ -706,9 +713,7 @@ const ShiftSelectModal = () => {
 
                                 const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
 
-
                                 const isExceededTime = realDuration && realDuration > brk.duration;
-
 
                                 return (
                                     <Fragment key={type}>
@@ -729,13 +734,8 @@ const ShiftSelectModal = () => {
                                                     <ThemedText style={styles.breakTimeText}>
                                                         {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                     </ThemedText>}
-                                                {_.isNumber(realDuration) && realDuration > 0 && (() => {
+                                                {_.isNumber(realDuration) && (() => {
                                                     const durationText = getDiffDurationText(realDuration, noCapT);
-
-                                                    const durationStr = realDuration
-                                                        ? durationText
-                                                        : `0 ${noCapT('misc_min_short')}`;
-
                                                     const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
 
                                                     return (
@@ -745,7 +745,7 @@ const ShiftSelectModal = () => {
                                                                 isExceededTime ? { color: Colors.error } : null
                                                             ]}
                                                         >
-                                                            {`${t('misc_duration')}: ${durationStr}${exceededText}`}
+                                                            {`${t('misc_duration')}: ${durationText}${exceededText}`}
                                                         </ThemedText>
                                                     );
                                                 })()}
@@ -778,7 +778,6 @@ const ShiftSelectModal = () => {
                             breaks
                                 .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
                                 .map((b: Breaks) => {
-
                                     const maxDurationText = getDiffDurationText(b.duration, noCapT);
                                     const brkTime = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
 
@@ -815,12 +814,8 @@ const ShiftSelectModal = () => {
                                                         <ThemedText style={styles.breakTimeText}>
                                                             {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                         </ThemedText>}
-                                                    {_.isNumber(realDuration) && realDuration > 0 && (() => {
+                                                    {_.isNumber(realDuration) && (() => {
                                                         const durationText = getDiffDurationText(realDuration, noCapT);
-
-                                                        const durationStr = realDuration
-                                                            ? durationText : `0 ${noCapT('misc_min_short')}`;
-
                                                         const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
 
                                                         return (
@@ -830,7 +825,7 @@ const ShiftSelectModal = () => {
                                                                     isExceededTime ? { color: Colors.error } : null
                                                                 ]}
                                                             >
-                                                                {`${t('misc_duration')}: ${durationStr}${exceededText}`}
+                                                                {`${t('misc_duration')}: ${durationText}${exceededText}`}
                                                             </ThemedText>
                                                         );
                                                     })()}
@@ -862,6 +857,7 @@ const ShiftSelectModal = () => {
                             <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
                             {attendance?.pauses.map((p) => {
                                 const isPending = p.checkInTime && !p.checkOutTime;
+                                const realDuration = p.checkInTime && p.checkOutTime ? dayjs(p.checkOutTime).diff(p.checkInTime, 'minutes') : null;
                                 return (
                                     <Fragment key={p._id}>
                                         <View style={styles.breakRow}>
@@ -876,6 +872,15 @@ const ShiftSelectModal = () => {
                                                     <ThemedText style={styles.breakTimeText}>
                                                         {t('msg_to')}: {dayjs(p.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
                                                     </ThemedText>}
+                                                {_.isNumber(realDuration) && (() => {
+                                                    const durationText = getDiffDurationText(realDuration, noCapT);
+
+                                                    return (
+                                                        <ThemedText style={[styles.breakTimeText]}>
+                                                            {`${t('misc_duration')}: ${durationText}`}
+                                                        </ThemedText>
+                                                    );
+                                                })()}
                                             </View>
                                             {isPending && <TouchableOpacity
                                                 style={[styles.breakButton, styles.buttonPending]}
@@ -980,7 +985,7 @@ const ShiftSelectModal = () => {
                     <View style={styles.fixedFooter}>
                         <TouchableOpacity
                             style={[styles.modalButton, styles.cancelButton]}
-                            onPress={() => setSelectedShift(null)}
+                            onPress={handleClose}
                         >
                             <ThemedText style={styles.modalButtonText}>{t('misc_close')}</ThemedText>
                         </TouchableOpacity>

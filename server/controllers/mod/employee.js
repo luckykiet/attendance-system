@@ -142,6 +142,7 @@ const deleteEmployee = async (req, res, next) => {
         if (!deletedEmployee) {
             throw new HttpError('srv_employee_not_found', 404);
         }
+        await utils.updateEmployeeDailyAttendance({ employeeId: deletedEmployee._id, isDeleting: true });
         return res.status(200).json({ success: true, msg: 'srv_employee_deleted' });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_employee_deletion_failed', 400));

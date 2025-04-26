@@ -22,6 +22,7 @@ export const useNotificationScheduler = () => {
   useEffect(() => {
     const loadScheduledIds = async () => {
       try {
+        await cleanPassedScheduledNotifications();
         const json = await AsyncStorage.getItem(STORAGE_KEY);
         if (json) {
           const ids: string[] = JSON.parse(json);
@@ -38,6 +39,9 @@ export const useNotificationScheduler = () => {
   }, []);
 
   const saveScheduledId = async (id: string) => {
+    if (notifiedIds.current.has(id)) {
+      return;
+    }
     notifiedIds.current.add(id);
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([...notifiedIds.current]));
@@ -123,10 +127,46 @@ export const useNotificationScheduler = () => {
     }
   };
 
+  const getScheduledNotificationsByPrefix = async (prefix: string): Promise<string[]> => {
+    try {
+      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!json) return [];
+      const allIds: string[] = JSON.parse(json);
+      const matchingIds = allIds.filter(storedId => storedId.startsWith(prefix));
+
+      return matchingIds;
+    } catch (error) {
+      console.error('Failed to get scheduled notifications:', error);
+      return [];
+    }
+  }
+
+  const cleanPassedScheduledNotifications = async () => {
+    if (!loaded) return;
+    try {
+      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!json) return;
+
+      const allIds: string[] = JSON.parse(json);
+
+      const pendingNotifications = await Notifications.getAllScheduledNotificationsAsync();
+      const pendingIds = pendingNotifications.map(n => n.identifier);
+
+      const validIds = allIds.filter(id => pendingIds.includes(id));
+
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(validIds));
+      console.log('Cleaned passed notifications. Remaining IDs:', validIds.length);
+    } catch (error) {
+      console.error('Failed to clean passed scheduled notifications:', error);
+    }
+  };
+
   return {
     scheduleNotificationIfNeeded,
     cancelScheduledNotification,
     cancelAllScheduledNotifications,
-    cancelNotificationsByPrefix
+    cancelNotificationsByPrefix,
+    getScheduledNotificationsByPrefix,
+    loaded,
   };
 };

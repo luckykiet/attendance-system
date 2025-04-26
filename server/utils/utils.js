@@ -20,6 +20,7 @@ const DailyAttendance = require("../models/DailyAttendance")
 const Attendance = require("../models/Attendance")
 const mongoose = require("mongoose")
 const { DATE_FORMAT } = require("../constants/days")
+const Employee = require("../models/Employee")
 
 dayjs.extend(require('dayjs/plugin/customParseFormat'))
 dayjs.extend(require('dayjs/plugin/isSameOrBefore'))
@@ -257,10 +258,9 @@ const finalizeDailyAttendanceAggregation = async (date) => {
     try {
         logger.info(`Finalizing daily attendance aggregation for date: ${date}`);
         const now = dayjs();
-        const targetDate = dayjs(date.toString(), DATE_FORMAT, true);
+        const targetDate = dayjs(date.toString(), DATE_FORMAT, true).endOf('day');
         if (!targetDate.isValid()) throw new Error('Invalid date');
         if (targetDate.isAfter(now.startOf('day'))) throw new Error('Date cannot be in the future');
-
         const numericDate = parseInt(targetDate.format(DATE_FORMAT));
         const allDailyAttendances = await DailyAttendance.find({ date: numericDate });
 
@@ -362,6 +362,142 @@ const finalizeDailyAttendanceAggregation = async (date) => {
         return { success: false, error: error.message };
     }
 };
+
+const updateEmployeeDailyAttendance = async ({ employeeId, isDeleting = false, date = dayjs().format(DATE_FORMAT) }) => {
+    const getLogger = utils.getLogger;
+    const logger = getLogger(__filename);
+
+    try {
+        if (!employeeId || !date) {
+            logger.warn('Missing required parameters', { employeeId, date });
+            throw new Error('Missing required parameters');
+        }
+
+        const employee = await Employee.findOne({ _id: employeeId }).exec();
+        if (!employee) {
+            logger.warn(`No employee found for id ${employeeId}`);
+            throw new Error('No employee found');
+        }
+
+        const targetDate = dayjs(date.toString(), DATE_FORMAT, true).endOf('day');
+        if (!targetDate.isValid()) throw new Error('Invalid date');
+
+        const workingAts = await WorkingAt.find({ employeeId }).exec();
+
+        logger.info(`Updating daily attendance for employee ${employeeId} on date: ${date}`);
+
+        const promises = workingAts.map(async (workingAt) => {
+            try {
+                const { registerId } = workingAt;
+                const numericDate = parseInt(targetDate.format(DATE_FORMAT));
+                const daily = await DailyAttendance.findOne({ date: numericDate, registerId }).exec();
+                if (!daily) {
+                    logger.warn(`No daily attendance found for date ${date} and registerId ${registerId}`);
+                    return;
+                }
+
+                if (daily.confirmed) {
+                    logger.warn('Daily attendance already confirmed');
+                    return;
+                }
+                const attendances = await Attendance.find({ _id: { $in: daily.attendanceIds } }).exec();
+                const shiftsToday = workingAt.shifts.get(DAYS_OF_WEEK[targetDate.day()]) || [];
+
+                const attendanceShiftIds = new Set(attendances.map(a => a.shiftId.toString()));
+                const allShiftIdsToday = new Set(shiftsToday.map(shift => shift._id.toString()));
+
+                if (!workingAt.isAvailable || isDeleting) {
+                    // Employee is unavailable: remove all missing shifts without attendance
+                    daily.missingEmployees = daily.missingEmployees.filter(
+                        (e) => !e.employeeId.equals(employeeId) || attendanceShiftIds.has(e.shiftId.toString())
+                    );
+                    daily.expectedShifts = daily.expectedShifts.filter(
+                        (e) => !e.employeeId.equals(employeeId) || attendanceShiftIds.has(e.shiftId.toString())
+                    );
+                    daily.workingHoursByEmployee = daily.workingHoursByEmployee.filter(
+                        (e) => !e.employeeId.equals(employeeId) || attendanceShiftIds.has(e.shiftId.toString())
+                    );
+                } else {
+                    for (const shift of shiftsToday) {
+                        if (!shift.isAvailable) {
+                            // Shift unavailable, remove everything but attendance
+                            daily.missingEmployees = daily.missingEmployees.filter(
+                                (e) => !(e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id) && !attendanceShiftIds.has(e.shiftId.toString()))
+                            );
+                            daily.expectedShifts = daily.expectedShifts.filter(
+                                (e) => !(e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id) && !attendanceShiftIds.has(e.shiftId.toString()))
+                            );
+                            daily.workingHoursByEmployee = daily.workingHoursByEmployee.filter(
+                                (e) => !(e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id) && !attendanceShiftIds.has(e.shiftId.toString()))
+                            );
+                        } else {
+                            // Shift still available, make sure it exists in expectedShifts
+                            const foundIndex = daily.expectedShifts.findIndex(
+                                e => e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id)
+                            );
+
+                            const expectedShift = {
+                                employeeId,
+                                shiftId: shift._id,
+                                start: shift.start,
+                                end: shift.end,
+                                isOverNight: shift.isOverNight,
+                                allowedOvertime: shift.allowedOverTime,
+                            };
+                            if (foundIndex !== -1) {
+                                // dont update if attendance exists
+                                if (!attendanceShiftIds.has(shift._id.toString())) {
+                                    daily.expectedShifts[foundIndex] = expectedShift;
+                                }
+                            } else {
+                                daily.expectedShifts.push(expectedShift);
+                            }
+                        }
+                    }
+                }
+
+                daily.expectedShifts = daily.expectedShifts.filter(e => {
+                    if (!e.employeeId.equals(employeeId)) return true;
+                    const shiftIdStr = e.shiftId.toString();
+                    const hasAttendance = attendanceShiftIds.has(shiftIdStr);
+                    const isStillInWorkingAt = allShiftIdsToday.has(shiftIdStr);
+                    return hasAttendance || isStillInWorkingAt;
+                });
+
+                daily.missingEmployees = daily.missingEmployees.filter(e => {
+                    if (!e.employeeId.equals(employeeId)) return true;
+                    const shiftIdStr = e.shiftId.toString();
+                    const hasAttendance = attendanceShiftIds.has(shiftIdStr);
+                    const isStillInWorkingAt = allShiftIdsToday.has(shiftIdStr);
+                    return hasAttendance || isStillInWorkingAt;
+                });
+
+                daily.workingHoursByEmployee = daily.workingHoursByEmployee.filter(e => {
+                    if (!e.employeeId.equals(employeeId)) return true;
+                    const shiftIdStr = e.shiftId.toString();
+                    const hasAttendance = attendanceShiftIds.has(shiftIdStr);
+                    const isStillInWorkingAt = allShiftIdsToday.has(shiftIdStr);
+                    return hasAttendance || isStillInWorkingAt;
+                });
+
+
+                await daily.save();
+                logger.info(`Updated daily attendance for registerId ${registerId}`);
+            } catch (err) {
+                logger.error(`Error updating daily attendance for workingAt ${workingAt._id}: ${err.message}`);
+            }
+        })
+
+        await Promise.all(promises);
+
+        logger.info(`Employee ${employeeId} daily attendance updated successfully for date ${date}.`);
+        return { success: true, msg: 'Daily attendance updated successfully' };
+    } catch (error) {
+        logger.error(`Error updating daily attendance: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+};
+
 
 const utils = {
     fetchAresWithTin: async (tin) => {
@@ -483,6 +619,9 @@ const utils = {
     },
     finalizeDailyAttendanceAggregation: (date) => {
         return finalizeDailyAttendanceAggregation(date)
+    },
+    updateEmployeeDailyAttendance: ({ employeeId, isDeleting, date }) => {
+        return updateEmployeeDailyAttendance({ employeeId, isDeleting, date })
     },
 }
 module.exports = utils

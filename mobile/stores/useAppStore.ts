@@ -23,6 +23,8 @@ type AppState = {
         workplace: TodayWorkplace
     } | null;
     theme: 'light' | 'dark';
+    isShiftModalOpen: boolean;
+    setIsShiftModalOpen: (isShiftModalOpen: boolean) => void;
     setTheme: (theme: 'light' | 'dark') => void;
     myWorkplaces: Record<string, GetMyCompaniesResult> | null;
     setMyWorkplaces: (myWorkplaces: Record<string, GetMyCompaniesResult> | null) => void;
@@ -54,6 +56,7 @@ const initStates = {
     selectedShift: null,
     myWorkplaces: null,
     theme: 'light' as 'light' | 'dark',
+    isShiftModalOpen: false,
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -72,6 +75,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     setIntent: (intent) => set({ intent }),
 
     setSelectedShift: (selectedShift) => set({ selectedShift }),
+
+    setIsShiftModalOpen: (isShiftModalOpen) => set({ isShiftModalOpen }),
 
     loadAppId: async () => {
         try {

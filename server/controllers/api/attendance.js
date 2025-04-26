@@ -268,8 +268,8 @@ const makeAttendance = async (req, res, next) => {
         }
         const isDemo = tmpRetail.tin === demoAccount.retail.tin;
         // demo registers
-        if (isDemo) {
-            const demoNames = demoAccount.registers.map(r => r.name);
+        const demoNames = demoAccount.registers.map(r => r.name);
+        if (isDemo && demoNames.includes(tmpRegister.name)) {
             // update demo register location to user's location
             await Register.updateMany({ retailId: tmpRetail._id, name: { $in: demoNames } }, { location: { type: 'Point', coordinates: [longitude, latitude], allowedRadius: 1000 } }).exec();
 

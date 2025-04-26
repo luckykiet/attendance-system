@@ -15,7 +15,7 @@ const createOrUpdateWorkingAt = async (req, res, next) => {
         }
 
         let workingAt = await WorkingAt.findOne({ employeeId: req.body.employeeId, registerId: req.body.registerId });
-        
+
         if (workingAt) {
             workingAt = await WorkingAt.findOneAndUpdate(
                 { _id: workingAt._id },
@@ -27,6 +27,9 @@ const createOrUpdateWorkingAt = async (req, res, next) => {
             workingAt.userId = req.user._id;
             workingAt = await workingAt.save();
         }
+        await utils.updateEmployeeDailyAttendance({
+            employeeId: workingAt.employeeId,
+        });
         return res.status(201).json({ success: true, msg: workingAt });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_register_creation_failed', 400));

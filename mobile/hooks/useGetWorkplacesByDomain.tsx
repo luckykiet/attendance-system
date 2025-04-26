@@ -5,13 +5,11 @@ import useScheduleWeekShifts from './useScheduleWeekShifts';
 import { useAppStore } from '@/stores/useAppStore';
 import { useEffect } from 'react';
 import _ from 'lodash';
-import { useNotificationScheduler } from './useNotificationScheduler';
 
 const useMyCompaniesByDomain = () => {
     const { appId, urls, myWorkplaces, setMyWorkplaces } = useAppStore();
     const { getMyCompanies } = useCompaniesApi();
-    const { cancelNotificationsByPrefix } = useNotificationScheduler();
-    const schedulePrefix = 'upcoming-shift';
+
     const queryResults = useQueries({
         queries: urls.map((url) => ({
             queryKey: ['myCompanies', appId, url],
@@ -26,7 +24,7 @@ const useMyCompaniesByDomain = () => {
                     dataByDomain[url] = result.data;
                 }
             });
-            cancelNotificationsByPrefix(schedulePrefix);
+
             return {
                 isLoading: results.some((r) => r.isLoading),
                 isFetching: results.some((r) => r.isFetching),

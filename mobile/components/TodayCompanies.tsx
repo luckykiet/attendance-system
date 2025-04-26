@@ -34,7 +34,7 @@ dayjs.extend(customParseFormat);
 const TodayCompanies = () => {
   const { t } = useTranslation();
   const { t: nonCap } = useTranslation({ capitalize: false });
-  const { location, appId, urls, isGettingLocation, setSelectedShift } = useAppStore();
+  const { location, appId, urls, isGettingLocation, setSelectedShift, setIsShiftModalOpen } = useAppStore();
   const { getTodayWorkplaces } = useCompaniesApi();
 
   const colorScheme = useColorScheme();
@@ -43,7 +43,7 @@ const TodayCompanies = () => {
   const now = dayjs();
   const todayKey = DAYS_OF_WEEK[now.day()];
   const yesterdayKey = DAYS_OF_WEEK[now.subtract(1, 'day').day()];
-  const { scheduleNotificationIfNeeded, cancelNotificationsByPrefix } = useNotificationScheduler();
+  const { scheduleNotificationIfNeeded, getScheduledNotificationsByPrefix, cancelScheduledNotification } = useNotificationScheduler();
 
   const schedulePrefix = `pending-shift`;
   const queryResults = useQueries({
@@ -168,7 +168,7 @@ const TodayCompanies = () => {
 
         return entries;
       });
-      cancelNotificationsByPrefix(schedulePrefix);
+
       return {
         isLoading: results.some((result) => result.isLoading),
         isFetching: results.some((result) => result.isFetching),
@@ -180,6 +180,7 @@ const TodayCompanies = () => {
 
   const handleOpenShiftSelection = ({ shift, workplace }: { shift: Shift, workplace: TodayWorkplace }) => {
     setSelectedShift({ shift, workplace });
+    setIsShiftModalOpen(true);
   }
 
   const handleScroll = (event: { nativeEvent: { contentSize: { height: number; width: number }; layoutMeasurement: { height: number; width: number }; contentOffset: { x: number; y: number } } }) => {
@@ -237,7 +238,7 @@ const TodayCompanies = () => {
   });
 
   useEffect(() => {
-    pendingShifts.forEach(({ shift, workplace }) => {
+    pendingShifts.forEach(async ({ shift, workplace }) => {
       const shiftTime = getStartEndTime({ start: shift.start, end: shift.end, isToday: true });
       if (!shiftTime) return;
 
@@ -247,6 +248,7 @@ const TodayCompanies = () => {
       const attendance = workplace.attendances.find((a) => a.shiftId === shift._id);
       if (!attendance) return;
 
+      let idPrefix = `${schedulePrefix}-${attendance._id}-shift`;
       let title = `${t('misc_shift_ending_soon_at')} ${workplace.name}`;
       let body = `${t('misc_do_not_forget_check_out_before')} ${endTime.format('HH:mm')}.`;
 
@@ -261,6 +263,7 @@ const TodayCompanies = () => {
           title = `${t('misc_break_ending_soon_for')} ${t(pendingBreak.name)} - ${workplace.name}`;
         }
         body = `${t('misc_do_not_forget_finish_before')} ${endTime.format('HH:mm')}.`;
+        idPrefix = `${schedulePrefix}-${attendance._id}-break`;
       }
 
       const pendingPause = attendance.pauses.find((pause) => pause.checkInTime && !pause.checkOutTime);
@@ -269,15 +272,25 @@ const TodayCompanies = () => {
         endTime = dayjs(pendingPause.checkInTime).add(60, 'minutes');
         title = `${t('misc_pending_pause')}: ${pendingPause.name} - ${workplace.name}`;
         body = `${t('misc_do_not_forget_finish_it')}!`;
+        idPrefix = `${schedulePrefix}-${attendance._id}-pause`;
       }
 
-      scheduleNotificationIfNeeded({
-        id: `${schedulePrefix}-${shift._id}`,
-        title,
-        body,
-        scheduledTime: endTime,
-        warningBeforeMinutes: 10,
-      });
+      const id = `${idPrefix}-${endTime.format('YYYY-MM-DD-HH-mm')}`;
+      // Check if the notification is already scheduled
+      // If it is, cancel the old one and schedule a new one
+      const existingNotificationIds = await getScheduledNotificationsByPrefix(idPrefix);
+      const isAlreadyScheduled = existingNotificationIds.some(notificationId => notificationId === id);
+      const oldIds = existingNotificationIds.filter(notificationId => notificationId !== id);
+      await Promise.all(oldIds.map(id => cancelScheduledNotification(id)));
+      if (!isAlreadyScheduled) {
+        scheduleNotificationIfNeeded({
+          id,
+          title,
+          body,
+          scheduledTime: endTime,
+          warningBeforeMinutes: 10,
+        });
+      }
     });
   }, [pendingShifts]);
 
