@@ -8,7 +8,7 @@ const open = require("open");
 const validUrl = require("valid-url");
 const crypto = require("crypto");
 const cron = require("node-cron");
-const detect = require("detect-port");
+const { detect } = require("detect-port");
 
 const app = express();
 const DEFAULT_PORT = 3872;
