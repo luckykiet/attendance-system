@@ -15,6 +15,7 @@ import LoadingCircle from '@/components/LoadingCircle';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { fetchRegister } from '@/api/register';
 import { CSVLink } from 'react-csv';
+import { getDiffDurationText } from '@/utils';
 
 dayjs.extend(customParseFormat);
 
@@ -28,6 +29,7 @@ const employeeSchema = z.object({
 const RegisterAttendance = () => {
     const { registerId } = useParams();
     const { t } = useTranslation();
+    const { t: noCap } = useTranslation({ capitalize: false });
     const [postMsg, setPostMsg] = useState('');
     const today = dayjs();
     const mainForm = useForm({
@@ -60,22 +62,45 @@ const RegisterAttendance = () => {
 
     const { data, isLoading, isFetching, error, refetch } = attendanceQuery;
 
-    const csvData = data?.attendance?.expectedShifts.map((shift) => {
+    const csvData = data?.dailyAttendance?.expectedShifts.map((shift) => {
         const employee = data.employees.find(emp => emp._id === shift.employeeId);
         const matchingAttendance = data.attendances.find(att => att.shiftId === shift.shiftId);
 
-        const isCheckInLate = matchingAttendance ? !!data.attendance.checkedInLateByEmployee[shift.employeeId] : false;
-        const isCheckOutEarly = matchingAttendance ? !!data.attendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+        const isCheckInLate = matchingAttendance ? !!data.dailyAttendance.checkedInLateByEmployee[shift.employeeId] : false;
+        const isCheckOutEarly = matchingAttendance ? !!data.dailyAttendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+
+        let expectedBreakTime = 0;
+        let actualBreakTime = 0;
+        let actualPauseTime = 0;
+        let actualWorkedHours = 0;
+        if (matchingAttendance) {
+            matchingAttendance.breaks.forEach((brk) => {
+                if (brk.checkOutTime) {
+                    actualBreakTime += dayjs(brk.checkOutTime).diff(dayjs(brk.checkInTime), 'minute');
+                }
+                expectedBreakTime += brk.breakHours?.duration || 0;
+            });
+            matchingAttendance.pauses.forEach((pause) => {
+                if (pause.checkOutTime) {
+                    actualPauseTime += dayjs(pause.checkOutTime).diff(dayjs(pause.checkInTime), 'minute');
+                }
+            });
+
+            const endTime = matchingAttendance.checkOutTime ? dayjs(matchingAttendance.checkOutTime) : dayjs();
+            const exceededBreakTime = actualBreakTime - expectedBreakTime > 0 ? actualBreakTime - expectedBreakTime : 0;
+            actualWorkedHours = endTime.diff(dayjs(matchingAttendance.checkInTime), 'minute') - exceededBreakTime - actualPauseTime;
+        }
 
         return {
-            shiftStart: shift.start || '',
-            shiftEnd: shift.end || '',
-            employee: employee ? employee.name : '',
+            fullName: employee ? employee.name : shift.employeeId,
             email: employee ? employee.email : '',
-            checkInTime: matchingAttendance?.checkInTime ? dayjs(matchingAttendance.checkInTime).format('DD/MM/YYYY HH:mm:ss'): '',
-            isCheckInLate: isCheckInLate ? 'Yes' : 'No',
-            checkOutTime: matchingAttendance?.checkOutTime ? dayjs(matchingAttendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss') : '',
-            isCheckOutEarly: isCheckOutEarly ? 'Yes' : 'No',
+            workingHour: `${shift.start} - ${shift.end}`,
+            checkIn: matchingAttendance?.checkInTime ? dayjs(matchingAttendance.checkInTime).format('HH:mm:ss') + (isCheckInLate ? ` (${t('misc_late')})` : '') : '',
+            checkOut: matchingAttendance?.checkOutTime ? dayjs(matchingAttendance.checkOutTime).format('HH:mm:ss') + (isCheckOutEarly ? ` (${t('misc_early')})` : '') : '',
+            expectedBreakTimeInMinutes: expectedBreakTime,
+            actualBreakTimeInMinutes: actualBreakTime,
+            actualPauseTimeInMinutes: actualPauseTime,
+            actualWorkedHoursInMinutes: actualWorkedHours,
         };
     }) || [];
 
@@ -90,7 +115,7 @@ const RegisterAttendance = () => {
             setPostMsg(error.message);
         }
     }, [error]);
-    
+
     return (
         <Container maxWidth="lg" sx={{ mb: 4, pt: 6 }}>
             <Stack spacing={4}>
@@ -140,20 +165,20 @@ const RegisterAttendance = () => {
                             <Grid size={{ xs: 12 }}>
                                 {isLoading || isFetching ? <LoadingCircle /> :
                                     data ? (() => {
-                                        const { attendance } = data;
-                                        const employeeIds = new Set(attendance.expectedShifts.map(shift => shift.employeeId));
-                                        const totalCheckedIn = (parseInt(attendance.checkedInOnTime || 0)) + (parseInt(attendance.checkedInLate || 0));
-                                        const totalCheckedOut = (parseInt(attendance.checkedOutOnTime || 0)) + (parseInt(attendance.checkedOutEarly || 0));
+                                        const { dailyAttendance } = data;
+                                        const employeeIds = new Set(dailyAttendance.expectedShifts.map(shift => shift.employeeId));
+                                        const totalCheckedIn = (parseInt(dailyAttendance.checkedInOnTime || 0)) + (parseInt(dailyAttendance.checkedInLate || 0));
+                                        const totalCheckedOut = (parseInt(dailyAttendance.checkedOutOnTime || 0)) + (parseInt(dailyAttendance.checkedOutEarly || 0));
                                         return <Stack spacing={2}>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_working_hour_of_the_workplace')}:</Typography>
                                                 <Typography variant="h6">
-                                                    {attendance.workingHour.isAvailable ? `${attendance.workingHour.start} - ${attendance.workingHour.end}` : t('misc_closed')}
+                                                    {dailyAttendance.workingHour.isAvailable ? `${dailyAttendance.workingHour.start} - ${dailyAttendance.workingHour.end}` : t('misc_closed')}
                                                 </Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_total_shifts')}:</Typography>
-                                                <Typography variant="h6">{attendance.expectedShifts.length || 0}</Typography>
+                                                <Typography variant="h6">{dailyAttendance.expectedShifts.length || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography variant="h6">{t('misc_working_employees')}:</Typography>
@@ -169,22 +194,22 @@ const RegisterAttendance = () => {
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_checked_in_late')}:</Typography>
-                                                <Typography color='error' variant="h6">{attendance.checkedInLate || 0}</Typography>
+                                                <Typography color='error' variant="h6">{dailyAttendance.checkedInLate || 0}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_checked_out_early')}:</Typography>
-                                                <Typography color='error' variant="h6">{attendance.checkedOutEarly || 0}</Typography>
+                                                <Typography color='error' variant="h6">{dailyAttendance.checkedOutEarly || 0}</Typography>
                                             </Stack>
 
                                             <Divider />
 
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_not_provided_check_in')}:</Typography>
-                                                <Typography color='error' variant="h6">{attendance.expectedShifts.length - totalCheckedIn}</Typography>
+                                                <Typography color='error' variant="h6">{dailyAttendance.expectedShifts.length - totalCheckedIn}</Typography>
                                             </Stack>
                                             <Stack spacing={2} direction={'row'}>
                                                 <Typography color='error' variant="h6">{t('misc_not_provided_check_out')}:</Typography>
-                                                <Typography color='error' variant="h6">{attendance.expectedShifts.length - totalCheckedOut}</Typography>
+                                                <Typography color='error' variant="h6">{dailyAttendance.expectedShifts.length - totalCheckedOut}</Typography>
                                             </Stack>
                                             <Divider />
                                             <Grid container spacing={2}>
@@ -195,7 +220,7 @@ const RegisterAttendance = () => {
                                                             {csvData.length && <Stack direction="row" justifyContent="flex-end" mb={2}>
                                                                 <CSVLink
                                                                     data={csvData}
-                                                                    filename={`attendance-${dayjs(date).format('YYYYMMDD')}.csv`}
+                                                                    filename={`attendance-${dayjs(date).format('YYYYMMDD-HH:mm:ss')}.csv`}
                                                                     target="_blank"
                                                                     style={{ textDecoration: 'none' }}
                                                                 >
@@ -213,24 +238,46 @@ const RegisterAttendance = () => {
                                                                         <TableCell>{t('misc_working_hour')}</TableCell>
                                                                         <TableCell>{t('misc_check_in')}</TableCell>
                                                                         <TableCell>{t('misc_check_out')}</TableCell>
+                                                                        <TableCell>{t('misc_max_expected_break_time')}</TableCell>
+                                                                        <TableCell>{t('misc_actual_break_time')}</TableCell>
+                                                                        <TableCell>{t('misc_actual_pause_time')}</TableCell>
+                                                                        <TableCell>{t('misc_actual_worked_hours')}</TableCell>
                                                                     </TableRow>
                                                                 </TableHead>
                                                                 <TableBody>
-                                                                    {data.attendance.expectedShifts.length > 0 ? [...data.attendance.expectedShifts].filter(shift => {
-                                                                        const employee = data.employees.find(emp => emp._id === shift.employeeId);
-                                                                        return employee && employeeIds.has(shift.employeeId);
+                                                                    {data.dailyAttendance.expectedShifts.length > 0 ? [...data.dailyAttendance.expectedShifts].sort((a, b) => {
+                                                                        if (a.employeeId < b.employeeId) return -1;
+                                                                        if (a.employeeId > b.employeeId) return 1;
+                                                                        return a.start.localeCompare(b.start);
                                                                     })
-                                                                        .sort((a, b) => {
-                                                                            if (a.employeeId < b.employeeId) return -1;
-                                                                            if (a.employeeId > b.employeeId) return 1;
-                                                                            return a.start.localeCompare(b.start);
-                                                                        })
                                                                         .map((shift) => {
                                                                             const employee = data.employees.find(emp => emp._id === shift.employeeId);
                                                                             const matchingAttendance = data.attendances.find(att => att.shiftId === shift.shiftId);
 
-                                                                            const isCheckInLate = matchingAttendance ? !!data.attendance.checkedInLateByEmployee[shift.employeeId] : false;
-                                                                            const isCheckOutEarly = matchingAttendance ? !!data.attendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+                                                                            const isCheckInLate = matchingAttendance ? !!data.dailyAttendance.checkedInLateByEmployee[shift.employeeId] : false;
+                                                                            const isCheckOutEarly = matchingAttendance ? !!data.dailyAttendance.checkedOutEarlyByEmployee[shift.employeeId] : false;
+
+                                                                            let expectedBreakTime = 0;
+                                                                            let actualBreakTime = 0;
+                                                                            let actualPauseTime = 0;
+                                                                            let actualWorkedHours = 0;
+
+                                                                            if (matchingAttendance) {
+                                                                                matchingAttendance.breaks.forEach((brk) => {
+                                                                                    if (brk.checkOutTime) {
+                                                                                        actualBreakTime += dayjs(brk.checkOutTime).diff(dayjs(brk.checkInTime), 'minute');
+                                                                                    }
+                                                                                    expectedBreakTime += brk.breakHours?.duration || 0;
+                                                                                });
+                                                                                matchingAttendance.pauses.forEach((pause) => {
+                                                                                    if (pause.checkOutTime) {
+                                                                                        actualPauseTime += dayjs(pause.checkOutTime).diff(dayjs(pause.checkInTime), 'minute');
+                                                                                    }
+                                                                                });
+                                                                                const endTime = matchingAttendance.checkOutTime ? dayjs(matchingAttendance.checkOutTime) : dayjs();
+                                                                                const exceededBreakTime = actualBreakTime - expectedBreakTime > 0 ? actualBreakTime - expectedBreakTime : 0;
+                                                                                actualWorkedHours = endTime.diff(dayjs(matchingAttendance.checkInTime), 'minute') - exceededBreakTime - actualPauseTime;
+                                                                            }
 
                                                                             return (
                                                                                 <TableRow key={shift._id}>
@@ -239,9 +286,7 @@ const RegisterAttendance = () => {
                                                                                             <Link component={RouterLink} target="_blank" to={`/employee/${employee._id}`} variant='h6'>
                                                                                                 {employee.name}
                                                                                             </Link>
-                                                                                        ) : (
-                                                                                            '-'
-                                                                                        )}
+                                                                                        ) : shift.employeeId}
                                                                                     </TableCell>
                                                                                     <TableCell>
                                                                                         <Typography variant='h6'>
@@ -258,6 +303,26 @@ const RegisterAttendance = () => {
                                                                                         <Typography variant='h6' color={isCheckOutEarly ? 'error' : 'success'}>
                                                                                             {matchingAttendance?.checkOutTime ? dayjs(matchingAttendance.checkOutTime).format('HH:mm:ss') : '-'}
                                                                                             {isCheckOutEarly && ` - ${t('misc_early')}`}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6'>
+                                                                                            {expectedBreakTime > 0 ? getDiffDurationText(expectedBreakTime, noCap) : '-'}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6' color={actualBreakTime > expectedBreakTime ? 'error' : 'success'}>
+                                                                                            {actualBreakTime > 0 ? getDiffDurationText(actualBreakTime, noCap) : '-'}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6' color={'error'}>
+                                                                                            {actualPauseTime > 0 ? getDiffDurationText(actualPauseTime, noCap) : '-'}
+                                                                                        </Typography>
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Typography variant='h6' color={'success'}>
+                                                                                            {getDiffDurationText(actualWorkedHours, noCap)}
                                                                                         </Typography>
                                                                                     </TableCell>
                                                                                 </TableRow>

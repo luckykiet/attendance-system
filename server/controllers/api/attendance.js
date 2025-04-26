@@ -14,11 +14,14 @@ const mongoose = require('mongoose');
 const { demoAccount } = require('../../demo');
 const geolib = require('geolib');
 const Retail = require('../../models/Retail');
+const { DAY_KEYS } = require('../../configs');
+const { DATE_FORMAT } = require('../../constants/days');
+const Employee = require('../../models/Employee');
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 
-const getDailyAttendance = async ({ date = null, registerId, isCreating = false }) => {
+const getDailyAttendance = async ({ date = null, registerId }) => {
     try {
         if (!registerId) {
             throw 'srv_register_not_found';
@@ -29,12 +32,12 @@ const getDailyAttendance = async ({ date = null, registerId, isCreating = false 
             throw 'srv_register_not_found';
         }
 
-        const dateToUse = date ? dayjs(date.toString(), 'YYYYMMDD', true) : dayjs();
+        const dateToUse = date ? dayjs(date.toString(), DATE_FORMAT, true) : dayjs();
         if (date && !dateToUse.isValid()) {
             throw 'srv_invalid_date';
         }
 
-        const numericDate = parseInt(dateToUse.format('YYYYMMDD'));
+        const numericDate = parseInt(dateToUse.format(DATE_FORMAT));
         let dailyAttendance = await DailyAttendance.findOne({ date: numericDate, registerId }).exec();
 
         const dayIndex = dateToUse.day();
@@ -65,8 +68,57 @@ const getDailyAttendance = async ({ date = null, registerId, isCreating = false 
         } else if (dailyAttendance) {
             dailyAttendance.workingHour = workingHours;
         }
-  
-        if (isCreating) {
+
+        if (!dailyAttendance.confirmed) {
+            const orConditions = DAY_KEYS.map((day) => ({
+                [`shifts.${day}.0`]: { $exists: true }
+            }));
+
+            const employeesWorkingAts = await WorkingAt.find({
+                registerId,
+                $or: orConditions,
+            }).exec();
+            const employees = await Employee.find({ _id: { $in: employeesWorkingAts.map(e => e.employeeId) } }).exec();
+            const attendances = await Attendance.find({ _id: { $in: dailyAttendance.attendanceIds } }).exec();
+            const attendanceShiftIds = new Set(attendances.map(a => a.shiftId.toString()));
+            const expectedShifts = [];
+
+            for (const workingAt of employeesWorkingAts) {
+                const employeeId = workingAt.employeeId;
+                const shiftsToday = workingAt.shifts.get(dayKey) || [];
+
+                for (const shift of shiftsToday) {
+                    // keep the shift if it is in attendanceShiftIds
+                    if (attendanceShiftIds.has(shift._id.toString())) {
+                        const existing = dailyAttendance.expectedShifts.find(e => e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id));
+                        if (existing) {
+                            expectedShifts.push(existing);
+                        }
+                    } else {
+                        const employee = employees.find(e => e._id.equals(employeeId));
+                        if (!employee || !employee.isAvailable) {
+                            continue;
+                        }
+                        if (workingAt.isAvailable && shift.isAvailable) {
+                            expectedShifts.push({
+                                employeeId,
+                                shiftId: shift._id,
+                                start: shift.start,
+                                end: shift.end,
+                                isOverNight: shift.isOverNight || false,
+                                allowedOverTime: shift.allowedOverTime || 0,
+                            });
+                        } else {
+                            // if the employee is not available, remove the shift from expectedShifts
+                            const existing = dailyAttendance.expectedShifts.find(e => e.employeeId.equals(employeeId) && e.shiftId.equals(shift._id));
+                            if (existing) {
+                                expectedShifts.splice(expectedShifts.indexOf(existing), 1);
+                            }
+                        }
+                    }
+                }
+            }
+            dailyAttendance.expectedShifts = expectedShifts;
             await dailyAttendance.save();
         }
 
@@ -137,7 +189,7 @@ const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAt
             let totalPauses = 0;
             let needUpdate = false;
 
-            const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: dayjs(dailyAttendance.date.toString(), 'YYYYMMDD') });
+            const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: dayjs(dailyAttendance.date.toString(), DATE_FORMAT) });
             if (!attendanceTime) {
                 throw 'srv_invalid_shift';
             }
@@ -253,7 +305,7 @@ const makeAttendance = async (req, res, next) => {
             const todayKey = DAYS_OF_WEEK[now.day()];
 
             if (register.name === 'Demo always success') {
-                const dailyAttendance = await getDailyAttendance({ registerId, isCreating: true });
+                const dailyAttendance = await getDailyAttendance({ registerId });
 
                 if (typeof dailyAttendance === 'string') {
                     throw new HttpError(dailyAttendance, 400);
@@ -366,7 +418,7 @@ const makeAttendance = async (req, res, next) => {
 
         const { endTime: shiftEndTime } = shiftTime;
 
-        const dailyAttendance = await getDailyAttendance({ date: isToday ? now.format('YYYYMMDD') : yesterday.format('YYYYMMDD'), registerId, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ date: isToday ? now.format(DATE_FORMAT) : yesterday.format(DATE_FORMAT), registerId });
 
         if (typeof dailyAttendance === 'string') {
             throw new HttpError(dailyAttendance, 400);

@@ -6,9 +6,12 @@ const Attendance = require('../../models/Attendance');
 const utils = require('../../utils');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
+const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 const { getDailyAttendance } = require('../api/attendance');
 const DailyAttendance = require('../../models/DailyAttendance');
+const { DATE_FORMAT } = require('../../constants/days');
 
+dayjs.extend(isSameOrAfter);
 dayjs.extend(customParseFormat);
 
 const getAttendancesByRegisterAndDate = async (req, res, next) => {
@@ -19,12 +22,14 @@ const getAttendancesByRegisterAndDate = async (req, res, next) => {
         if (!register) {
             throw new HttpError('srv_register_not_found', 404);
         }
-
-        if (!date && !dayjs(date, 'YYYYMMDD').isValid()) {
+        const dateDayjs = dayjs(date, DATE_FORMAT);
+        if (!date || !dateDayjs.isValid()) {
             throw new HttpError('srv_invalid_date', 400);
         }
+        const now = dayjs();
+        const isCreating = dateDayjs.isSameOrAfter(now, 'day');
 
-        const dailyAttendance = await getDailyAttendance({ registerId, date })
+        const dailyAttendance = isCreating ? await getDailyAttendance({ registerId, date }) : await DailyAttendance.findOne({ registerId, date });
 
         if (!dailyAttendance) {
             throw new HttpError('srv_attendance_not_found', 404);
@@ -41,14 +46,9 @@ const getAttendancesByRegisterAndDate = async (req, res, next) => {
         }).lean();
 
         const workingAts = await WorkingAt.find({ registerId, employeeId: { $in: Array.from(employeeIds) } });
-        employees.forEach(employee => {
-            const workingAt = workingAts.find(workingAt => workingAt.employeeId.toString() === employee._id.toString());
-            if (workingAt) {
-                employee.workingHours = workingAt.workingHours;
-            }
-        });
         const attendances = await Attendance.find({ dailyAttendanceId: dailyAttendance._id });
-        return res.status(200).json({ success: true, msg: { attendance: dailyAttendance, employees, attendances } });
+
+        return res.status(200).json({ success: true, msg: { dailyAttendance, employees, attendances, workingAts } });
     } catch (error) {
         return next(utils.parseExpressErrors(error, 'srv_attendance_not_found', 404));
     }
@@ -65,7 +65,7 @@ const getAttendancesByEmployeeAndDate = async (req, res, next) => {
             throw new HttpError('srv_date_not_found', 400);
         }
 
-        if (!dayjs(date, 'YYYYMMDD').isValid()) {
+        if (!dayjs(date, DATE_FORMAT).isValid()) {
             throw new HttpError('srv_invalid_date', 400);
         }
 

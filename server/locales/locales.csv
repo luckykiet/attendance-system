@@ -18,7 +18,10 @@ misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
 misc_account_number	Account number	Số tài khoản	Číslo účtu
 misc_active	active	trực tiếp	aktivní
+misc_actual_break_time	actual break time	thời gian nghỉ thực tế	reálná doba přestávky
+misc_actual_pause_time	actual pause time	thời gian tạm dừng thực tế	reálný čas přerušení
 misc_actual_shift_amount	Actual shift amount	Số ca thực tế	Současný počet směn
+misc_actual_worked_hours	Actual worked hours	Giờ làm việc thực tế	Skutečně odpracovaných hodin
 misc_actual_working_time	actual working time	thời gian làm việc thực tế	aktuální pracovní doba
 misc_actual_workplace	actual workplace	nơi việc hiện tại	aktuální pracoviště
 misc_add	Add	Tạo	Přidat
@@ -333,6 +336,7 @@ misc_managed_by	merchant managed by	được quản lý bởi	pod kontrolou
 misc_manager	Manager	Quản lý	Manažer
 misc_maturity_period	Maturity period	Thời hạn đáo hạn	Doba splatnosti
 misc_max_duration	max duration	thời gian tối đa	maximální doba trvání
+misc_max_expected_break_time	max. expected break time	thời gian nghỉ tối đa	max. očekávané přestávky
 misc_max_local_devices	max local devices	thiết bị cục bộ tối đa	Maximální lokální zařízení
 misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
