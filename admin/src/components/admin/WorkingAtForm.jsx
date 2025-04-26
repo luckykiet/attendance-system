@@ -371,7 +371,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                 <Divider />
                                                 {postMsg && <FeedbackMessage message={postMsg} />}
                                                 <Button sx={{ minWidth: '200px' }} variant="contained" color={workingAt ? "primary" : "success"} type="submit" loading={saveWorkingAtMutation.isPending} disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}>
-                                                    {workingAt ? t('misc_save') : t('misc_create')}
+                                                    {workingAt ? t('misc_save_shifts') : t('misc_create')}
                                                 </Button>
                                             </Stack>
                                         </form>

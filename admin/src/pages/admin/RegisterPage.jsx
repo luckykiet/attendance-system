@@ -70,7 +70,7 @@ export default function RegisterPage() {
         setValue,
         formState: { errors },
     } = mainForm;
-    
+
     const createNewRegisterMutation = useMutation({
         mutationFn: (data) => createRegister(data),
         onError: (error) => {
@@ -409,13 +409,16 @@ export default function RegisterPage() {
                                 render={({ field, fieldState }) => (
                                     <TextField
                                         {...field}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                         fullWidth
-                                        label={`${t('misc_max_local_devices')}`}
+                                        onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            field.onChange(inputValue === '' ? '' : !isNaN(inputValue) ? parseInt(inputValue) : inputValue);
+                                        }}
+                                        label={t('misc_max_local_devices')}
                                         variant="outlined"
                                         type="number"
                                         error={fieldState.invalid}
-                                        helperText={fieldState.invalid && t(fieldState.error.message)}
+                                        helperText={fieldState.invalid && t(fieldState.error?.message)}
                                     />
                                 )}
                             />

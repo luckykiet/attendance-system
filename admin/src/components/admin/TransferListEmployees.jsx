@@ -402,7 +402,7 @@ export default function TransferListEmployees({ employeeId }) {
               loading={saveWorkingAtsMutation.isPending}
               disabled={!_.isEmpty(errors) || _.isEmpty(dirtyFields)}
             >
-              {t('misc_save')}
+              {t('misc_save_workplaces')}
             </Button>
           </Stack>
         </form>

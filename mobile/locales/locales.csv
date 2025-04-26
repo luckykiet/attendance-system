@@ -425,6 +425,7 @@ misc_notification	Notification	Thông báo	Notifikace
 misc_opening	opening	đang mở	otevřeno
 misc_opening_soon	opening soon	sắp mở cửa	brzy otevřeno
 misc_operations	Operations	Tác vụ	Operace
+misc_other	other	khác	jiné
 misc_others	others	khác	jiné
 misc_out_of_hours	out of Hours	đã qua giờ làm việc	mimo pracovní dobu
 misc_outside_time	outside time	ngoài thời gian	mimo čas
@@ -447,6 +448,7 @@ misc_pending	pending	chờ xử lý	čeká na vyřízení
 misc_pending_pause	pending pause	tạm dừng ca đang chạy	probíhající přerušení směny
 misc_permission_denied	permission denied	quyền truy cập bị từ chối	přístup odepřen
 misc_photo	photo	ảnh	fotka
+misc_pick_up_delivery_package	pick up delivery package	lấy gói hàng nhận được	vyzvednout balíček od kurýra
 misc_plan	plan	gói	plán
 misc_plans	plans	gói	plány
 misc_please_reload_page	Please reload the page	Hãy tải lại trang	Obnovte stránku
@@ -531,8 +533,10 @@ misc_save_and_send	Save and send	Lưu và gửi	Uložit a poslat
 misc_save_changes_first	save changes first	lưu thay đổi trước	uložte nejprve změny
 misc_save_draft	save draft	lưu nháp	uložit koncept
 misc_save_merchant	save new merchant	lưu nhà bán buôn mới	uložit nového obchodníka
+misc_save_shifts	save shifts	lưu ca làm việc	uložit směny
 misc_save_signature	save signature	lưu chữ ký	uložit podpis
 misc_save_transactions	save transactions	lưu giao dịch	uložit transakce
+misc_save_workplaces	save workplaces	lưu nơi làm việc	Uložit pracoviště
 misc_scanning_local_devices	scanning for local devices	đang quét thiết bị cục bộ	skenování lokálních zařízení
 misc_searched	searched	tìm	vyhledávaný
 misc_select_all	select all	chọn tất cả	vybrat vše
@@ -674,6 +678,7 @@ misc_users	Users	Người dùng	Uživatele
 misc_valid	valid	hợp lệ	validní
 misc_value	value	giá trị	hodnota
 misc_vin	VIN	DIČ	DIČ
+misc_visit_doctor	visit doctor	đi khám bác sĩ	navštívit lékaře
 misc_want_to_continue	do you want to continue	bạn có muốn tiếp tục không	chcete pokračovat
 misc_website	website	trang web	webová stránka
 misc_working_at	working at	làm việc tại	pracuje v

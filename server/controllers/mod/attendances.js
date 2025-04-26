@@ -32,11 +32,13 @@ const getAttendancesByRegisterAndDate = async (req, res, next) => {
 
         const employeeIds = new Set(dailyAttendance.expectedShifts.map(shift => shift.employeeId));
 
-        const employees = await Employee.find({ _id: { $in: Array.from(employeeIds) } }).lean();
-        dailyAttendance.expectedShifts = dailyAttendance.expectedShifts.filter(shift => {
-            const employee = employees.find(emp => emp._id.equals(shift.employeeId))
-            return employee && employeeIds.has(shift.employeeId);
-        })
+        const employees = await Employee.find({ _id: { $in: Array.from(employeeIds) } }).select({
+            name: 1,
+            email: 1,
+            phone: 1,
+            retailId: 1,
+            _id: 1,
+        }).lean();
 
         const workingAts = await WorkingAt.find({ registerId, employeeId: { $in: Array.from(employeeIds) } });
         employees.forEach(employee => {

@@ -182,7 +182,7 @@ const MyAttendances: React.FC<MyAttendancesProps> = ({ retailId, domain }) => {
                             </ThemedText>}
 
                             <ThemedText style={[styles.attendanceText, { color: status.checkOutTime?.isSuccess ? Colors.success : Colors.error }]}>
-                                {`${t('misc_reason')}: ${item.reason || '-'}`}
+                                {`${t('misc_reason')}: ${t(item.reason || '') || '-'}`}
                             </ThemedText>
 
                             {
@@ -298,7 +298,6 @@ const styles = StyleSheet.create({
     },
     headerSub: {
         fontSize: 12,
-        color: 'gray'
     },
     titleContainer: {
         flexDirection: 'row',
@@ -325,7 +324,6 @@ const styles = StyleSheet.create({
     },
     registerText: {
         fontSize: 14,
-        color: 'gray'
     },
     noDataContainer: {
         flex: 1,

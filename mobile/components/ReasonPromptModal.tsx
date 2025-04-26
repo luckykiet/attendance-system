@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Modal,
     View,
@@ -16,6 +16,13 @@ import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
+import { Picker } from '@react-native-picker/picker';
+
+const selectionOptions = [
+    { value: 'doctor', name: 'misc_visit_doctor' },
+    { value: 'pickup_delivery', name: 'misc_pick_up_delivery_package' },
+    { value: 'other', name: 'misc_other' },
+];
 
 const FormSchema = z.object({
     reason: z.string().trim().min(1, 'misc_required'),
@@ -39,16 +46,20 @@ const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_che
     const isDarkMode = colorScheme === 'dark';
     const durationText = getDiffDurationText(diff, noCap);
 
-    const { control, handleSubmit, reset } = useForm<ReasonData>({
+    const { control, handleSubmit, reset, setValue } = useForm<ReasonData>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             reason: '',
         },
     });
 
+    const [selectedOption, setSelectedOption] = useState('other');
+
     const onSubmit = async (data: ReasonData) => {
         if (onConfirm) {
-            onConfirm(data);
+            const selectedItem = selectionOptions.find(opt => opt.value === selectedOption);
+            const reasonFinal = selectedOption !== 'other' && selectedItem ? selectedItem.name : data.reason;
+            onConfirm({ reason: reasonFinal });
         }
     };
 
@@ -60,6 +71,7 @@ const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_che
     useEffect(() => {
         if (visible) {
             reset({ reason: reason ? reason : '' });
+            setSelectedOption('other');
         }
     }, [visible, reason, reset]);
 
@@ -68,26 +80,51 @@ const ReasonPromptModal: React.FC<Props> = ({ title = 'misc_reason_for_early_che
             <ThemedView style={styles.overlay}>
                 <View style={containerStyle}>
                     <ThemedText style={styles.title}>{t(title)}</ThemedText>
-                    {_.isNumber(diff) && diff > 0 && <ThemedText style={styles.subtitle}>
-                        {t('misc_until_the_end')}: {durationText}
-                    </ThemedText>}
-                    <Controller
-                        control={control}
-                        name="reason"
-                        render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                            <ThemedTextInput
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                placeholderTextColor={isDarkMode ? '#aaa' : '#666'}
-                                multiline
-                                numberOfLines={4}
-                                error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
-                                containerStyle={styles.inputContainer}
-                                label={t('misc_reason')}
-                            />
-                        )}
-                    />
+                    {_.isNumber(diff) && diff > 0 && (
+                        <ThemedText style={styles.subtitle}>
+                            {t('misc_until_the_end')}: {durationText}
+                        </ThemedText>
+                    )}
+
+                    <View style={styles.pickerContainer}>
+                        <Picker
+                            selectedValue={selectedOption}
+                            onValueChange={(itemValue) => {
+                                setSelectedOption(itemValue);
+                                if (itemValue !== 'other') {
+                                    setValue('reason', t(selectionOptions.find(opt => opt.value === itemValue)?.name || ''));
+                                } else {
+                                    setValue('reason', '');
+                                }
+                            }}
+                            style={{ color: isDarkMode ? 'white' : 'black' }}
+                        >
+                            {selectionOptions.map(option => (
+                                <Picker.Item key={option.value} label={t(option.name)} value={option.value} />
+                            ))}
+                        </Picker>
+                    </View>
+
+                    {selectedOption === 'other' && (
+                        <Controller
+                            control={control}
+                            name="reason"
+                            render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                                <ThemedTextInput
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    placeholderTextColor={isDarkMode ? '#aaa' : '#666'}
+                                    multiline
+                                    numberOfLines={4}
+                                    error={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                                    containerStyle={styles.inputContainer}
+                                    label={t('misc_reason')}
+                                />
+                            )}
+                        />
+                    )}
+
                     <View style={styles.actions}>
                         <TouchableOpacity style={[styles.button, styles.cancel]} onPress={onCancel}>
                             <ThemedText style={styles.buttonText}>{t('misc_cancel')}</ThemedText>
@@ -132,12 +169,12 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: 'transparent',
     },
-    label: {
-        fontSize: 16,
-        marginBottom: 4,
-    },
-    inputError: {
-        borderColor: 'red',
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 6,
+        marginBottom: 16,
+        overflow: 'hidden',
     },
     actions: {
         flexDirection: 'row',
@@ -159,11 +196,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontWeight: '600',
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 14,
-        marginTop: 4,
     },
 });
 

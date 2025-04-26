@@ -83,8 +83,6 @@ const checkEmployeeResources = async (req) => {
         throw new HttpError('srv_retail_not_found', 400);
     }
 
-    const isDemo = retail.tin === '12345678'
-
     const { employee } = req
 
     const workingAt = await WorkingAt.findOne({ employeeId: employee._id, registerId: register._id, isAvailable: true }).exec();
@@ -113,7 +111,7 @@ const checkEmployeeResources = async (req) => {
         isToday = false;
         // because the shift is overnight, we need to check if the current time is after the end time of the shift. End time is the next day
         const endTime = dayjs(shift.end, TIME_FORMAT, true).add(1, 'day');
-        console.log(now.format(), endTime.format());
+
         if (now.isAfter(endTime)) {
             throw new HttpError('srv_shift_already_ended', 400);
         }
@@ -160,7 +158,7 @@ const checkEmployeeResources = async (req) => {
     const distanceInMeters = geolib.getDistance({ latitude, longitude }, locationToUse);
     const allowedRadius = localDevice && localDevice.location ? localDevice.location.allowedRadius : register.location.allowedRadius;
 
-    if (distanceInMeters > allowedRadius && !isDemo) {
+    if (distanceInMeters > allowedRadius) {
         throw new HttpError('srv_outside_allowed_radius', 400);
     }
     return {
@@ -172,7 +170,6 @@ const checkEmployeeResources = async (req) => {
         isToday,
         distanceInMeters,
         allowedRadius,
-        isDemo,
     }
 }
 

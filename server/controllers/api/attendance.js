@@ -10,7 +10,6 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const isBetween = require('dayjs/plugin/isBetween');
 const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
 const _ = require('lodash');
-const { DAY_KEYS } = require('../../configs');
 const mongoose = require('mongoose');
 const { demoAccount } = require('../../demo');
 const geolib = require('geolib');
@@ -66,38 +65,7 @@ const getDailyAttendance = async ({ date = null, registerId, isCreating = false 
         } else if (dailyAttendance) {
             dailyAttendance.workingHour = workingHours;
         }
-
-        const orConditions = DAY_KEYS.map((day) => ({
-            [`shifts.${day}.0`]: { $exists: true }
-        }));
-
-        const employeesWorkingAts = await WorkingAt.find({
-            registerId,
-            $or: orConditions,
-        }).select('employeeId shifts').exec();
-
-        const expectedShifts = [];
-
-        for (const workingAt of employeesWorkingAts) {
-            const employeeId = workingAt.employeeId;
-            const shiftsToday = workingAt.shifts.get(dayKey) || [];
-
-            for (const shift of shiftsToday) {
-                if (shift.isAvailable) {
-                    expectedShifts.push({
-                        employeeId,
-                        shiftId: shift._id,
-                        start: shift.start,
-                        end: shift.end,
-                        isOverNight: shift.isOverNight || false,
-                        allowedOverTime: shift.allowedOverTime || 0,
-                    });
-                }
-            }
-        }
-
-        dailyAttendance.expectedShifts = expectedShifts;
-
+  
         if (isCreating) {
             await dailyAttendance.save();
         }

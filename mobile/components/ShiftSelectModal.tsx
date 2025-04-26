@@ -29,7 +29,7 @@ const ShiftSelectModal = () => {
     const queryClient = useQueryClient();
     const { t } = useTranslation();
     const { t: noCapT } = useTranslation({ capitalize: false });
-    const { selectedShift, setSelectedShift, location, setLocalDevices, isShiftModalOpen, setIsShiftModalOpen } = useAppStore();
+    const { selectedShift, setSelectedShift, location, setLocalDevices } = useAppStore();
     const { logAttendance } = useAttendanceApi();
     const { applySpecificBreak } = useSpecificBreakApi();
     const { applyBreak } = useBreakApi();
@@ -38,6 +38,7 @@ const ShiftSelectModal = () => {
     const [showReasonModal, setShowReasonModal] = useState(false);
     const [checkoutForm, setCheckoutForm] = useState<AttendanceMutation | null>(null);
     const [isSubmittingType, setIsSubmittingType] = useState<'attendance' | 'specific-break' | 'break' | 'pause' | null>(null);
+    const [isClosing, setIsClosing] = useState<boolean>(false);
 
     const [diff, setDiff] = useState<number>(0);
     const [reasonModalTitle, setReasonModalTitle] = useState<string>('misc_reason_for_early_check_out');
@@ -61,8 +62,6 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
-                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                     Alert.alert(
                         t('misc_shift_pause_successfully'),
                         t(data.msg),
@@ -70,9 +69,13 @@ const ShiftSelectModal = () => {
                             {
                                 text: t('misc_close'),
                                 onPress: () => {
+                                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                                     setPendingAttendance(null);
+                                    setIsClosing(true);
                                     handleClose();
                                 },
+                                isPreferred: true,
                             },
                         ],
                         { cancelable: false }
@@ -93,18 +96,21 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
-                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(
+
+                    return Alert.alert(
                         t('misc_attendance_success'),
                         t(data.msg),
                         [
                             {
                                 text: t('misc_close'),
                                 onPress: () => {
+                                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                                     setPendingAttendance(null);
+                                    setIsClosing(true);
                                     handleClose();
                                 },
+                                isPreferred: true,
                             },
                         ],
                         { cancelable: false }
@@ -125,18 +131,21 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
-                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(
+
+                    return Alert.alert(
                         t('misc_break_submitted'),
                         t(data.msg),
                         [
                             {
                                 text: t('misc_close'),
                                 onPress: () => {
+                                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                                     setPendingAttendance(null);
+                                    setIsClosing(true);
                                     handleClose();
                                 },
+                                isPreferred: true,
                             },
                         ],
                         { cancelable: false }
@@ -157,18 +166,20 @@ const ShiftSelectModal = () => {
                 if (data.localDevices) {
                     setLocalDevices(data.localDevices);
                 } else {
-                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
-                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
-                    Alert.alert(
+                    return Alert.alert(
                         t('misc_break_submitted'),
                         t(data.msg),
                         [
                             {
                                 text: t('misc_close'),
                                 onPress: () => {
+                                    queryClient.refetchQueries({ predicate: (query) => query.queryKey[0] === 'todayWorkplaces' });
+                                    queryClient.removeQueries({ queryKey: ['todayWorkplaces'] });
                                     setPendingAttendance(null);
+                                    setIsClosing(true);
                                     handleClose();
                                 },
+                                isPreferred: true,
                             },
                         ],
                         { cancelable: false }
@@ -198,8 +209,8 @@ const ShiftSelectModal = () => {
     }) : null;
 
     const handleClose = () => {
-        setIsShiftModalOpen(false);
         setSelectedShift(null);
+        setIsClosing(false);
     }
 
     const handleSubmitPause = async ({ _id }: { _id?: string }) => {
@@ -227,7 +238,6 @@ const ShiftSelectModal = () => {
                     Alert.alert(t('misc_error'), t('misc_pause_not_found'));
                     return;
                 }
-
                 if (pause && pause.checkOutTime) {
                     Alert.alert(t('srv_already_checked_out'), t('misc_cannot_revert_action'));
                     return;
@@ -235,7 +245,6 @@ const ShiftSelectModal = () => {
             }
 
             const deviceKey = await SecureStore.getItemAsync('deviceKey');
-
             if (!deviceKey) {
                 Alert.alert(t('misc_error'), t('misc_you_must_register_device'));
                 return;
@@ -247,10 +256,8 @@ const ShiftSelectModal = () => {
             }
 
             const biometricEnabled = await SecureStore.getItemAsync('biometricEnabled');
-
             if (biometricEnabled === 'true') {
                 const result = await checkBiometric(t);
-
                 if (!result.success) {
                     if (_.isObject(result.msg)) {
                         Alert.alert(t(result.msg.title), t(result.msg.message));
@@ -282,7 +289,7 @@ const ShiftSelectModal = () => {
                     Alert.alert(t('misc_error'), t('srv_invalid_time'));
                     return;
                 }
-                const { endTime: closeTime } = shiftTime
+                const { endTime: closeTime } = shiftTime;
                 const difference = closeTime.diff(currentTime, 'minute');
 
                 setReasonModalTitle('misc_reason_for_pause');
@@ -295,8 +302,7 @@ const ShiftSelectModal = () => {
 
             const difference = currentTime.diff(pause?.checkInTime, 'minute');
             const durationText = getDiffDurationText(difference, noCapT);
-            let text = `${t('misc_cannot_revert_action')}!`;
-            text += `\n${t('misc_duration')}: ${durationText}`;
+            const text = `${t('misc_cannot_revert_action')}!\n${t('misc_duration')}: ${durationText}`;
 
             Alert.alert(
                 t('misc_finish_pause'),
@@ -308,10 +314,10 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: () => {
+                        onPress: async () => {
                             setPendingAttendance(form);
                             setIsSubmittingType('pause');
-                            submitPauseMutation.mutate(form);
+                            await submitPauseMutation.mutateAsync(form);
                         },
                     },
                 ],
@@ -420,12 +426,12 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: () => {
+                        onPress: async () => {
                             const form: AttendanceMutation = { registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, };
 
                             setPendingAttendance(form);
                             setIsSubmittingType('attendance');
-                            makeAttendanceMutation.mutate(form);
+                            return await makeAttendanceMutation.mutateAsync(form);
                         },
                     },
                 ],
@@ -510,7 +516,7 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: () => {
+                        onPress: async () => {
 
                             if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
                                 Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
@@ -520,7 +526,7 @@ const ShiftSelectModal = () => {
 
                             setPendingAttendance(form);
                             setIsSubmittingType('specific-break');
-                            applySpecificBreakMutation.mutate(form);
+                            return await applySpecificBreakMutation.mutateAsync(form);
                         },
                     },
                 ],
@@ -611,7 +617,7 @@ const ShiftSelectModal = () => {
                     },
                     {
                         text: t('misc_confirm'),
-                        onPress: () => {
+                        onPress: async () => {
                             if (!location || isNaN(location.longitude) || isNaN(location.latitude)) {
                                 Alert.alert(t('misc_error'), t('srv_location_required_to_submit_break'));
                                 return;
@@ -619,7 +625,7 @@ const ShiftSelectModal = () => {
                             const form: BreakMutation = { _id, registerId, retailId, deviceKey, domain, longitude: location.longitude, latitude: location.latitude, shiftId, attendanceId: attendance ? attendance._id : null, breakId, name };
                             setIsSubmittingType('break');
                             setPendingAttendance(form);
-                            applyBreakMutation.mutate(form);
+                            return await applyBreakMutation.mutateAsync(form);
                         },
                     },
                 ],
@@ -669,318 +675,347 @@ const ShiftSelectModal = () => {
     const { startTime: shiftStartTime, endTime: shiftEndTime } = shiftTime
     return (
         <Modal
-            visible={isShiftModalOpen}
+            visible={!!selectedShift}
             animationType="slide"
             transparent
             onRequestClose={handleClose}
         >
             <ThemedView style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                    <BLEScanModal onResult={handleScanResult} />
-                    <ScrollViewWrapper
-                        showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.scrollContent}>
-                        <ThemedText style={styles.modalTitle}>{t('misc_shift_details')}</ThemedText>
-                        <ThemedText>
-                            {t('misc_workplace')}: {workplace.name ?? '-'}
-                        </ThemedText>
-                        <ThemedText>
-                            {t('misc_shift_time')}: {!workplace.isToday ? `${t(daysOfWeeksTranslations[yesterdayKey].name)} ` : ''}{statusInfo.message || '-'}
-                        </ThemedText>
-                        <ThemedText style={{ color: Colors.warning }}>{t('misc_earliest_check_in_time')}: {shiftStartTime.subtract(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
-                        <ThemedText style={{ color: Colors.warning }}>{t('misc_latest_check_out_time')}: {shiftEndTime.add(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
-                        <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
-                        {specificBreaks && SPECIFIC_BREAKS.some(type =>
-                            specificBreaks[type]?.isAvailable
-                        ) ? (
-                            SPECIFIC_BREAKS.filter((type) => {
-                                const brk = specificBreaks[type];
-                                return brk && brk.isAvailable
-                            }).map((type) => {
-                                const brk = specificBreaks[type];
-                                const maxDurationText = getDiffDurationText(brk.duration, noCapT);
-                                const brkTime = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
+                    {!isClosing && (
+                        <>
+                            <BLEScanModal onResult={handleScanResult} />
+                            <ScrollViewWrapper
+                                showsVerticalScrollIndicator={false}
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.scrollContent}>
+                                <ThemedText style={styles.modalTitle}>{t('misc_shift_details')}</ThemedText>
+                                <ThemedText>
+                                    {t('misc_workplace')}: {workplace.name ?? '-'}
+                                </ThemedText>
+                                <ThemedText>
+                                    {t('misc_shift_time')}: {!workplace.isToday ? `${t(daysOfWeeksTranslations[yesterdayKey].name)} ` : ''}{statusInfo.message || '-'}
+                                </ThemedText>
+                                <ThemedText style={{ color: Colors.warning }}>{t('misc_earliest_check_in_time')}: {shiftStartTime.subtract(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
+                                <ThemedText style={{ color: Colors.warning }}>{t('misc_latest_check_out_time')}: {shiftEndTime.add(allowedOverTime, 'minutes').format(TIME_FORMAT)}</ThemedText>
+                                <ThemedText style={styles.groupHeader}>{t('misc_specific_breaks')}</ThemedText>
+                                {specificBreaks && SPECIFIC_BREAKS.some(type =>
+                                    specificBreaks[type]?.isAvailable
+                                ) ? (
+                                    SPECIFIC_BREAKS.filter((type) => {
+                                        const brk = specificBreaks[type];
+                                        return brk && brk.isAvailable
+                                    }).map((type) => {
+                                        const brk = specificBreaks[type];
+                                        const maxDurationText = getDiffDurationText(brk.duration, noCapT);
+                                        const brkTime = getStartEndTime({ start: brk.start, end: brk.end, isToday: workplace.isToday });
 
-                                if (!brkTime) return null;
+                                        if (!brkTime) return null;
 
-                                const { startTime, endTime } = brkTime;
-                                const attendanceBreak = attendance?.breaks.find(b => b.type === type);
+                                        const { startTime, endTime } = brkTime;
+                                        const attendanceBreak = attendance?.breaks.find(b => b.type === type);
 
-                                const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
+                                        const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
 
-                                const isBreakNotAvailable = (!isBreakPending && !now.isBetween(startTime, endTime, null, '[]')) || !_.isEmpty(attendanceBreak?.checkOutTime);
+                                        const isBreakNotAvailable = (!isBreakPending && !now.isBetween(startTime, endTime, null, '[]')) || !_.isEmpty(attendanceBreak?.checkOutTime);
 
-                                const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
+                                        const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
 
-                                const isExceededTime = realDuration && realDuration > brk.duration;
+                                        const isExceededTime = realDuration && realDuration > brk.duration;
 
-                                return (
-                                    <Fragment key={type}>
-                                        <View style={styles.breakRow}>
-                                            <View style={styles.breakInfo}>
-                                                <ThemedText style={styles.breakText}>
-                                                    {t(`misc_${type}`)}: {brk.start} - {brk.end}
-                                                    {brk.isOverNight ? ` (${t('misc_over_night')})` : ''}
-                                                </ThemedText>
-                                                <ThemedText style={styles.breakDurationText}>
-                                                    {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
-                                                </ThemedText>
-                                                {attendanceBreak?.checkInTime &&
-                                                    <ThemedText style={styles.breakTimeText}>
-                                                        {t('msg_from')}: {dayjs(attendanceBreak.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                    </ThemedText>}
-                                                {attendanceBreak?.checkOutTime &&
-                                                    <ThemedText style={styles.breakTimeText}>
-                                                        {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                    </ThemedText>}
-                                                {_.isNumber(realDuration) && (() => {
-                                                    const durationText = getDiffDurationText(realDuration, noCapT);
-                                                    const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
-
-                                                    return (
-                                                        <ThemedText
-                                                            style={[
-                                                                styles.breakTimeText,
-                                                                isExceededTime ? { color: Colors.error } : null
-                                                            ]}
-                                                        >
-                                                            {`${t('misc_duration')}: ${durationText}${exceededText}`}
+                                        return (
+                                            <Fragment key={type}>
+                                                <View style={styles.breakRow}>
+                                                    <View style={styles.breakInfo}>
+                                                        <ThemedText style={styles.breakText}>
+                                                            {t(`misc_${type}`)}: {brk.start} - {brk.end}
+                                                            {brk.isOverNight ? ` (${t('misc_over_night')})` : ''}
                                                         </ThemedText>
-                                                    );
-                                                })()}
-                                            </View>
-                                            <TouchableOpacity
-                                                style={[
-                                                    styles.breakButton,
-                                                    isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
-                                                ]}
-                                                disabled={isBreakNotAvailable}
-                                                activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
-                                                onPress={() => handleSpecificBreakSubmit({ breakKey: type, _id: attendanceBreak?._id })}
-                                            >
-                                                <ThemedText style={[
-                                                    styles.breakButtonText,
-                                                    isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
+                                                        <ThemedText style={styles.breakDurationText}>
+                                                            {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
+                                                        </ThemedText>
+                                                        {attendanceBreak?.checkInTime &&
+                                                            <ThemedText style={styles.breakTimeText}>
+                                                                {t('msg_from')}: {dayjs(attendanceBreak.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                            </ThemedText>}
+                                                        {attendanceBreak?.checkOutTime &&
+                                                            <ThemedText style={styles.breakTimeText}>
+                                                                {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                            </ThemedText>}
+                                                        {_.isNumber(realDuration) && (() => {
+                                                            const durationText = getDiffDurationText(realDuration, noCapT);
+                                                            const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
 
-                                                ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </Fragment>
-                                );
-                            })
-                        ) : (
-                            <ThemedText style={styles.breakText}>{t('misc_no_breaks')}</ThemedText>
-                        )}
+                                                            return (
+                                                                <ThemedText
+                                                                    style={[
+                                                                        styles.breakTimeText,
+                                                                        isExceededTime ? { color: Colors.error } : null
+                                                                    ]}
+                                                                >
+                                                                    {`${t('misc_duration')}: ${durationText}${exceededText}`}
+                                                                </ThemedText>
+                                                            );
+                                                        })()}
+                                                    </View>
+                                                    <TouchableOpacity
+                                                        style={[
+                                                            styles.breakButton,
+                                                            isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
+                                                        ]}
+                                                        disabled={isBreakNotAvailable}
+                                                        activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
+                                                        onPress={() => handleSpecificBreakSubmit({ breakKey: type, _id: attendanceBreak?._id })}
+                                                    >
+                                                        <ThemedText style={[
+                                                            styles.breakButtonText,
+                                                            isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
 
-                        <ThemedText style={styles.groupHeader}>{t('misc_generic_breaks')}</ThemedText>
-                        {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end })) ? (
-                            breaks
-                                .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
-                                .map((b: Breaks) => {
-                                    const maxDurationText = getDiffDurationText(b.duration, noCapT);
-                                    const brkTime = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
-
-                                    if (!brkTime) {
-                                        return null
-                                    }
-
-                                    const { startTime, endTime } = brkTime;
-                                    const attendanceBreak = attendance?.breaks.find(brk => brk.breakId && b._id === brk.breakId);
-
-                                    const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
-
-                                    const isBreakNotAvailable = (!isBreakPending && !now.isBetween(startTime, endTime, null, '[]')) || !_.isEmpty(attendanceBreak?.checkOutTime);
-
-                                    const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
-
-                                    const isExceededTime = realDuration && realDuration > b.duration;
-                                    return (
-                                        <Fragment key={b._id}>
-                                            <View style={styles.breakRow}>
-                                                <View style={styles.breakInfo}>
-                                                    <ThemedText style={styles.breakText}>
-                                                        {b.name ? `${t(b.name)}: ` : ''}{b.start} - {b.end}
-                                                        {b.isOverNight ? ` (${t('misc_over_night')})` : ''}
-                                                    </ThemedText>
-                                                    <ThemedText style={styles.breakDurationText}>
-                                                        {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
-                                                    </ThemedText>
-                                                    {attendanceBreak?.checkInTime &&
-                                                        <ThemedText style={styles.breakTimeText}>
-                                                            {t('msg_from')}: {dayjs(attendanceBreak.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                        </ThemedText>}
-                                                    {attendanceBreak?.checkOutTime &&
-                                                        <ThemedText style={styles.breakTimeText}>
-                                                            {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                        </ThemedText>}
-                                                    {_.isNumber(realDuration) && (() => {
-                                                        const durationText = getDiffDurationText(realDuration, noCapT);
-                                                        const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
-
-                                                        return (
-                                                            <ThemedText
-                                                                style={[
-                                                                    styles.breakTimeText,
-                                                                    isExceededTime ? { color: Colors.error } : null
-                                                                ]}
-                                                            >
-                                                                {`${t('misc_duration')}: ${durationText}${exceededText}`}
-                                                            </ThemedText>
-                                                        );
-                                                    })()}
+                                                        ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
+                                                    </TouchableOpacity>
                                                 </View>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.breakButton,
-                                                        isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
-                                                    ]}
-                                                    disabled={isBreakNotAvailable}
-                                                    activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
-                                                    onPress={() => handleBreakSubmit({ _id: attendanceBreak?._id, breakId: b._id, name: b.name })}
-                                                >
-                                                    <ThemedText style={[
-                                                        styles.breakButtonText,
-                                                        isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
+                                            </Fragment>
+                                        );
+                                    })
+                                ) : (
+                                    <ThemedText style={styles.breakText}>{t('misc_no_breaks')}</ThemedText>
+                                )}
 
-                                                    ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
+                                <ThemedText style={styles.groupHeader}>{t('misc_generic_breaks')}</ThemedText>
+                                {breaks?.some(b => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end })) ? (
+                                    breaks
+                                        .filter((b) => isBreakWithinShift({ breakStart: b.start, breakEnd: b.end, shiftStart: shift.start, shiftEnd: shift.end }))
+                                        .map((b: Breaks) => {
+                                            const maxDurationText = getDiffDurationText(b.duration, noCapT);
+                                            const brkTime = getStartEndTime({ start: b.start, end: b.end, isToday: workplace.isToday });
+
+                                            if (!brkTime) {
+                                                return null
+                                            }
+
+                                            const { startTime, endTime } = brkTime;
+                                            const attendanceBreak = attendance?.breaks.find(brk => brk.breakId && b._id === brk.breakId);
+
+                                            const isBreakPending = attendanceBreak && !_.isEmpty(attendanceBreak.checkInTime) && _.isEmpty(attendanceBreak.checkOutTime);
+
+                                            const isBreakNotAvailable = (!isBreakPending && !now.isBetween(startTime, endTime, null, '[]')) || !_.isEmpty(attendanceBreak?.checkOutTime);
+
+                                            const realDuration = attendanceBreak && attendanceBreak?.checkInTime && attendanceBreak?.checkOutTime ? dayjs(attendanceBreak.checkOutTime).diff(attendanceBreak.checkInTime, 'minutes') : null;
+
+                                            const isExceededTime = realDuration && realDuration > b.duration;
+                                            return (
+                                                <Fragment key={b._id}>
+                                                    <View style={styles.breakRow}>
+                                                        <View style={styles.breakInfo}>
+                                                            <ThemedText style={styles.breakText}>
+                                                                {b.name ? `${t(b.name)}: ` : ''}{b.start} - {b.end}
+                                                                {b.isOverNight ? ` (${t('misc_over_night')})` : ''}
+                                                            </ThemedText>
+                                                            <ThemedText style={styles.breakDurationText}>
+                                                                {t('misc_max_duration')}: {maxDurationText ? maxDurationText : '-'}
+                                                            </ThemedText>
+                                                            {attendanceBreak?.checkInTime &&
+                                                                <ThemedText style={styles.breakTimeText}>
+                                                                    {t('msg_from')}: {dayjs(attendanceBreak.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                                </ThemedText>}
+                                                            {attendanceBreak?.checkOutTime &&
+                                                                <ThemedText style={styles.breakTimeText}>
+                                                                    {t('msg_to')}: {dayjs(attendanceBreak.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                                </ThemedText>}
+                                                            {_.isNumber(realDuration) && (() => {
+                                                                const durationText = getDiffDurationText(realDuration, noCapT);
+                                                                const exceededText = isExceededTime ? ` (${t('misc_exceeded_time')})` : '';
+
+                                                                return (
+                                                                    <ThemedText
+                                                                        style={[
+                                                                            styles.breakTimeText,
+                                                                            isExceededTime ? { color: Colors.error } : null
+                                                                        ]}
+                                                                    >
+                                                                        {`${t('misc_duration')}: ${durationText}${exceededText}`}
+                                                                    </ThemedText>
+                                                                );
+                                                            })()}
+                                                        </View>
+                                                        <TouchableOpacity
+                                                            style={[
+                                                                styles.breakButton,
+                                                                isBreakNotAvailable ? styles.buttonDisabled : isBreakPending && styles.buttonPending,
+                                                            ]}
+                                                            disabled={isBreakNotAvailable}
+                                                            activeOpacity={!isBreakNotAvailable ? 0.7 : 1}
+                                                            onPress={() => handleBreakSubmit({ _id: attendanceBreak?._id, breakId: b._id, name: b.name })}
+                                                        >
+                                                            <ThemedText style={[
+                                                                styles.breakButtonText,
+                                                                isBreakNotAvailable ? styles.buttonTextDisabled : isBreakPending && styles.buttonTextPending,
+
+                                                            ]}>{t(isBreakNotAvailable ? 'misc_outside_time' : isBreakPending ? 'misc_finish' : 'misc_to_start')}</ThemedText>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                </Fragment>
+                                            );
+                                        })
+                                ) : (
+                                    <ThemedText style={styles.breakText}>{t('misc_no_breaks')}</ThemedText>
+                                )}
+
+                                {!_.isEmpty(attendance?.pauses ?? []) && (attendance?.pauses?.length ?? 0) > 0 && <>
+                                    <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
+                                    {attendance?.pauses.map((p) => {
+                                        const isPending = p.checkInTime && !p.checkOutTime;
+                                        const realDuration = p.checkInTime && p.checkOutTime ? dayjs(p.checkOutTime).diff(p.checkInTime, 'minutes') : null;
+                                        return (
+                                            <Fragment key={p._id}>
+                                                <View style={styles.breakRow}>
+                                                    <View style={styles.breakInfo}>
+                                                        <ThemedText style={styles.breakText}>
+                                                            {t(p.name)}
+                                                        </ThemedText>
+                                                        <ThemedText style={styles.breakTimeText}>
+                                                            {t('msg_from')}: {dayjs(p.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                        </ThemedText>
+                                                        {p.checkOutTime &&
+                                                            <ThemedText style={styles.breakTimeText}>
+                                                                {t('msg_to')}: {dayjs(p.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                                            </ThemedText>}
+                                                        {_.isNumber(realDuration) && (() => {
+                                                            const durationText = getDiffDurationText(realDuration, noCapT);
+
+                                                            return (
+                                                                <ThemedText style={[styles.breakTimeText]}>
+                                                                    {`${t('misc_duration')}: ${durationText}`}
+                                                                </ThemedText>
+                                                            );
+                                                        })()}
+                                                    </View>
+                                                    {isPending && <TouchableOpacity
+                                                        style={[styles.breakButton, styles.buttonPending]}
+                                                        onPress={() => handleSubmitPause({ _id: p._id })}
+                                                    >
+                                                        <ThemedText style={[styles.breakButtonText]}>{t('misc_finish')}</ThemedText>
+                                                    </TouchableOpacity>}
+                                                </View>
+                                            </Fragment>
+                                        );
+                                    })}
+                                </>}
+
+                                <View style={styles.attendanceInfo}>
+                                    <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
+                                </View>
+                                <View style={styles.attendanceStatusContainer}>
+                                    {attendance?.checkInTime ? <>
+                                        <ThemedText>
+                                            {t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
+                                        </ThemedText>
+                                        {attendanceStatus && !_.isEmpty(attendanceStatus.checkInTime) && <ThemedText style={attendanceStatus.checkInTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
+                                            {t(attendanceStatus.checkInTime.message)}
+                                        </ThemedText>}
+                                    </> : <ThemedText>
+                                        {t('misc_not_checked_in')}
+                                    </ThemedText>}
+                                </View>
+                                <View style={styles.attendanceStatusContainer}>
+                                    {attendance?.checkOutTime ? <>
+                                        <ThemedText>
+                                            {t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
+                                        </ThemedText>
+                                        {attendanceStatus && !_.isEmpty(attendanceStatus.checkOutTime) && <ThemedText style={attendanceStatus.checkOutTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
+                                            {t(attendanceStatus.checkOutTime.message)}
+                                        </ThemedText>}
+                                    </> : <ThemedText>
+                                        {t('misc_not_checked_out')}
+                                    </ThemedText>}
+                                </View>
+                                {!_.isEmpty(runningBreak) ?
+                                    (() => {
+                                        const startTime = dayjs(runningBreak.checkInTime);
+                                        const expectedEndTime = startTime.add(runningBreak.breakHours.duration, 'minutes');
+                                        const timeLeft = expectedEndTime.diff(now, 'minute');
+
+                                        const timeLeftText = getDiffDurationText(timeLeft, noCapT);
+
+                                        return <>
+                                            <ThemedText style={styles.groupHeader}>{t('misc_running_break')}: {t(runningBreak.name)}</ThemedText>
+                                            {expectedEndTime.isAfter(now) ? <ThemedText style={styles.breakDurationText}>
+                                                {t('misc_expected_end_time')}: {expectedEndTime.format('DD/MM/YYYY HH:mm:ss')}
+                                            </ThemedText> : <ThemedText style={{ color: Colors.error }}>
+                                                {t('misc_break_overdue')}: {expectedEndTime.format('DD/MM/YYYY HH:mm:ss')}
+                                            </ThemedText>}
+                                            {expectedEndTime.isAfter(now) && <ThemedText style={styles.breakDurationText}>
+                                                {t('misc_time_left')}: {timeLeftText}
+                                            </ThemedText>}
+                                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: Colors.warning }]} onPress={() => {
+                                                if (typeof runningBreak.type === 'string' && SPECIFIC_BREAKS.includes(runningBreak.type as SpecificBreakTypes)) {
+                                                    if (SPECIFIC_BREAKS.includes(runningBreak.type as SpecificBreakTypes)) {
+                                                        handleSpecificBreakSubmit({ breakKey: runningBreak.type as SpecificBreakTypes, _id: runningBreak._id });
+                                                    }
+                                                } else {
+                                                    handleBreakSubmit({ _id: runningBreak._id, breakId: runningBreak.breakId, name: runningBreak.name })
+                                                }
+                                            }}>
+                                                <ThemedText style={styles.modalButtonText}>{t('misc_finish')}</ThemedText>
+                                            </TouchableOpacity>
+                                        </>
+                                    })()
+                                    : lastestPause ?
+                                        <>
+                                            <ThemedText style={styles.groupHeader}>{t('misc_running_pause')}: {t(lastestPause.name)}</ThemedText>
+                                            <ThemedText>{t('msg_from')}: {dayjs(lastestPause.checkInTime).format('DD/MM/YYYY HH:mm:ss')}</ThemedText>
+                                            <View style={styles.buttonGroup}>
+                                                <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
+                                                    handleSubmitPause({
+                                                        _id: lastestPause._id
+                                                    })
+                                                }}>
+                                                    <ThemedText style={[styles.modalButtonText]}>{t('misc_finish')}</ThemedText>
                                                 </TouchableOpacity>
                                             </View>
-                                        </Fragment>
-                                    );
-                                })
-                        ) : (
-                            <ThemedText style={styles.breakText}>{t('misc_no_breaks')}</ThemedText>
-                        )}
-
-                        {!_.isEmpty(attendance?.pauses ?? []) && (attendance?.pauses?.length ?? 0) > 0 && <>
-                            <ThemedText style={styles.groupHeader}>{t('misc_pauses')}</ThemedText>
-                            {attendance?.pauses.map((p) => {
-                                const isPending = p.checkInTime && !p.checkOutTime;
-                                const realDuration = p.checkInTime && p.checkOutTime ? dayjs(p.checkOutTime).diff(p.checkInTime, 'minutes') : null;
-                                return (
-                                    <Fragment key={p._id}>
-                                        <View style={styles.breakRow}>
-                                            <View style={styles.breakInfo}>
-                                                <ThemedText style={styles.breakText}>
-                                                    {t(p.name)}
-                                                </ThemedText>
-                                                <ThemedText style={styles.breakTimeText}>
-                                                    {t('msg_from')}: {dayjs(p.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                </ThemedText>
-                                                {p.checkOutTime &&
-                                                    <ThemedText style={styles.breakTimeText}>
-                                                        {t('msg_to')}: {dayjs(p.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
-                                                    </ThemedText>}
-                                                {_.isNumber(realDuration) && (() => {
-                                                    const durationText = getDiffDurationText(realDuration, noCapT);
-
-                                                    return (
-                                                        <ThemedText style={[styles.breakTimeText]}>
-                                                            {`${t('misc_duration')}: ${durationText}`}
-                                                        </ThemedText>
-                                                    );
-                                                })()}
+                                        </>
+                                        : !attendance?.checkOutTime && <>
+                                            <View style={styles.buttonGroup}>
+                                                {attendance?.checkInTime && <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
+                                                    handleSubmitPause({
+                                                        _id: undefined
+                                                    })
+                                                }}>
+                                                    <ThemedText style={[styles.modalButtonText]}>{t('misc_pause_shift')}</ThemedText>
+                                                </TouchableOpacity>}
+                                                <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
+                                                    <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
+                                                </TouchableOpacity>
                                             </View>
-                                            {isPending && <TouchableOpacity
-                                                style={[styles.breakButton, styles.buttonPending]}
-                                                onPress={() => handleSubmitPause({ _id: p._id })}
-                                            >
-                                                <ThemedText style={[styles.breakButtonText]}>{t('misc_finish')}</ThemedText>
-                                            </TouchableOpacity>}
-                                        </View>
-                                    </Fragment>
-                                );
-                            })}
-                        </>}
+                                        </>}
+                            </ScrollViewWrapper>
+                            <ReasonPromptModal
+                                title={reasonModalTitle}
+                                diff={diff}
+                                visible={showReasonModal}
+                                onCancel={() => {
+                                    setShowReasonModal(false);
+                                    setCheckoutForm(null);
+                                }}
+                                onConfirm={(data: ReasonData) => {
+                                    if (!checkoutForm) return;
 
-                        <View style={styles.attendanceInfo}>
-                            <ThemedText style={styles.groupHeader}>{t('misc_attendance')}</ThemedText>
-                        </View>
-                        <View style={styles.attendanceStatusContainer}>
-                            {attendance?.checkInTime ? <>
-                                <ThemedText>
-                                    {t('misc_check_in')}: {dayjs(attendance.checkInTime).format('DD/MM/YYYY HH:mm:ss')}
-                                </ThemedText>
-                                {attendanceStatus && !_.isEmpty(attendanceStatus.checkInTime) && <ThemedText style={attendanceStatus.checkInTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
-                                    {t(attendanceStatus.checkInTime.message)}
-                                </ThemedText>}
-                            </> : <ThemedText>
-                                {t('misc_not_checked_in')}
-                            </ThemedText>}
-                        </View>
-                        <View style={styles.attendanceStatusContainer}>
-                            {attendance?.checkOutTime ? <>
-                                <ThemedText>
-                                    {t('misc_check_out')}: {dayjs(attendance.checkOutTime).format('DD/MM/YYYY HH:mm:ss')}
-                                </ThemedText>
-                                {attendanceStatus && !_.isEmpty(attendanceStatus.checkOutTime) && <ThemedText style={attendanceStatus.checkOutTime.isSuccess ? { color: Colors.success } : { color: Colors.error }}>
-                                    {t(attendanceStatus.checkOutTime.message)}
-                                </ThemedText>}
-                            </> : <ThemedText>
-                                {t('misc_not_checked_out')}
-                            </ThemedText>}
-                        </View>
-                        {!_.isEmpty(runningBreak) ?
-                            (() => {
-                                const startTime = dayjs(runningBreak.checkInTime);
-                                const expectedEndTime = startTime.add(runningBreak.breakHours.duration, 'minutes');
-                                const timeLeft = expectedEndTime.diff(now, 'minute');
+                                    if (isSubmittingType === 'attendance') {
+                                        const formWithReason = { ...checkoutForm, ...data };
+                                        setPendingAttendance(formWithReason);
+                                        makeAttendanceMutation.mutate(formWithReason);
+                                    } else if (isSubmittingType === 'pause') {
+                                        const formWithReason = { ...checkoutForm, name: data.reason };
+                                        setPendingAttendance(formWithReason);
+                                        submitPauseMutation.mutate(formWithReason);
+                                    }
 
-                                const timeLeftText = getDiffDurationText(timeLeft, noCapT);
-
-                                return <>
-                                    <ThemedText style={styles.groupHeader}>{t('misc_running_break')}: {t(runningBreak.name)}</ThemedText>
-                                    {expectedEndTime.isAfter(now) ? <ThemedText style={styles.breakDurationText}>
-                                        {t('misc_expected_end_time')}: {expectedEndTime.format('DD/MM/YYYY HH:mm:ss')}
-                                    </ThemedText> : <ThemedText style={{ color: Colors.error }}>
-                                        {t('misc_break_overdue')}: {expectedEndTime.format('DD/MM/YYYY HH:mm:ss')}
-                                    </ThemedText>}
-                                    {expectedEndTime.isAfter(now) && <ThemedText style={styles.breakDurationText}>
-                                        {t('misc_time_left')}: {timeLeftText}
-                                    </ThemedText>}
-                                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: Colors.warning }]} onPress={() => {
-                                        if (typeof runningBreak.type === 'string' && SPECIFIC_BREAKS.includes(runningBreak.type as SpecificBreakTypes)) {
-                                            if (SPECIFIC_BREAKS.includes(runningBreak.type as SpecificBreakTypes)) {
-                                                handleSpecificBreakSubmit({ breakKey: runningBreak.type as SpecificBreakTypes, _id: runningBreak._id });
-                                            }
-                                        } else {
-                                            handleBreakSubmit({ _id: runningBreak._id, breakId: runningBreak.breakId, name: runningBreak.name })
-                                        }
-                                    }}>
-                                        <ThemedText style={styles.modalButtonText}>{t('misc_finish')}</ThemedText>
-                                    </TouchableOpacity>
-                                </>
-                            })()
-                            : lastestPause ?
-                                <>
-                                    <ThemedText style={styles.groupHeader}>{t('misc_running_pause')}: {t(lastestPause.name)}</ThemedText>
-                                    <ThemedText>{t('msg_from')}: {dayjs(lastestPause.checkInTime).format('DD/MM/YYYY HH:mm:ss')}</ThemedText>
-                                    <View style={styles.buttonGroup}>
-                                        <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
-                                            handleSubmitPause({
-                                                _id: lastestPause._id
-                                            })
-                                        }}>
-                                            <ThemedText style={[styles.modalButtonText]}>{t('misc_finish')}</ThemedText>
-                                        </TouchableOpacity>
-                                    </View>
-                                </>
-                                : !attendance?.checkOutTime && <>
-                                    <View style={styles.buttonGroup}>
-                                        {attendance?.checkInTime && <TouchableOpacity style={[styles.modalButton, styles.buttonPending]} onPress={() => {
-                                            handleSubmitPause({
-                                                _id: undefined
-                                            })
-                                        }}>
-                                            <ThemedText style={[styles.modalButtonText]}>{t('misc_pause_shift')}</ThemedText>
-                                        </TouchableOpacity>}
-                                        <TouchableOpacity style={styles.modalButton} onPress={handleCheckIn}>
-                                            <ThemedText style={styles.modalButtonText}>{t(attendance?.checkInTime ? 'misc_check_out' : 'misc_check_in')}</ThemedText>
-                                        </TouchableOpacity>
-                                    </View>
-                                </>}
-                    </ScrollViewWrapper>
+                                    setShowReasonModal(false);
+                                    setCheckoutForm(null);
+                                }}
+                            />
+                        </>
+                    )}
 
                     <View style={styles.fixedFooter}>
                         <TouchableOpacity
@@ -990,33 +1025,6 @@ const ShiftSelectModal = () => {
                             <ThemedText style={styles.modalButtonText}>{t('misc_close')}</ThemedText>
                         </TouchableOpacity>
                     </View>
-                    <ReasonPromptModal
-                        title={reasonModalTitle}
-                        diff={diff}
-                        visible={showReasonModal}
-                        onCancel={() => {
-                            setShowReasonModal(false);
-                            setCheckoutForm(null);
-                        }}
-                        onConfirm={(data: ReasonData) => {
-                            if (isSubmittingType === 'attendance') {
-                                if (checkoutForm) {
-                                    const formWithReason = { ...checkoutForm, ...data };
-                                    setPendingAttendance(formWithReason);
-                                    makeAttendanceMutation.mutate(formWithReason);
-                                }
-                            } else {
-                                if (checkoutForm) {
-                                    const formWithReason = { ...checkoutForm, name: data.reason };
-                                    setPendingAttendance(formWithReason);
-                                    submitPauseMutation.mutate(formWithReason);
-                                }
-                            }
-                            setShowReasonModal(false);
-                            setCheckoutForm(null);
-                        }}
-                    />
-
                 </View>
             </ThemedView>
         </Modal>

@@ -2278,6 +2278,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-picker/picker@npm:2.9.0":
+  version: 2.9.0
+  resolution: "@react-native-picker/picker@npm:2.9.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/a7b64b1073a2a31f2efdcdd767316312a55516c80f2f6a48f3110875f6029b82cf9067fbea1da3df2ee992233f8aed23928f39ee935ef80c9c20ce06bb836303
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:0.76.9":
   version: 0.76.9
   resolution: "@react-native/assets-registry@npm:0.76.9"
@@ -9219,6 +9229,7 @@ __metadata:
     "@expo/vector-icons": "npm:^14.1.0"
     "@hookform/resolvers": "npm:^5.0.1"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
+    "@react-native-picker/picker": "npm:2.9.0"
     "@react-navigation/native": "npm:^7.0.14"
     "@tanstack/react-query": "npm:^5.74.4"
     "@types/jest": "npm:^29.5.14"

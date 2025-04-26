@@ -24,7 +24,6 @@ import ShiftSelectModal from './ShiftSelectModal';
 import { Attendance } from '@/types/attendance';
 import { useNotificationScheduler } from '@/hooks/useNotificationScheduler';
 import { SPECIFIC_BREAKS, specificBreakTranslations } from '@/constants/SpecificBreak';
-
 import ScrollToBottomButton from './ScrollToBottomButton';
 
 dayjs.extend(isBetween);
@@ -34,10 +33,10 @@ dayjs.extend(customParseFormat);
 const TodayCompanies = () => {
   const { t } = useTranslation();
   const { t: nonCap } = useTranslation({ capitalize: false });
-  const { location, appId, urls, isGettingLocation, setSelectedShift, setIsShiftModalOpen } = useAppStore();
+  const { location, appId, urls, isGettingLocation, setSelectedShift } = useAppStore();
   const { getTodayWorkplaces } = useCompaniesApi();
-
   const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme === 'dark' ? 'dark' : 'light');
   const scrollViewRef = useRef<FlatList>(null);
   const [showScrollArrow, setShowScrollArrow] = useState(false);
   const now = dayjs();
@@ -180,7 +179,6 @@ const TodayCompanies = () => {
 
   const handleOpenShiftSelection = ({ shift, workplace }: { shift: Shift, workplace: TodayWorkplace }) => {
     setSelectedShift({ shift, workplace });
-    setIsShiftModalOpen(true);
   }
 
   const handleScroll = (event: { nativeEvent: { contentSize: { height: number; width: number }; layoutMeasurement: { height: number; width: number }; contentOffset: { x: number; y: number } } }) => {
@@ -405,11 +403,7 @@ const TodayCompanies = () => {
                                     : 'schedule'
                               }
                               size={18}
-                              color={
-                                shift.pendingStatus === 'pause' ? Colors.warning
-                                  : shift.pendingStatus === 'break' ? Colors.info
-                                    : Colors.primary
-                              }
+                              color={Colors.warning}
                               style={{ position: 'absolute', top: 6, right: 6 }}
                             />
                           )}
@@ -464,7 +458,7 @@ const TodayCompanies = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: 'light' | 'dark') => StyleSheet.create({
   nearbyContainer: {
     paddingHorizontal: 10,
     flex: 1,
@@ -497,7 +491,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: Colors[theme].border,
     borderRadius: 8,
   },
   companyDayText: {
@@ -513,7 +507,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#ccc',
+    backgroundColor: Colors[theme].border,
     marginVertical: 8,
   },
   shiftItem: {
@@ -533,12 +527,12 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   finishedShift: {
-    borderColor: Colors.secondary,
-    backgroundColor: `${Colors.secondary}20`,
+    borderColor: Colors[theme].textSecondary,
+    backgroundColor: `${Colors[theme].textSecondary}20`,
   },
 
   finishedText: {
-    color: Colors.secondary,
+    color: Colors[theme].textSecondary,
     textDecorationLine: 'line-through',
   },
 });
