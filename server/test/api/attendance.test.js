@@ -766,7 +766,7 @@ describe('Attendance Tests', () => {
                 userId: user._id,
             }));
 
-            await getDailyAttendance({ registerId: register._id, isCreating: true });
+            await getDailyAttendance({ registerId: register._id });
 
             for (let i = 0; i < 15; i++) {
                 await new Attendance({
@@ -838,7 +838,7 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should create daily attendance with expected employees', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
 
         expect(dailyAttendance).toBeDefined();
         expect(dailyAttendance.expectedShifts.length).toBeGreaterThan(0);
@@ -846,7 +846,7 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should correctly increment checkedInOnTime for employee', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
 
         expect(dailyAttendance.checkedInOnTime).toBe(0);
 
@@ -861,7 +861,7 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should correctly increment checkedInLate for employee', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
 
         dailyAttendance.checkedInLate += 1;
         dailyAttendance.checkedInLateByEmployee.set(employee._id.toString(), 1);
@@ -874,7 +874,7 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should correctly increment checkedOutEarly for employee', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
 
         dailyAttendance.checkedOutEarly += 1;
         dailyAttendance.checkedOutEarlyByEmployee.set(employee._id.toString(), 1);
@@ -887,19 +887,22 @@ describe('DailyAttendance Aggregation Tests', () => {
     });
 
     test('should correctly track workingHoursByEmployee', async () => {
-        const dailyAttendance = await getDailyAttendance({ registerId: register._id, isCreating: true });
+        const dailyAttendance = await getDailyAttendance({ registerId: register._id });
         const shiftId = ObjectId.createFromHexString(workingAt.shifts.get(DAYS_OF_WEEK[fixedDay])[0]._id.toString())
         const employeeId = ObjectId.createFromHexString(employee._id.toString());
         dailyAttendance.workingHoursByEmployee.push({
             employeeId,
             shiftId,
-            minutes: 300,
+            totalWorkedMinutes: 300,
+            totalBreakMinutes: 10,
+            totalExpectedBreakMinutes: 80,
+            totalPauseMinutes: 20,
         }); // 300 minutes = 5 hours
         await dailyAttendance.save();
 
         const refreshed = await DailyAttendance.findById(dailyAttendance._id).lean();
 
-        expect(refreshed.workingHoursByEmployee.find((e) => e.employeeId.equals(employeeId) && e.shiftId.equals(shiftId)).minutes).toBe(300);
+        expect(refreshed.workingHoursByEmployee.find((e) => e.employeeId.equals(employeeId) && e.shiftId.equals(shiftId)).totalWorkedMinutes).toBe(300);
     });
 });
 
@@ -1053,6 +1056,6 @@ describe('DailyAttendance Real Aggregation Tests (via makeAttendance)', () => {
             e.shiftId.toString() === shift._id.toString()
         );
         expect(workingHoursEntry).toBeDefined();
-        expect(workingHoursEntry.minutes).toBeGreaterThan(0);
+        expect(workingHoursEntry.totalWorkedMinutes).toBeGreaterThan(0);
     });
 });
