@@ -684,5 +684,8 @@ const utils = {
     calculateTotalWorkedMinutes: (attendanceId) => {
         return calculateTotalWorkedMinutes(attendanceId)
     },
+    mapToObj: (map) => {
+        return Object.fromEntries(map);
+    }
 }
 module.exports = utils

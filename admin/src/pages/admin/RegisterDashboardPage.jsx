@@ -78,8 +78,13 @@ const RegisterDashboardPage = () => {
     }, [registerId, start, end, handleSubmit, onSubmit])
 
     const csvData = aggregation?.employees?.map((employee) => {
-        const actualMinutes = aggregation.workingHoursByEmployee?.[employee._id] || 0;
-        const expectedMinutes = aggregation.expectedWorkingHoursByEmployee?.[employee._id] || 0;
+        const actualWorkedMinutes = aggregation.workedMinutesByEmployee?.[employee._id] || 0;
+        const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0;
+        const actualBreakMinutes = aggregation.breakMinutesByEmployee?.[employee._id] || 0;
+        const expectedBreakMinutes = aggregation.expectedBreakMinutesByEmployee?.[employee._id] || 0;
+        const actualPauseMinutes = aggregation.pauseMinutesByEmployee?.[employee._id] || 0;
+
+
         const actualShiftAmount = aggregation.actualShiftsAmountByEmployee?.[employee._id] || 0;
         const expectedShiftAmount = aggregation.expectedShiftsAmountByEmployee?.[employee._id] || 0;
 
@@ -88,8 +93,11 @@ const RegisterDashboardPage = () => {
             email: employee.email,
             actualShiftAmount,
             expectedShiftAmount,
-            actualMinutes,
-            expectedMinutes,
+            actualWorkedMinutes,
+            expectedWorkedMinutes,
+            actualBreakMinutes,
+            expectedBreakMinutes,
+            actualPauseMinutes,
         };
     }) || [];
 
@@ -272,12 +280,24 @@ const RegisterDashboardPage = () => {
                                                     <TableCell align="right">{aggregation.missingCheckOut}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
+                                                    <TableCell>{t('misc_total_expected_break_hours')}</TableCell>
+                                                    <TableCell align="right">{(aggregation.totalExpectedBreakMinutes / 60).toFixed(2)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>{t('misc_total_actual_break_hours')}</TableCell>
+                                                    <TableCell align="right">{(aggregation.totalBreakMinutes / 60).toFixed(2)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>{t('misc_total_actual_pause_hours')}</TableCell>
+                                                    <TableCell align="right">{(aggregation.totalPauseMinutes / 60).toFixed(2)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
                                                     <TableCell>{t('misc_total_expected_worked_hours')}</TableCell>
-                                                    <TableCell align="right">{(aggregation.totalExpectedWorkingHours / 60).toFixed(2)}</TableCell>
+                                                    <TableCell align="right">{(aggregation.totalExpectedWorkedMinutes / 60).toFixed(2)}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell>{t('misc_total_actual_worked_hours')}</TableCell>
-                                                    <TableCell align="right">{(aggregation.totalWorkingMinutes / 60).toFixed(2)}</TableCell>
+                                                    <TableCell align="right">{(aggregation.totalWorkedMinutes / 60).toFixed(2)}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -294,7 +314,7 @@ const RegisterDashboardPage = () => {
                                                 {csvData.length && <Stack direction="row" justifyContent="flex-end" mb={2}>
                                                     <CSVLink
                                                         data={csvData}
-                                                        filename={`attendance-${start.toString()}-${end.toString()}-${registerId}.csv`}
+                                                        filename={`attendance-${start.toString()}-${end.toString()}-${register.name.replace(/\s+/g, '_')}.csv`}
                                                         target="_blank"
                                                         style={{ textDecoration: 'none' }}
                                                     >
@@ -311,21 +331,33 @@ const RegisterDashboardPage = () => {
                                                             <TableCell>{t('misc_employee')}</TableCell>
                                                             <TableCell align="right">{t('misc_actual_shift_amount')}</TableCell>
                                                             <TableCell align="right">{t('misc_expected_shift_amount')}</TableCell>
-                                                            <TableCell align="right">{t('misc_actual_worked_hours')} ({t('misc_hour').toLowerCase()})</TableCell>
-                                                            <TableCell align="right">{t('misc_expected_worked_hours')} ({t('misc_hour').toLowerCase()})</TableCell>
+                                                            <TableCell align="right">{t('misc_actual_break_hours')}</TableCell>
+                                                            <TableCell align="right">{t('misc_expected_break_hours')}</TableCell>
+                                                            <TableCell align="right">{t('misc_actual_pause_hours')}</TableCell>
+                                                            <TableCell align="right">{t('misc_actual_worked_hours')}</TableCell>
+                                                            <TableCell align="right">{t('misc_expected_worked_hours')}</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {aggregation.employees.map((employee) => {
-                                                            const actualMinutes = aggregation.workingHoursByEmployee?.[employee._id] || 0;
-                                                            const expectedMinutes = aggregation.expectedWorkingHoursByEmployee?.[employee._id] || 0;
-                                                            const actualHours = actualMinutes / 60;
-                                                            const expectedHours = expectedMinutes / 60;
-                                                            const isLess = actualHours < expectedHours;
+                                                            const actualWorkedMinutes = aggregation.workedMinutesByEmployee?.[employee._id] || 0;
+                                                            const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0;
+                                                            const actualBreakMinutes = aggregation.breakMinutesByEmployee?.[employee._id] || 0;
+                                                            const expectedBreakMinutes = aggregation.expectedBreakMinutesByEmployee?.[employee._id] || 0;
+                                                            const actualPauseMinutes = aggregation.pauseMinutesByEmployee?.[employee._id] || 0;
+
+                                                            const actualWorkedHours = actualWorkedMinutes / 60;
+                                                            const expectedHours = expectedWorkedMinutes / 60;
+                                                            const isLess = actualWorkedMinutes < expectedWorkedMinutes;
+
+                                                            const actualBreakHours = actualBreakMinutes / 60;
+                                                            const expectedBreakHours = expectedBreakMinutes / 60;
+                                                            const actualPauseHours = actualPauseMinutes / 60;
+
                                                             const actualShiftAmount = aggregation.actualShiftsAmountByEmployee?.[employee._id] || 0;
                                                             const expectedShiftAmount = aggregation.expectedShiftsAmountByEmployee?.[employee._id] || 0;
                                                             const isShiftAmountLess = actualShiftAmount < expectedShiftAmount;
-                                                            
+
                                                             return (
                                                                 <TableRow key={employee._id} onClick={() => navigate(`/employee/${employee._id}`)} sx={{ cursor: 'pointer' }}>
                                                                     <TableCell>
@@ -343,8 +375,23 @@ const RegisterDashboardPage = () => {
                                                                         </Typography>
                                                                     </TableCell>
                                                                     <TableCell align="right">
+                                                                        <Typography color={actualBreakHours > expectedBreakHours ? 'error' : 'success.main'}>
+                                                                            {actualBreakHours.toFixed(2)}
+                                                                        </Typography>
+                                                                    </TableCell>
+                                                                    <TableCell align="right">
+                                                                        <Typography>
+                                                                            {expectedBreakHours.toFixed(2)}
+                                                                        </Typography>
+                                                                    </TableCell>
+                                                                    <TableCell align="right">
+                                                                        <Typography color={actualPauseHours > 0 ? 'error' : 'success.main'}>
+                                                                            {actualPauseHours.toFixed(2)}
+                                                                        </Typography>
+                                                                    </TableCell>
+                                                                    <TableCell align="right">
                                                                         <Typography color={isLess ? 'error' : 'success.main'}>
-                                                                            {actualHours.toFixed(2)}
+                                                                            {actualWorkedHours.toFixed(2)}
                                                                         </Typography>
                                                                     </TableCell>
                                                                     <TableCell align="right">
@@ -364,23 +411,24 @@ const RegisterDashboardPage = () => {
                             {aggregation.employees?.length > 0 && (
                                 <Card>
                                     <CardContent>
-                                        <Typography variant="h6" mb={2}>{t('misc_comparison_actual_expected')}</Typography>
+                                        <Typography variant="h6" mb={2}>{t('misc_comparison_actual_expected_worked_hours')}</Typography>
                                         <ResponsiveContainer width="100%" height={400}>
                                             <BarChart
                                                 data={aggregation.employees.map((employee) => ({
                                                     name: employee.name,
-                                                    actual: (aggregation.workingHoursByEmployee?.[employee._id] || 0) / 60,
-                                                    expected: (aggregation.expectedWorkingHoursByEmployee?.[employee._id] || 0) / 60,
+                                                    actual: (aggregation.workedMinutesByEmployee?.[employee._id] || 0) / 60,
+                                                    expected: (aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0) / 60,
                                                 }))}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
                                                 <XAxis dataKey="name" />
                                                 <YAxis label={{ value: t('misc_hours'), angle: -90, position: 'insideLeft' }} />
                                                 <Tooltip formatter={(value) => `${value.toFixed(2)} ${t('misc_hour_short').toLowerCase()}`} />
-                                                <Bar dataKey="actual" name={t('misc_actual_working_time')} />
-                                                <Bar dataKey="expected" name={t('misc_expected_working_time')} />
+                                                <Bar dataKey="actual" name={t('misc_actual_working_time')} fill="#82ca9d" />
+                                                <Bar dataKey="expected" name={t('misc_expected_working_time')} fill="#8884d8" />
                                             </BarChart>
                                         </ResponsiveContainer>
+
                                     </CardContent>
                                 </Card>
                             )}

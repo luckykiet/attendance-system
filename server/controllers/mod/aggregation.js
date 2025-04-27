@@ -47,7 +47,11 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
             totalDays: dailyAttendances.length || 0,
             totalExpectedShifts: 0,
             totalAttendances: 0,
-            totalExpectedWorkingHours: 0,
+            totalExpectedWorkedMinutes: 0,
+            totalExpectedBreakMinutes: 0,
+            totalWorkedMinutes: 0,
+            totalBreakMinutes: 0,
+            totalPauseMinutes: 0,
 
             checkedInOnTime: 0,
             checkedInLate: 0,
@@ -57,9 +61,13 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
             checkedOutEarly: 0,
             missingCheckOut: 0,
 
-            totalWorkingMinutes: 0,
-            workingHoursByEmployee: new Map(),
-            expectedWorkingHoursByEmployee: new Map(),
+
+            expectedWorkedMinutesByEmployee: new Map(),
+            workedMinutesByEmployee: new Map(),
+            expectedBreakMinutesByEmployee: new Map(),
+            breakMinutesByEmployee: new Map(),
+            pauseMinutesByEmployee: new Map(),
+
             expectedShiftsAmountByEmployee: new Map(),
             actualShiftsAmountByEmployee: new Map(),
             employees: [],
@@ -84,82 +92,55 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
             aggregation.missingCheckOut += daily.missingEmployees ? daily.missingEmployees.length : 0;
 
             if (Array.isArray(daily.expectedShifts)) {
-                const expectedWorkingMinutesByEmployee = new Map();
-                const expectedShiftsAmountByEmployee = new Map();
-
                 daily.expectedShifts.forEach(({ employeeId, start, end }) => {
                     const empId = employeeId.toString();
                     if (!employeeIds.has(empId)) {
                         employeeIds.add(empId);
                     }
-                    if (!expectedShiftsAmountByEmployee.has(empId)) {
-                        expectedShiftsAmountByEmployee.set(empId, 0);
+                    if (!aggregation.expectedShiftsAmountByEmployee.has(empId)) {
+                        aggregation.expectedShiftsAmountByEmployee.set(empId, 0);
                     }
-                    expectedShiftsAmountByEmployee.set(empId, expectedShiftsAmountByEmployee.get(empId) + 1);
-
-                    if (!expectedWorkingMinutesByEmployee.has(empId)) {
-                        expectedWorkingMinutesByEmployee.set(empId, 0);
-                    }
+                    aggregation.expectedShiftsAmountByEmployee.set(empId, aggregation.expectedShiftsAmountByEmployee.get(empId) + 1);
+                    aggregation.totalExpectedShifts += 1;
 
                     const shiftTime = utils.getStartEndTime({ start, end, baseDay: dayjs(daily.date.toString(), DATE_FORMAT) });
                     if (shiftTime) {
                         const { startTime, endTime } = shiftTime;
                         const minutes = endTime.diff(startTime, 'minute');
-                        expectedWorkingMinutesByEmployee.set(empId, expectedWorkingMinutesByEmployee.get(empId) + minutes);
+                        if (!aggregation.expectedWorkedMinutesByEmployee.has(empId)) {
+                            aggregation.expectedWorkedMinutesByEmployee.set(empId, 0);
+                        }
+                        aggregation.expectedWorkedMinutesByEmployee.set(empId, aggregation.expectedWorkedMinutesByEmployee.get(empId) + minutes);
+                        aggregation.totalExpectedWorkedMinutes += minutes;
                     }
-                });
-
-
-                expectedWorkingMinutesByEmployee.forEach((minutes, empId) => {
-                    if (!aggregation.expectedWorkingHoursByEmployee.has(empId)) {
-                        aggregation.expectedWorkingHoursByEmployee.set(empId, 0);
-                    }
-                    aggregation.expectedWorkingHoursByEmployee.set(
-                        empId,
-                        aggregation.expectedWorkingHoursByEmployee.get(empId) + minutes
-                    );
-                    aggregation.totalExpectedWorkingHours += minutes;
-                });
-
-                expectedShiftsAmountByEmployee.forEach((amount, empId) => {
-                    if (!aggregation.expectedShiftsAmountByEmployee.has(empId)) {
-                        aggregation.expectedShiftsAmountByEmployee.set(empId, 0);
-                    }
-                    aggregation.expectedShiftsAmountByEmployee.set(
-                        empId,
-                        aggregation.expectedShiftsAmountByEmployee.get(empId) + amount
-                    );
-                    aggregation.totalExpectedWorkingHours += amount;
                 });
             }
 
             if (Array.isArray(daily.workingHoursByEmployee)) {
-                const dailyWorkingMinutesByEmployee = new Map();
+                const keys = {
+                    workedMinutesByEmployee: 'totalWorkedMinutes',
+                    expectedBreakMinutesByEmployee: 'totalExpectedBreakMinutes',
+                    breakMinutesByEmployee: 'totalBreakMinutes',
+                    pauseMinutesByEmployee: 'totalPauseMinutes'
+                };
 
-                daily.workingHoursByEmployee.forEach(({ employeeId, minutes }) => {
+                daily.workingHoursByEmployee.forEach((workingHour) => {
+                    const { employeeId, ...rest } = workingHour.toObject();
                     const empId = employeeId.toString();
-                    if (!dailyWorkingMinutesByEmployee.has(empId)) {
-                        dailyWorkingMinutesByEmployee.set(empId, 0);
-                    }
-                    dailyWorkingMinutesByEmployee.set(empId, dailyWorkingMinutesByEmployee.get(empId) + minutes);
-                });
-
-                dailyWorkingMinutesByEmployee.forEach((minutes, empId) => {
-                    if (!aggregation.workingHoursByEmployee.has(empId)) {
-                        aggregation.workingHoursByEmployee.set(empId, 0);
-                    }
-                    aggregation.workingHoursByEmployee.set(
-                        empId,
-                        aggregation.workingHoursByEmployee.get(empId) + minutes
-                    );
-                    aggregation.totalWorkingMinutes += minutes;
+                    console.log(rest)
+                    Object.entries(keys).forEach(([mapKey, fieldKey]) => {
+                        if (!aggregation[mapKey].has(empId)) {
+                            aggregation[mapKey].set(empId, 0);
+                        }
+                        const value = rest[fieldKey] || 0;
+                        aggregation[mapKey].set(empId, aggregation[mapKey].get(empId) + value);
+                        aggregation[fieldKey] += value;
+                    });
                 });
             }
 
             if (Array.isArray(daily.attendanceIds)) {
-                const actualShiftsAmountByEmployee = new Map();
                 daily.attendanceIds.forEach(attendanceId => {
-
                     const attendance = attendances.find(att => att._id.equals(attendanceId));
 
                     if (!attendance) return;
@@ -169,42 +150,12 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
 
                     const empId = workingAt.employeeId.toString();
 
-                    if (!actualShiftsAmountByEmployee.has(empId)) {
-                        actualShiftsAmountByEmployee.set(empId, 0);
-                    }
-                    actualShiftsAmountByEmployee.set(empId, actualShiftsAmountByEmployee.get(empId) + 1);
-                });
-
-                actualShiftsAmountByEmployee.forEach((amount, empId) => {
                     if (!aggregation.actualShiftsAmountByEmployee.has(empId)) {
                         aggregation.actualShiftsAmountByEmployee.set(empId, 0);
                     }
-                    aggregation.actualShiftsAmountByEmployee.set(
-                        empId,
-                        aggregation.actualShiftsAmountByEmployee.get(empId) + amount
-                    );
+                    aggregation.actualShiftsAmountByEmployee.set(empId, aggregation.actualShiftsAmountByEmployee.get(empId) + 1);
                 });
             }
-        });
-
-        const workingHoursByEmployeeObj = {};
-        aggregation.workingHoursByEmployee.forEach((minutes, employeeId) => {
-            workingHoursByEmployeeObj[employeeId] = minutes;
-        });
-
-        const expectedWorkingHoursByEmployeeObj = {};
-        aggregation.expectedWorkingHoursByEmployee.forEach((minutes, employeeId) => {
-            expectedWorkingHoursByEmployeeObj[employeeId] = minutes;
-        });
-
-        const expectedShiftsAmountByEmployeeObj = {};
-        aggregation.expectedShiftsAmountByEmployee.forEach((amount, employeeId) => {
-            expectedShiftsAmountByEmployeeObj[employeeId] = amount;
-        });
-
-        const actualShiftsAmountByEmployeeObj = {};
-        aggregation.actualShiftsAmountByEmployee.forEach((amount, employeeId) => {
-            actualShiftsAmountByEmployeeObj[employeeId] = amount;
         });
 
         const employees = await Employee.find({
@@ -217,14 +168,17 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
             phone: 1,
         }).lean();
 
+
+        for (const key in aggregation) {
+            if (aggregation[key] instanceof Map) {
+                aggregation[key] = utils.mapToObj(aggregation[key]);
+            }
+        }
+
         return res.status(200).json({
             success: true,
             msg: {
                 ...aggregation,
-                workingHoursByEmployee: workingHoursByEmployeeObj,
-                expectedWorkingHoursByEmployee: expectedWorkingHoursByEmployeeObj,
-                expectedShiftsAmountByEmployee: expectedShiftsAmountByEmployeeObj,
-                actualShiftsAmountByEmployee: actualShiftsAmountByEmployeeObj,
                 employees
             }
         });
@@ -233,7 +187,6 @@ const getAttendanceAggregationRegisterAndByRange = async (req, res, next) => {
         return next(utils.parseExpressErrors(error, 'srv_attendance_aggregation_failed', 500));
     }
 };
-
 
 module.exports = {
     getAttendanceAggregationRegisterAndByRange,

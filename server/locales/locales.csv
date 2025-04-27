@@ -18,7 +18,9 @@ misc_about_us	About	Thông tin	O nás
 misc_accomodation	accomodation	chỗ ở	ubytování
 misc_account_number	Account number	Số tài khoản	Číslo účtu
 misc_active	active	trực tiếp	aktivní
+misc_actual_break_hours	Actual break hours	Giờ nghỉ thực tế	Reálný počet hodin přestávek
 misc_actual_break_time	actual break time	thời gian nghỉ thực tế	reálná doba přestávky
+misc_actual_pause_hours	Actual pause hours	Giờ tạm dừng thực tế	Reálný počet hodin přerušení
 misc_actual_pause_time	actual pause time	thời gian tạm dừng thực tế	reálný čas přerušení
 misc_actual_shift_amount	Actual shift amount	Số ca thực tế	Současný počet směn
 misc_actual_worked_hours	Actual worked hours	Giờ làm việc thực tế	Skutečně odpracovaných hodin
@@ -135,6 +137,7 @@ misc_commercial_activity	commercial activity	hoạt động thương mại	obcho
 misc_companies	Company	Công ty	Firmy
 misc_company	Company	Công ty	Firma
 misc_comparison_actual_expected	comparison actual expected	so sánh thực tế và mong muốn	porovnání skutečného a očekávaného
+misc_comparison_actual_expected_worked_hours	Comparison of actual and expected worked hours	so sánh giờ làm việc thực tế và dự kiến	srovnání skutečných a očekávaných odpracovaných hodin
 misc_confirm	Confirm	Xác nhận	Potvrdit
 misc_confirm_cancel_device_pairing	Confirm cancel device pairing	Xác nhận hủy kết nối thiết bị	Potvrdit zrušení párování zařízení
 misc_confirm_check_in	confirm check in	xác nhận check in	potvrdit příchod
@@ -220,6 +223,7 @@ misc_example	example	ví dụ	příklad
 misc_examples	examples	ví dụ	příklady
 misc_exceeded_time	exceeded time	vượt quá thời gian	překročen čas
 misc_expected	expected	mong muốn	očekávaný
+misc_expected_break_hours	Expected break hours	Giờ nghỉ dự kiến	Očekávaný počet hodin přestávek
 misc_expected_end_time	Expected end time	Thời gian kết thúc dự kiến	Předpokládaný čas ukončení
 misc_expected_shift_amount	Expected shift amount	Số ca dự kiến	Předpokládaný počet směn
 misc_expected_worked_hours	Expected worked hours	Số giờ làm việc dự kiến	Počet očekávaných hodin práce
@@ -642,9 +646,12 @@ misc_today	today	hôm nay	dnes
 misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
+misc_total_actual_break_hours	Total actual break hours	Tổng thời gian nghỉ thực tế	Celkový počet skutečných hodin přestávky
+misc_total_actual_pause_hours	Total actual pause hours	Tổng thời gian tạm dừng thực tế	Celkový počet skutečných hodin přerušení
 misc_total_actual_worked_hours	Total actual worked hours	Tổng số giờ làm việc thực tế	Celkový počet skutečně odpracovaných hodin
 misc_total_attendances	Total attendances	Tổng số điểm danh	Celkový počet docházek
 misc_total_days	Total days	Tổng số ngày	Celkový počet dní
+misc_total_expected_break_hours	Total expected break hours	Tổng thời gian nghỉ dự kiến	Celkový počet očekávaných hodin přestávky
 misc_total_expected_shifts	Total expected shifts	Tổng số ca làm việc mong đợi	Celkový počet očekávaných směn
 misc_total_expected_worked_hours	Total expected worked hours	Tổng số giờ làm việc dự kiến	Celkový počet očekávaných hodiny práce
 misc_total_price	total price	tiền tổng	celková částka
