@@ -16,7 +16,7 @@ const DailyAttendanceSchema = new Schema(
         start: { type: String, required: true },
         end: { type: String, required: true },
         isOverNight: { type: Boolean, default: false },
-        allowedOvertime: { type: Number, default: 0 }, // in minutes
+        allowedOverTime: { type: Number, default: 0 }, // in minutes
       }
     ],
 
@@ -41,7 +41,10 @@ const DailyAttendanceSchema = new Schema(
       {
         employeeId: { type: Schema.Types.ObjectId, required: true },
         shiftId: { type: Schema.Types.ObjectId, required: true },
-        minutes: { type: Number, required: true },
+        totalWorkedMinutes: { type: Number, required: true },
+        totalBreakMinutes: { type: Number, required: true },
+        totalExpectedBreakMinutes: { type: Number, required: true },
+        totalPauseMinutes: { type: Number, required: true },
       }
     ],
 

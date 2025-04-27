@@ -249,6 +249,108 @@ const isBreakWithinShift = ({
     return bStart.isBefore(sEnd) && bEnd.isAfter(sStart);
 };
 
+const calculateTotalWorkedMinutes = async (attendanceId) => {
+    const getLogger = utils.getLogger;
+    const logger = getLogger(__filename);
+    try {
+        const attendance = await Attendance.findOne({ _id: attendanceId }).exec();
+
+        if (!attendance) {
+            throw new Error('Attendance not found');
+        }
+        const dailyAttendance = await DailyAttendance.findOne({ _id: attendance.dailyAttendanceId }).exec();
+
+        if (!dailyAttendance) {
+            throw new Error('Daily attendance not found');
+        }
+
+        const workingAt = await WorkingAt.findOne({ _id: attendance.workingAtId }).exec();
+
+        if (!workingAt) {
+            throw new Error('WorkingAt not found');
+        }
+
+        let needUpdate = false;
+        const shiftTime = getStartEndTime({
+            start: attendance.start,
+            end: attendance.end,
+            timeFormat: TIME_FORMAT,
+            baseDay: dayjs(dailyAttendance.date.toString(), DATE_FORMAT, true),
+        });
+
+        if (!shiftTime) {
+            throw new Error('Invalid shift time');
+        }
+
+        const { endTime: shiftEnd } = shiftTime;
+
+        if (!attendance.checkOutTime) {
+            if (shiftEnd.isAfter(dayjs())) {
+                throw new Error('Shift end time is in the future');
+            }
+            needUpdate = true;
+            attendance.checkOutTime = shiftEnd.clone().toDate();
+            dailyAttendance.checkedOutOnTime += 1;
+            dailyAttendance.checkedOutOnTimeByEmployee.set(workingAt.employeeId, (dailyAttendance.checkedOutOnTimeByEmployee.get(workingAt.employeeId) || 0) + 1);
+        }
+
+        const checkIn = dayjs(attendance.checkInTime);
+        const checkOut = dayjs(attendance.checkOutTime);
+
+        const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: dayjs(dailyAttendance.date.toString(), DATE_FORMAT, true) });
+
+        if (!attendanceTime) {
+            throw new Error('Invalid attendance time');
+        }
+
+        const totalWorkedMinutes = checkOut.diff(checkIn, 'minute');
+
+        let totalExpectedBreakMinutes = 0;
+        let totalBreakMinutes = 0;
+        let totalPauseMinutes = 0;
+
+        attendance.breaks?.forEach(b => {
+            const breakDuration = b.breakHours?.duration || 0;
+            if (breakDuration) {
+                if (!b.checkOutTime) {
+                    b.checkOutTime = attendanceTime.endTime.toDate();
+                    needUpdate = true;
+                }
+                totalExpectedBreakMinutes += breakDuration;
+                const realDuration = dayjs(b.checkOutTime).diff(dayjs(b.checkInTime), 'minute');
+                totalBreakMinutes += realDuration;
+            }
+        });
+
+        attendance.pauses?.forEach(p => {
+            if (!p.checkOutTime) {
+                p.checkOutTime = attendanceTime.endTime.toDate();
+                needUpdate = true;
+            }
+            const realDuration = dayjs(p.checkOutTime).diff(dayjs(p.checkInTime), 'minute');
+            totalPauseMinutes += realDuration;
+        });
+
+        if (needUpdate) {
+            await attendance.save();
+        }
+
+        return {
+            success: true,
+            msg: {
+                totalWorkedMinutes,
+                totalBreakMinutes,
+                totalExpectedBreakMinutes,
+                totalPauseMinutes,
+            }
+        };
+    } catch (error) {
+        logger.error(`Error calculating total worked minutes: ${error.message}`);
+        return { success: false, error: error.message };
+
+    }
+}
+
 const finalizeDailyAttendanceAggregation = async (date) => {
     const getLogger = utils.getLogger;
     const logger = getLogger(__filename);
@@ -267,7 +369,7 @@ const finalizeDailyAttendanceAggregation = async (date) => {
                 continue;
             }
 
-            const attendanceDocs = await Attendance.find({ dailyAttendanceId: daily._id }).exec();
+            const attendanceDocs = await Attendance.find({ _id: { $in: daily.attendanceIds } }).exec();
             if (!daily.missingEmployees) daily.missingEmployees = [];
 
             for (const expected of daily.expectedShifts || []) {
@@ -283,69 +385,29 @@ const finalizeDailyAttendanceAggregation = async (date) => {
                     continue;
                 }
 
-                let needUpdate = false;
-                const shiftEnd = dayjs(attendance.end, TIME_FORMAT);
-
-                if (!attendance.checkOutTime) {
-                    needUpdate = true;
-                    const employeeId = expected.employeeId.toString();
-                    attendance.checkOutTime = shiftEnd
-                        .day(targetDate.day())
-                        .month(targetDate.month())
-                        .year(targetDate.year())
-                        .toDate();
-                    daily.checkedOutOnTime += 1;
-                    daily.checkedOutOnTimeByEmployee.set(employeeId, (daily.checkedOutOnTimeByEmployee.get(employeeId) || 0) + 1);
-                }
-
-                const checkIn = dayjs(attendance.checkInTime);
-                const checkOut = dayjs(attendance.checkOutTime);
-                let totalExceededBreaks = 0;
-                let totalPauses = 0;
-
-                const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: targetDate });
-                if (!attendanceTime) {
-                    logger.warn(`Invalid attendance time for employee ${expected.employeeId} on date ${date}`);
+                const calculatedWorkedMinutes = await calculateTotalWorkedMinutes(attendance._id);
+                if (!calculatedWorkedMinutes.success) {
+                    logger.error(`Error calculating worked minutes for attendance ${attendance._id}: ${calculatedWorkedMinutes.error}`);
                     continue;
                 }
 
-                attendance.breaks?.forEach(b => {
-                    const breakDuration = b.breakHours?.duration || 0;
-                    if (breakDuration) {
-                        if (!b.checkOutTime) {
-                            b.checkOutTime = attendanceTime.endTime.toDate();
-                            needUpdate = true;
-                        }
-                        const realDuration = dayjs(b.checkOutTime).diff(dayjs(b.checkInTime), 'minute');
-                        totalExceededBreaks += realDuration > 0 && realDuration > breakDuration ? realDuration - breakDuration : 0;
-                    }
-                });
-
-                attendance.pauses?.forEach(p => {
-                    if (!p.checkOutTime) {
-                        p.checkOutTime = attendanceTime.endTime.toDate();
-                        needUpdate = true;
-                    }
-                    const realDuration = dayjs(p.checkOutTime).diff(dayjs(p.checkInTime), 'minute');
-                    totalPauses += realDuration > 0 ? realDuration : 0;
-                });
-
-                if (needUpdate) {
-                    await attendance.save();
-                }
-
-                const totalWorked = checkOut.diff(checkIn, 'minute') - totalExceededBreaks - totalPauses;
                 const existing = daily.workingHoursByEmployee.find(e =>
                     e.employeeId.equals(expected.employeeId) && e.shiftId.equals(expected.shiftId)
                 );
 
                 if (existing) {
-                    existing.minutes = totalWorked;
+                    existing.totalWorkedMinutes = calculatedWorkedMinutes.msg.totalWorkedMinutes;
+                    existing.totalBreakMinutes = calculatedWorkedMinutes.msg.totalBreakMinutes;
+                    existing.totalExpectedBreakMinutes = calculatedWorkedMinutes.msg.totalExpectedBreakMinutes;
+                    existing.totalPauseMinutes = calculatedWorkedMinutes.msg.totalPauseMinutes;
                 } else {
                     daily.workingHoursByEmployee.push({
                         employeeId: new mongoose.Types.ObjectId(expected.employeeId),
                         shiftId: new mongoose.Types.ObjectId(expected.shiftId),
-                        minutes: totalWorked,
+                        totalWorkedMinutes: calculatedWorkedMinutes.msg.totalWorkedMinutes,
+                        totalBreakMinutes: calculatedWorkedMinutes.msg.totalBreakMinutes,
+                        totalExpectedBreakMinutes: calculatedWorkedMinutes.msg.totalExpectedBreakMinutes,
+                        totalPauseMinutes: calculatedWorkedMinutes.msg.totalPauseMinutes,
                     });
                 }
             }
@@ -439,7 +501,7 @@ const updateEmployeeDailyAttendance = async ({ employeeId, isDeleting = false, d
                                 start: shift.start,
                                 end: shift.end,
                                 isOverNight: shift.isOverNight,
-                                allowedOvertime: shift.allowedOverTime,
+                                allowedOverTime: shift.allowedOverTime,
                             };
                             if (foundIndex !== -1) {
                                 // dont update if attendance exists
@@ -618,6 +680,9 @@ const utils = {
     },
     updateEmployeeDailyAttendance: ({ employeeId, isDeleting, date }) => {
         return updateEmployeeDailyAttendance({ employeeId, isDeleting, date })
+    },
+    calculateTotalWorkedMinutes: (attendanceId) => {
+        return calculateTotalWorkedMinutes(attendanceId)
     },
 }
 module.exports = utils

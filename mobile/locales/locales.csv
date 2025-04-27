@@ -836,8 +836,10 @@ srv_end_time_before_start_time	end time is before start time	Thời gian kết t
 srv_error	chyba serveru	lỗi serveru	chyba serveru
 srv_error_fetching_address	error fetching address	lỗi tìm địa chỉ	chyba při získávání adresy
 srv_error_fetching_coordinates	error fetching coordinates	lỗi tìm tọa độ	chyba při získávání souřadnic
+srv_expected_shift_not_found	Expected shift not found	Không tìm thấy ca làm việc mong đợi	Nenalezena očekávaná směna
 srv_exposure_is_after_expiration	Exposure date is after expiration date	Ngày hiệu lực sau ngày hết hạn	Datum vystavení je po datumu expirace
 srv_failed_api_request	Failed API request	API request failed	API požadavek selhal
+srv_failed_calculate_worked_minutes	Failed to calculate worked minutes	Tính toán thời gian làm việc không thành công	Vypočítání odpracovaných minut se nezdařilo
 srv_failed_get_latest_attendance	failed to get latest attendance	lấy dữ liệu điểm danh thất bại	získání poslední docházky selhalo
 srv_failed_make_attendance	failed to make attendance	điểm danh thất bại	neúspěšné zaznamenání docházky
 srv_failed_register_local_device	Failed to register local device	Đăng ký thiết bị cục bộ không thành công	Registrace lokálního zařízení selhala

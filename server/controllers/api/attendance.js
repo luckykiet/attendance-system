@@ -8,7 +8,7 @@ const HttpError = require("../../constants/http-error");
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const isBetween = require('dayjs/plugin/isBetween');
-const { DAYS_OF_WEEK, TIME_FORMAT } = require('../../constants');
+const { DAYS_OF_WEEK } = require('../../constants');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { demoAccount } = require('../../demo');
@@ -129,19 +129,11 @@ const getDailyAttendance = async ({ date = null, registerId }) => {
     }
 };
 
-const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAttendanceId }) => {
+// This function updates the actual daily attendance record
+const updateDailyAttendance = async ({ aggregation = null, attendanceId }) => {
     try {
-        if (!dailyAttendanceId) {
-            throw 'srv_daily_attendance_not_found';
-        }
-
         if (!aggregation) {
             throw 'srv_missing_aggregation';
-        }
-
-        const dailyAttendance = await DailyAttendance.findOne({ _id: dailyAttendanceId }).exec();
-        if (!dailyAttendance) {
-            throw 'srv_daily_attendance_not_found';
         }
 
         if (!attendanceId) {
@@ -151,6 +143,11 @@ const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAt
         const attendance = await Attendance.findOne({ _id: attendanceId }).exec();
         if (!attendance) {
             throw 'srv_attendance_not_found';
+        }
+
+        const dailyAttendance = await DailyAttendance.findOne({ _id: attendance.dailyAttendanceId }).exec();
+        if (!dailyAttendance) {
+            throw 'srv_daily_attendance_not_found';
         }
 
         const workingAt = await WorkingAt.findOne({ _id: attendance.workingAtId }).exec();
@@ -167,87 +164,61 @@ const updateDailyAttendance = async ({ aggregation = null, attendanceId, dailyAt
 
         const now = dayjs();
 
+        const expected = dailyAttendance.expectedShifts.find(e =>
+            employeeId === e.employeeId.toString() && attendance.shiftId.equals(e.shiftId)
+        );
+
+        if (!expected) {
+            throw 'srv_expected_shift_not_found';
+        }
+
+        const shiftTime = utils.getStartEndTime({ start: expected.start, end: expected.end, baseDay: dayjs(dailyAttendance.date.toString(), DATE_FORMAT, true) });
+
+        if (!shiftTime) {
+            throw 'srv_invalid_shift';
+        }
+
+        const { startTime: shiftStartTime, endTime: shiftEndTime } = shiftTime;
+
         if (aggregation.checkOutTime) {
-            const expected = dailyAttendance.expectedShifts.find(e =>
-                e.employeeId.equals(employeeId) && attendance.shiftId.equals(e.shiftId)
-            );
-
-            if (expected) {
-                const shiftEnd = dayjs(expected.end, TIME_FORMAT);
-                if (now.isBefore(shiftEnd)) {
-                    dailyAttendance.checkedOutEarly += 1;
-                    dailyAttendance.checkedOutEarlyByEmployee.set(employeeId, (dailyAttendance.checkedOutEarlyByEmployee.get(employeeId) || 0) + 1);
-                } else {
-                    dailyAttendance.checkedOutOnTime += 1;
-                    dailyAttendance.checkedOutOnTimeByEmployee.set(employeeId, (dailyAttendance.checkedOutOnTimeByEmployee.get(employeeId) || 0) + 1);
-                }
+            const calculatedWorkedMinutes = await utils.calculateTotalWorkedMinutes(attendance._id);
+            if (!calculatedWorkedMinutes.success) {
+                throw 'srv_failed_calculate_worked_minutes';
             }
-
-            const checkIn = dayjs(attendance.checkInTime);
-            const checkOut = dayjs(attendance.checkOutTime);
-            let totalExceededBreaks = 0;
-            let totalPauses = 0;
-            let needUpdate = false;
-
-            const attendanceTime = utils.getStartEndTime({ start: attendance.start, end: attendance.end, baseDay: dayjs(dailyAttendance.date.toString(), DATE_FORMAT) });
-            if (!attendanceTime) {
-                throw 'srv_invalid_shift';
-            }
-
-            attendance.breaks?.forEach(b => {
-                const breakDuration = b.breakHours?.duration || 0;
-                if (breakDuration) {
-                    if (!b.checkOutTime) {
-                        b.checkOutTime = attendanceTime.endTime.toDate();
-                        needUpdate = true;
-                    }
-                    const realDuration = dayjs(b.checkOutTime).diff(dayjs(b.checkInTime), 'minute');
-                    totalExceededBreaks += realDuration > 0 && realDuration > breakDuration ? realDuration - breakDuration : 0;
-                }
-            });
-
-            attendance.pauses?.forEach(p => {
-                if (!p.checkOutTime) {
-                    p.checkOutTime = attendanceTime.endTime.toDate();
-                    needUpdate = true;
-                }
-                const realDuration = dayjs(p.checkOutTime).diff(dayjs(p.checkInTime), 'minute');
-                totalPauses += realDuration > 0 ? realDuration : 0;
-            });
-
-            if (needUpdate) {
-                await attendance.save();
-            }
-
-            const totalWorked = checkOut.diff(checkIn, 'minute') - totalExceededBreaks - totalPauses;
             const existing = dailyAttendance.workingHoursByEmployee.find(e =>
-                e.employeeId.toString() === employeeId && e.shiftId.toString() === attendance.shiftId.toString()
+                e.employeeId.equals(workingAt.employeeId) && e.shiftId.equals(attendance.shiftId)
             );
 
             if (existing) {
-                existing.minutes = totalWorked;
+                existing.totalWorkedMinutes = calculatedWorkedMinutes.msg.totalWorkedMinutes;
+                existing.totalBreakMinutes = calculatedWorkedMinutes.msg.totalBreakMinutes;
+                existing.totalExpectedBreakMinutes = calculatedWorkedMinutes.msg.totalExpectedBreakMinutes;
+                existing.totalPauseMinutes = calculatedWorkedMinutes.msg.totalPauseMinutes;
             } else {
                 dailyAttendance.workingHoursByEmployee.push({
-                    employeeId: new mongoose.Types.ObjectId(employeeId),
+                    employeeId: new mongoose.Types.ObjectId(workingAt.employeeId),
                     shiftId: new mongoose.Types.ObjectId(attendance.shiftId),
-                    minutes: totalWorked,
+                    totalWorkedMinutes: calculatedWorkedMinutes.msg.totalWorkedMinutes,
+                    totalBreakMinutes: calculatedWorkedMinutes.msg.totalBreakMinutes,
+                    totalExpectedBreakMinutes: calculatedWorkedMinutes.msg.totalExpectedBreakMinutes,
+                    totalPauseMinutes: calculatedWorkedMinutes.msg.totalPauseMinutes,
                 });
             }
-        }
-        else if (aggregation.checkInTime) {
-            const expected = dailyAttendance.expectedShifts.find(e =>
-                employeeId === e.employeeId.toString() && attendance.shiftId.equals(e.shiftId)
-            );
 
-            if (expected) {
-                const shiftStart = dayjs(expected.start, TIME_FORMAT);
-                if (now.isAfter(shiftStart)) {
-                    dailyAttendance.checkedInLate += 1;
-                    dailyAttendance.checkedInLateByEmployee.set(employeeId, (dailyAttendance.checkedInLateByEmployee.get(employeeId) || 0) + 1);
-                } else {
-                    dailyAttendance.checkedInOnTime += 1;
-                    dailyAttendance.checkedInOnTimeByEmployee.set(employeeId, (dailyAttendance.checkedInOnTimeByEmployee.get(employeeId) || 0) + 1);
-                }
+            if (now.isBefore(shiftEndTime)) {
+                dailyAttendance.checkedOutEarly += 1;
+                dailyAttendance.checkedOutEarlyByEmployee.set(employeeId, (dailyAttendance.checkedOutEarlyByEmployee.get(employeeId) || 0) + 1);
+            } else {
+                dailyAttendance.checkedOutOnTime += 1;
+                dailyAttendance.checkedOutOnTimeByEmployee.set(employeeId, (dailyAttendance.checkedOutOnTimeByEmployee.get(employeeId) || 0) + 1);
+            }
+        } else if (aggregation.checkInTime) {
+            if (now.isAfter(shiftStartTime)) {
+                dailyAttendance.checkedInLate += 1;
+                dailyAttendance.checkedInLateByEmployee.set(employeeId, (dailyAttendance.checkedInLateByEmployee.get(employeeId) || 0) + 1);
+            } else {
+                dailyAttendance.checkedInOnTime += 1;
+                dailyAttendance.checkedInOnTimeByEmployee.set(employeeId, (dailyAttendance.checkedInOnTimeByEmployee.get(employeeId) || 0) + 1);
             }
         }
 
@@ -347,7 +318,6 @@ const makeAttendance = async (req, res, next) => {
                                 checkOutTime: attendance.checkOutTime,
                             },
                             attendanceId: attendance._id,
-                            dailyAttendanceId: dailyAttendance._id
                         });
                         if (typeof update === 'string') {
                             throw update;
@@ -380,7 +350,6 @@ const makeAttendance = async (req, res, next) => {
                             checkOutTime: newAttendance.checkOutTime,
                         },
                         attendanceId: newAttendance._id,
-                        dailyAttendanceId: dailyAttendance._id
                     });
                     if (typeof update === 'string') {
                         throw update;
@@ -493,7 +462,6 @@ const makeAttendance = async (req, res, next) => {
                         checkOutTime: attendance.checkOutTime,
                     },
                     attendanceId: attendance._id,
-                    dailyAttendanceId: dailyAttendance._id
                 });
                 if (typeof update === 'string') {
                     throw update;
@@ -530,11 +498,9 @@ const makeAttendance = async (req, res, next) => {
         try {
             const update = await updateDailyAttendance({
                 aggregation: {
-
                     checkInTime,
                 },
                 attendanceId: newAttendance._id,
-                dailyAttendanceId: dailyAttendance._id
             });
 
             if (typeof update === 'string') {
