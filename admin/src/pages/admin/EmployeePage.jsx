@@ -325,11 +325,15 @@ export default function EmployeePage() {
                                 <Grid size={{ xs: 12 }}>
                                     {postMsg && <FeedbackMessage message={postMsg} />}
                                 </Grid>
-                                <Grid size={{ xs: 12 }}>
+                                {!_.isEmpty(employee) && <Grid size={{ xs: 12 }}>
                                     <ButtonGroup fullWidth>
-                                        <Button sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
-                                            {employeeId ? t('misc_save') : t('misc_create')}
+                                        <Button sx={{ minWidth: '200px' }} variant="contained" color="primary" onClick={() => navigate(`/employee/dashboard/${employeeId}`)} >
+                                            {t('misc_dashboard')}
                                         </Button>
+                                    </ButtonGroup>
+                                </Grid>}
+                                {!_.isEmpty(employee) && <Grid size={{ xs: 12 }}>
+                                    <ButtonGroup fullWidth>
                                         {employee &&
                                             <Button sx={{ minWidth: '200px' }} variant="contained" color="warning" onClick={() => handleGenerateToken()} loading={generateEmployeeTokenMutation.isPending} disabled={isProvidingUpdate}>
                                                 {t(watch('registrationToken') || watch('deviceId') ? 'misc_regenerate_token' : 'misc_generate_token')}
@@ -343,6 +347,16 @@ export default function EmployeePage() {
                                         {employee && <Button sx={{ minWidth: '200px' }} variant="contained" color="error" onClick={() => handleCancelPairing()} loading={cancelPairingEmployeeMutation.isPending} disabled={isProvidingUpdate}>
                                             {t('misc_cancel_device_pairing')}
                                         </Button>}
+                                    </ButtonGroup>
+                                </Grid>}
+                                <Grid size={{ xs: 12 }}>
+                                    <ButtonGroup fullWidth>
+                                        <Button sx={{ minWidth: '200px' }} variant="contained" color="success" type="submit" loading={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} disabled={deleteEmployeeMutation.isPending || !_.isEmpty(errors)}>
+                                            {employeeId ? t('misc_save') : t('misc_create')}
+                                        </Button>
+                                        <Button sx={{ minWidth: '200px' }} variant="outlined" color="secondary" onClick={() => navigate('/employees')} disabled={isProvidingUpdate}>
+                                            {t('misc_cancel')}
+                                        </Button>
                                         {employee && checkPrivileges('deleteEmployee', user?.role) &&
                                             <Button sx={{ minWidth: '200px' }} variant="outlined" color="error" loading={deleteEmployeeMutation.isPending} disabled={createEmployeeMutation.isPending || updateEmployeeMutation.isPending} onClick={handleDelete}>
                                                 {t('misc_delete')}

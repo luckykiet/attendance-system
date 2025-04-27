@@ -705,6 +705,7 @@
   "misc_working_hour_of_the_workplace": "working hour of the workplace",
   "misc_working_hours": "working hours",
   "misc_working_hours_by_employee": "working hours by employee",
+  "misc_working_hours_by_register": "Worked hours by workplace",
   "misc_working_time_will_be_reduced": "working time will be reduced",
   "misc_working_time_will_be_reduced_if_exceed_allowed_duration": "working time will be reduced if exceed allowed duration",
   "misc_workplace": "workplace",

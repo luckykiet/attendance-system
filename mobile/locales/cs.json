@@ -705,6 +705,7 @@
   "misc_working_hour_of_the_workplace": "Pracovní doba pracoviště",
   "misc_working_hours": "pracovní doba",
   "misc_working_hours_by_employee": "počet odpracovaných hodin zaměstnanců",
+  "misc_working_hours_by_register": "Počet odpracovaných hodin podle pracoviště",
   "misc_working_time_will_be_reduced": "počet odpracovaných hodin bude zkrácen",
   "misc_working_time_will_be_reduced_if_exceed_allowed_duration": "počet odpracovaných hodin bude zkrácen, pokud překročí povolenou dobu",
   "misc_workplace": "pracoviště",

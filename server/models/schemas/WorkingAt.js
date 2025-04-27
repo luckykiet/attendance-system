@@ -31,5 +31,6 @@ WorkingAtSchema.pre(['save', 'findOneAndUpdate', 'updateOne', 'updateMany'], set
 
 WorkingAtSchema.index({ employeeId: 1, registerId: 1 }, { unique: true });
 WorkingAtSchema.index({ registerId: 1 });
+WorkingAtSchema.index({ employeeId: 1 });
 
 module.exports = WorkingAtSchema;

@@ -1,4 +1,4 @@
-import { fetchRegister } from '@/api/register'
+import { fetchEmployee } from '@/api/employee'
 import LoadingCircle from '@/components/LoadingCircle'
 import useTranslation from '@/hooks/useTranslation'
 import DashboardSchema from '@/schemas/dashboard'
@@ -13,16 +13,16 @@ import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
-import { fetchRegisterAggregation } from '@/api/aggregation'
+import { fetchEmployeeAggregation } from '@/api/aggregation'
 import { useEffect, useState, useCallback } from 'react'
 import { debounce } from 'lodash'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { CSVLink } from 'react-csv';
 
-const RegisterDashboardPage = () => {
+const EmployeeDashboardPage = () => {
     const navigate = useNavigate()
     const { t } = useTranslation()
-    const { registerId } = useParams()
+    const { employeeId } = useParams()
     const now = dayjs()
 
     const mainForm = useForm({
@@ -41,23 +41,23 @@ const RegisterDashboardPage = () => {
 
     const [validatedDates, setValidatedDates] = useState(null)
 
-    const registerQuery = useQuery({
-        queryKey: ['register', registerId],
-        queryFn: () => fetchRegister(registerId),
-        enabled: !!registerId,
+    const employeeQuery = useQuery({
+        queryKey: ['employee', employeeId],
+        queryFn: () => fetchEmployee(employeeId),
+        enabled: !!employeeId,
     })
 
     const aggregationQuery = useQuery({
-        queryKey: ['aggregation', registerId, validatedDates?.start, validatedDates?.end],
-        queryFn: () => fetchRegisterAggregation({
-            registerId,
+        queryKey: ['aggregation-employee', employeeId, validatedDates?.start, validatedDates?.end],
+        queryFn: () => fetchEmployeeAggregation({
+            employeeId,
             start: validatedDates.start,
             end: validatedDates.end,
         }),
-        enabled: !!registerId && !!validatedDates?.start && !!validatedDates?.end,
+        enabled: !!employeeId && !!validatedDates?.start && !!validatedDates?.end,
     })
 
-    const { data: register, isLoading: isRegisterLoading, isFetching: isRegisterFetching } = registerQuery
+    const { data: employee, isLoading: isEmployeeLoading, isFetching: isEmployeeFetching } = employeeQuery
     const { data: aggregation, isLoading: isAggregationLoading, isFetching: isAggregationFetching } = aggregationQuery
 
     const onSubmit = useCallback((values) => {
@@ -72,25 +72,25 @@ const RegisterDashboardPage = () => {
             handleSubmit(onSubmit)()
         }, 300)
 
-        if (registerId && start && end) {
+        if (employeeId && start && end) {
             debouncedSubmit()
         }
-    }, [registerId, start, end, handleSubmit, onSubmit])
+    }, [employeeId, start, end, handleSubmit, onSubmit])
 
-    const csvData = aggregation?.employees?.map((employee) => {
-        const actualWorkedMinutes = aggregation.workedMinutesByEmployee?.[employee._id] || 0;
-        const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0;
-        const actualBreakMinutes = aggregation.breakMinutesByEmployee?.[employee._id] || 0;
-        const expectedBreakMinutes = aggregation.expectedBreakMinutesByEmployee?.[employee._id] || 0;
-        const actualPauseMinutes = aggregation.pauseMinutesByEmployee?.[employee._id] || 0;
+    const csvData = aggregation?.registers?.map((register) => {
+        const actualWorkedMinutes = aggregation.workedMinutesByRegister?.[register._id] || 0;
+        const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByRegister?.[register._id] || 0;
+        const actualBreakMinutes = aggregation.breakMinutesByRegister?.[register._id] || 0;
+        const expectedBreakMinutes = aggregation.expectedBreakMinutesByRegister?.[register._id] || 0;
+        const actualPauseMinutes = aggregation.pauseMinutesByRegister?.[register._id] || 0;
 
 
-        const actualShiftAmount = aggregation.actualShiftsAmountByEmployee?.[employee._id] || 0;
-        const expectedShiftAmount = aggregation.expectedShiftsAmountByEmployee?.[employee._id] || 0;
+        const actualShiftAmount = aggregation.actualShiftsAmountByRegister?.[register._id] || 0;
+        const expectedShiftAmount = aggregation.expectedShiftsAmountByRegister?.[register._id] || 0;
 
         return {
-            name: employee.name,
-            email: employee.email,
+            name: register.name,
+            address: `${register.address.street}, ${register.address.zip} ${register.address.city}`,
             actualShiftAmount,
             expectedShiftAmount,
             actualBreakMinutes,
@@ -103,15 +103,15 @@ const RegisterDashboardPage = () => {
 
     return (
         <Container maxWidth="lg" sx={{ mb: 4, pt: 6 }}>
-            {isRegisterLoading || isRegisterFetching || isAggregationLoading || isAggregationFetching ? (
+            {isEmployeeFetching || isEmployeeLoading || isAggregationLoading || isAggregationFetching ? (
                 <LoadingCircle />
-            ) : register ? (
+            ) : employee ? (
                 <Stack spacing={2}>
                     <Typography variant="h4">{t('misc_dashboard')}</Typography>
                     <Stack spacing={1}>
-                        <Typography variant="h5">{register.name}</Typography>
-                        <Typography variant="body1">{register.address?.street}</Typography>
-                        <Typography variant="body1">{register.address?.zip} {register.address?.city}</Typography>
+                        <Typography variant="h5">{employee.name}</Typography>
+                        <Typography variant="body1">{employee.email}</Typography>
+                        <Typography variant="body1">{employee.phone}</Typography>
                     </Stack>
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 6 }}>
@@ -305,16 +305,16 @@ const RegisterDashboardPage = () => {
                                 </CardContent>
                             </Card>
 
-                            {aggregation.employees?.length > 0 && (
+                            {aggregation.registers?.length > 0 && (
                                 <Card>
                                     <CardContent>
                                         <Stack spacing={2}>
                                             <Stack spacing={2} direction={'row'} justifyContent={'space-between'}>
-                                                <Typography variant="h6" mb={2}>{t('misc_working_hours_by_employee')}</Typography>
+                                                <Typography variant="h6" mb={2}>{t('misc_working_hours_by_register')}</Typography>
                                                 {csvData.length > 0 && <Stack direction="row" justifyContent="flex-end" mb={2}>
                                                     <CSVLink
                                                         data={csvData}
-                                                        filename={`attendance-${start.toString()}-${end.toString()}-${register.name.replace(/\s+/g, '_')}.csv`}
+                                                        filename={`attendance-${start.toString()}-${end.toString()}-${employee.name.replace(/\s+/g, '_')}.csv`}
                                                         target="_blank"
                                                         style={{ textDecoration: 'none' }}
                                                     >
@@ -328,7 +328,7 @@ const RegisterDashboardPage = () => {
                                                 <Table>
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell>{t('misc_employee')}</TableCell>
+                                                            <TableCell>{t('misc_workplace')}</TableCell>
                                                             <TableCell align="right">{t('misc_actual_shift_amount')}</TableCell>
                                                             <TableCell align="right">{t('misc_expected_shift_amount')}</TableCell>
                                                             <TableCell align="right">{t('misc_actual_break_hours')}</TableCell>
@@ -339,12 +339,12 @@ const RegisterDashboardPage = () => {
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
-                                                        {aggregation.employees.map((employee) => {
-                                                            const actualWorkedMinutes = aggregation.workedMinutesByEmployee?.[employee._id] || 0;
-                                                            const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0;
-                                                            const actualBreakMinutes = aggregation.breakMinutesByEmployee?.[employee._id] || 0;
-                                                            const expectedBreakMinutes = aggregation.expectedBreakMinutesByEmployee?.[employee._id] || 0;
-                                                            const actualPauseMinutes = aggregation.pauseMinutesByEmployee?.[employee._id] || 0;
+                                                        {aggregation.registers.map((register) => {
+                                                            const actualWorkedMinutes = aggregation.workedMinutesByRegister?.[register._id] || 0;
+                                                            const expectedWorkedMinutes = aggregation.expectedWorkedMinutesByRegister?.[register._id] || 0;
+                                                            const actualBreakMinutes = aggregation.breakMinutesByRegister?.[register._id] || 0;
+                                                            const expectedBreakMinutes = aggregation.expectedBreakMinutesByRegister?.[register._id] || 0;
+                                                            const actualPauseMinutes = aggregation.pauseMinutesByRegister?.[register._id] || 0;
 
                                                             const actualWorkedHours = actualWorkedMinutes / 60;
                                                             const expectedHours = expectedWorkedMinutes / 60;
@@ -354,15 +354,18 @@ const RegisterDashboardPage = () => {
                                                             const expectedBreakHours = expectedBreakMinutes / 60;
                                                             const actualPauseHours = actualPauseMinutes / 60;
 
-                                                            const actualShiftAmount = aggregation.actualShiftsAmountByEmployee?.[employee._id] || 0;
-                                                            const expectedShiftAmount = aggregation.expectedShiftsAmountByEmployee?.[employee._id] || 0;
+                                                            const actualShiftAmount = aggregation.actualShiftsAmountByRegister?.[register._id] || 0;
+                                                            const expectedShiftAmount = aggregation.expectedShiftsAmountByRegister?.[register._id] || 0;
                                                             const isShiftAmountLess = actualShiftAmount < expectedShiftAmount;
 
                                                             return (
-                                                                <TableRow key={employee._id} onClick={() => navigate(`/employee/${employee._id}`)} sx={{ cursor: 'pointer' }}>
+                                                                <TableRow key={register._id} onClick={() => navigate(`/register/${register._id}`)} sx={{ cursor: 'pointer' }}>
                                                                     <TableCell>
-                                                                        {employee.name} <br />
-                                                                        <Typography variant="caption" color="text.secondary">{employee.email}</Typography>
+                                                                        <Stack spacing={1}>
+                                                                            <Typography variant="body1" >  {register.name}</Typography>
+                                                                            <Typography variant="caption" color="text.secondary">{register.address.street}</Typography>
+                                                                            <Typography variant="caption" color="text.secondary">{register.address.zip} {register.address.city}</Typography>
+                                                                        </Stack>
                                                                     </TableCell>
                                                                     <TableCell align="right">
                                                                         <Typography color={isShiftAmountLess ? 'error' : 'success.main'}>
@@ -408,16 +411,16 @@ const RegisterDashboardPage = () => {
                                 </Card>
                             )}
 
-                            {aggregation.employees?.length > 0 && (
+                            {aggregation.registers?.length > 0 && (
                                 <Card>
                                     <CardContent>
                                         <Typography variant="h6" mb={2}>{t('misc_comparison_actual_expected_worked_hours')}</Typography>
                                         <ResponsiveContainer width="100%" height={400}>
                                             <BarChart
-                                                data={aggregation.employees.map((employee) => ({
-                                                    name: employee.name,
-                                                    actual: (aggregation.workedMinutesByEmployee?.[employee._id] || 0) / 60,
-                                                    expected: (aggregation.expectedWorkedMinutesByEmployee?.[employee._id] || 0) / 60,
+                                                data={aggregation.registers.map((register) => ({
+                                                    name: register.name,
+                                                    actual: (aggregation.workedMinutesByRegister?.[register._id] || 0) / 60,
+                                                    expected: (aggregation.expectedWorkedMinutesByRegister?.[register._id] || 0) / 60,
                                                 }))}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
@@ -445,4 +448,4 @@ const RegisterDashboardPage = () => {
     )
 }
 
-export default RegisterDashboardPage
+export default EmployeeDashboardPage
