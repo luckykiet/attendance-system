@@ -275,8 +275,7 @@ const RegisterAttendance = () => {
                                                                                     }
                                                                                 });
                                                                                 const endTime = matchingAttendance.checkOutTime ? dayjs(matchingAttendance.checkOutTime) : dayjs();
-                                                                                const exceededBreakTime = actualBreakTime - expectedBreakTime > 0 ? actualBreakTime - expectedBreakTime : 0;
-                                                                                actualWorkedHours = endTime.diff(dayjs(matchingAttendance.checkInTime), 'minute') - exceededBreakTime - actualPauseTime;
+                                                                                actualWorkedHours = endTime.diff(dayjs(matchingAttendance.checkInTime), 'minute');
                                                                             }
 
                                                                             return (
