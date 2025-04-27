@@ -222,6 +222,7 @@ misc_exceeded_time	exceeded time	vượt quá thời gian	překročen čas
 misc_expected	expected	mong muốn	očekávaný
 misc_expected_end_time	Expected end time	Thời gian kết thúc dự kiến	Předpokládaný čas ukončení
 misc_expected_shift_amount	Expected shift amount	Số ca dự kiến	Předpokládaný počet směn
+misc_expected_worked_hours	Expected worked hours	Số giờ làm việc dự kiến	Počet očekávaných hodin práce
 misc_expected_working_time	expected working time	thời gian làm việc dự kiến	požadovaná pracovní doba
 misc_expiration_date	expiration date	ngày hết hạn	den expirace
 misc_export	export	export	exportovat
@@ -641,11 +642,14 @@ misc_today	today	hôm nay	dnes
 misc_today_closed	today closed	hôm nay đóng	dnes zavřeno
 misc_token	token	mã token	token
 misc_total	Total	Tổng	Celkem
+misc_total_actual_worked_hours	Total actual worked hours	Tổng số giờ làm việc thực tế	Celkový počet skutečně odpracovaných hodin
 misc_total_attendances	Total attendances	Tổng số điểm danh	Celkový počet docházek
 misc_total_days	Total days	Tổng số ngày	Celkový počet dní
 misc_total_expected_shifts	Total expected shifts	Tổng số ca làm việc mong đợi	Celkový počet očekávaných směn
+misc_total_expected_worked_hours	Total expected worked hours	Tổng số giờ làm việc dự kiến	Celkový počet očekávaných hodiny práce
 misc_total_price	total price	tiền tổng	celková částka
 misc_total_shifts	Total shifts	Tổng ca làm việc	Celkový počet směn
+misc_total_worked_hours	Total worked hours	Tổng số giờ làm việc	Totální odpracované hodiny
 misc_total_working_minutes	Total working minutes	Tổng số phút làm việc	Celkový počet pracovních minut
 misc_transaction_fee	transaction fees	phí giao dịch	poplatky za transakce
 misc_transactions	transactions	giao dịch	transakce

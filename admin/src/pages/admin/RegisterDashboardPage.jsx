@@ -272,11 +272,11 @@ const RegisterDashboardPage = () => {
                                                     <TableCell align="right">{aggregation.missingCheckOut}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell>{t('misc_expected_working_time')}</TableCell>
+                                                    <TableCell>{t('misc_total_expected_worked_hours')}</TableCell>
                                                     <TableCell align="right">{(aggregation.totalExpectedWorkingHours / 60).toFixed(2)}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
-                                                    <TableCell>{t('misc_actual_working_time')}</TableCell>
+                                                    <TableCell>{t('misc_total_actual_worked_hours')}</TableCell>
                                                     <TableCell align="right">{(aggregation.totalWorkingMinutes / 60).toFixed(2)}</TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -311,8 +311,8 @@ const RegisterDashboardPage = () => {
                                                             <TableCell>{t('misc_employee')}</TableCell>
                                                             <TableCell align="right">{t('misc_actual_shift_amount')}</TableCell>
                                                             <TableCell align="right">{t('misc_expected_shift_amount')}</TableCell>
-                                                            <TableCell align="right">{t('misc_actual_working_time')} ({t('misc_hour').toLowerCase()})</TableCell>
-                                                            <TableCell align="right">{t('misc_expected_working_time')} ({t('misc_hour').toLowerCase()})</TableCell>
+                                                            <TableCell align="right">{t('misc_actual_worked_hours')} ({t('misc_hour').toLowerCase()})</TableCell>
+                                                            <TableCell align="right">{t('misc_expected_worked_hours')} ({t('misc_hour').toLowerCase()})</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -325,7 +325,7 @@ const RegisterDashboardPage = () => {
                                                             const actualShiftAmount = aggregation.actualShiftsAmountByEmployee?.[employee._id] || 0;
                                                             const expectedShiftAmount = aggregation.expectedShiftsAmountByEmployee?.[employee._id] || 0;
                                                             const isShiftAmountLess = actualShiftAmount < expectedShiftAmount;
-
+                                                            
                                                             return (
                                                                 <TableRow key={employee._id} onClick={() => navigate(`/employee/${employee._id}`)} sx={{ cursor: 'pointer' }}>
                                                                     <TableCell>
