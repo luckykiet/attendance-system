@@ -75,6 +75,7 @@ const submitRegistration = async (req, res, next) => {
                 email: form.email,
                 phone: form.phone,
                 registrationToken: registration.isDemo ? registration.tokenId : '',
+                registeredAt: dayjs().toDate(),
             }
         });
 
