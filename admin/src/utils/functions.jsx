@@ -308,21 +308,16 @@ export const validateBreaksWithinWorkingHours = (brk, workingHours, timeFormat =
   };
 };
 
-export const getDurationLabel = (start, end, timeFormat = TIME_FORMAT) => {
+export const getDurationLabel = ({ start, end, timeFormat = TIME_FORMAT, t }) => {
   const startTime = dayjs.isDayjs(start) ? start : dayjs(start, timeFormat);
   const endTime = dayjs.isDayjs(end) ? end : dayjs(end, timeFormat);
 
   if (startTime.isValid() && endTime.isValid()) {
     const diff =
       startTime.isAfter(endTime)
-        ? endTime.add(1, 'day').diff(startTime)
-        : endTime.diff(startTime);
-
-    const dur = dayjs.duration(diff);
-    const hours = Math.floor(dur.asHours());
-    const minutes = dur.minutes();
-
-    return `${hours}h ${minutes}m`;
+        ? endTime.add(1, 'day').diff(startTime, 'minutes')
+        : endTime.diff(startTime, 'minutes');
+    return getDiffDurationText(diff, t);
   }
 
   return '-';

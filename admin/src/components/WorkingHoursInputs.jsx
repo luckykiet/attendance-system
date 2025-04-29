@@ -21,6 +21,7 @@ dayjs.extend(customParseFormat);
 export default function WorkingHoursInputs() {
     const { watch, control, handleSubmit, setValue } = useFormContext();
     const { t } = useTranslation();
+    const { t: noCap } = useTranslation({ capitalize: false });
 
     return (
         !_.isEmpty(watch('workingHours')) &&
@@ -148,8 +149,11 @@ export default function WorkingHoursInputs() {
                                 <Typography variant="body1">
                                     {t('misc_duration')}:{' '}
                                     {getDurationLabel(
-                                        watch(`workingHours[${key}].start`),
-                                        watch(`workingHours[${key}].end`),
+                                        {
+                                            start: watch(`workingHours[${key}].start`),
+                                            end: watch(`workingHours[${key}].end`),
+                                            t: noCap,
+                                        }
                                     )}
                                 </Typography>
                             </Grid>

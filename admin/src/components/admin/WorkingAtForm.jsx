@@ -21,7 +21,7 @@ import { useForm, Controller, FormProvider, useFieldArray } from 'react-hook-for
 import { zodResolver } from '@hookform/resolvers/zod';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
-import { daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDurationLabel, getStartEndTime, TIME_FORMAT } from '@/utils';
+import { daysOfWeeksTranslations, getDaysOfWeek, getDefaultAttendance, getDefaultShift, getDefaultWorkingAt, getDiffDurationText, getDurationLabel, getStartEndTime, TIME_FORMAT } from '@/utils';
 import useTranslation from '@/hooks/useTranslation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -46,6 +46,7 @@ dayjs.extend(customParseFormat);
 
 export default function WorkingAtForm({ employeeId, register, workingAt }) {
     const { t } = useTranslation()
+    const { t: noCap } = useTranslation({ capitalize: false });
     const config = useConfigStore();
     const today = dayjs();
     const [postMsg, setPostMsg] = useState('');
@@ -418,7 +419,11 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             return (
                                                                                 <Stack direction={'row'} spacing={2}>
                                                                                     <Typography variant='body1'>{startTime.format(TIME_FORMAT)} - {endTime.format(TIME_FORMAT)}{isOverNight ? ` (${t('misc_over_night')})` : ''}</Typography>
-                                                                                    <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(attendance.start, attendance.end)}</Typography>
+                                                                                    <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel({
+                                                                                        start: attendance.start,
+                                                                                        end: attendance.end,
+                                                                                        t: noCap,
+                                                                                    })}</Typography>
                                                                                 </Stack>
                                                                             )
                                                                         })()}
@@ -544,7 +549,11 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         <Typography variant='body1'>{t('misc_name')} ({t('misc_reason')}): {t(pause.name || '-')}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_start_time')}: {pause.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_end_time')}: {pause.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
-                                                                                        {!_.isEmpty(pause.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
+                                                                                        {!_.isEmpty(pause.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel({
+                                                                                            start: startTime,
+                                                                                            end: endTime,
+                                                                                            t: noCap,
+                                                                                        })}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
 
@@ -571,9 +580,14 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                     <Stack spacing={1}>
                                                                                         <Typography variant='body1'>{t('misc_break')}: {t(brk.name)}</Typography>
                                                                                         <Typography variant='body1'>{breakTime.startTime.format(TIME_FORMAT)} - {breakTime.endTime.format(TIME_FORMAT)}{breakTime.isOverNight ? t('misc_over_night') : ''}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_max_duration')}: {getDiffDurationText(brk.breakHours.duration)}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_check_in')}: {brk.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_check_out')}: {brk.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
-                                                                                        {!_.isEmpty(brk.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
+                                                                                        {!_.isEmpty(brk.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel({
+                                                                                            start: startTime,
+                                                                                            end: endTime,
+                                                                                            t: noCap,
+                                                                                        })}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
                                                                             );
