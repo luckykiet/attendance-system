@@ -546,7 +546,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             return (
                                                                                 <Grid size={{ xs: 12, sm: 6 }} key={index}>
                                                                                     <Stack spacing={1}>
-                                                                                        <Typography variant='body1'>{t('misc_name')} ({t('misc_reason')}): {t(pause.name || '-')}</Typography>
+                                                                                        <Typography variant='body1'>{t('misc_name')} ({noCap('misc_reason')}): {t(pause.name || '-')}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_start_time')}: {pause.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_end_time')}: {pause.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         {!_.isEmpty(pause.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel({
