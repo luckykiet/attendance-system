@@ -534,12 +534,12 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                     <Typography variant='h6'>{t('misc_pauses')}</Typography>
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12 }}>
-                                                                    {attendance.pauses && attendance.pauses.length > 0 ? attendance.pauses.map((pause, index) => {
-                                                                        const startTime = dayjs(pause.checkInTime);
-                                                                        const endTime = dayjs(pause.checkOutTime);
-                                                                        return (
-                                                                            <Grid container spacing={2} key={index}>
-                                                                                <Grid size={{ xs: 12, sm: 6 }}>
+                                                                    <Grid container spacing={2}>
+                                                                        {attendance.pauses && attendance.pauses.length > 0 ? attendance.pauses.map((pause, index) => {
+                                                                            const startTime = dayjs(pause.checkInTime);
+                                                                            const endTime = dayjs(pause.checkOutTime);
+                                                                            return (
+                                                                                <Grid size={{ xs: 12, sm: 6 }} key={index}>
                                                                                     <Stack spacing={1}>
                                                                                         <Typography variant='body1'>{t('misc_name')} ({t('misc_reason')}): {t(pause.name || '-')}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_start_time')}: {pause.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
@@ -547,9 +547,10 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         {!_.isEmpty(pause.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
-                                                                            </Grid>
-                                                                        );
-                                                                    }) : <Typography variant='body1' textAlign={'center'}>{t('misc_no_pauses')}</Typography>}
+
+                                                                            );
+                                                                        }) : <Grid size={{ xs: 12 }}><Typography variant='body1' textAlign={'center'}>{t('misc_no_pauses')}</Typography></Grid>}
+                                                                    </Grid>
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12 }}>
                                                                     <Divider />
@@ -558,15 +559,15 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                     <Typography variant='h6'>{t('misc_breaks')}</Typography>
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12 }}>
-                                                                    {attendance.breaks && attendance.breaks.length > 0 ? attendance.breaks.map((brk, index) => {
-                                                                        const breakTime = getStartEndTime({ start: brk.breakHours.start, end: brk.breakHours.end });
-                                                                        if (!breakTime) return null;
-                                                                        const startTime = dayjs(brk.checkInTime);
-                                                                        const endTime = dayjs(brk.checkOutTime);
+                                                                    <Grid container spacing={2}>
+                                                                        {attendance.breaks && attendance.breaks.length > 0 ? attendance.breaks.map((brk, index) => {
+                                                                            const breakTime = getStartEndTime({ start: brk.breakHours.start, end: brk.breakHours.end });
+                                                                            if (!breakTime) return null;
+                                                                            const startTime = dayjs(brk.checkInTime);
+                                                                            const endTime = dayjs(brk.checkOutTime);
 
-                                                                        return (
-                                                                            <Grid container spacing={2} key={index}>
-                                                                                <Grid size={{ xs: 12, sm: 6 }}>
+                                                                            return (
+                                                                                <Grid size={{ xs: 12, sm: 6 }} key={index}>
                                                                                     <Stack spacing={1}>
                                                                                         <Typography variant='body1'>{t('misc_break')}: {t(brk.name)}</Typography>
                                                                                         <Typography variant='body1'>{breakTime.startTime.format(TIME_FORMAT)} - {breakTime.endTime.format(TIME_FORMAT)}{breakTime.isOverNight ? t('misc_over_night') : ''}</Typography>
@@ -575,9 +576,9 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         {!_.isEmpty(brk.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
-                                                                            </Grid>
-                                                                        );
-                                                                    }) : <Typography variant='body1' textAlign={'center'}>{t('misc_no_breaks')}</Typography>}
+                                                                            );
+                                                                        }) : <Grid size={{ xs: 12 }} ><Typography variant='body1' textAlign={'center'}>{t('misc_no_breaks')}</Typography></Grid>}
+                                                                    </Grid>
                                                                 </Grid>
                                                                 <Grid size={{ xs: 12 }}>
                                                                     {postAttendanceMsg && <FeedbackMessage message={postAttendanceMsg} />}
