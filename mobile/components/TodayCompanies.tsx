@@ -268,7 +268,7 @@ const TodayCompanies = () => {
 
       if (pendingPause) {
         endTime = dayjs(pendingPause.checkInTime).add(60, 'minutes');
-        title = `${t('misc_pending_pause')}: ${pendingPause.name} - ${workplace.name}`;
+        title = `${t('misc_pending_pause')}: ${t(pendingPause.name)} - ${workplace.name}`;
         body = `${t('misc_do_not_forget_finish_it')}!`;
         idPrefix = `${schedulePrefix}-${attendance._id}-pause`;
       }
