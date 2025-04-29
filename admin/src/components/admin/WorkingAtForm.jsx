@@ -417,7 +417,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                             const { startTime, endTime, isOverNight } = shiftTime;
                                                                             return (
                                                                                 <Stack direction={'row'} spacing={2}>
-                                                                                    <Typography variant='body1'>{startTime.format(TIME_FORMAT)} - {endTime.format(TIME_FORMAT)}{isOverNight ? `(${t('misc_over_night')})` : ''}</Typography>
+                                                                                    <Typography variant='body1'>{startTime.format(TIME_FORMAT)} - {endTime.format(TIME_FORMAT)}{isOverNight ? ` (${t('misc_over_night')})` : ''}</Typography>
                                                                                     <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(attendance.start, attendance.end)}</Typography>
                                                                                 </Stack>
                                                                             )
@@ -543,7 +543,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                     <Stack spacing={1}>
                                                                                         <Typography variant='body1'>{t('misc_start_time')}: {pause.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_end_time')}: {pause.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
-                                                                                        <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>
+                                                                                        {!_.isEmpty(pause.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
                                                                             </Grid>
@@ -571,7 +571,7 @@ export default function WorkingAtForm({ employeeId, register, workingAt }) {
                                                                                         <Typography variant='body1'>{breakTime.startTime.format(TIME_FORMAT)} - {breakTime.endTime.format(TIME_FORMAT)}{breakTime.isOverNight ? t('misc_over_night') : ''}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_check_in')}: {brk.checkInTime ? startTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
                                                                                         <Typography variant='body1'>{t('misc_check_out')}: {brk.checkOutTime ? endTime.format('DD/MM/YYYY HH:mm:ss') : ' -'}</Typography>
-                                                                                        <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>
+                                                                                        {!_.isEmpty(brk.checkOutTime) && <Typography variant='body1'>{t('misc_duration')}: {getDurationLabel(startTime, endTime)}</Typography>}
                                                                                     </Stack>
                                                                                 </Grid>
                                                                             </Grid>
