@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Stack, Typography, Card, CardContent, IconButton, CardActions } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography, Card, CardContent, IconButton, CardActions, Divider } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { fetchRetail } from '@/api/retail';
 import useTranslation from '@/hooks/useTranslation';
@@ -9,7 +9,7 @@ import { useSetRetail } from '@/stores/root';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import EditIcon from '@mui/icons-material/Edit';
-import { checkPrivileges, DAYS_OF_WEEK, daysOfWeeksTranslations, getStartEndTime, getWorkingHoursText } from '@/utils';
+import { checkPrivileges, DAYS_OF_WEEK, daysOfWeeksTranslations, getWorkingHoursText } from '@/utils';
 import LoadingCircle from '@/components/LoadingCircle';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
@@ -106,58 +106,90 @@ export default function HomePage() {
                   {registers.map((register) => {
                     const yesterdayWorkingHours = register.workingHours[yesterdayKey];
 
-                    const yesterdayWorkingHour = getStartEndTime({ start: yesterdayWorkingHours.start, end: yesterdayWorkingHours.end, isToday: false });
-
-                    if (!yesterdayWorkingHour) return null;
-
-                    const { startTime: start, endTime: end } = yesterdayWorkingHour;
-                    const isToday = !now.isBetween(start, end);
-                    const todayWorkingHours = register.workingHours[todayKey];
-
-                    const { status, message } = getWorkingHoursText({
-                      workingHour: isToday ? todayWorkingHours : yesterdayWorkingHours,
-                      isToday,
+                    const yesterdayOpeningText = getWorkingHoursText({
+                      workingHour: yesterdayWorkingHours,
+                      isToday: false,
                       t
                     })
+
+                    const isYesterdayStillOpen = yesterdayWorkingHours.isAvailable && yesterdayOpeningText.status !== 'out_of_time';
+
+                    const todayWorkingHours = register.workingHours[todayKey];
+
+                    const todayOpeningText = getWorkingHoursText({
+                      workingHour: todayWorkingHours,
+                      isToday: true,
+                      t
+                    })
+                    const isTodayStillOpen = todayWorkingHours.isAvailable && todayOpeningText.status !== 'out_of_time';
 
                     return (
                       <Grid size={{ xs: 12, sm: 6, md: 6 }} key={register._id}>
                         <Card variant="outlined" sx={{ position: 'relative' }}>
                           <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                              {register.name}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {register.address.street}, {register.address.city}, {register.address.zip}
-                            </Typography>
+                            <Stack spacing={1}>
+                              <Typography variant="h6" gutterBottom>
+                                {register.name}
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary">
+                                {register.address.street}, {register.address.city}, {register.address.zip}
+                              </Typography>
 
-                            {register.isAvailable && <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                color: status === 'open' ? 'success.main' : 'error.main',
-                              }}
-                            >
-                              {status === 'closed' ? t(message) : `${status === 'open' ? t('misc_opening') : t('misc_closed')}`}
-                            </Typography>}
-                            {register.isAvailable && <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                color: status === 'open' ? 'success.main' : 'error.main',
-                              }}
-                            >
-                              {t(daysOfWeeksTranslations[isToday ? todayKey : yesterdayKey].name)}: {t(message)}
-                            </Typography>}
-                            {!register.isAvailable && <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                color: register.isAvailable ? 'success.main' : 'error.main',
-                              }}
-                            >
-                              {register.isAvailable ? t('misc_active') : t('misc_unavailable')}
-                            </Typography>}
+                              {register.isAvailable ?
+                                <>
+                                  {isYesterdayStillOpen && <>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        mt: 1,
+                                        color: 'success.main',
+                                      }}
+                                    >
+                                      {t('misc_opening')}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        mt: 1,
+                                        color: 'success.main',
+                                      }}
+                                    >
+                                      {t(daysOfWeeksTranslations[yesterdayKey].name)} ({t('misc_yesterday')}): {t(yesterdayOpeningText.message)}
+                                    </Typography>
+                                    <Divider sx={{ my: 2 }} />
+                                  </>}
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      mt: 1,
+                                      color: isTodayStillOpen ? 'success.main' : 'error.main',
+                                    }}
+                                  >
+                                    {isTodayStillOpen ? t('misc_opening') : t('misc_closed')}
+                                  </Typography>
+                                  {todayWorkingHours.isAvailable && <Typography
+                                    variant="body2"
+                                    sx={{
+                                      mt: 1,
+                                      color: isTodayStillOpen ? 'success.main' : 'error.main',
+                                    }}
+                                  >
+                                    {t(daysOfWeeksTranslations[todayKey].name)}: {t(todayOpeningText.message)}
+                                  </Typography>}
+                                </>
+                                :
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    mt: 1,
+                                    color: 'error.main',
+                                  }}
+                                >
+                                  {t('misc_unavailable')}
+                                </Typography>
+                              }
+
+                            </Stack>
                           </CardContent>
                           {checkPrivileges('editRegister', user?.role) && <IconButton
                             onClick={() => handleEditRegister(register._id)}
