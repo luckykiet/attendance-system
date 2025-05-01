@@ -1,6 +1,6 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
-const logger = require('morgan')
+const morgan = require('morgan')
 const path = require('path')
 const compression = require('compression')
 const passport = require('passport')
@@ -42,8 +42,8 @@ require('./security/passport')
 
 const app = express()
 
-app.use(logger('dev'))
-app.use(express.json({ limit: '50mb' }))
+app.use(morgan('combined'));
+app.use(bodyParser.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: false, limit: '50mb' }))
 app.use(cookieParser())
 app.use(
@@ -59,7 +59,7 @@ app.use(
   }),
 )
 
-app.use(bodyParser.json())
+
 
 const languages = ['cs', 'en', 'vi']
 app.use(
