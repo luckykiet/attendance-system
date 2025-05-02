@@ -293,4 +293,8 @@ const checkIsAuthenticated = (req, res, next) => {
     }
 };
 
-module.exports = { signup, login, signout, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword, checkIsAuthenticated };
+const getVerifiedForgotPasswordEmail = (req, res) => {
+    res.status(200).json({ success: true, msg: { email: req.email } })
+}
+
+module.exports = { signup, login, signout, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword, checkIsAuthenticated, getVerifiedForgotPasswordEmail };
