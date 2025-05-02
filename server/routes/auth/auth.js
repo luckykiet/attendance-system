@@ -4,26 +4,9 @@ const { recaptcha } = require('../../middlewares');
 const { validate } = require('../../middlewares/validation');
 const { body } = require('express-validator')
 const utils = require('../../utils/utils');
-const { signup, signout, login, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword } = require('../../controllers/auth/auth');
+const { signup, signout, login, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword, checkIsAuthenticated } = require('../../controllers/auth/auth');
 
-router.post('/isAuthenticated', (req, res, next) => {
-    try {
-        if (!req.isAuthenticated()) {
-            return res.json({ isAuthenticated: false });
-        }
-        return res.json({
-            isAuthenticated: true,
-            id: req.user.id,
-            username: req.user.username,
-            email: req.user.email,
-            name: req.user.name,
-            role: req.user.role,
-            retailId: req.user.registerId,
-        });
-    } catch (error) {
-        return next(utils.parseExpressErrors(error, 'srv_unexpected_error', 500));
-    }
-});
+router.post('/isAuthenticated', checkIsAuthenticated);
 
 router.post(
     '/login',

@@ -274,4 +274,23 @@ const updatePassword = async (req, res, next) => {
     }
 };
 
-module.exports = { signup, login, signout, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword };
+const checkIsAuthenticated = (req, res, next) => {
+    try {
+        if (!req.isAuthenticated()) {
+            return res.json({ isAuthenticated: false });
+        }
+        return res.json({
+            isAuthenticated: true,
+            id: req.user.id,
+            username: req.user.username,
+            email: req.user.email,
+            name: req.user.name,
+            role: req.user.role,
+            retailId: req.user.registerId,
+        });
+    } catch (error) {
+        return next(utils.parseExpressErrors(error, 'srv_unexpected_error', 500));
+    }
+};
+
+module.exports = { signup, login, signout, passwordResetTokenVerifyMiddleware, sendRequestRenewPassword, updatePassword, checkIsAuthenticated };
