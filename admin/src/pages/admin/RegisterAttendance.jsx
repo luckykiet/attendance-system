@@ -216,7 +216,7 @@ const RegisterAttendance = () => {
                                                     <Stack spacing={2}>
                                                         <Stack spacing={2} direction={'row'} justifyContent={'space-between'}>
                                                             <Typography variant="h6">{t('misc_attendances')}</Typography>
-                                                            {csvData.length && <Stack direction="row" justifyContent="flex-end" mb={2}>
+                                                            {csvData.length > 0 && <Stack direction="row" justifyContent="flex-end" mb={2}>
                                                                 <CSVLink
                                                                     data={csvData}
                                                                     filename={`attendance-${dayjs(date).format('YYYYMMDD-HH:mm:ss')}.csv`}
@@ -340,7 +340,7 @@ const RegisterAttendance = () => {
                                             </Grid>
                                         </Stack>
                                     })() : (
-                                        <Typography>{t('srv_attendance_not_found')}</Typography>
+                                        <Typography textAlign={'center'} >{t('srv_attendance_not_found')}</Typography>
                                     )
                                 }
                             </Grid>
