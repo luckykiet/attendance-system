@@ -88,7 +88,8 @@ const template = (title, body) => {
     </html>`;
 };
 
-const mailResetPasswordBody = (title, username, link) => {
+const mailResetPasswordBody = (title, username, token) => {
+  const link = urlJoin(CONFIG.host, 'reset-password', token);
   const content = `
   <div class="content">
         <h1>Hi ${username},</h1>
@@ -183,9 +184,10 @@ const createTransporter = async () => {
   }
 }
 
-const sendMailResetPassword = async (to, username, link) => {
+const sendMailResetPassword = async (to, username, token) => {
   const title = `Password reset for user: ${username}`
-  const html = await minify(mailResetPasswordBody(title, username, link), {
+  const html = await minify(mailResetPasswordBody(title, username, token
+  ), {
     removeAttributeQuotes: true,
     minifyCSS: true,
     minifyURLs: true,

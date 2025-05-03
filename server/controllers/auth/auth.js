@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken');
 
 const mailSender = require('../../mail_sender');
 const { CONFIG } = require('../../configs');
-const urlJoin = require('proper-url-join');
 
 const signupLogger = utils.getLogger('signup');
 const authLogger = utils.getLogger('auth');
@@ -223,7 +222,7 @@ const sendRequestRenewPassword = async (req, res, next) => {
             mailSender.sendMailResetPassword(
                 email,
                 user.username,
-                urlJoin(CONFIG.url, 'reset-password', token),
+                token,
             );
         }
 
