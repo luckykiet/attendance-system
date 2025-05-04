@@ -7,64 +7,18 @@ import { signup } from '@/api/auth';
 import { useAuthStoreActions } from '@/stores/auth';
 import { useNavigate } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { fetchAresWithTin } from '@/api/ares';
 import FeedbackMessage from '@/components/FeedbackMessage';
-import { clearAllQueries, getDefaultAddress, REGEX } from '@/utils';
+import { clearAllQueries, getDefaultAddress } from '@/utils';
 import { useConfigStore } from '@/stores/config';
-
-const signupSchema = z.object({
-    username: z
-        .string()
-        .trim()
-        .min(6, { message: 'srv_username_length' })
-        .max(255, { message: 'srv_username_length' })
-        .regex(REGEX.username, { message: 'srv_username_no_whitespace' }),
-    email: z
-        .string()
-        .email({ message: 'srv_wrong_email_format' }),
-    tin: z
-        .string()
-        .regex(/^[0-9]{8}$/, { message: 'srv_invalid_tin' }),
-    name: z
-        .string()
-        .max(255, { message: 'srv_name_max_length' }),
-    vin: z
-        .string()
-        .max(20, { message: 'srv_vin_max_length' })
-        .optional(),
-    address: z.object({
-        street: z
-            .string()
-            .max(255, { message: 'srv_street_max_length' })
-            .optional(),
-        city: z
-            .string()
-            .max(255, { message: 'srv_city_max_length' })
-            .optional(),
-        zip: z
-            .string()
-            .regex(/^\d{3} ?\d{2}$/, { message: 'srv_invalid_zip' })
-            .optional(),
-    }),
-    password: z
-        .string()
-        .min(8, { message: 'srv_password_length' })
-        .max(255, { message: 'srv_password_length' }),
-    confirmPassword: z
-        .string()
-        .max(255, { message: 'srv_password_length' })
-}).refine((data) => data.password === data.confirmPassword, {
-    message: 'srv_passwords_not_match',
-    path: ['confirmPassword']
-});
+import SignupSchema from '@/schemas/signup';
 
 const SignupForm = () => {
     const { t } = useTranslation();
     const config = useConfigStore();
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient();''
     const executeRecaptcha = useRecaptchaV3(config.grecaptchaSiteKey);
 
     const { login: loginStore } = useAuthStoreActions();
@@ -73,7 +27,7 @@ const SignupForm = () => {
     const navigate = useNavigate();
 
     const mainUseForm = useForm({
-        resolver: zodResolver(signupSchema),
+        resolver: zodResolver(SignupSchema),
         defaultValues: {
             username: '',
             password: '',

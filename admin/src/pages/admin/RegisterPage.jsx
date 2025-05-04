@@ -106,6 +106,7 @@ export default function RegisterPage() {
         onSuccess: (data) => {
             setAlertMessage({ msg: data, severity: 'success' });
             queryClient.invalidateQueries(['register']);
+            navigate('/');
         }
     })
 
@@ -169,7 +170,6 @@ export default function RegisterPage() {
             mainText: `${t('misc_delete')} ${register.name}?`,
             onConfirm: () => {
                 deleteRegisterMutation.mutate();
-                navigate('/');
             },
         })
     }

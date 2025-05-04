@@ -53,6 +53,9 @@ const updateUser = async (req, res, next) => {
             if (foundUser._id.equals(req.user._id) && req.body.role !== foundUser.role) {
                 throw new HttpError('srv_user_cannot_change_own_role', 400);
             }
+            if (foundUser.role === 'Admin' && req.body.role !== 'Admin') {
+                throw new HttpError('srv_user_cannot_change_admin_role', 400);
+            }
         }
         if (req.body.isAvailable !== undefined) {
             if (foundUser._id.equals(req.user._id) && req.body.isAvailable !== foundUser.isAvailable) {
@@ -87,6 +90,13 @@ const deleteUser = async (req, res, next) => {
     try {
         if (req.params.id === req.user.id) {
             throw new HttpError('srv_user_cannot_delete_self', 400);
+        }
+        const user = await User.findOne({ _id: req.params.id, retailId: req.user.retailId });
+        if (!user) {
+            throw new HttpError('srv_user_not_found', 404);
+        }
+        if (user.role === 'Admin') {
+            throw new HttpError('srv_user_cannot_delete_admin', 400);
         }
         const deletedUser = await User.findOneAndDelete({ _id: req.params.id, retailId: req.user.retailId });
         if (!deletedUser) {

@@ -1,11 +1,11 @@
 # ATTENDENCE SYSTEM
 
-- v1.0.0
-- Tuan Kiet Nguyen, 2024
+- v2.0.0
+- Tuan Kiet Nguyen, 2025
 - ngntuankiet@gmail.com
 ## Deployment
 
-- [Admin Interface](https://attendance.batatas.cz)
+- [Admin Interface](https://attendance.chanlongkhang.com)
 - [Google Play](https://play.google.com/store/apps/details?id=cz.ethereal.gokasaworkforce&pcampaignid=web_share)
 - [Apple App Store](https://apps.apple.com/cz/app/gokasa-workforce/id6738621542)
   
@@ -67,8 +67,11 @@ As default for development system will use _vcap.me_ domain
 [Server](server/configs/config.js)
 ```
 jwtSecret - a secret that use to sign tokens, MUST be same as server
-grecaptchaSecret - generated from Google Recaptcha v3
-mobile_intent - scheme of mobile app
+grecaptchaSecrets: {
+        [domain] : '', // generated from Google Recaptcha v3
+}
+mongodb_host - url to the mongodb
+mobileIntent - scheme of mobile app
 proxy_domain - only works in development; set if you use tunneling
 mail_transport: {
     service: 'gmail', --- mail service
@@ -87,39 +90,6 @@ mail_transport: {
 1. Run app
 ```
 yarn devhttps
-```
-
-### Development
-
-As default for development system will use _vcap.me_ domain
-1. Setup configs files
-[Server](server/configs/config.js)
-```
-jwtSecret - a secret that use to sign tokens, MUST be same as server
-grecaptchaSecret - generated from Google Recaptcha v3
-mobile_intent - scheme of mobile app
-proxy_domain - only works in development; set if you use tunneling
-mail_transport: {
-    service: 'gmail', --- mail service
-    port: 465,
-    secure: true,
-    auth: {
-        type: 'OAuth2',
-        user: '', --- email STMP
-        clientId: '',
-        clientSecret: '',
-        refreshToken: ''
-    }
-},
-```
-
-1. Run app and mobile app
-```
-On first terminal:
-yarn devhttps
-
-On second terminal:
-yarn devmobile
 ```
 
 ### Production

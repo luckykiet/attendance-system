@@ -1,6 +1,8 @@
 import { ROLES } from '@/configs';
 import { REGEX } from '@/utils';
 import { z } from 'zod';
+import ConfirmPasswordSchema from './confirm-password';
+import PasswordSchema from './password';
 
 const BaseUserSchema = z.object({
     userId: z.string().optional(),
@@ -16,21 +18,19 @@ const BaseUserSchema = z.object({
         .string()
         .optional()
         .refine((val) => !val || REGEX.phone.test(val), { message: 'srv_invalid_phone' }),
-    password: z
-        .string()
-        .min(8, { message: 'srv_password_length' })
-        .max(255, { message: 'srv_password_length' })
-        .optional()
-        .or(z.literal('')),
-    confirmPassword: z
-        .string()
-        .max(255, { message: 'srv_password_length' })
-        .optional()
-        .or(z.literal('')),
+    password: z.preprocess(
+        (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+        PasswordSchema.optional()
+    ),
+    confirmPassword: z.preprocess(
+        (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+        ConfirmPasswordSchema.optional()
+    ),
     role: z.enum(ROLES, { message: 'srv_invalid_role' }),
     notes: z.string().optional(),
     isAvailable: z.boolean(),
-})
+});
+
 
 const UserSchema = BaseUserSchema.superRefine((data, ctx) => {
     if (!data.userId && !data.password) {
@@ -47,7 +47,7 @@ const UserSchema = BaseUserSchema.superRefine((data, ctx) => {
         });
     }
 
-    if (data.password && data.confirmPassword && data.password !== data.confirmPassword) {
+    if (!data.userId && data.password && data.confirmPassword && data.password !== data.confirmPassword) {
         ctx.addIssue({
             path: ['confirmPassword'],
             message: 'srv_passwords_not_match',

@@ -153,6 +153,7 @@ misc_copied	copied	đã sao chép	kopírováno
 misc_copied_to_clipboard	copied to Clipboard	đã sao chép vào bộ nhớ	kopírováno do schránky
 misc_copy_from_merchant	Copy from basement	Sao chép từ công ty	Kopírovat z sídla
 misc_country	Country	Quốc gia	Stát
+misc_country_codes	Country codes	Mã quốc gia	Kódy zemí
 misc_create	create	tạo	založit
 misc_create_company	create a company	tạo công ty	vytvořit společnost
 misc_create_employee	create a employee	tạo nhân viên mới	vytvořit nový zaměstnanec
@@ -1037,6 +1038,7 @@ srv_register_creation_failed	Workplace creation failed	Tạo nơi làm việc th
 srv_register_deleted	workplace deleted	nơi làm việc đã bị xóa	pracoviště smazáno
 srv_register_deletion_failed	Failed to delete workplace	Xóa nơi làm việc thất bại	Smazání pracoviště selhalo
 srv_register_failed	Register failed	Đăng ký không thành công	Registrace se nezdařila
+srv_register_has_attendance	workplace already has attendances	nơi làm việc đã có điểm danh	pracoviště již má docházky
 srv_register_not_found	workplace not found	không tìm thấy nơi làm việc	pracoviště nenalezeno
 srv_registers_not_found	Workplaces not found	Không tìm thấy nơi làm việc	Pracoviště nenalezeno
 srv_registration_not_found	registration not found or expired	yêu cầu đăng ký không tìm thấy hoặc đã hết hạn	registrace nenalezena nebo vypršela
@@ -1081,8 +1083,10 @@ srv_unknown_error	unknown error	lỗi không xác định	neznámá chyba
 srv_unsupported_payment_terminal	Unsupported payment terminal	Thiết bị thanh toán không được hỗ trợ	Neexistující platební terminál
 srv_updated	updated	đã được cập nhập	aktualizováno
 srv_url_exists	URL exists	URL đã tồn tại	
+srv_user_cannot_change_admin_role	user cannot change Admin role	người dùng không thể đổi chức vụ Admin	uživatel nemůže změnit roli Admin
 srv_user_cannot_change_own_role	user cannot change own role	người dùng không thể đổi chức vụ của mình	uživatel nemůže změnit svou roli
 srv_user_cannot_change_own_status	user cannot change own status	người dùng không thể đổi trạng thái của mình	uživatel nemůže změnit svůj status
+srv_user_cannot_delete_admin	uuser cannot delete Admin	người dùng không thể xóa Admin	uživatel nemůže smazat Admin
 srv_user_creation_failed	user creation failed	tạo người dùng thất bại	vytvoření uživatele selhalo
 srv_user_exists	userexists	người dùng tồn tại	uživatel existuje
 srv_user_has_subordinates	User has subordinates	Người dùng có cấp dưới	Uživatel má podřízené

@@ -20,7 +20,7 @@ import { useSetConfirmBox } from '@/stores/confirm';
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useConfigStore } from '@/stores/config';
 import UserSchema from '@/schemas/user';
-import { PatternFormat } from 'react-number-format';
+import PhoneInput from '@/components/PhoneInput';
 
 dayjs.extend(customParseFormat);
 
@@ -105,11 +105,10 @@ export default function UserPage() {
         try {
             setPostMsg('');
             const recaptcha = await executeRecaptcha(`${userId ? 'update' : 'create'}user`);
-
             if (userId) {
-                updateUserMutation.mutate({ ...data, _id: userId, phone: data.phone.replace(/\s+/g, ''), recaptcha });
+                updateUserMutation.mutate({ ...data, _id: userId, recaptcha });
             } else {
-                createUserMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), recaptcha });
+                createUserMutation.mutate({ ...data, recaptcha });
             }
         }
         catch (error) {
@@ -132,6 +131,14 @@ export default function UserPage() {
             reset({ ...getDefaultUser(), ...user, userId: user._id });
         }
     }, [user, reset]);
+
+    const checkFieldsMsg = t('msg_control_typed_field');
+
+    useEffect(() => {
+        if (!_.isEmpty(errors)) {
+            setPostMsg(new Error(checkFieldsMsg));
+        }
+    }, [errors, checkFieldsMsg]);
 
     if (isUserLoading) {
         return (
@@ -205,18 +212,17 @@ export default function UserPage() {
                                             name="phone"
                                             control={control}
                                             render={({ field, fieldState }) => (
-                                                <PatternFormat
-                                                    {...field}
-                                                    customInput={TextField}
-                                                    fullWidth
-                                                    label={t('misc_telephone')}
-                                                    variant="outlined"
-                                                    error={fieldState.invalid}
-                                                    helperText={fieldState.error?.message && t(fieldState.error.message)}
-                                                    format="+### ### ### ###"
-                                                    mask="_"
-                                                    allowEmptyFormatting
-                                                />
+                                                <Stack spacing={1}>
+                                                    <InputLabel>
+                                                        {t('misc_telephone')}
+                                                    </InputLabel>
+                                                    <PhoneInput
+                                                        initValue={field.value || ''}
+                                                        onChange={(val) => field.onChange(val)}
+                                                        error={fieldState.invalid}
+                                                        helperText={fieldState.error?.message && t(fieldState.error.message)}
+                                                    />
+                                                </Stack>
                                             )}
                                         />
                                     </Grid>

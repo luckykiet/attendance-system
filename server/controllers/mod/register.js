@@ -6,6 +6,7 @@ const utils = require('../../utils');
 const dayjs = require('dayjs');
 const { DAYS_OF_WEEK } = require('../../constants');
 const LocalDevice = require('../../models/LocalDevice');
+const Attendance = require('../../models/Attendance');
 
 const getRegisterById = async (id, retailId) => {
     if (!id) {
@@ -63,7 +64,7 @@ const updateRegister = async (req, res, next) => {
                 throw new HttpError('srv_max_local_devices_exceeded', 400);
             }
         }
-      
+
         Object.assign(foundRegister, {
             ...req.body,
             location: {
@@ -72,7 +73,7 @@ const updateRegister = async (req, res, next) => {
                 allowedRadius: allowedRadius || 100,
             },
         });
-        
+
         const updatedRegister = await foundRegister.save();
 
         if (!updatedRegister) {
@@ -105,7 +106,12 @@ const updateRegister = async (req, res, next) => {
 
 const deleteRegister = async (req, res, next) => {
     try {
-        const deletedRegister = await Register.findOneAndDelete({ _id: req.params.id, retailId: req.user.retailId });
+        const workingAts = await WorkingAt.find({ registerId: req.params.id }).exec();
+        const existingAttendance = await Attendance.findOne({ workingAtId: { $in: workingAts.map(wa => wa._id) } }).exec();
+        if (existingAttendance) {
+            throw new HttpError('srv_register_has_attendance', 400);
+        }
+        const deletedRegister = await Register.findOneAndDelete({ _id: req.params.id, retailId: req.user.retailId }).exec();
         if (!deletedRegister) {
             throw new HttpError('srv_register_not_found', 404);
         }

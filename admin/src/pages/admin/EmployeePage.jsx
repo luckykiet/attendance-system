@@ -1,4 +1,4 @@
-import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup, Button } from '@mui/material';
+import { Container, Typography, TextField, Grid, Stack, FormControlLabel, Switch, Divider, ButtonGroup, Button, InputLabel } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,8 +20,8 @@ import { useSetConfirmBox } from '@/stores/confirm';
 import { QRCodeCanvas } from 'qrcode.react';
 import TransferListEmployees from '@/components/admin/TransferListEmployees';
 import { useConfigStore } from '@/stores/config';
-import { PatternFormat } from 'react-number-format';
 import EmployeeSchema from '@/schemas/employee';
+import PhoneInput from '@/components/PhoneInput';
 
 dayjs.extend(customParseFormat);
 
@@ -121,11 +121,10 @@ export default function EmployeePage() {
         try {
             setPostMsg('');
             const recaptcha = await executeRecaptcha(`${employeeId ? 'update' : 'create'}employee`);
-
             if (employeeId) {
-                updateEmployeeMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), _id: employeeId, recaptcha });
+                updateEmployeeMutation.mutate({ ...data, _id: employeeId, recaptcha });
             } else {
-                createEmployeeMutation.mutate({ ...data, phone: data.phone.replace(/\s+/g, ''), recaptcha });
+                createEmployeeMutation.mutate({ ...data, recaptcha });
             }
         }
         catch (error) {
@@ -243,18 +242,17 @@ export default function EmployeePage() {
                                         name="phone"
                                         control={control}
                                         render={({ field, fieldState }) => (
-                                            <PatternFormat
-                                                {...field}
-                                                customInput={TextField}
-                                                fullWidth
-                                                label={t('misc_telephone')}
-                                                variant="outlined"
-                                                error={fieldState.invalid}
-                                                helperText={fieldState.error?.message && t(fieldState.error.message)}
-                                                format="+### ### ### ###"
-                                                mask="_"
-                                                allowEmptyFormatting
-                                            />
+                                            <Stack spacing={1}>
+                                                <InputLabel>
+                                                    {t('misc_telephone')}
+                                                </InputLabel>
+                                                <PhoneInput
+                                                    initValue={field.value || ''}
+                                                    onChange={(val) => field.onChange(val)}
+                                                    error={fieldState.invalid}
+                                                    helperText={fieldState.error?.message && t(fieldState.error.message)}
+                                                />
+                                            </Stack>
                                         )}
                                     />
                                 </Grid>

@@ -8,21 +8,14 @@ import IconButton from '@mui/material/IconButton';
 import { useAuthStoreActions } from '@/stores/auth';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import useRecaptchaV3 from '@/hooks/useRecaptchaV3';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTranslation from '@/hooks/useTranslation';
 import { login } from '@/api/auth';
 import FeedbackMessage from '@/components/FeedbackMessage';
 import { useConfigStore } from '@/stores/config';
 import { clearAllQueries } from '@/utils';
+import LoginSchema from '@/schemas/login';
 
-const loginSchema = z.object({
-    username: z
-        .string({ required_error: 'misc_required' })
-        .regex(/^\S+$/, 'srv_invalid_username')
-        .max(255),
-    password: z.string({ required_error: 'misc_required' }).max(255)
-});
 
 const LoginForm = () => {
     const { t } = useTranslation();
@@ -35,7 +28,7 @@ const LoginForm = () => {
     const navigate = useNavigate();
 
     const mainUseForm = useForm({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(LoginSchema),
         defaultValues: {
             username: import.meta.env.MODE === 'development' ? 'demo' : '',
             password: import.meta.env.MODE === 'development' ? 'demodemo' : ''
