@@ -342,6 +342,7 @@ misc_manager	Manager	Quản lý	Manažer
 misc_maturity_period	Maturity period	Thời hạn đáo hạn	Doba splatnosti
 misc_max_duration	max duration	thời gian tối đa	maximální doba trvání
 misc_max_expected_break_time	max. expected break time	thời gian nghỉ tối đa	max. očekávané přestávky
+misc_max_local_device_desc	Maximum number of local devices allowed to be paired with the workplace.	Số lượng thiết bị cục bộ tối đa được phép ghép nối với nơi làm việc.	Maximální počet místních zařízení povolených k párování s pracovním místem.
 misc_max_local_devices	max local devices	thiết bị cục bộ tối đa	Maximální lokální zařízení
 misc_merchant	merchant	nhà bán buôn	obchodník
 misc_merchant_email	merchant e-mail	e-mail nhà bán buôn	e-mail obchodníka
@@ -560,6 +561,7 @@ misc_send_mail	send e-mail	gửi e-mail	poslat e-mail
 misc_send_upload_signed_mail	Send email to sign	Gửi email để ký	Poslat email pro podpis
 misc_sent	sent	đã gửi	odesláno
 misc_service	service	dịch vụ	služby
+misc_set_to_prevent_unauthorized_pairing	Setting to prevent unauthorized pairing.	Cài đặt để ngăn chặn ghép nối trái phép.	Nastavení pro zabránění neoprávněnému párování.
 misc_settings	Settings	Cài đặt	Nastavení
 misc_settings_instructions	settings instructions	hướng dẫn cài đặt	instrukce nastavení
 misc_settings_instructions_1	add workplace domains here.	Thêm miền nơi làm việc ở đây.	Přidejte sem domény pracoviště.

@@ -15,7 +15,9 @@ import {
     CardContent,
     CardActions,
     Divider,
-    Button
+    Button,
+    FormControl,
+    FormLabel
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -402,23 +404,35 @@ export default function RegisterPage() {
                             <Typography variant='h6'>{t('misc_settings')}</Typography>
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6 }}>
+
                             <Controller
                                 name="maxLocalDevices"
                                 control={control}
                                 render={({ field, fieldState }) => (
-                                    <TextField
-                                        {...field}
-                                        fullWidth
-                                        onChange={(e) => {
-                                            const inputValue = e.target.value;
-                                            field.onChange(inputValue === '' ? '' : !isNaN(inputValue) ? parseInt(inputValue) : inputValue);
-                                        }}
-                                        label={t('misc_max_local_devices')}
-                                        variant="outlined"
-                                        type="number"
-                                        error={fieldState.invalid}
-                                        helperText={fieldState.invalid && t(fieldState.error?.message)}
-                                    />
+                                    <FormControl fullWidth error={fieldState.invalid}>
+                                        <Stack direction={'row'} spacing={1} alignItems={'center'}>
+                                            <FormLabel>{t('misc_max_local_devices')}</FormLabel>
+                                            <CustomPopover
+                                                content={
+                                                    <Stack spacing={1}>
+                                                        <Typography variant='h6'>{t('misc_max_local_device_desc')}</Typography>
+                                                        <Typography variant='body1'>{t('misc_set_to_prevent_unauthorized_pairing')}</Typography>
+                                                    </Stack>
+                                                }
+                                            />
+                                        </Stack>
+                                        <TextField
+                                            {...field}
+                                            variant="outlined"
+                                            type="number"
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                field.onChange(val === '' ? '' : Number.isNaN(Number(val)) ? '' : Number(val));
+                                            }}
+                                            value={field.value ?? ''}
+                                            helperText={fieldState.invalid ? t(fieldState.error?.message) : ''}
+                                        />
+                                    </FormControl>
                                 )}
                             />
                         </Grid>
