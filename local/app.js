@@ -9,6 +9,7 @@ const validUrl = require("valid-url");
 const crypto = require("crypto");
 const cron = require("node-cron");
 const { detect } = require("detect-port");
+const os = require("os");
 
 const app = express();
 const DEFAULT_PORT = 3872;
@@ -23,6 +24,7 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
 
+
 const startBeacon = (uuid, customText = 'beacon') => {
     if (!uuid) {
         console.log("No UUID provided. Beacon will not start.");
@@ -34,9 +36,19 @@ const startBeacon = (uuid, customText = 'beacon') => {
         return;
     }
 
-    console.log(`Attempting to start beacon with UUID: ${uuid} and custom text: "${customText}"`);
+    const platform = os.platform(); 
 
-    bleno.startAdvertising(customText, [uuid], (err) => {
+    let nameToAdvertise = customText;
+    if (platform !== 'win32' && platform !== 'darwin') {
+        nameToAdvertise = customText.slice(0, 8);
+        if (customText.length > 8) {
+            console.warn(`customText too long for BLE on ${platform}. Using shortened version: "${nameToAdvertise}"`);
+        }
+    }
+
+    console.log(`Attempting to start beacon with UUID: ${uuid} and custom text: "${nameToAdvertise}"`);
+
+    bleno.startAdvertising(nameToAdvertise, [uuid], (err) => {
         if (err) {
             console.error("Failed to start advertising:", err);
         } else {
